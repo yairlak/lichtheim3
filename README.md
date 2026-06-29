@@ -128,13 +128,23 @@ generalization split, and the lesion dissociation).
 ```bash
 pip install -r requirements.txt
 
-# train the model and run all evaluations end to end
-python run_all.py --epochs 8
+# train the model (PyTorch) and run every evaluation end to end
+python run_all.py                                  # quick run (small lexicon)
+python run_all.py --epochs 15 --max_words 8000     # fuller run
 ```
 
-Outputs (loss curve, generalization, serial-position curves, neighborhood plots,
-sonority confusion matrix, the 2x2 dissociation plot, and the lesion figures) are
-written to `outputs/`.
+This writes the **whole figure set** — loss curve, generalization, serial-position
+curve, neighborhood, sonority confusion matrix, the frequency × length
+dissociation, and the lesion figures — into an organized tree:
+
+```
+figures/train/   figures/eval/   figures/ablation/   figures/summary.json
+```
+
+`run_all.py` is the authoritative path (real GRUs + the full eval battery; add
+`data/glove.6B.300d.txt` for real semantic targets). The `numpy_demo/` twin is a
+dependency-light fallback for machines without PyTorch and reproduces the same
+story — it is not needed if you have torch.
 
 ---
 
