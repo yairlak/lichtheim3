@@ -8,7 +8,7 @@ venv/
 # Model / run outputs
 outputs/
 
-# Large resources (download separately; see data/fetch_resources.py)
+# Optional GloVe vectors (the 30k lexicon is bundled; GloVe is optional)
 data/glove.*.txt
 data/glove*.zip
 
