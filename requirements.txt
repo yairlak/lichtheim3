@@ -1,0 +1,7 @@
+torch>=2.0
+numpy>=1.23
+matplotlib>=3.6
+# The realistic 30k English lexicon (data/lexicon_en.tsv) is bundled, so no
+# downloads are required. Optional extras:
+#   - a GloVe text file (glove.6B.300d.txt in data/) for real semantic targets
+#   - the NumPy demo (numpy_demo/) needs only numpy + matplotlib, not torch

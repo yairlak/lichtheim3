@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Model / run outputs
+outputs/
+
+# Large resources (download separately; see data/fetch_resources.py)
+data/glove.*.txt
+data/glove*.zip
+
+# macOS
+.DS_Store
