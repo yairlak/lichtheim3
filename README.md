@@ -186,8 +186,15 @@ trains end-to-end with hand-written backprop and reproduces the same story on an
 machine — no torch required:
 
 ```bash
-python -m numpy_demo.run_demo     # training_loss, generalization, unseen_by_length
-python -m numpy_demo.ablation      # ablation_severity, ablation_dissociation, ablation_length
+# trains once and writes every figure into an organized figures/ tree:
+#   figures/train/      training_loss, logfreq_curriculum
+#   figures/eval/       generalization, nonword_by_length, primacy_recency
+#   figures/ablation/   ablation_severity, ablation_dissociation, ablation_length
+python -m numpy_demo.make_figures
+
+# or run the pieces individually (write to outputs/numpy_demo/):
+python -m numpy_demo.run_demo
+python -m numpy_demo.ablation
 ```
 
 It trains on the same realistic lexicon with log-frequency weighting (a frequent

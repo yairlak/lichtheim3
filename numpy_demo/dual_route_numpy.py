@@ -63,7 +63,7 @@ def softmax(z, axis=-1):
 # ---------------------------------------------------------------------------
 class DualRouteNumpy:
     def __init__(self, L, V, h_sem=256, beta=6.0, leak=0.9, k_slots=4,
-                 primacy_gain=1.6, primacy_decay=0.18,
+                 primacy_gain=1.6, primacy_decay=0.18, recency_gain=2.0,
                  gate_alpha=10.0, gate_thr=0.5, seed=0):
         self.L, self.V, self.H = L, V, h_sem
         self.beta = beta                       # dorsal copy sharpness
@@ -85,11 +85,15 @@ class DualRouteNumpy:
         # full model's error_suppression gate gets from its semantic bank, and it
         # is robust to the lexical route being confidently wrong on novel items.
         self.fam_bank = None
-        # dorsal trace strength = primacy gradient x recency leak (fixed, content-free)
+        # Dorsal trace strength = primacy gradient PLUS a recency boost
+        # (fixed, content-free). Adding the two components -- a decaying primacy
+        # gradient and a leaky recency term that favours the last items -- yields
+        # the classic U-shaped serial-position profile (both ends survive the
+        # capacity bottleneck, the middle is lost).
         pos = np.arange(L)
         recency = leak ** (L - 1 - pos)
         primacy = primacy_gain * np.exp(-primacy_decay * pos)
-        self.trace_strength = (primacy * recency).astype(np.float32)   # (L,)
+        self.trace_strength = (primacy + recency_gain * recency).astype(np.float32)
         self.pos_decay = recency.astype(np.float32)
 
     PARAMS = ["W1", "b1", "W2", "b2"]
