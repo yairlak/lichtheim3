@@ -79,6 +79,10 @@ class TrainConfig:
     device: str = "cpu"            # "cuda" if available; run_all auto-detects
     log_every: int = 50
     seed: int = 0
+    # Train the dorsal route additionally on a frequency-flat stream of
+    # pronounceable pseudowords so it learns a general serial-recall / copy
+    # (and stays lexical-frequency-invariant). 0 disables.
+    dorsal_pool_size: int = 4000
 
 
 @dataclass

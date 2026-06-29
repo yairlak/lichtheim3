@@ -1,14 +1,16 @@
 """Training loop and a `build_and_train` convenience entry point."""
 from __future__ import annotations
 
+import itertools
 from typing import Tuple
 
 import torch
+import torch.nn.functional as F
 
 from config import Config
 from data.phonemes import build_vocab, Vocab
 from data.lexicon import build_lexicon, Lexicon
-from data.dataset import make_loader
+from data.dataset import make_loader, build_pool_loader
 from models.dual_route import DualRouteModel
 from losses import total_loss
 from utils.seed import set_seed
@@ -28,28 +30,45 @@ def build_everything(cfg: Config):
         val_entries, vocab, density, cfg.train.batch_size,
         frequency_weighted=False, shuffle=False)
 
+    pool_loader = None
+    if cfg.train.dorsal_pool_size > 0:
+        pool_loader = build_pool_loader(
+            vocab, cfg.train.dorsal_pool_size, cfg.train.batch_size,
+            cfg.data.semantic_dim, max_len=cfg.data.max_phonemes, seed=cfg.train.seed)
+
     model = DualRouteModel(cfg, vocab).to(cfg.train.device)
     # frozen lexical bank = GloVe vectors of the *training* lexicon
     bank = torch.stack([torch.tensor(e.semantic) for e in train_entries]).float()
     model.set_semantic_bank(bank.to(cfg.train.device))
-    return model, vocab, lexicon, train_loader, val_loader
+    return model, vocab, lexicon, train_loader, val_loader, pool_loader
 
 
-def run_epoch(model, loader, cfg: Config, optim=None) -> dict:
+def run_epoch(model, loader, cfg: Config, optim=None, pool_iter=None) -> dict:
     train_mode = optim is not None
     model.train(train_mode)
     pad_id = model.vocab.pad_id
+    dev = cfg.train.device
     agg = {}
     n = 0
     for batch in loader:
-        batch = {k: (v.to(cfg.train.device) if torch.is_tensor(v) else v)
+        batch = {k: (v.to(dev) if torch.is_tensor(v) else v)
                  for k, v in batch.items()}
         out = model(batch["enc_in"], batch["enc_mask"], batch["dec_in"])
         losses = total_loss(out, batch, cfg.loss, pad_id,
                             usage_prior=cfg.gating.usage_prior)
+        total = losses["total"]
+        if train_mode and pool_iter is not None:
+            # dorsal-only serial-recall loss on a pronounceable pseudoword batch
+            pb = next(pool_iter)
+            pb = {k: (v.to(dev) if torch.is_tensor(v) else v) for k, v in pb.items()}
+            pout = model(pb["enc_in"], pb["enc_mask"], pb["dec_in"])
+            V = pout["wm_logits"].shape[-1]
+            pool_ce = F.cross_entropy(pout["wm_logits"].reshape(-1, V),
+                                      pb["dec_tgt"].reshape(-1), ignore_index=pad_id)
+            total = total + cfg.loss.wm * pool_ce
         if train_mode:
             optim.zero_grad()
-            losses["total"].backward()
+            total.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.train.grad_clip)
             optim.step()
         for k, v in losses.items():
@@ -79,15 +98,17 @@ def build_and_train(cfg: Config, out_dir: str = None
                     ) -> Tuple[DualRouteModel, Vocab, Lexicon, list]:
     if cfg.train.device == "cpu" and torch.cuda.is_available():
         cfg.train.device = "cuda"
-    model, vocab, lexicon, train_loader, val_loader = build_everything(cfg)
+    model, vocab, lexicon, train_loader, val_loader, pool_loader = build_everything(cfg)
     optim = torch.optim.AdamW(model.parameters(), lr=cfg.train.lr,
                               weight_decay=cfg.train.weight_decay)
+    pool_iter = itertools.cycle(pool_loader) if pool_loader is not None else None
 
     print(f"[train] lexicon={len(lexicon)} ({lexicon.source}) "
-          f"vocab={vocab.size} device={cfg.train.device}")
+          f"vocab={vocab.size} device={cfg.train.device} "
+          f"dorsal_pool={'on' if pool_iter else 'off'}")
     history = []
     for ep in range(cfg.train.epochs):
-        tr = run_epoch(model, train_loader, cfg, optim)
+        tr = run_epoch(model, train_loader, cfg, optim, pool_iter=pool_iter)
         with torch.no_grad():
             va = run_epoch(model, val_loader, cfg, optim=None)
         history.append({"epoch": ep + 1,

@@ -12,8 +12,8 @@ Usage:
     python run_all.py                 # quick run (small lexicon)
     python run_all.py --epochs 15 --max_words 8000   # fuller run
 
-This is the authoritative path (the numpy_demo/ twin only exists for machines
-without PyTorch). Drop glove.6B.300d.txt in data/ for real semantic targets.
+For real semantic targets run `bash data/get_glove.sh` first (otherwise the
+ventral route aligns to deterministic per-word pseudo-vectors).
 """
 from __future__ import annotations
 

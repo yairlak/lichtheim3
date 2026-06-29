@@ -25,11 +25,13 @@ def main():
     cfg.train.batch_size = 32
     cfg.train.device = "cpu"
 
-    model, vocab, lexicon, train_loader, val_loader = build_everything(cfg)
+    model, vocab, lexicon, train_loader, val_loader, pool_loader = build_everything(cfg)
     optim = torch.optim.AdamW(model.parameters(), lr=cfg.train.lr)
+    import itertools
+    pool_iter = itertools.cycle(pool_loader) if pool_loader is not None else None
 
-    # one forward/backward
-    stats = run_epoch(model, train_loader, cfg, optim)
+    # one forward/backward (incl. the dorsal pseudoword pool)
+    stats = run_epoch(model, train_loader, cfg, optim, pool_iter=pool_iter)
     assert torch.isfinite(torch.tensor(stats["total"])), stats
 
     # shape checks on a single batch

@@ -76,8 +76,9 @@ pronunciations, frequency-ranked) with **log-frequency** weighting; see
 **Dorsal / WM is a parametric recurrent serial-recall network** (Botvinick &
 Plaut, 2006). A recurrent **encoder** reads the phoneme sequence into a single,
 bounded recurrent state; a recurrent **decoder** re-articulates it. Because it is
-trained on the repetition task (and, in the NumPy twin, additionally on a
-frequency-flat stream of pronounceable forms), it learns the auditory→motor map
+trained on the repetition task (and additionally on a frequency-flat stream of
+pronounceable pseudowords — `config.TrainConfig.dorsal_pool_size`), it learns the
+auditory→motor map
 and the language's phonotactics, and acquires the *general* serial-recall
 computation — so it generalizes to novel words and nonwords. Its frailties are
 emergent, not hand-wired: packing the whole sequence into a fixed-size state plus
@@ -141,10 +142,14 @@ dissociation, and the lesion figures — into an organized tree:
 figures/train/   figures/eval/   figures/ablation/   figures/summary.json
 ```
 
-`run_all.py` is the authoritative path (real GRUs + the full eval battery; add
-`data/glove.6B.300d.txt` for real semantic targets). The `numpy_demo/` twin is a
-dependency-light fallback for machines without PyTorch and reproduces the same
-story — it is not needed if you have torch.
+For real GloVe semantic targets, fetch them once:
+
+```bash
+bash data/get_glove.sh        # -> data/glove.6B.300d.txt (auto-detected)
+```
+
+Tip: run `python -m tests.smoke_test` first — it trains a tiny model and runs the
+evaluations in a few seconds, catching any environment issue before a full run.
 
 ---
 
@@ -158,9 +163,9 @@ no downloads. Semantic targets for the ventral route use **GloVe** if you place
 `glove.6B.300d.txt` in `data/`, otherwise a stable deterministic pseudo-vector.
 
 Frequency enters through **exposure**: words are *presented* in proportion to
-their **log frequency** (`data.lexicon.logfreq_weights`) — the PyTorch dataset
-samples by these weights and the NumPy twin draws minibatches by them — rather
-than re-weighting the loss. Word frequencies are Zipfian, so the log compresses
+their **log frequency** (`data.lexicon.logfreq_weights`) — the PyTorch dataset's
+sampler draws words by these weights — rather than re-weighting the loss. Word
+frequencies are Zipfian, so the log compresses
 the huge high-frequency tail (raw frequency would mean essentially only ever
 seeing *the/of/and*), matching practice in the word-repetition literature.
 Rebuild the lexicon from your own frequency list with:
@@ -188,55 +193,25 @@ rationale behind each term.
 
 ## Training curve + unseen-word generalization
 
-`run_all.py` now saves a `training_loss.png` (train vs held-out repetition loss)
-and runs `evaluate/generalization.py`, which repeats **trained vs novel
-(held-out) words** through each route in isolation — the protocol from
-Chang et al., *Modelling Word Repetition with Deep Neural Networks*
-(arXiv:2506.13450). The expected dissociation: the **ventral** route shows a
-large trained-minus-novel gap (lexical knowledge does not transfer to
-non-words), the **dorsal** buffer is flat across familiarity but falls off with
+`run_all.py` saves a `training_loss.png` (train vs held-out repetition loss) and
+runs `evaluate/generalization.py`, which repeats **trained vs novel (held-out)
+words** through each route in isolation — the protocol from Chang et al.,
+*Modelling Word Repetition with Deep Neural Networks* (arXiv:2506.13450). The
+expected pattern is a dual-route **crossover**: the **ventral** route wins on
+trained words but fails on novel forms (lexical knowledge does not transfer to
+non-words), the **dorsal** route generalizes to novel forms but falls off with
 length, and the **gated** model tracks the better route item-by-item.
-
-### Runnable NumPy twin (`numpy_demo/`)
-
-Because the full model is PyTorch, a dependency-light NumPy twin is provided that
-trains end-to-end with hand-written backprop and reproduces the same story on any
-machine — no torch required:
-
-```bash
-# trains once and writes every figure into an organized figures/ tree:
-#   figures/train/      training_loss, logfreq_curriculum
-#   figures/eval/       generalization, nonword_by_length, primacy_recency
-#   figures/ablation/   ablation_severity, ablation_dissociation, ablation_length
-python -m numpy_demo.make_figures
-python -m numpy_demo.make_figures --reuse   # reuse cached model (skip training)
-```
-
-It trains on the same realistic lexicon, **presenting words in proportion to log
-frequency**, and uses the same architecture: a parametric ventral autoencoder
-through a tight semantic bottleneck (lexical: memorizes trained words, fails novel
-ones), a parametric **recurrent serial-recall dorsal route** (sub-lexical:
-generalizes to novel forms; additionally trained on a frequency-flat stream of
-pronounceable forms), and a lexical-familiarity gate. Results (~45 s on CPU): a
-dual-route **crossover** — ventral wins on trained words, the dorsal route wins on
-nonwords, the **gated** model tracks the best; and the Ueno-style lesion
-dissociation — **dorsal lesion** spares words (~1.0) but abolishes nonwords (→0),
-**ventral lesion** does the reverse.
 
 ---
 
 ## Lesion / ablation studies (Ueno et al. 2011, "Lichtheim 2")
 
 Following Ueno, Saito, Rogers & Lambon Ralph (2011, *Neuron* 72:385–396),
-damage is simulated by **removing a proportion of a pathway's units/links and
-adding noise over its output**, titrating severity and averaging over random
-"patients" (seeds), reported as mean ± SE.
-
-```bash
-python -m numpy_demo.ablation     # writes outputs/numpy_demo/ablation_*.png
-```
-
-Lesioning each route reproduces the classic **double dissociation**:
+`evaluate/ablation.py` simulates damage by **removing a proportion of a pathway's
+units and adding noise over its output**, titrating severity and averaging over
+random "patients" (seeds), reported as mean ± SE (figures in
+`figures/ablation/`). Lesioning each route reproduces the classic
+**double dissociation**:
 
 | Lesion | Word (trained) repetition | Nonword (novel) repetition | Aphasia analogue |
 |--------|---------------------------|----------------------------|------------------|
@@ -270,7 +245,8 @@ lichtheim3/
 │   ├── lexicon.py           # bundled-lexicon loader + log-frequency weights
 │   ├── lexicon_en.tsv       # 30k real words + ARPABET + frequency rank
 │   ├── build_lexicon_en.py  # (re)build lexicon_en.tsv from a frequency list
-│   └── dataset.py           # Dataset + log-frequency sampler + collate
+│   ├── get_glove.sh         # fetch GloVe 6B 300d into data/
+│   └── dataset.py           # Dataset + log-frequency sampler + pseudoword pool
 ├── models/
 │   ├── wm_route.py          # dorsal recurrent serial-recall net
 │   ├── ltm_route.py         # ventral encoder/decoder
@@ -283,8 +259,7 @@ lichtheim3/
 │   ├── dissociation.py      # frequency × length
 │   ├── generalization.py    # trained vs unseen words
 │   └── ablation.py          # Ueno-style lesions
-├── numpy_demo/              # runnable, torch-free twin: make_figures.py, ablation.py
-│                            #   common.py, dual_route_numpy.py (recurrent dorsal)
+├── tests/smoke_test.py      # fast end-to-end sanity check
 └── utils/
     ├── seed.py
     └── plotting.py

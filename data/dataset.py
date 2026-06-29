@@ -24,6 +24,8 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 
+import random
+
 from .lexicon import Lexicon, LexEntry, logfreq_weights
 from .phonemes import Vocab
 
@@ -85,6 +87,33 @@ def make_collate(pad_id: int):
             "words": [b["word"] for b in batch],
         }
     return collate
+
+
+def build_pool_loader(vocab: Vocab, n: int, batch_size: int, semantic_dim: int,
+                      min_len: int = 2, max_len: int = 9, seed: int = 0) -> DataLoader:
+    """A loader of pronounceable (C)V(C) pseudowords for training the dorsal
+    route's general serial-recall (frequency-flat, no semantics)."""
+    rng = random.Random(seed)
+    cons = [vocab.stoi[s] for s in vocab.itos[3:] if vocab.sonority[vocab.stoi[s]] < 0.9]
+    vow = [vocab.stoi[s] for s in vocab.itos[3:] if vocab.sonority[vocab.stoi[s]] >= 0.95]
+    entries, seen = [], set()
+    while len(entries) < n:
+        f = []
+        for _ in range(rng.randint(1, 3)):
+            if rng.random() < 0.85:
+                f.append(rng.choice(cons))
+            f.append(rng.choice(vow))
+            if rng.random() < 0.4:
+                f.append(rng.choice(cons))
+        if not (min_len <= len(f) <= max_len) or tuple(f) in seen:
+            continue
+        seen.add(tuple(f))
+        entries.append(LexEntry(word="", phonemes=f,
+                                semantic=np.zeros(semantic_dim, np.float32),
+                                freq=1.0, rank=1))
+    density = {i: 0 for i in range(len(entries))}
+    return make_loader(entries, vocab, density, batch_size,
+                       frequency_weighted=False, shuffle=True)
 
 
 def make_loader(entries: List[LexEntry], vocab: Vocab, density: Dict[int, int],

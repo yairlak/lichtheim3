@@ -13,8 +13,8 @@ it, so it:
     into a fixed-size recurrent state, and interference noise corrupts it -- this
     is what produces length effects and the serial-position curve;
   * stays lexical-frequency-invariant, because a generalizing route gains nothing
-    from word identity (and, in the NumPy twin, because it is additionally
-    trained on a frequency-flat stream of pronounceable forms).
+    from word identity (and it is additionally trained on a frequency-flat stream
+    of pronounceable pseudowords; see `config.TrainConfig.dorsal_pool_size`).
 
 Same forward contract as before -- `forward(enc_in, enc_mask, dec_in) ->
 {"premotor": (B, S, premotor_dim)}` -- so the gate, motor, and lesion hooks are
