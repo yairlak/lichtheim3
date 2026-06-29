@@ -31,14 +31,9 @@ class DataConfig:
 
 @dataclass
 class WMConfig:
-    """Dorsal / working-memory buffer."""
-    n_slots: int = 7               # Miller's 7±2 capacity ceiling
-    leak: float = 0.88             # per-step retention (<1 => recency decay)
-    primacy_gain: float = 1.6      # write-gain at position 0
-    primacy_decay: float = 0.18    # how fast write-gain falls with position
-    interference_std: float = 0.06 # Gaussian noise added to stored traces
-    pos_embed_dim: int = 32        # learnable READ positions (no content weights)
-    read_hidden: int = 64
+    """Dorsal recurrent serial-recall route (Botvinick & Plaut, 2006)."""
+    hidden: int = 128              # bounded recurrent state -> capacity/length limits
+    interference_noise: float = 0.1  # Gaussian noise on the recalled state
 
 
 @dataclass

@@ -11,7 +11,7 @@ distinct routes feed that bottleneck:
 
 | Route | Stream | Memory type | Implemented in |
 |-------|--------|-------------|----------------|
-| **WM Buffer** | Dorsal | Non-parametric, activity-based, capacity-limited | `models/wm_route.py` |
+| **WM serial-recall net** | Dorsal | Parametric recurrent encoder→decoder, capacity-limited | `models/wm_route.py` |
 | **LTM Lexicon** | Ventral | Parametric, weight-based, semantic | `models/ltm_route.py` |
 
 The point of this repo is **not** state-of-the-art accuracy. It is to show that
@@ -30,10 +30,11 @@ four classic **human** behavioral signatures *for free*:
 
 **Architecture — phonemes in, two routes, one shared output:**
 
-- **Dorsal WM buffer** (`models/wm_route.py`): a *non-parametric*, capacity-limited
-  activity buffer that re-articulates the phonemes actually heard (primacy gain +
-  recency leak + interference noise; only tiny position weights). Sub-lexical and
-  content-agnostic — it can repeat anything once, but fragilely.
+- **Dorsal WM route** (`models/wm_route.py`): a *parametric* recurrent
+  serial-recall network (encoder→decoder, after Botvinick & Plaut 2006). It reads
+  the sequence into a bounded recurrent state and re-articulates it, learning the
+  auditory→motor map and phonotactics. Sub-lexical and generalizing — it repeats
+  novel words and nonwords — but capacity/length-limited and noisy.
 - **Ventral LTM lexicon** (`models/ltm_route.py`): a *parametric*
   encoder → semantic vector → decoder associative memory that maps a word-form to
   meaning and regenerates the form. Lexical and weight-based — robust on known
@@ -72,14 +73,18 @@ pronunciations, frequency-ranked) with **log-frequency** weighting; see
 
 ## Why each route is built the way it is
 
-**Dorsal / WM is deliberately crippled, not trained to be good.**
-It is a fixed-capacity buffer of `K` slots. Each phoneme is *written* (the actual
-one-hot vector, not a learned lexical code) with a **primacy gain** that decays
-across input position, the buffer **leaks** every step (recency), and stored
-traces accumulate **Gaussian interference**. The only learnable parameters are
-tiny *position* embeddings used for read-out — there is no content-addressable
-weight anywhere, so the buffer physically *cannot* memorize a lexicon. This is
-what makes it frequency-invariant and length-sensitive.
+**Dorsal / WM is a parametric recurrent serial-recall network** (Botvinick &
+Plaut, 2006). A recurrent **encoder** reads the phoneme sequence into a single,
+bounded recurrent state; a recurrent **decoder** re-articulates it. Because it is
+trained on the repetition task (and, in the NumPy twin, additionally on a
+frequency-flat stream of pronounceable forms), it learns the auditory→motor map
+and the language's phonotactics, and acquires the *general* serial-recall
+computation — so it generalizes to novel words and nonwords. Its frailties are
+emergent, not hand-wired: packing the whole sequence into a fixed-size state plus
+interference noise gives **capacity / length limits** and the **serial-position
+curve**. It is **lexical-frequency-invariant** because a generalizing route gains
+nothing from word identity — frequency-invariance now comes from *what it learns*,
+not from having no weights.
 
 **Ventral / LTM is a proper associative memory.**
 A recurrent encoder maps the phoneme sequence to a 300-d semantic vector that is
@@ -142,10 +147,13 @@ real CMUdict∩hunspell words with continued Zipfian rank). It loads offline wit
 no downloads. Semantic targets for the ventral route use **GloVe** if you place
 `glove.6B.300d.txt` in `data/`, otherwise a stable deterministic pseudo-vector.
 
-Training samples words by **log frequency** (`data.lexicon.logfreq_weights`):
-word frequencies are Zipfian, so the log compresses the huge high-frequency tail,
-matching practice in the word-repetition modelling literature. Rebuild the
-lexicon from your own frequency list with:
+Frequency enters through **exposure**: words are *presented* in proportion to
+their **log frequency** (`data.lexicon.logfreq_weights`) — the PyTorch dataset
+samples by these weights and the NumPy twin draws minibatches by them — rather
+than re-weighting the loss. Word frequencies are Zipfian, so the log compresses
+the huge high-frequency tail (raw frequency would mean essentially only ever
+seeing *the/of/and*), matching practice in the word-repetition literature.
+Rebuild the lexicon from your own frequency list with:
 
 ```bash
 python -m data.build_lexicon_en  RANKED_WORDS.txt  30000
@@ -191,20 +199,19 @@ machine — no torch required:
 #   figures/eval/       generalization, nonword_by_length, primacy_recency
 #   figures/ablation/   ablation_severity, ablation_dissociation, ablation_length
 python -m numpy_demo.make_figures
-
-# or run the pieces individually (write to outputs/numpy_demo/):
-python -m numpy_demo.run_demo
-python -m numpy_demo.ablation
+python -m numpy_demo.make_figures --reuse   # reuse cached model (skip training)
 ```
 
-It trains on the same realistic lexicon with log-frequency weighting (a frequent
-core of real words), and keeps the three commitments: a parametric ventral
-autoencoder through a tight semantic bottleneck, a non-parametric
-capacity-limited dorsal copy buffer, and an error-suppression gate that routes by
-lexical *familiarity*. Results (≈14 s each on CPU): trained words ~1.0, held-out
-real words ~0.94 (the lexicon generalizes), nonwords carried best by the **gated**
-model; and the Ueno-style lesion dissociation — **dorsal lesion** spares words
-(~1.0) but abolishes nonwords (→0), **ventral lesion** does the reverse.
+It trains on the same realistic lexicon, **presenting words in proportion to log
+frequency**, and uses the same architecture: a parametric ventral autoencoder
+through a tight semantic bottleneck (lexical: memorizes trained words, fails novel
+ones), a parametric **recurrent serial-recall dorsal route** (sub-lexical:
+generalizes to novel forms; additionally trained on a frequency-flat stream of
+pronounceable forms), and a lexical-familiarity gate. Results (~45 s on CPU): a
+dual-route **crossover** — ventral wins on trained words, the dorsal route wins on
+nonwords, the **gated** model tracks the best; and the Ueno-style lesion
+dissociation — **dorsal lesion** spares words (~1.0) but abolishes nonwords (→0),
+**ventral lesion** does the reverse.
 
 ---
 
@@ -255,7 +262,7 @@ lichtheim3/
 │   ├── build_lexicon_en.py  # (re)build lexicon_en.tsv from a frequency list
 │   └── dataset.py           # Dataset + log-frequency sampler + collate
 ├── models/
-│   ├── wm_route.py          # dorsal buffer
+│   ├── wm_route.py          # dorsal recurrent serial-recall net
 │   ├── ltm_route.py         # ventral encoder/decoder
 │   ├── motor.py             # shared motor bottleneck
 │   ├── gating.py            # error-suppression gate
@@ -266,7 +273,8 @@ lichtheim3/
 │   ├── dissociation.py      # frequency × length
 │   ├── generalization.py    # trained vs unseen words
 │   └── ablation.py          # Ueno-style lesions
-├── numpy_demo/              # runnable, torch-free twin (+ ablation)
+├── numpy_demo/              # runnable, torch-free twin: make_figures.py, ablation.py
+│                            #   common.py, dual_route_numpy.py (recurrent dorsal)
 └── utils/
     ├── seed.py
     └── plotting.py

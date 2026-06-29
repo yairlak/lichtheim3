@@ -37,8 +37,8 @@ from numpy_demo.dual_route_numpy import accuracy
 
 OUT = os.path.join("outputs", "numpy_demo")
 SEVERITIES = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-N_PATIENTS = 10
-DORSAL_NOISE_MAX = 5.0      # logit-scale noise at severity 1 (beta=6)
+N_PATIENTS = 6
+DORSAL_NOISE_MAX = 4.0      # output noise over the lesioned pathway at severity 1
 VENTRAL_NOISE_MAX = 4.0
 
 
@@ -83,11 +83,11 @@ def _se(v):
 def main():
     os.makedirs(OUT, exist_ok=True)
     print("[ablation] training the healthy model on the real lexicon ...")
-    data = make_data(n_core=2500, n_unseen=400, n_nonword=400, L=9, seed=0)
-    model = train_model(data, epochs=400, verbose=True)
+    data = make_data(n_core=1800, n_unseen=400, n_nonword=300, L=9, seed=0)
+    model = train_model(data, steps=2200, verbose=True)
 
     # eval pools: real trained words vs novel nonwords (subset words for speed)
-    k = 600
+    k = 300
     word = (data["Xtr"][:k], data["Ttr"][:k], data["Mtr"][:k])
     nonword = (data["Xnw"], data["Tnw"], data["Mnw"])
 

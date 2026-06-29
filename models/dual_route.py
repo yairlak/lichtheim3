@@ -24,7 +24,7 @@ import torch.nn as nn
 
 from config import Config
 from data.phonemes import Vocab
-from .wm_route import WMBuffer
+from .wm_route import WMRecurrent
 from .ltm_route import LTMLexicon
 from .gating import build_gate
 from .motor import MotorCortex
@@ -41,7 +41,7 @@ class DualRouteModel(nn.Module):
         self.phon_embed = nn.Embedding(vocab.size, cfg.ltm.phon_embed_dim,
                                        padding_idx=vocab.pad_id)
 
-        self.wm = WMBuffer(cfg.wm, self.phon_embed, premotor_dim)
+        self.wm = WMRecurrent(cfg.wm, self.phon_embed, premotor_dim)
         self.ltm = LTMLexicon(cfg.ltm, self.phon_embed, cfg.data.semantic_dim,
                               premotor_dim, vocab.pad_id)
         self.gate = build_gate(cfg.gating, premotor_dim)
@@ -53,8 +53,7 @@ class DualRouteModel(nn.Module):
 
     # ---------------------------------------------------------------- forward
     def forward(self, enc_in, enc_mask, dec_in, collect: bool = False) -> Dict[str, torch.Tensor]:
-        S = dec_in.shape[1]
-        wm_out = self.wm(enc_in, enc_mask, n_steps=S, collect=collect)
+        wm_out = self.wm(enc_in, enc_mask, dec_in, collect=collect)
         ltm_out = self.ltm(enc_in, enc_mask, dec_in,
                            want_field=self.gate.needs_field or collect)
 
@@ -80,9 +79,8 @@ class DualRouteModel(nn.Module):
     def route_logits(self, enc_in, enc_mask, dec_in, route: str,
                      collect: bool = False) -> Dict[str, torch.Tensor]:
         """route in {"full", "wm", "ltm"}. Returns logits and (if collect) diag."""
-        S = dec_in.shape[1]
         if route == "wm":
-            wm_out = self.wm(enc_in, enc_mask, n_steps=S, collect=collect)
+            wm_out = self.wm(enc_in, enc_mask, dec_in, collect=collect)
             res = {"logits": self.motor(wm_out["premotor"])}
             if collect:
                 res["wm_diag"] = wm_out
