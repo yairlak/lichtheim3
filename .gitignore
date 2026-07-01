@@ -14,3 +14,7 @@ data/glove*.zip
 
 # macOS
 .DS_Store
+
+# Model checkpoints (binary, potentially large)
+checkpoints/*.pt
+checkpoints/*.pth

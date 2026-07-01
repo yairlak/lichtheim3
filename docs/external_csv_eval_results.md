@@ -1,0 +1,266 @@
+# Yair-L3: External CSV Evaluation Results
+
+> **Status:** Template — fill in after running `scripts/external_eval.py`.
+> See `outputs/external_eval/external_eval_summary.json` for machine-readable results.
+
+---
+
+## 0. Provenance
+
+| Field | Value |
+|---|---|
+| Checkpoint evaluated | `checkpoints/lichtheim3.pt` |
+| Lexicon source | `bundled-en` (data/lexicon_en.tsv) |
+| Training words (n) | *(fill from checkpoint meta: `n_train`)* |
+| Held-out words (n) | *(fill from checkpoint meta: `n_val`)* |
+| Training epochs | *(fill from checkpoint meta)* |
+| Max_words | *(fill from checkpoint meta)* |
+| Seed | *(fill from checkpoint meta)* |
+| GloVe present | **NO** — pseudo-hash semantic vectors used for all words |
+| Evaluation date | *(fill)* |
+| Evaluation script | `scripts/external_eval.py` |
+
+---
+
+## 1. Evaluation regime
+
+**All inference is teacher-forced.**
+
+At each decoder step t, the decoder receives the gold phoneme p_{t-1} (not the
+model's own previous prediction).  This is identical to the regime in all
+`evaluate/*.py` scripts in this repo.  It does NOT simulate free-recall
+repetition.  Results should be interpreted as:
+
+> "Given the correct partial sequence so far, can the model produce the next
+> correct phoneme?"
+
+This regime tends to *underestimate* practical error rates (no error propagation)
+and is *not* directly comparable to human repetition accuracy.
+
+---
+
+## 2. Vocabulary / compatibility check
+
+Computed by `scripts/inspect_csvs.py`.
+Full report: `outputs/external_eval/csv_inspection_report.json`
+
+| Dataset | Rows | Unknown phonemes | Parse failures | Items excluded |
+|---|---|---|---|---|
+| phonemes.csv | 39 | 0 | 0 | — |
+| wfe.csv | 1200 | *(fill)* | *(fill)* | *(fill)* |
+| ssp.csv | 16560 | *(fill)* | *(fill)* | *(fill)* |
+
+Expected: 0 unknown phonemes (all 39 ARPABET symbols in WFE/SSP `No_Stress`
+match Yair-L3's vocabulary exactly).
+
+---
+
+## 3. WFE lexicon overlap
+
+**Source:** `outputs/external_eval/wfe/metrics.json` → key `wfe_lexicon_overlap`
+and column `lexicon_category` in `item_level_predictions.tsv`.
+
+Each WFE item is assigned to exactly one of four categories by
+`scripts/external_eval.py::_wfe_lexicon_category`:
+
+| Category | Criterion |
+|---|---|
+| `real_word_seen_in_training_lexicon` | Real word; orthographic string OR phoneme sequence matched a train-split entry of the 4k-word lexicon |
+| `real_word_in_validation_split` | Real word; matched val-split entry (never trained on, but in lexicon) |
+| `real_word_outside_4000_lexicon` | Real word; absent from both splits (beyond max_words cutoff or not in CMU dict) |
+| `pseudoword` | Lexicality column is not "real" |
+
+### 3a. Overlap counts
+
+| Category | n |
+|---|---|
+| real_word_seen_in_training_lexicon | *(fill)* |
+| real_word_in_validation_split | *(fill)* |
+| real_word_outside_4000_lexicon | *(fill)* |
+| pseudoword | 400 |
+
+### 3b. Accuracy by lexicon category
+
+| Category | n | full exact | wm exact | ltm exact |
+|---|---|---|---|---|
+| real_word_seen_in_training_lexicon | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| real_word_in_validation_split | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| real_word_outside_4000_lexicon | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| pseudoword | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+
+**Why this matters:** Without this breakdown, "real word accuracy" conflates items the
+model was explicitly trained on with words it has never seen.  Any claim about
+lexicality effects must be conditioned on this category split.
+
+---
+
+## 4. WFE results (model metrics)
+
+Full output: `outputs/external_eval/wfe/`
+
+### 4a. Overall metrics by route
+
+| Route | Exact match | Phoneme acc | Edit dist | Norm edit |
+|---|---|---|---|---|
+| full (gated) | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| wm (dorsal) | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| ltm (ventral) | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+
+### 4b. By Lexicality
+
+| Lexicality | n | full exact | wm exact | ltm exact |
+|---|---|---|---|---|
+| real | 800 | *(fill)* | *(fill)* | *(fill)* |
+| pseudo | 400 | *(fill)* | *(fill)* | *(fill)* |
+
+Expected pattern (if model generalises to novel forms):
+- `wm >= ltm` for pseudowords (dorsal handles novel forms better)
+- `ltm >= wm` for real words (ventral leverages lexical memory)
+- `full >= max(wm, ltm)` overall (gate routes to the better route per item)
+
+### 4c. By Size
+
+| Size | n | full exact | wm exact | ltm exact |
+|---|---|---|---|---|
+| short | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| long | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+
+Expected: WM accuracy should decline more for long items (capacity-limited buffer).
+
+### 4d. By Morphology
+
+| Morphology | n | full exact | wm exact | ltm exact |
+|---|---|---|---|---|
+| simple | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| complex | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+
+### 4e. By Condition
+
+*(fill from `outputs/external_eval/wfe/summary_table.tsv`)*
+
+### 4f. Frequency effect (real words only, full route)
+
+Correlation between Zipf_Frequency and exact match accuracy: *(fill)*
+
+Expected: positive correlation (higher frequency → better accuracy), driven by
+the LTM route.  Note: with pseudo-hash vectors (GloVe absent), this effect may
+reflect exposure frequency in training rather than true semantic encoding.
+
+### 4g. Figures produced
+
+```
+outputs/external_eval/wfe/figures/
+  accuracy_by_lexicality_{full,wm,ltm}.png
+  accuracy_by_length_{full,wm,ltm}.png
+  accuracy_by_size_{full,wm,ltm}.png
+  accuracy_by_morphology_{full,wm,ltm}.png
+  accuracy_by_condition_{full,wm,ltm}.png
+  edit_distance_by_lexicality_{full,wm,ltm}.png
+  frequency_effect_real_words_{full,wm,ltm}.png
+  route_accuracy_barplot_real.png
+  route_accuracy_barplot_pseudo.png
+```
+
+---
+
+## 5. SSP results
+
+Full output: `outputs/external_eval/ssp/`
+
+### 5a. Overall metrics (WM route — primary)
+
+| Route | Exact match | Phoneme acc | Edit dist | Norm edit |
+|---|---|---|---|---|
+| wm (dorsal) | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| full (gated) | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| ltm (ventral) | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+
+### 5b. By Type (CCV vs VCC)
+
+| Type | n | wm exact | wm phoneme_acc | wm edit_dist |
+|---|---|---|---|---|
+| CCV | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+| VCC | *(fill)* | *(fill)* | *(fill)* | *(fill)* |
+
+### 5c. Accuracy and edit distance by Sonority score
+
+*(fill from `outputs/external_eval/ssp/summary_table.tsv`)*
+
+Sonority range in dataset: *(fill min – max)*
+
+Expected if model is SSP-sensitive:
+- Higher sonority score (more compliant clusters) → higher accuracy
+- Lower sonority score (marked violations, e.g., stop+stop) → lower accuracy / higher edit distance
+
+Caution: Yair-L3 was not explicitly trained to be SSP-sensitive.  Sonority
+effects (if any) would be emergent from phonotactic exposure during training.
+The WM route's pseudoword curriculum (`build_pool_loader`) uses CV templating
+but does NOT enforce SSP, so sensitivity to sonority gradients is not guaranteed.
+
+### 5d. Figures produced
+
+```
+outputs/external_eval/ssp/figures/
+  accuracy_by_sonority_{full,wm,ltm}.png
+  edit_distance_by_sonority_{full,wm,ltm}.png
+  accuracy_by_type_CCV_VCC_{full,wm,ltm}.png
+  phoneme_accuracy_by_sonority_{full,wm,ltm}.png
+```
+
+---
+
+## 6. Limitations
+
+1. **Teacher-forced evaluation only.** Per-position accuracy does not reflect
+   true repetition error rates.  A free-generation evaluation mode does not
+   currently exist in this repo.
+
+2. **GloVe absent — pseudo-hash vectors.** The LTM route's "semantic" alignment
+   is to arbitrary per-word random vectors, not real meaning.  Lexical confidence
+   and gate routing are computed from learned representation geometry that was
+   trained against these hashes, not genuine semantic neighbourhoods.
+
+3. **Single checkpoint, small lexicon.** The checkpoint reflects one training
+   run with the parameters recorded in `checkpoints/lichtheim3.pt`
+   (`cfg_train.epochs`, `cfg_data.max_words`).  Performance at full 30k-word
+   scale and across multiple seeds may differ substantially.
+
+4. **WFE word overlap with training lexicon unknown.** Some WFE real words may
+   be in the 4,000-word training set; others may not.  Without cross-referencing
+   `data/lexicon_en.tsv` with WFE words, "real word" performance conflates
+   trained and novel real words.
+
+5. **SSP items have no semantic content.** The LTM and gate outputs for SSP
+   items are artefacts of the model mapping 3-phoneme strings to semantic space;
+   they should not be interpreted as lexical access.
+
+6. **WM noise is stochastic.** The dorsal route adds Gaussian noise to the
+   encoder hidden state during `collect=True` inference.  Results for the `wm`
+   route reflect a single noise draw per item (variance not averaged here).
+   For reproducible WM estimates, run multiple seeds and average.
+
+7. **WFE and SSP should not be merged.** They test different phenomena
+   (lexicality/frequency/morphology vs sonority compliance) at different
+   sequence lengths and population characteristics.
+
+---
+
+## 7. What can be shown to Yair
+
+- Route-level diagnostic curves from an independently-sourced dataset.
+- Evidence of lexicality effect (if `wm ≥ ltm` for pseudowords) that does not
+  rely on the train/val split from `figures/summary.json`.
+- Evidence of a length effect (short vs long size cells) from a controlled
+  stimulus set.
+- SSP accuracy/edit-distance curves as a function of sonority score — a test of
+  sub-lexical phonotactic sensitivity the existing eval suite does not contain.
+
+## 8. What cannot be claimed scientifically
+
+- That results prove "cognitive replication" of any human behavioural effect.
+- That the GloVe (vATL/semantic) story holds, since GloVe was not present.
+- That results generalise to other model configurations, lexicon sizes, or seeds.
+- That teacher-forced accuracy ≡ word repetition accuracy in the clinical/
+  psycholinguistic sense.
+- That WFE results on "real words" reflect purely lexical processing, since
+  some items may be in the training lexicon and others not.
