@@ -1,0 +1,582 @@
+"""WFE follow-up: condition breakdown, real-word coverage, and error table.
+
+Run AFTER scripts/external_eval.py has produced:
+    outputs/external_eval/wfe/item_level_predictions.tsv
+
+Outputs (all written to outputs/external_eval/wfe/):
+    wfe_condition_breakdown.tsv                   per-condition accuracy across all routes
+    wfe_condition_breakdown.md                    human-readable version of the above
+    wfe_real_word_coverage.tsv                    real-word split by lexicon-overlap category
+    wfe_real_word_coverage.md                     human-readable version of the above
+    train_seen_real_word_errors.tsv               items where training-seen real words failed
+    wfe_model_centered_category_breakdown.tsv     human-friendly category labels + accuracy
+    wfe_model_centered_category_breakdown.md      markdown of the above
+    figures/wfe_accuracy_by_model_centered_category.png  grouped barplot (full/wm/ltm per category)
+
+Usage (from repo root):
+    python scripts/wfe_condition_analysis.py
+    python scripts/wfe_condition_analysis.py --pred outputs/external_eval/wfe/item_level_predictions.tsv
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+PRED_PATH = os.path.join(ROOT, "outputs", "external_eval", "wfe",
+                         "item_level_predictions.tsv")
+OUT_DIR   = os.path.join(ROOT, "outputs", "external_eval", "wfe")
+
+# ---------------------------------------------------------------------------
+# Condition decoder
+# ---------------------------------------------------------------------------
+_CONDITION_MAP = {
+    "RLCH": ("real",   "long",  "complex", "high"),
+    "RLCL": ("real",   "long",  "complex", "low"),
+    "RLSH": ("real",   "long",  "simple",  "high"),
+    "RLSL": ("real",   "long",  "simple",  "low"),
+    "RSCH": ("real",   "short", "complex", "high"),
+    "RSCL": ("real",   "short", "complex", "low"),
+    "RSSH": ("real",   "short", "simple",  "high"),
+    "RSSL": ("real",   "short", "simple",  "low"),
+    # Pseudoword conditions (no frequency dimension)
+    "PLC":  ("pseudo", "long",  "complex", "N/A"),
+    "PLS":  ("pseudo", "long",  "simple",  "N/A"),
+    "PSC":  ("pseudo", "short", "complex", "N/A"),
+    "PSS":  ("pseudo", "short", "simple",  "N/A"),
+}
+
+_CONDITION_MEANING = {
+    "RLCH": "real, long, complex, high-freq",
+    "RLCL": "real, long, complex, low-freq",
+    "RLSH": "real, long, simple, high-freq",
+    "RLSL": "real, long, simple, low-freq",
+    "RSCH": "real, short, complex, high-freq",
+    "RSCL": "real, short, complex, low-freq",
+    "RSSH": "real, short, simple, high-freq",
+    "RSSL": "real, short, simple, low-freq",
+    "PLC":  "pseudo, long, complex",
+    "PLS":  "pseudo, long, simple",
+    "PSC":  "pseudo, short, complex",
+    "PSS":  "pseudo, short, simple",
+}
+
+
+def _decode_condition(code: str) -> tuple[str, str, str, str]:
+    """Return (lexicality, size, morphology, freq_group) or 'unknown' fields."""
+    return _CONDITION_MAP.get(code, ("unknown", "unknown", "unknown", "unknown"))
+
+
+def _fmt(v) -> str:
+    if v is None or (isinstance(v, float) and np.isnan(v)):
+        return "—"
+    if isinstance(v, float):
+        return f"{v:.3f}"
+    return str(v)
+
+
+# ---------------------------------------------------------------------------
+# 1. Condition breakdown
+# ---------------------------------------------------------------------------
+
+def make_condition_breakdown(df: pd.DataFrame) -> pd.DataFrame:
+    """Per-condition accuracy for all three routes."""
+    routes = ["full", "wm", "ltm"]
+    rows = []
+
+    for cond in sorted(df["condition"].dropna().unique()):
+        sub = df[df["condition"] == cond]
+        lex, size, morph, freq_grp = _decode_condition(cond)
+        row = {
+            "condition":   cond,
+            "meaning":     _CONDITION_MEANING.get(cond, "unknown"),
+            "n":           len(sub),
+            "lexicality":  lex,
+            "size":        size,
+            "morphology":  morph,
+            "freq_group":  freq_grp,
+        }
+        for r in routes:
+            em_col  = f"{r}_exact_match"
+            pa_col  = f"{r}_phoneme_acc"
+            ed_col  = f"{r}_edit_dist"
+            row[f"{r}_exact_match"]  = round(float(sub[em_col].mean()),  4) if em_col in sub else float("nan")
+            row[f"{r}_phoneme_acc"]  = round(float(sub[pa_col].mean()),  4) if pa_col in sub else float("nan")
+            row[f"{r}_edit_dist"]    = round(float(sub[ed_col].mean()),  4) if ed_col in sub else float("nan")
+        rows.append(row)
+
+    return pd.DataFrame(rows)
+
+
+def write_condition_breakdown_md(cdf: pd.DataFrame, path: str) -> None:
+    lines = [
+        "# WFE Condition Breakdown",
+        "",
+        "> Generated by `scripts/wfe_condition_analysis.py`.",
+        "> All metrics are teacher-forced (gold prefix fed at each decoder step).",
+        "> Freq group is 'high' / 'low' as defined by condition code; 'N/A' for pseudowords.",
+        "",
+        "| Condition | Meaning | n | Lex | Size | Morph | Freq | full_exact | wm_exact | ltm_exact | full_phon_acc | full_edit |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for _, row in cdf.iterrows():
+        lines.append(
+            f"| {row['condition']} | {row['meaning']} | {row['n']} "
+            f"| {row['lexicality']} | {row['size']} | {row['morphology']} "
+            f"| {row['freq_group']} "
+            f"| {_fmt(row['full_exact_match'])} "
+            f"| {_fmt(row['wm_exact_match'])} "
+            f"| {_fmt(row['ltm_exact_match'])} "
+            f"| {_fmt(row['full_phoneme_acc'])} "
+            f"| {_fmt(row['full_edit_dist'])} |"
+        )
+    lines += [
+        "",
+        "## Frequency effect within real words",
+        "",
+        "For real-word conditions (R*), each size × morphology cell appears in a",
+        "High-frequency and a Low-frequency variant.  A frequency effect is present",
+        "when the H row shows higher `full_exact_match` than the corresponding L row.",
+        "",
+        "## Expected patterns",
+        "",
+        "- `wm_exact > ltm_exact` for pseudo conditions (dorsal better on novel forms)",
+        "- `ltm_exact > wm_exact` for real conditions in training lexicon (ventral benefits from lexical memory)",
+        "- `full_exact >= max(wm_exact, ltm_exact)` per condition (gated model tracks best route)",
+        "- `long` conditions lower than `short` conditions for WM route (capacity limit)",
+        "",
+        "> These are expected patterns, not guaranteed results.",
+        "> See `docs/external_csv_eval_results.md` for interpretation guidance.",
+    ]
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    print(f"  -> {path}")
+
+
+# ---------------------------------------------------------------------------
+# 2. Real-word coverage (lexicon overlap categories)
+# ---------------------------------------------------------------------------
+
+def make_coverage_report(df: pd.DataFrame) -> pd.DataFrame:
+    """Split real words by lexicon_category and report accuracy + demographics."""
+    _SEEN  = "real_word_seen_in_training_lexicon"
+    _VAL   = "real_word_in_validation_split"
+    _OUT   = "real_word_outside_4000_lexicon"
+    _PSEUDO = "pseudoword"
+    cats = [_SEEN, _VAL, _OUT, _PSEUDO]
+
+    if "lexicon_category" not in df.columns:
+        print("[coverage] WARNING: 'lexicon_category' column missing.  "
+              "Re-run external_eval.py with the updated scripts.")
+        return pd.DataFrame()
+
+    rows = []
+    for cat in cats:
+        sub = df[df["lexicon_category"] == cat]
+        if len(sub) == 0:
+            rows.append({"category": cat, "n": 0})
+            continue
+
+        row = {
+            "category":          cat,
+            "n":                 len(sub),
+            "full_exact_match":  round(float(sub["full_exact_match"].mean()), 4),
+            "wm_exact_match":    round(float(sub["wm_exact_match"].mean()),   4),
+            "ltm_exact_match":   round(float(sub["ltm_exact_match"].mean()),  4),
+            "mean_length":       round(float(sub["length_phonemes"].mean()),   2)
+                                 if "length_phonemes" in sub else float("nan"),
+            "mean_zipf":         float("nan"),
+            "n_errors_full":     int((sub["full_exact_match"] == 0).sum()),
+        }
+        if "zipf_frequency" in sub.columns:
+            zf = pd.to_numeric(sub["zipf_frequency"], errors="coerce").dropna()
+            row["mean_zipf"] = round(float(zf.mean()), 3) if len(zf) else float("nan")
+        rows.append(row)
+
+    return pd.DataFrame(rows)
+
+
+def write_coverage_md(cov: pd.DataFrame, path: str) -> None:
+    lines = [
+        "# WFE Real-Word Coverage Report",
+        "",
+        "> Generated by `scripts/wfe_condition_analysis.py`.",
+        "> Teacher-forced evaluation; see plan doc for interpretation.",
+        "",
+        "Each WFE item is assigned to exactly one lexicon-overlap category "
+        "by `scripts/external_eval.py::_wfe_lexicon_category`.",
+        "",
+        "## Category definitions",
+        "",
+        "| Category | Criterion |",
+        "|---|---|",
+        "| `real_word_seen_in_training_lexicon` | Word or phoneme sequence matched a train-split entry of the 4k lexicon |",
+        "| `real_word_in_validation_split` | Matched val-split entry (never trained on but in lexicon) |",
+        "| `real_word_outside_4000_lexicon` | Real word absent from both splits (beyond cutoff or not in CMU dict) |",
+        "| `pseudoword` | Lexicality != 'real' |",
+        "",
+        "## Results",
+        "",
+        "| Category | n | full_exact | wm_exact | ltm_exact | mean_length | mean_zipf | n_errors |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for _, row in cov.iterrows():
+        lines.append(
+            f"| {row['category']} | {row['n']} "
+            f"| {_fmt(row.get('full_exact_match'))} "
+            f"| {_fmt(row.get('wm_exact_match'))} "
+            f"| {_fmt(row.get('ltm_exact_match'))} "
+            f"| {_fmt(row.get('mean_length'))} "
+            f"| {_fmt(row.get('mean_zipf'))} "
+            f"| {row.get('n_errors_full', '—')} |"
+        )
+    lines += [
+        "",
+        "## Why this matters",
+        "",
+        "Without this split, 'real word accuracy' conflates items the model was",
+        "explicitly trained on with words it never saw during training.  Claims",
+        "about lexicality effects must be conditioned on this breakdown.",
+        "",
+        "**`real_word_seen_in_training_lexicon`**: training performance upper bound.",
+        "High accuracy here can be partial memorisation, not generalisation.",
+        "",
+        "**`real_word_in_validation_split`**: the model was trained on the full",
+        "lexicon except these words.  Accuracy here is a genuine within-lexicon",
+        "generalisation test.",
+        "",
+        "**`real_word_outside_4000_lexicon`**: words absent from the training",
+        "lexicon entirely.  Accuracy here depends only on the WM buffer's",
+        "phonotactic generalisation.",
+    ]
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    print(f"  -> {path}")
+
+
+# ---------------------------------------------------------------------------
+# 3. Error table for training-seen real words
+# ---------------------------------------------------------------------------
+
+def make_error_table(df: pd.DataFrame) -> pd.DataFrame:
+    """Items where the full route made an error on training-seen real words."""
+    _SEEN = "real_word_seen_in_training_lexicon"
+    if "lexicon_category" not in df.columns:
+        return pd.DataFrame()
+
+    seen = df[df["lexicon_category"] == _SEEN].copy()
+    errors = seen[seen["full_exact_match"] == 0].copy()
+
+    cols = []
+    for col in ("word", "condition", "length_phonemes", "zipf_frequency",
+                "full_target", "full_predicted", "wm_predicted", "ltm_predicted",
+                "full_edit_dist"):
+        if col in errors.columns:
+            cols.append(col)
+
+    # full_target is stored as "target" in the route columns produced by external_eval.py
+    # Rename for clarity
+    rename = {}
+    if "full_target" not in errors.columns and "target" not in errors.columns:
+        # The predictions TSV has columns like full_target, wm_target, ltm_target
+        # OR just "target" (single column since all routes share the same target)
+        # Check what's actually there
+        pass
+
+    if "full_target" in errors.columns:
+        rename["full_target"] = "target_phonemes"
+    elif "target" in errors.columns:
+        rename["target"] = "target_phonemes"
+
+    if rename:
+        errors = errors.rename(columns=rename)
+        cols = [rename.get(c, c) for c in cols]
+        cols = [c for c in cols if c in errors.columns]
+
+    # Keep only meaningful columns; always include item_id if present
+    out_cols = []
+    for c in (["item_id"] + cols):
+        if c in errors.columns and c not in out_cols:
+            out_cols.append(c)
+
+    errors = errors[out_cols].sort_values("full_edit_dist", ascending=False)
+    return errors
+
+
+# ---------------------------------------------------------------------------
+# 4. Model-centred category figure
+# ---------------------------------------------------------------------------
+
+# Internal category keys (as produced by external_eval._wfe_lexicon_category)
+# mapped to human-readable x-axis labels, in display order (most familiar → least).
+_CATEGORY_DISPLAY = {
+    "real_word_seen_in_training_lexicon": "trained\nreal words",
+    "real_word_in_validation_split":      "validation\nlexicon words",
+    "real_word_outside_4000_lexicon":     "outside-4k WFE\nreal words / novel",
+    "pseudoword":                          "WFE\npseudowords",
+}
+_CATEGORY_ORDER = list(_CATEGORY_DISPLAY.keys())
+
+_ROUTE_STYLES = {
+    "full": ("Full (gated)",  "steelblue"),
+    "wm":   ("WM (dorsal)",   "darkorange"),
+    "ltm":  ("LTM (ventral)", "forestgreen"),
+}
+
+_REGIME_NOTE = (
+    "Teacher-forced decoding — gold prefix fed at each step; "
+    "errors do not propagate across positions."
+)
+
+
+def make_model_centered_figure(cov: pd.DataFrame, out_dir: str) -> None:
+    """Grouped barplot: full / WM / LTM exact match per model-centred category.
+
+    Reads accuracy values from ``cov`` (output of make_coverage_report), maps
+    internal category keys to human-readable labels, and saves:
+        <out_dir>/wfe_model_centered_category_breakdown.tsv
+        <out_dir>/wfe_model_centered_category_breakdown.md
+        <out_dir>/figures/wfe_accuracy_by_model_centered_category.png
+    """
+    if cov is None or len(cov) == 0:
+        print("[model-centred figure] skipped — coverage data empty")
+        return
+
+    fig_dir = os.path.join(out_dir, "figures")
+    os.makedirs(fig_dir, exist_ok=True)
+
+    # ---- Build the display table (only categories present in data) ----
+    rows = []
+    for key in _CATEGORY_ORDER:
+        sub = cov[cov["category"] == key]
+        if len(sub) == 0:
+            continue
+        r = sub.iloc[0]
+        rows.append({
+            "category_key":   key,
+            "category_label": _CATEGORY_DISPLAY[key].replace("\n", " "),
+            "n":              int(r.get("n", 0)),
+            "full_exact_match": float(r.get("full_exact_match", float("nan"))),
+            "wm_exact_match":   float(r.get("wm_exact_match",   float("nan"))),
+            "ltm_exact_match":  float(r.get("ltm_exact_match",  float("nan"))),
+        })
+
+    if not rows:
+        print("[model-centred figure] skipped — no matching categories in coverage TSV")
+        return
+
+    display_df = pd.DataFrame(rows)
+
+    # ---- Save TSV ----
+    tsv_path = os.path.join(out_dir, "wfe_model_centered_category_breakdown.tsv")
+    display_df.to_csv(tsv_path, sep="\t", index=False)
+    print(f"  -> {tsv_path}")
+
+    # ---- Save Markdown ----
+    md_path = os.path.join(out_dir, "wfe_model_centered_category_breakdown.md")
+    _write_model_centered_md(display_df, md_path)
+
+    # ---- Draw figure ----
+    n_cats   = len(display_df)
+    n_routes = 3
+    width    = 0.22          # bar width
+    offsets  = [-width, 0.0, width]   # full, wm, ltm
+    x        = np.arange(n_cats)
+
+    fig, ax = plt.subplots(figsize=(max(7, n_cats * 1.8), 5))
+
+    for k, (route, (label, colour)) in enumerate(_ROUTE_STYLES.items()):
+        col = f"{route}_exact_match"
+        vals = display_df[col].tolist()
+        # Replace NaN with 0 for display; mark missing bars with a hatch
+        bar_vals  = [v if not np.isnan(v) else 0.0 for v in vals]
+        hatches   = ["//" if np.isnan(v) else "" for v in vals]
+        bars = ax.bar(
+            x + offsets[k], bar_vals, width,
+            label=label, color=colour, alpha=0.85, zorder=3,
+        )
+        for bar, hatch in zip(bars, hatches):
+            bar.set_hatch(hatch)
+
+    # X-axis labels (multi-line, with n annotated)
+    xlabels = [
+        f"{row['category_label']}\n(n={row['n']})"
+        for _, row in display_df.iterrows()
+    ]
+    ax.set_xticks(x)
+    ax.set_xticklabels(xlabels, fontsize=9)
+
+    ax.set_ylim(0, 1.08)
+    ax.set_ylabel("Exact match accuracy", fontsize=10)
+    ax.set_title(
+        "WFE accuracy by model-centred category\n"
+        "(full / WM dorsal / LTM ventral routes)",
+        fontsize=10,
+    )
+    ax.legend(loc="upper right", fontsize=9)
+    ax.grid(axis="y", alpha=0.3, zorder=0)
+    ax.axhline(0, color="black", linewidth=0.6)
+
+    # Footnote with evaluation regime
+    fig.text(
+        0.01, 0.01, f"Note: {_REGIME_NOTE}",
+        fontsize=6.5, color="grey", ha="left", va="bottom",
+        wrap=True,
+    )
+
+    fig.tight_layout(rect=[0, 0.04, 1, 1])   # leave room for footnote
+    fig_path = os.path.join(fig_dir, "wfe_accuracy_by_model_centered_category.png")
+    fig.savefig(fig_path, dpi=150)
+    plt.close(fig)
+    print(f"  -> {fig_path}")
+
+
+def _write_model_centered_md(display_df: pd.DataFrame, path: str) -> None:
+    lines = [
+        "# WFE Accuracy by Model-Centred Category",
+        "",
+        "> Generated by `scripts/wfe_condition_analysis.py`.",
+        f"> {_REGIME_NOTE}",
+        "",
+        "## Category definitions",
+        "",
+        "| Label | Internal key | Interpretation |",
+        "|---|---|---|",
+        "| trained real words | `real_word_seen_in_training_lexicon` | Word or phoneme sequence matched a train-split entry of the 4k lexicon.  High accuracy here may reflect memorisation. |",
+        "| validation lexicon words | `real_word_in_validation_split` | In the 4k lexicon but held out during training.  Accuracy here is genuine within-lexicon generalisation. |",
+        "| outside-4k WFE real words / novel | `real_word_outside_4000_lexicon` | Real word absent from the 4k training lexicon.  Performance driven by WM phonotactic generalisation and LTM geometry. |",
+        "| WFE pseudowords | `pseudoword` | No lexical entry; must be handled by the dorsal buffer. |",
+        "",
+        "## Results",
+        "",
+        "| Category | n | full_exact | wm_exact | ltm_exact |",
+        "|---|---|---|---|---|",
+    ]
+    for _, row in display_df.iterrows():
+        lines.append(
+            f"| {row['category_label']} | {row['n']} "
+            f"| {_fmt(row['full_exact_match'])} "
+            f"| {_fmt(row['wm_exact_match'])} "
+            f"| {_fmt(row['ltm_exact_match'])} |"
+        )
+    lines += [
+        "",
+        "## Figure",
+        "",
+        "![WFE accuracy by model-centred category]"
+        "(figures/wfe_accuracy_by_model_centered_category.png)",
+        "",
+        "## What to look for",
+        "",
+        "- **Across columns (full vs WM vs LTM):**",
+        "  - For *trained real words*: LTM ≥ WM is expected (lexical memory advantage).",
+        "  - For *validation lexicon words*: LTM may still lead if the phonological form maps to nearby semantic space.",
+        "  - For *novel / outside-4k* real words and *pseudowords*: WM ≥ LTM expected (dorsal generalises, ventral cannot retrieve unknown forms).",
+        "- **Across rows (trained → novel):**",
+        "  - Monotonically decreasing full accuracy would indicate the model degrades gracefully with novelty.",
+        "  - If outside-4k words are worse than pseudowords, that is unexpected and worth investigating.",
+        "",
+        "> All comparisons are under teacher-forced decoding.  See `docs/external_csv_eval_results.md`.",
+    ]
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    print(f"  -> {path}")
+
+
+# ---------------------------------------------------------------------------
+# main
+# ---------------------------------------------------------------------------
+
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--pred",    default=PRED_PATH,
+                   help="path to item_level_predictions.tsv")
+    p.add_argument("--out_dir", default=OUT_DIR)
+    return p.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+
+    if not os.path.exists(args.pred):
+        print(
+            f"\n[wfe_condition_analysis] ERROR: predictions file not found:\n"
+            f"  {args.pred}\n\n"
+            f"Run first:\n"
+            f"  python scripts/external_eval.py --wfe_only\n"
+        )
+        sys.exit(1)
+
+    os.makedirs(args.out_dir, exist_ok=True)
+
+    print(f"[wfe_condition_analysis] Loading: {args.pred}")
+    df = pd.read_csv(args.pred, sep="\t")
+    print(f"  {len(df)} items loaded")
+
+    # ---- 1. Condition breakdown ----
+    print("\n[1] Condition breakdown …")
+    cdf = make_condition_breakdown(df)
+
+    cbreak_tsv = os.path.join(args.out_dir, "wfe_condition_breakdown.tsv")
+    cdf.to_csv(cbreak_tsv, sep="\t", index=False)
+    print(f"  -> {cbreak_tsv}")
+
+    cbreak_md = os.path.join(args.out_dir, "wfe_condition_breakdown.md")
+    write_condition_breakdown_md(cdf, cbreak_md)
+
+    # Print a compact summary
+    print(f"\n  {'Condition':<8} {'n':>4}  {'full':>6} {'wm':>6} {'ltm':>6}")
+    print(f"  {'-'*40}")
+    for _, row in cdf.iterrows():
+        print(f"  {row['condition']:<8} {row['n']:>4}  "
+              f"{_fmt(row['full_exact_match']):>6} "
+              f"{_fmt(row['wm_exact_match']):>6} "
+              f"{_fmt(row['ltm_exact_match']):>6}")
+
+    # ---- 2. Real-word coverage ----
+    print("\n[2] Real-word coverage …")
+    cov = make_coverage_report(df)
+
+    if len(cov) > 0:
+        cov_tsv = os.path.join(args.out_dir, "wfe_real_word_coverage.tsv")
+        cov.to_csv(cov_tsv, sep="\t", index=False)
+        print(f"  -> {cov_tsv}")
+
+        cov_md = os.path.join(args.out_dir, "wfe_real_word_coverage.md")
+        write_coverage_md(cov, cov_md)
+
+        for _, row in cov.iterrows():
+            print(f"  {row['category']}: n={row['n']}  "
+                  f"full={_fmt(row.get('full_exact_match'))}")
+
+        # ---- 2b. Model-centred figure ----
+        print("\n[2b] Model-centred category figure …")
+        make_model_centered_figure(cov, args.out_dir)
+    else:
+        print("  (skipped — lexicon_category column missing)")
+
+    # ---- 3. Error table for training-seen words ----
+    print("\n[3] Training-seen real-word errors …")
+    err = make_error_table(df)
+    if len(err) > 0:
+        err_tsv = os.path.join(args.out_dir, "train_seen_real_word_errors.tsv")
+        err.to_csv(err_tsv, sep="\t", index=False)
+        print(f"  -> {err_tsv}  ({len(err)} errors)")
+    else:
+        print("  (no errors found, or lexicon_category column missing)")
+
+    print("\n[wfe_condition_analysis] Done.")
+
+
+if __name__ == "__main__":
+    main()

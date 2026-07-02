@@ -1,14 +1,16 @@
-# Yair-L3: External CSV Evaluation Plan
+# External CSV Evaluation Plan — lichtheim3 Dual-Route Model
 
 ## Purpose
 
-Run clean external diagnostics of the Yair-L3 dual-route model on two
+Run clean external diagnostics of the lichtheim3 dual-route model on two
 independently produced datasets:
 
-- **WFE** (`data/raw-nwr_swp/wfe.csv`): 1200 items, 800 real words + 400
-  pseudowords, from a controlled word-form experiment.
-- **SSP** (`data/raw-nwr_swp/ssp.csv`): 16,560 3-phoneme CCV/VCC sequences
-  designed to test Sonority Sequencing Principle compliance.
+- **WFE** (`data/raw-nwr_swp/wfe.csv`): 1 200 items, 800 real words + 400
+  pseudowords, from a controlled word-form experiment with a 12-condition
+  factorial design.
+- **SSP** (`data/raw-nwr_swp/ssp.csv`): 16 560 3-phoneme CCV/VCC sequences
+  designed to probe Sonority Sequencing Principle compliance.
+  **SSP is secondary priority for the current evaluation cycle; see §SSP note.**
 
 **This is not a claim of cognitive replication.**  It is diagnostic analysis
 of a specific model checkpoint under a documented, consistent evaluation regime.
@@ -45,14 +47,48 @@ propagation.  All outputs state this regime explicitly.
 
 ---
 
-## Known caveats from the audit
+## Known caveats
 
 | Caveat | Impact on this evaluation |
 |---|---|
-| GloVe absent (pseudo-hash vectors) | `lexical_confidence` and gate routing are still computed; "semantic" labels should be avoided |
+| GloVe absent (pseudo-hash vectors) | `lexical_confidence` and gate routing still computed; "semantic" labels must be avoided |
 | Single-seed training, 4k-word lexicon | Results reflect one checkpoint at reduced scale |
-| WM route accuracy uses injected noise (`collect=True`) | Per-position accuracy is stochastic; averaged over 1 forward pass per item (deterministic for LTM/full) |
-| Some committed `figures/summary.json` claims not reproduced | This evaluation does not validate those claims |
+| WM route uses injected noise (`collect=True`) | Per-position accuracy is stochastic; only one noise draw per item |
+| Some committed `figures/summary.json` claims not reproduced by that run | This evaluation does not validate those claims |
+
+---
+
+## WFE condition key
+
+Each WFE item has a condition code encoding up to four binary factors.
+
+| Position | Real words | Pseudowords |
+|---|---|---|
+| 1 | R = real | P = pseudo |
+| 2 | L = long (7–9 phones) / S = short (3–5 phones) | same |
+| 3 | C = complex morphology / S = simple morphology | same |
+| 4 | H = high frequency / L = low frequency | absent (no frequency column) |
+
+Full condition decoding:
+
+| Code | Lexicality | Size | Morphology | Freq group |
+|---|---|---|---|---|
+| RLCH | real | long | complex | high |
+| RLCL | real | long | complex | low |
+| RLSH | real | long | simple | high |
+| RLSL | real | long | simple | low |
+| RSCH | real | short | complex | high |
+| RSCL | real | short | complex | low |
+| RSSH | real | short | simple | high |
+| RSSL | real | short | simple | low |
+| PLC  | pseudo | long | complex | N/A |
+| PLS  | pseudo | long | simple | N/A |
+| PSC  | pseudo | short | complex | N/A |
+| PSS  | pseudo | short | simple | N/A |
+
+Frequency group is defined by splitting real-word items at the median
+Zipf_Frequency within each size × morphology cell.  For pseudowords the
+column is empty (not applicable).
 
 ---
 
@@ -65,31 +101,32 @@ data/
     ssp.csv
     phonemes.csv
   eval_external/        ← CONVERTED (created by scripts/convert_csvs.py)
-    wfe_yair_l3_format.tsv
-    ssp_yair_l3_format.tsv
+    wfe_eval.tsv
+    ssp_eval.tsv
 
 checkpoints/
   lichtheim3.pt         ← created by scripts/train_checkpoint.py
 
 scripts/
-  train_checkpoint.py   ← trains model + saves checkpoint
-  inspect_csvs.py       ← Step 2: CSV compatibility report
-  convert_csvs.py       ← Step 3: parse + filter + write TSVs
-  external_eval.py      ← Steps 4–6: dry run + full WFE + full SSP
+  train_checkpoint.py        ← Step 0: train + save checkpoint
+  inspect_csvs.py            ← Step 1: vocabulary compatibility
+  convert_csvs.py            ← Step 2: parse + filter + write TSVs
+  external_eval.py           ← Steps 3–5: dry run + full WFE + SSP
+  wfe_condition_analysis.py  ← Step 6: condition breakdown + error table
 
-outputs/external_eval/
+outputs/external_eval/          (gitignored — generated when scripts run)
   csv_inspection_report.json
   csv_inspection_summary.md
-  dry_run_wfe/
-    item_level_predictions.tsv
-    metrics.json
-  dry_run_ssp/
-    item_level_predictions.tsv
-    metrics.json
+  dry_run_wfe/   dry_run_ssp/
   wfe/
     item_level_predictions.tsv
     metrics.json
     summary_table.tsv
+    wfe_condition_breakdown.tsv   ← scripts/wfe_condition_analysis.py
+    wfe_condition_breakdown.md
+    wfe_real_word_coverage.tsv
+    wfe_real_word_coverage.md
+    train_seen_real_word_errors.tsv
     figures/
       accuracy_by_lexicality_{route}.png
       accuracy_by_length_{route}.png
@@ -101,18 +138,13 @@ outputs/external_eval/
       route_accuracy_barplot_{lexicality}.png
   ssp/
     item_level_predictions.tsv
-    metrics.json
-    summary_table.tsv
-    figures/
-      accuracy_by_sonority_{route}.png
-      edit_distance_by_sonority_{route}.png
-      accuracy_by_type_CCV_VCC_{route}.png
-      phoneme_accuracy_by_sonority_{route}.png
+    metrics.json  summary_table.tsv  figures/
   external_eval_summary.json
 
 docs/
-  yair_l3_external_csv_eval_plan.md   ← this file
-  yair_l3_external_csv_eval_results.md
+  external_csv_eval_plan.md          ← this file
+  external_csv_eval_results.md
+  wfe_retraining_recommendation.md
 ```
 
 ---
@@ -153,7 +185,7 @@ Outputs: `outputs/external_eval/csv_inspection_report.json`
          `outputs/external_eval/csv_inspection_summary.md`
 
 Verifies that all phonemes in WFE / SSP `No_Stress` columns are in
-Yair-L3's 39-symbol ARPABET vocabulary.
+the model's 39-symbol ARPABET vocabulary (`data/phonemes.py`).
 
 ### Step 2 — Convert CSVs
 
@@ -161,11 +193,11 @@ Yair-L3's 39-symbol ARPABET vocabulary.
 python scripts/convert_csvs.py
 ```
 
-Outputs: `data/eval_external/wfe_yair_l3_format.tsv`
-         `data/eval_external/ssp_yair_l3_format.tsv`
+Outputs: `data/eval_external/wfe_eval.tsv`
+         `data/eval_external/ssp_eval.tsv`
 
 Parses Python-list-string phoneme columns, filters unknown phonemes,
-flags out-of-distribution lengths (>9), writes clean TSVs.
+flags out-of-training-distribution lengths (> 9 phones), writes clean TSVs.
 
 ### Step 3 — Dry runs
 
@@ -200,6 +232,19 @@ python scripts/external_eval.py --ssp_only
 ```bash
 python scripts/external_eval.py
 ```
+
+### Step 7 — WFE condition breakdown and error analysis
+
+**Requires Step 4 to have run first** (needs `item_level_predictions.tsv`).
+
+```bash
+python scripts/wfe_condition_analysis.py
+```
+
+Outputs in `outputs/external_eval/wfe/`:
+- `wfe_condition_breakdown.tsv` / `.md`
+- `wfe_real_word_coverage.tsv` / `.md`
+- `train_seen_real_word_errors.tsv`
 
 ---
 
@@ -237,6 +282,17 @@ All metrics computed under teacher-forced decoding.
 
 ### phonemes.csv
 
-- Used only for vocabulary validation (all 39 Yair-L3 ARPABET symbols confirmed).
-- Not used for model features (Yair-L3 uses its own articulatory feature matrix
-  from `data/phonemes.py`).
+- Used only for vocabulary validation (all 39 ARPABET symbols confirmed against
+  the model's inventory in `data/phonemes.py`).
+- Not used for model feature computation.
+
+---
+
+## SSP note
+
+SSP is **secondary priority** for the current evaluation cycle.  The 16 560
+3-phoneme CCV/VCC sequences test sub-lexical phonotactic sensitivity but cannot
+serve as a lexicality or frequency benchmark.  WFE analysis and the retraining
+recommendation take priority.  SSP figures are produced by `external_eval.py`
+but are not discussed in the main results document until WFE coverage improves.
+See `docs/wfe_retraining_recommendation.md` for next steps.

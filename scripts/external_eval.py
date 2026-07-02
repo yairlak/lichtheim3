@@ -60,8 +60,8 @@ from evaluate.hooks import make_batch, route_predictions, per_position_correct
 
 # ---------------------------------------------------------------------------
 CKPT_PATH    = os.path.join(ROOT, "checkpoints", "lichtheim3.pt")
-WFE_TSV      = os.path.join(ROOT, "data", "eval_external", "wfe_yair_l3_format.tsv")
-SSP_TSV      = os.path.join(ROOT, "data", "eval_external", "ssp_yair_l3_format.tsv")
+WFE_TSV      = os.path.join(ROOT, "data", "eval_external", "wfe_eval.tsv")
+SSP_TSV      = os.path.join(ROOT, "data", "eval_external", "ssp_eval.tsv")
 OUT_DIR      = os.path.join(ROOT, "outputs", "external_eval")
 DRY_WFE_N   = 10
 DRY_SSP_N   = 20

@@ -117,7 +117,7 @@ def convert_wfe(wfe_path: str, vocab_set: set[str], out_dir: str) -> str:
         })
 
     out_df = pd.DataFrame(rows)
-    out_path = os.path.join(out_dir, "wfe_yair_l3_format.tsv")
+    out_path = os.path.join(out_dir, "wfe_eval.tsv")
     out_df.to_csv(out_path, sep="\t", index=False)
 
     print(f"[convert_wfe] {len(rows)} rows written -> {out_path}")
@@ -163,7 +163,7 @@ def convert_ssp(ssp_path: str, vocab_set: set[str], out_dir: str) -> str:
         })
 
     out_df = pd.DataFrame(rows)
-    out_path = os.path.join(out_dir, "ssp_yair_l3_format.tsv")
+    out_path = os.path.join(out_dir, "ssp_eval.tsv")
     out_df.to_csv(out_path, sep="\t", index=False)
 
     print(f"[convert_ssp] {len(rows)} rows written -> {out_path}")
