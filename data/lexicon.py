@@ -259,8 +259,11 @@ def build_bundled(cfg, vocab: Vocab = VOCAB, path: str = BUNDLED_PATH
 
 def build_lexicon(cfg, vocab: Vocab = VOCAB) -> Lexicon:
     if cfg.use_real:
-        lex = build_bundled(cfg, vocab)          # realistic English, no downloads
+        # Use cfg.lexicon_path if explicitly set (e.g. GloVe-filtered variant),
+        # otherwise fall back to the default bundled path.
+        custom_path = getattr(cfg, "lexicon_path", None)
+        lex = build_bundled(cfg, vocab, path=custom_path or BUNDLED_PATH)
         if lex is not None:
             return lex
-        print("[lexicon] bundled lexicon_en.tsv missing -> synthetic fallback.")
+        print("[lexicon] bundled lexicon missing -> synthetic fallback.")
     return build_synthetic(cfg, vocab)

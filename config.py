@@ -18,6 +18,10 @@ class DataConfig:
     # the bundled file is missing.
     use_real: bool = True
     glove_path: Optional[str] = "data/glove.6B.300d.txt"
+    # Optional override for the lexicon TSV path.  Leave None to use the default
+    # data/lexicon_en.tsv.  Useful for GloVe-filtered variants such as
+    # data/lexicon_en_glove_covered.tsv without changing any other code.
+    lexicon_path: Optional[str] = None
     semantic_dim: int = 300
     max_words: int = 30000         # the 30k most frequent words
     min_phonemes: int = 2
