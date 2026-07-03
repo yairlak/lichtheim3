@@ -184,15 +184,20 @@ def load_model_and_vocab(ckpt_path: str, device: str) -> Tuple[DualRouteModel, V
 @torch.no_grad()
 def eval_batch(model: DualRouteModel, vocab: Vocab,
                forms: List[List[int]], device: str,
-               routes: Tuple[str, ...] = ("full", "wm", "ltm")
+               routes: Tuple[str, ...] = ("full", "wm", "ltm"),
+               wm_noise: bool = False,
                ) -> Dict[str, List[List[int]]]:
-    """Return per-route predicted phoneme id sequences for a list of forms."""
+    """Return per-route predicted phoneme id sequences for a list of forms.
+
+    wm_noise=False (default): collect=False for WM route → WM interference noise
+    disabled → deterministic evaluation.  Pass wm_noise=True only for explicit
+    diagnostic runs where noise-in-eval is desired.
+    """
     batch = make_batch(forms, vocab, device)
     preds_by_route: Dict[str, List[List[int]]] = {}
 
     for route in routes:
-        # collect=True keeps interference noise on for wm route (same as run_all.py)
-        collect = (route == "wm")
+        collect = (route == "wm") and wm_noise
         preds, _ = route_predictions(model, batch, route=route, collect=collect)
         route_preds = []
         for i in range(len(forms)):
@@ -211,7 +216,8 @@ def eval_batch(model: DualRouteModel, vocab: Vocab,
 def evaluate_items(model: DualRouteModel, vocab: Vocab,
                    forms_ids: List[List[int]], device: str,
                    batch_size: int = BATCH_SIZE,
-                   routes: Tuple[str, ...] = ("full", "wm", "ltm")
+                   routes: Tuple[str, ...] = ("full", "wm", "ltm"),
+                   wm_noise: bool = False,
                    ) -> Dict[str, List[dict]]:
     """
     Run teacher-forced inference and compute per-item metrics for each route.
@@ -224,7 +230,8 @@ def evaluate_items(model: DualRouteModel, vocab: Vocab,
     n = len(forms_ids)
     for start in range(0, n, batch_size):
         batch_forms = forms_ids[start: start + batch_size]
-        preds_by_route = eval_batch(model, vocab, batch_forms, device, routes)
+        preds_by_route = eval_batch(model, vocab, batch_forms, device, routes,
+                                    wm_noise=wm_noise)
 
         for r in routes:
             for i, form_ids in enumerate(batch_forms):
@@ -349,7 +356,7 @@ def figure_scatter(x: np.ndarray, y: np.ndarray, xlabel: str, ylabel: str,
 
 def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
                  tsv_path: str, out_dir: str, dry_run: bool,
-                 device: str) -> dict:
+                 device: str, wm_noise: bool = False) -> dict:
     df = pd.read_csv(tsv_path, sep="\t")
     # Exclude items flagged EXCLUDED (unknown phonemes)
     df = df[~df["notes"].fillna("").str.contains("EXCLUDED", na=False)].copy()
@@ -402,8 +409,10 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
     print(f"  lexicon overlap: {overlap_counts}")
 
     # --- Run inference ---
-    print(f"  Running teacher-forced inference …")
-    results = evaluate_items(model, vocab, forms_ids, device, routes=routes)
+    print(f"  Running teacher-forced inference …  "
+          f"(WM noise: {'ON' if wm_noise else 'OFF — deterministic'})")
+    results = evaluate_items(model, vocab, forms_ids, device, routes=routes,
+                             wm_noise=wm_noise)
 
     # --- Attach results to dataframe ---
     for route in routes:
@@ -483,6 +492,8 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         "git_commit":           meta.get("git_commit", ""),
         "glove_present":        meta["glove_present"],
         "lexicon_source":       meta["lexicon_source"],
+        "wm_noise_enabled":     wm_noise,
+        "deterministic":        not wm_noise,
         "n_items_evaluated":    n_valid,
         "n_items_excluded":     len(df) - n_valid,
         "dry_run":              dry_run,
@@ -567,7 +578,7 @@ def _make_wfe_figures(df: pd.DataFrame, fig_dir: str,
 
 def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
                  tsv_path: str, out_dir: str, dry_run: bool,
-                 device: str) -> dict:
+                 device: str, wm_noise: bool = False) -> dict:
     df = pd.read_csv(tsv_path, sep="\t")
     df = df[~df["notes"].fillna("").str.contains("EXCLUDED", na=False)].copy()
     df = df.reset_index(drop=True)
@@ -615,8 +626,10 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
     n_valid  = len(forms_ids)
     print(f"  {n_valid} items with valid phoneme sequences")
 
-    print(f"  Running teacher-forced inference …")
-    results = evaluate_items(model, vocab, forms_ids, device, routes=routes)
+    print(f"  Running teacher-forced inference …  "
+          f"(WM noise: {'ON' if wm_noise else 'OFF — deterministic'})")
+    results = evaluate_items(model, vocab, forms_ids, device, routes=routes,
+                             wm_noise=wm_noise)
 
     for route in routes:
         for metric in ("exact_match", "phoneme_acc", "edit_dist", "norm_edit",
@@ -655,6 +668,8 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         "evaluation_regime":    EVAL_REGIME_NOTE,
         "checkpoint":           meta["checkpoint"],
         "glove_present":        meta["glove_present"],
+        "wm_noise_enabled":     wm_noise,
+        "deterministic":        not wm_noise,
         "n_items_evaluated":    n_valid,
         "dry_run":              dry_run,
         "overall":              overall,
@@ -760,6 +775,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--ssp_only", action="store_true")
     p.add_argument("--device",  default=None,
                    help="cpu / cuda (auto-detected if omitted)")
+    p.add_argument("--wm_noise", action="store_true",
+                   help="Enable WM interference noise during evaluation (non-deterministic). "
+                        "Default: OFF — evaluation is fully deterministic.")
     return p.parse_args()
 
 
@@ -771,9 +789,11 @@ def main() -> None:
     print("=" * 60)
     print("  Yair-L3 External CSV Evaluation")
     print("=" * 60)
-    print(f"  device   : {device}")
-    print(f"  dry_run  : {args.dry_run}")
-    print(f"  REGIME   : {EVAL_REGIME_NOTE[:80]}…")
+    print(f"  device      : {device}")
+    print(f"  dry_run     : {args.dry_run}")
+    print(f"  wm_noise    : {args.wm_noise}  "
+          f"({'NON-DETERMINISTIC' if args.wm_noise else 'deterministic'})")
+    print(f"  REGIME      : {EVAL_REGIME_NOTE[:80]}…")
     print()
 
     model, vocab, meta = load_model_and_vocab(args.ckpt, device)
@@ -790,7 +810,7 @@ def main() -> None:
         else:
             wfe_results = run_wfe_eval(
                 model, vocab, meta, args.wfe_tsv, args.out_dir,
-                args.dry_run, device)
+                args.dry_run, device, wm_noise=args.wm_noise)
             all_results["wfe"] = wfe_results
 
     if not args.wfe_only:
@@ -800,7 +820,7 @@ def main() -> None:
         else:
             ssp_results = run_ssp_eval(
                 model, vocab, meta, args.ssp_tsv, args.out_dir,
-                args.dry_run, device)
+                args.dry_run, device, wm_noise=args.wm_noise)
             all_results["ssp"] = ssp_results
 
     # Master summary

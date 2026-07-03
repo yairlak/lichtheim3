@@ -501,8 +501,12 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
     p.add_argument("--pred",    default=PRED_PATH,
                    help="path to item_level_predictions.tsv")
-    p.add_argument("--out_dir", default=OUT_DIR)
-    return p.parse_args()
+    p.add_argument("--out_dir", default=None,
+                   help="output directory (default: same directory as --pred)")
+    args = p.parse_args()
+    if args.out_dir is None:
+        args.out_dir = os.path.dirname(os.path.abspath(args.pred))
+    return args
 
 
 def main() -> None:
