@@ -68,12 +68,25 @@ DRY_SSP_N   = 20
 BATCH_SIZE   = 64
 # ---------------------------------------------------------------------------
 
-EVAL_REGIME_NOTE = (
-    "Teacher-forced decoding: the decoder receives the gold previous phoneme "
-    "at each step (dec_in = [BOS, p1, ..., pT-1]).  This matches the regime "
-    "used by all evaluate/*.py scripts in Yair-L3 and does NOT simulate "
-    "true free-recall error propagation."
-)
+DECODE_TF = "teacher_forced"
+DECODE_AR = "autoregressive"
+
+_REGIME_NOTES = {
+    DECODE_TF: (
+        "Teacher-forced decoding: the decoder receives the gold previous phoneme "
+        "at each step (dec_in = [BOS, p1, ..., pT-1]).  "
+        "This does NOT simulate true free-recall error propagation."
+    ),
+    DECODE_AR: (
+        "Autoregressive decoding: the decoder receives its own previous "
+        "prediction at each step.  Errors propagate: a wrong phoneme at "
+        "position t corrupts all subsequent positions.  This is the "
+        "behaviorally plausible regime for comparison with Dager/SWP."
+    ),
+}
+
+# Keep for backward compatibility
+EVAL_REGIME_NOTE = _REGIME_NOTES[DECODE_TF]
 
 
 # ============================================================  helpers  ====
@@ -213,14 +226,63 @@ def eval_batch(model: DualRouteModel, vocab: Vocab,
     return preds_by_route
 
 
+@torch.no_grad()
+def autoregressive_decode_batch(model: DualRouteModel, vocab: Vocab,
+                                 forms: List[List[int]], device: str,
+                                 routes: Tuple[str, ...] = ("full", "wm", "ltm"),
+                                 wm_noise: bool = False,
+                                 ) -> Dict[str, List[List[int]]]:
+    """Autoregressive decoding: each step feeds the model's own previous prediction.
+
+    Decodes for exactly len(form) steps per item.  If the model predicts EOS
+    before the target length is reached, the output is truncated there (the
+    remaining positions are treated as missing, contributing to edit distance).
+    """
+    batch = make_batch(forms, vocab, device)
+    max_steps = max(len(f) for f in forms)
+    preds_by_route: Dict[str, List[List[int]]] = {}
+
+    for route in routes:
+        collect = (route == "wm") and wm_noise
+        # Start with BOS only; grow one token per step
+        dec_input = batch["enc_in"].new_full((len(forms), 1), vocab.bos_id)
+
+        for _ in range(max_steps):
+            res = model.route_logits(batch["enc_in"], batch["enc_mask"],
+                                     dec_input, route=route, collect=collect)
+            next_tok = res["logits"][:, -1, :].argmax(-1, keepdim=True)  # (B, 1)
+            dec_input = torch.cat([dec_input, next_tok], dim=1)
+
+        # dec_input: (B, max_steps+1) = [BOS, pred_0, ..., pred_{max_steps-1}]
+        route_preds = []
+        for i, form in enumerate(forms):
+            n_steps = len(form)
+            pred_ids = dec_input[i, 1:n_steps + 1].tolist()
+            # Trim at first EOS so output length matches what the model intended
+            seq: List[int] = []
+            for idx in pred_ids:
+                if idx == vocab.eos_id:
+                    break
+                seq.append(idx)
+            route_preds.append(seq)
+
+        preds_by_route[route] = route_preds
+
+    return preds_by_route
+
+
 def evaluate_items(model: DualRouteModel, vocab: Vocab,
                    forms_ids: List[List[int]], device: str,
                    batch_size: int = BATCH_SIZE,
                    routes: Tuple[str, ...] = ("full", "wm", "ltm"),
                    wm_noise: bool = False,
+                   decode: str = DECODE_TF,
                    ) -> Dict[str, List[dict]]:
     """
-    Run teacher-forced inference and compute per-item metrics for each route.
+    Run inference and compute per-item metrics for each route.
+
+    decode="teacher_forced"  — gold prefix at every decoder step (upper bound).
+    decode="autoregressive"  — model's own previous output at every step.
 
     Returns:  {route: [{exact_match, phoneme_acc, edit_dist, norm_edit_dist,
                         predicted_symbols, target_symbols}, ...]}
@@ -230,8 +292,12 @@ def evaluate_items(model: DualRouteModel, vocab: Vocab,
     n = len(forms_ids)
     for start in range(0, n, batch_size):
         batch_forms = forms_ids[start: start + batch_size]
-        preds_by_route = eval_batch(model, vocab, batch_forms, device, routes,
-                                    wm_noise=wm_noise)
+        if decode == DECODE_AR:
+            preds_by_route = autoregressive_decode_batch(
+                model, vocab, batch_forms, device, routes, wm_noise=wm_noise)
+        else:
+            preds_by_route = eval_batch(
+                model, vocab, batch_forms, device, routes, wm_noise=wm_noise)
 
         for r in routes:
             for i, form_ids in enumerate(batch_forms):
@@ -356,11 +422,16 @@ def figure_scatter(x: np.ndarray, y: np.ndarray, xlabel: str, ylabel: str,
 
 def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
                  tsv_path: str, out_dir: str, dry_run: bool,
-                 device: str, wm_noise: bool = False) -> dict:
+                 device: str, wm_noise: bool = False,
+                 decode: str = DECODE_TF) -> dict:
     df = pd.read_csv(tsv_path, sep="\t")
     # Exclude items flagged EXCLUDED (unknown phonemes)
     df = df[~df["notes"].fillna("").str.contains("EXCLUDED", na=False)].copy()
     df = df.reset_index(drop=True)
+
+    subdir = ("dry_run_wfe" if dry_run
+              else ("wfe_ar" if decode == DECODE_AR else "wfe"))
+    out_dir = os.path.join(out_dir, subdir)
 
     if dry_run:
         # Balanced sample: 5 real + 5 pseudo, mix of short/long
@@ -369,11 +440,9 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         pseudo_df = df[df["lexicality"] != "real"].sample(
             n=min(5, (df["lexicality"]!="real").sum()), random_state=0)
         df = pd.concat([real_df, pseudo_df]).reset_index(drop=True)
-        out_dir = os.path.join(out_dir, "dry_run_wfe")
         print(f"\n[WFE DRY RUN] {len(df)} items  -> {out_dir}")
     else:
-        out_dir = os.path.join(out_dir, "wfe")
-        print(f"\n[WFE FULL EVAL] {len(df)} items  -> {out_dir}")
+        print(f"\n[WFE FULL EVAL ({decode})] {len(df)} items  -> {out_dir}")
 
     os.makedirs(out_dir, exist_ok=True)
     fig_dir = os.path.join(out_dir, "figures")
@@ -409,10 +478,10 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
     print(f"  lexicon overlap: {overlap_counts}")
 
     # --- Run inference ---
-    print(f"  Running teacher-forced inference …  "
+    print(f"  Running {decode} inference …  "
           f"(WM noise: {'ON' if wm_noise else 'OFF — deterministic'})")
     results = evaluate_items(model, vocab, forms_ids, device, routes=routes,
-                             wm_noise=wm_noise)
+                             wm_noise=wm_noise, decode=decode)
 
     # --- Attach results to dataframe ---
     for route in routes:
@@ -487,7 +556,8 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
                 float(sub[f"{route}_edit_dist"].mean()), 4)
 
     metrics = {
-        "evaluation_regime":    EVAL_REGIME_NOTE,
+        "evaluation_regime":    _REGIME_NOTES[decode],
+        "decode_mode":          decode,
         "checkpoint":           meta["checkpoint"],
         "git_commit":           meta.get("git_commit", ""),
         "glove_present":        meta["glove_present"],
@@ -520,7 +590,7 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         _make_wfe_figures(df_valid, fig_dir, routes)
 
     # Console summary
-    print(f"\n  === WFE RESULTS (teacher-forced) ===")
+    print(f"\n  === WFE RESULTS ({decode}) ===")
     for route in routes:
         o = overall[route]
         print(f"  [{route:5s}] exact={o['exact_match']:.3f}  "
@@ -578,10 +648,15 @@ def _make_wfe_figures(df: pd.DataFrame, fig_dir: str,
 
 def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
                  tsv_path: str, out_dir: str, dry_run: bool,
-                 device: str, wm_noise: bool = False) -> dict:
+                 device: str, wm_noise: bool = False,
+                 decode: str = DECODE_TF) -> dict:
     df = pd.read_csv(tsv_path, sep="\t")
     df = df[~df["notes"].fillna("").str.contains("EXCLUDED", na=False)].copy()
     df = df.reset_index(drop=True)
+
+    subdir = ("dry_run_ssp" if dry_run
+              else ("ssp_ar" if decode == DECODE_AR else "ssp"))
+    out_dir = os.path.join(out_dir, subdir)
 
     if dry_run:
         # Sample 20 items: 10 CCV + 10 VCC, across sonority values
@@ -598,11 +673,9 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         if len(picked) == 0:
             picked = [df.sample(n=min(20, len(df)), random_state=0)]
         df = pd.concat(picked).drop_duplicates("item_id").head(20).reset_index(drop=True)
-        out_dir = os.path.join(out_dir, "dry_run_ssp")
         print(f"\n[SSP DRY RUN] {len(df)} items  -> {out_dir}")
     else:
-        out_dir = os.path.join(out_dir, "ssp")
-        print(f"\n[SSP FULL EVAL] {len(df)} items  -> {out_dir}")
+        print(f"\n[SSP FULL EVAL ({decode})] {len(df)} items  -> {out_dir}")
 
     os.makedirs(out_dir, exist_ok=True)
     fig_dir = os.path.join(out_dir, "figures")
@@ -626,10 +699,10 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
     n_valid  = len(forms_ids)
     print(f"  {n_valid} items with valid phoneme sequences")
 
-    print(f"  Running teacher-forced inference …  "
+    print(f"  Running {decode} inference …  "
           f"(WM noise: {'ON' if wm_noise else 'OFF — deterministic'})")
     results = evaluate_items(model, vocab, forms_ids, device, routes=routes,
-                             wm_noise=wm_noise)
+                             wm_noise=wm_noise, decode=decode)
 
     for route in routes:
         for metric in ("exact_match", "phoneme_acc", "edit_dist", "norm_edit",
@@ -665,7 +738,8 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         }
 
     metrics = {
-        "evaluation_regime":    EVAL_REGIME_NOTE,
+        "evaluation_regime":    _REGIME_NOTES[decode],
+        "decode_mode":          decode,
         "checkpoint":           meta["checkpoint"],
         "glove_present":        meta["glove_present"],
         "wm_noise_enabled":     wm_noise,
@@ -687,7 +761,7 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
     if not dry_run:
         _make_ssp_figures(df_valid, fig_dir, routes)
 
-    print(f"\n  === SSP RESULTS (teacher-forced) ===")
+    print(f"\n  === SSP RESULTS ({decode}) ===")
     for route in routes:
         o = overall[route]
         print(f"  [{route:5s}] exact={o['exact_match']:.3f}  "
@@ -778,6 +852,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--wm_noise", action="store_true",
                    help="Enable WM interference noise during evaluation (non-deterministic). "
                         "Default: OFF — evaluation is fully deterministic.")
+    p.add_argument("--decode", default=DECODE_TF,
+                   choices=[DECODE_TF, DECODE_AR],
+                   help="Decoding regime: teacher_forced (default, upper-bound) or "
+                        "autoregressive (model's own previous output as next input, "
+                        "behaviorally plausible, errors propagate).  "
+                        "AR outputs go to {out_dir}/wfe_ar/ and {out_dir}/ssp_ar/.")
     return p.parse_args()
 
 
@@ -790,17 +870,19 @@ def main() -> None:
     print("  Yair-L3 External CSV Evaluation")
     print("=" * 60)
     print(f"  device      : {device}")
+    print(f"  decode      : {args.decode}")
     print(f"  dry_run     : {args.dry_run}")
     print(f"  wm_noise    : {args.wm_noise}  "
           f"({'NON-DETERMINISTIC' if args.wm_noise else 'deterministic'})")
-    print(f"  REGIME      : {EVAL_REGIME_NOTE[:80]}…")
+    print(f"  REGIME      : {_REGIME_NOTES[args.decode][:80]}…")
     print()
 
     model, vocab, meta = load_model_and_vocab(args.ckpt, device)
 
     all_results: dict = {
         "meta": meta,
-        "evaluation_regime": EVAL_REGIME_NOTE,
+        "evaluation_regime": _REGIME_NOTES[args.decode],
+        "decode_mode": args.decode,
     }
 
     if not args.ssp_only:
@@ -810,7 +892,8 @@ def main() -> None:
         else:
             wfe_results = run_wfe_eval(
                 model, vocab, meta, args.wfe_tsv, args.out_dir,
-                args.dry_run, device, wm_noise=args.wm_noise)
+                args.dry_run, device, wm_noise=args.wm_noise,
+                decode=args.decode)
             all_results["wfe"] = wfe_results
 
     if not args.wfe_only:
@@ -820,7 +903,8 @@ def main() -> None:
         else:
             ssp_results = run_ssp_eval(
                 model, vocab, meta, args.ssp_tsv, args.out_dir,
-                args.dry_run, device, wm_noise=args.wm_noise)
+                args.dry_run, device, wm_noise=args.wm_noise,
+                decode=args.decode)
             all_results["ssp"] = ssp_results
 
     # Master summary
