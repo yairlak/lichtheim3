@@ -86,6 +86,42 @@ _ALL_REAL_COLOR    = "#c0392b"
 _PSEUDO_COLOR      = "#2c3e7f"
 
 NOTE = "Teacher-forced decoding · WM noise disabled (deterministic)"
+NOTE_REGIME = "Regime A (teacher-forced, deterministic) — see docs/evaluation_regimes.md"
+
+_X_LABEL = "Word length (phonemes)"
+
+
+# ---------------------------------------------------------------------------
+# Bootstrap CI helper
+# ---------------------------------------------------------------------------
+
+def _bootstrap_ci(values: np.ndarray, n_boot: int,
+                  rng: np.random.RandomState) -> tuple:
+    """95 % bootstrap CI for the mean of values. Returns (lo, hi)."""
+    if len(values) < 2 or n_boot == 0:
+        m = float(values.mean()) if len(values) > 0 else np.nan
+        return m, m
+    boot = np.array([rng.choice(values, size=len(values), replace=True).mean()
+                     for _ in range(n_boot)])
+    return float(np.percentile(boot, 2.5)), float(np.percentile(boot, 97.5))
+
+
+def _length_curve(sub: pd.DataFrame, col: str,
+                  n_boot: int = 1000, min_n: int = 3,
+                  rng: Optional[np.random.RandomState] = None) -> pd.DataFrame:
+    """Mean + 95 % bootstrap CI per exact phoneme length for column `col`."""
+    if rng is None:
+        rng = np.random.RandomState(42)
+    rows = []
+    for length, grp in sub.groupby("length_phonemes"):
+        vals = grp[col].dropna().values
+        if len(vals) < min_n:
+            continue
+        mean_val = float(vals.mean())
+        ci_lo, ci_hi = _bootstrap_ci(vals, n_boot, rng)
+        rows.append({"length_phonemes": int(length), "mean": mean_val,
+                     "ci_lo": ci_lo, "ci_hi": ci_hi, "n": len(vals)})
+    return pd.DataFrame(rows).sort_values("length_phonemes").reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------
@@ -147,190 +183,159 @@ def fig_model_centered_categories(df: pd.DataFrame, out_dir: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Helpers for figures 02 / 02b
+# Shared drawing helper for figures 02 / 02b
 # ---------------------------------------------------------------------------
 
-def _length_curve(sub: pd.DataFrame, edit_col: str,
-                  min_n: int = 3) -> pd.DataFrame:
-    """Mean ± SEM edit distance per exact phoneme length."""
-    agg = (sub.groupby("length_phonemes")
-              .agg(
-                  mean=(edit_col, "mean"),
-                  sem=(edit_col, lambda x: float(x.sem()) if len(x) > 1 else 0.0),
-                  n=(edit_col, "count"),
-              )
-              .reset_index())
-    return agg[agg["n"] >= min_n].sort_values("length_phonemes")
-
-
-def _plot_length_curve(ax: plt.Axes,
+def _draw_length_panel(ax: plt.Axes,
                        df_real: pd.DataFrame, df_pseudo: pd.DataFrame,
+                       col: str,
                        real_label: str, real_color: str,
-                       edit_col: str,
-                       show_routes: bool,
-                       df_real_wm: Optional[pd.DataFrame] = None,
-                       df_pseudo_wm: Optional[pd.DataFrame] = None,
-                       df_real_ltm: Optional[pd.DataFrame] = None,
-                       df_pseudo_ltm: Optional[pd.DataFrame] = None) -> None:
-    """Plot two lines (real, pseudo) for the given route; optionally thin WM/LTM."""
+                       n_boot: int,
+                       show_routes: bool = False) -> None:
+    """Two main lines (real / pseudo, full route) + optional thin WM/LTM lines."""
+    rng = np.random.RandomState(42)
 
     def _draw(agg, color, label, lw=2.2, ls="-", alpha=1.0, ms=6, zorder=3):
         if agg is None or len(agg) == 0:
             return
         xs = agg["length_phonemes"].values
         ys = agg["mean"].values
-        se = agg["sem"].values
+        lo = agg["ci_lo"].values
+        hi = agg["ci_hi"].values
         ax.plot(xs, ys, color=color, lw=lw, ls=ls, marker="o", ms=ms,
                 label=label, alpha=alpha, zorder=zorder)
-        ax.fill_between(xs, ys - se, ys + se, color=color, alpha=0.12 * alpha)
+        ax.fill_between(xs, lo, hi, color=color, alpha=0.15 * alpha)
 
-    # Main lines (full route)
-    real_agg   = _length_curve(df_real,   edit_col)
-    pseudo_agg = _length_curve(df_pseudo, edit_col)
+    real_agg   = _length_curve(df_real,   col, n_boot=n_boot, rng=rng)
+    pseudo_agg = _length_curve(df_pseudo, col, n_boot=n_boot, rng=rng)
     _draw(real_agg,   real_color,   real_label)
-    _draw(pseudo_agg, _PSEUDO_COLOR, "Pseudoword")
+    _draw(pseudo_agg, _PSEUDO_COLOR, "Pseudowords")
+
+    for agg, color in [(real_agg, real_color), (pseudo_agg, _PSEUDO_COLOR)]:
+        for _, row in agg.iterrows():
+            ax.annotate(f"n={int(row['n'])}",
+                        xy=(row["length_phonemes"], row["mean"]),
+                        xytext=(2, 5), textcoords="offset points",
+                        fontsize=6, color=color, alpha=0.75)
 
     if show_routes:
-        # Thin supplementary lines for WM and LTM
-        wm_edit  = edit_col.replace("full_", "wm_")
-        ltm_edit = edit_col.replace("full_", "ltm_")
-        if df_real_wm is not None:
-            _draw(_length_curve(df_real_wm,   wm_edit),
-                  real_color,   f"{real_label} — WM",   lw=1, ls="--", alpha=0.55, ms=3, zorder=2)
-            _draw(_length_curve(df_pseudo_wm, wm_edit),
-                  _PSEUDO_COLOR, "Pseudoword — WM",     lw=1, ls="--", alpha=0.55, ms=3, zorder=2)
-        if df_real_ltm is not None:
-            _draw(_length_curve(df_real_ltm,   ltm_edit),
-                  real_color,   f"{real_label} — LTM",  lw=1, ls=":", alpha=0.55, ms=3, zorder=2)
-            _draw(_length_curve(df_pseudo_ltm, ltm_edit),
-                  _PSEUDO_COLOR, "Pseudoword — LTM",    lw=1, ls=":", alpha=0.55, ms=3, zorder=2)
+        for route, ls_style, alpha in [("wm", "--", 0.50), ("ltm", ":", 0.50)]:
+            route_col = col.replace("full_", f"{route}_")
+            if route_col not in df_real.columns:
+                continue
+            _draw(_length_curve(df_real,   route_col, n_boot=0, rng=rng),
+                  real_color,   f"Train-seen real — {route.upper()}",
+                  lw=1.0, ls=ls_style, alpha=alpha, ms=3, zorder=2)
+            _draw(_length_curve(df_pseudo, route_col, n_boot=0, rng=rng),
+                  _PSEUDO_COLOR, f"Pseudowords — {route.upper()}",
+                  lw=1.0, ls=ls_style, alpha=alpha, ms=3, zorder=2)
+
+
+def _save_panel(ax: plt.Axes, fig: plt.Figure, subtitle: str, title: str,
+                ylabel: str, fname: str) -> None:
+    ax.set_xlabel(_X_LABEL, fontsize=11)
+    ax.set_ylabel(ylabel, fontsize=11)
+    ax.set_title(title, fontsize=10)
+    ax.text(0.5, -0.16, subtitle,
+            transform=ax.transAxes, ha="center", va="top",
+            fontsize=8, color="#444444", style="italic")
+    ax.legend(fontsize=9)
+    ax.grid(alpha=0.3)
+    ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
+    fig.subplots_adjust(bottom=0.2)
+    fig.savefig(fname, dpi=150)
+    plt.close(fig)
+    print(f"  [fig] {fname}")
 
 
 # ---------------------------------------------------------------------------
-# Figure 02 — strict Dager (train-seen real vs pseudo)
+# Figure 02 — strict Dager-comparable (train-seen real vs pseudo)
+# Produces: 02_strict_real_error_rate.png  +  02_strict_real_edit_dist.png
 # ---------------------------------------------------------------------------
 
-def fig_strict_dager(df: pd.DataFrame, out_dir: str, show_routes: bool) -> None:
+def fig_strict_dager(df: pd.DataFrame, out_dir: str,
+                     show_routes: bool, n_boot: int) -> None:
     df_real   = df[df["lexicon_category"] == "real_word_seen_in_training_lexicon"].copy()
     df_pseudo = df[df["lexicality"] == "pseudo"].copy()
 
-    n_real   = len(df_real)
-    n_pseudo = len(df_pseudo)
+    for sub in (df_real, df_pseudo):
+        for route in ("full", "wm", "ltm"):
+            sub[f"{route}_error_rate"] = 1.0 - sub[f"{route}_exact_match"]
 
+    n_real, n_pseudo = len(df_real), len(df_pseudo)
     real_label = f"Train-seen real words (n={n_real})"
+    subtitle = (f"real = WFE train-seen;  pseudo = WFE pseudowords  ·  "
+                f"n_pseudo={n_pseudo}  ·  {NOTE}")
 
-    fig, ax = plt.subplots(figsize=(9, 5))
-
-    _plot_length_curve(
-        ax, df_real, df_pseudo,
-        real_label=real_label, real_color=_STRICT_REAL_COLOR,
-        edit_col="full_edit_dist",
-        show_routes=show_routes,
-        df_real_wm=df_real if show_routes else None,
-        df_pseudo_wm=df_pseudo if show_routes else None,
-        df_real_ltm=df_real if show_routes else None,
-        df_pseudo_ltm=df_pseudo if show_routes else None,
-    )
-
-    # Print how many items in each length group
     for df_grp, lbl in [(df_real, "train-real"), (df_pseudo, "pseudo")]:
         counts = df_grp["length_phonemes"].value_counts().sort_index()
         print(f"    {lbl} length counts: {dict(counts)}")
 
-    ax.set_xlabel("Phoneme length", fontsize=11)
-    ax.set_ylabel("Mean edit distance (full route)", fontsize=11)
+    fig, ax = plt.subplots(figsize=(9, 5))
+    _draw_length_panel(ax, df_real, df_pseudo, "full_error_rate",
+                       real_label, _STRICT_REAL_COLOR, n_boot, show_routes)
+    ax.set_ylim(-0.02, min(1.05, ax.get_ylim()[1] + 0.05))
+    _save_panel(ax, fig, subtitle,
+                "WFE: error rate by word length — Dager-comparable\n"
+                "lichtheim3 30k  ·  full/gated route  ·  95 % bootstrap CI",
+                "Error rate  (1 − exact-match)",
+                os.path.join(out_dir, "02_strict_real_error_rate.png"))
+
+    fig, ax = plt.subplots(figsize=(9, 5))
+    _draw_length_panel(ax, df_real, df_pseudo, "full_edit_dist",
+                       real_label, _STRICT_REAL_COLOR, n_boot, show_routes)
     ax.set_ylim(bottom=-0.02)
-    ax.set_title(
-        "WFE: edit distance by phoneme length — Dager-comparable\n"
-        "lichtheim3 30k",
-        fontsize=11,
-    )
-    # Subtitle
-    ax.text(
-        0.5, -0.16,
-        "real = WFE real words seen during training;  "
-        "pseudo = WFE pseudowords;  teacher-forced",
-        transform=ax.transAxes, ha="center", va="top", fontsize=8, color="#444444",
-        style="italic",
-    )
-    ax.legend(fontsize=9)
-    ax.grid(alpha=0.3)
-    ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
-
-    # Annotate count per real length group
-    real_agg = _length_curve(df_real, "full_edit_dist")
-    for _, row in real_agg.iterrows():
-        ax.annotate(f"n={int(row['n'])}", xy=(row["length_phonemes"], row["mean"]),
-                    xytext=(2, 6), textcoords="offset points", fontsize=6, color=_STRICT_REAL_COLOR)
-    pseudo_agg = _length_curve(df_pseudo, "full_edit_dist")
-    for _, row in pseudo_agg.iterrows():
-        ax.annotate(f"n={int(row['n'])}", xy=(row["length_phonemes"], row["mean"]),
-                    xytext=(2, 6), textcoords="offset points", fontsize=6, color=_PSEUDO_COLOR)
-
-    fig.subplots_adjust(bottom=0.2)
-    path = os.path.join(out_dir, "02_dager_fig2_like_wfe_strict_train_real.png")
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    print(f"  [fig] {path}")
+    _save_panel(ax, fig, subtitle,
+                "WFE: edit distance by word length — Dager-comparable\n"
+                "lichtheim3 30k  ·  full/gated route  ·  95 % bootstrap CI",
+                "Mean edit distance (full route)",
+                os.path.join(out_dir, "02_strict_real_edit_dist.png"))
 
 
 # ---------------------------------------------------------------------------
-# Figure 02b — dataset-centered (all WFE real vs pseudo)
+# Figure 02b — dataset-centered (all WFE real vs pseudo, NOT Dager-comparable)
+# Produces: 02b_all_real_error_rate.png  +  02b_all_real_edit_dist.png
 # ---------------------------------------------------------------------------
 
-def fig_dataset_centered(df: pd.DataFrame, out_dir: str, show_routes: bool) -> None:
+def fig_dataset_centered(df: pd.DataFrame, out_dir: str,
+                          show_routes: bool, n_boot: int) -> None:
     df_real   = df[df["lexicality"] == "real"].copy()
     df_pseudo = df[df["lexicality"] == "pseudo"].copy()
 
-    # Count breakdown of real words by category
     cat_counts = df_real["lexicon_category"].value_counts()
     breakdown  = ", ".join(
-        f"{_CAT_LABELS.get(k, k)}={v}"
-        for k, v in cat_counts.items()
+        f"{_CAT_LABELS.get(k, k)}={v}" for k, v in cat_counts.items()
     )
     print(f"    all-real breakdown: {breakdown}")
 
-    n_real   = len(df_real)
-    n_pseudo = len(df_pseudo)
-    real_label = f"All WFE real words: train + validation + novel (n={n_real})"
+    for sub in (df_real, df_pseudo):
+        for route in ("full", "wm", "ltm"):
+            sub[f"{route}_error_rate"] = 1.0 - sub[f"{route}_exact_match"]
+
+    n_real, n_pseudo = len(df_real), len(df_pseudo)
+    real_label = f"All WFE real words: train + val + novel (n={n_real})"
+    subtitle = (f"all WFE real: train + val + novel;  pseudo n={n_pseudo}  ·  {NOTE}")
+    flag = "[NOT Dager-comparable — includes unseen real words]"
 
     fig, ax = plt.subplots(figsize=(9, 5))
+    _draw_length_panel(ax, df_real, df_pseudo, "full_error_rate",
+                       real_label, _ALL_REAL_COLOR, n_boot, show_routes)
+    ax.set_ylim(-0.02, min(1.05, ax.get_ylim()[1] + 0.05))
+    _save_panel(ax, fig, subtitle,
+                f"WFE: error rate by word length — dataset lexicality\n"
+                f"lichtheim3 30k  ·  full/gated route  ·  {flag}",
+                "Error rate  (1 − exact-match)",
+                os.path.join(out_dir, "02b_all_real_error_rate.png"))
 
-    _plot_length_curve(
-        ax, df_real, df_pseudo,
-        real_label=real_label, real_color=_ALL_REAL_COLOR,
-        edit_col="full_edit_dist",
-        show_routes=show_routes,
-        df_real_wm=df_real if show_routes else None,
-        df_pseudo_wm=df_pseudo if show_routes else None,
-        df_real_ltm=df_real if show_routes else None,
-        df_pseudo_ltm=df_pseudo if show_routes else None,
-    )
-
-    ax.set_xlabel("Phoneme length", fontsize=11)
-    ax.set_ylabel("Mean edit distance (full route)", fontsize=11)
+    fig, ax = plt.subplots(figsize=(9, 5))
+    _draw_length_panel(ax, df_real, df_pseudo, "full_edit_dist",
+                       real_label, _ALL_REAL_COLOR, n_boot, show_routes)
     ax.set_ylim(bottom=-0.02)
-    ax.set_title(
-        "WFE: edit distance by phoneme length — dataset lexicality\n"
-        "lichtheim3 30k  [NOT Dager-comparable — includes unseen real words]",
-        fontsize=10,
-    )
-    ax.text(
-        0.5, -0.16,
-        "all WFE real words: train + validation + novel;  "
-        "pseudo = WFE pseudowords;  teacher-forced",
-        transform=ax.transAxes, ha="center", va="top", fontsize=8, color="#444444",
-        style="italic",
-    )
-    ax.legend(fontsize=9)
-    ax.grid(alpha=0.3)
-    ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
-
-    fig.subplots_adjust(bottom=0.2)
-    path = os.path.join(out_dir, "02b_dager_fig2_like_wfe_dataset_lexicality.png")
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    print(f"  [fig] {path}")
+    _save_panel(ax, fig, subtitle,
+                f"WFE: edit distance by word length — dataset lexicality\n"
+                f"lichtheim3 30k  ·  full/gated route  ·  {flag}",
+                "Mean edit distance (full route)",
+                os.path.join(out_dir, "02b_all_real_edit_dist.png"))
 
 
 # ---------------------------------------------------------------------------
@@ -363,7 +368,9 @@ def parse_args():
     p.add_argument("--src_figs", default=SRC_FIGS,
                    help="Source directory for figures 03–06 (default: external_eval_30k/figures/)")
     p.add_argument("--show_routes", action="store_true",
-                   help="Add thin WM and LTM lines to the edit-distance curves")
+                   help="Add thin WM and LTM lines to the length curves")
+    p.add_argument("--n_boot", type=int, default=1000,
+                   help="Bootstrap resamples for 95 %% CI (0 = disable CI, show point estimate only)")
     return p.parse_args()
 
 
@@ -375,6 +382,7 @@ def main():
     print(f"  Input   : {args.pred}")
     print(f"  Output  : {args.out_dir}")
     print(f"  WM/LTM  : {'shown (thin lines)' if args.show_routes else 'hidden'}")
+    print(f"  n_boot  : {args.n_boot}")
 
     if not os.path.exists(args.pred):
         print(f"\nERROR: predictions TSV not found: {args.pred}")
@@ -406,14 +414,14 @@ def main():
         n_strict = int((df["lexicon_category"] == "real_word_seen_in_training_lexicon").sum())
         n_pseudo = int((df["lexicality"] == "pseudo").sum())
         print(f"    strict real n={n_strict},  pseudo n={n_pseudo}")
-        fig_strict_dager(df, args.out_dir, args.show_routes)
+        fig_strict_dager(df, args.out_dir, args.show_routes, args.n_boot)
     else:
         print("  SKIPPED — missing lexicon_category or lexicality column")
 
     # --- Figure 02b ---
     print("\n  [02b] Dataset-centered (all WFE real vs pseudo) …")
     if "lexicality" in df.columns:
-        fig_dataset_centered(df, args.out_dir, args.show_routes)
+        fig_dataset_centered(df, args.out_dir, args.show_routes, args.n_boot)
     else:
         print("  SKIPPED — missing lexicality column")
 
