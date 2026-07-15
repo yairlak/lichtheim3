@@ -29,23 +29,43 @@ from train import _forward_scheduled_sampling
 class MockModel:
     """Fake dual-route model for unit-testing scheduled sampling logic.
 
+    Implements the encode_all / decode_from_states interface introduced in
+    Phase 2B (encode-once / decode-stepwise).
+
     Always returns logits that strongly predict `always_predict` token.
-    Records each `dec_in` it receives so tests can inspect what tokens
-    were actually fed to the decoder at each step.
+    Records each `dec_in` fed to decode_from_states so tests can inspect
+    the exact token history seen by the decoder at each step.
+    `encode_call_count` verifies that the encoder is called exactly once
+    per forward pass regardless of sequence length.
     """
 
     def __init__(self, vocab_size: int = 10, always_predict: int = 3,
                  s_hat_dim: int = 4):
-        self.vocab_size      = vocab_size
-        self.always_predict  = always_predict
-        self.s_hat_dim       = s_hat_dim
+        self.vocab_size        = vocab_size
+        self.always_predict    = always_predict
+        self.s_hat_dim         = s_hat_dim
         self.inputs_seen: list[torch.Tensor] = []
+        self.encode_call_count:     int = 0
+        self.wm_encode_call_count:  int = 0
+        self.ltm_encode_call_count: int = 0
 
-    def __call__(self, enc_in, enc_mask, dec_in):
+    def encode_all(self, enc_in, enc_mask,
+                   collect: bool = False,
+                   apply_noise: bool = False) -> dict:
+        self.encode_call_count += 1
+        self.wm_encode_call_count  += 1
+        self.ltm_encode_call_count += 1
+        B = enc_in.shape[0]
+        return {
+            "h_WM":  torch.zeros(1, B, 8),
+            "s_hat": torch.zeros(B, self.s_hat_dim),
+            "field": None,
+        }
+
+    def decode_from_states(self, h_WM, s_hat, field, dec_in) -> dict:
         self.inputs_seen.append(dec_in.clone())
         B, S = dec_in.shape
-        V = self.vocab_size
-        logits = torch.zeros(B, S, V)
+        logits = torch.zeros(B, S, self.vocab_size)
         logits[:, :, self.always_predict] = 10.0   # confident prediction
         gate = torch.full((B, S, 1), 0.5)
         return {
@@ -53,7 +73,7 @@ class MockModel:
             "wm_logits":  logits,
             "ltm_logits": logits,
             "gate":       gate,
-            "s_hat":      torch.zeros(B, self.s_hat_dim),
+            "s_hat":      s_hat,
         }
 
 
@@ -206,7 +226,7 @@ def test_training_smoke_tf0():
     from train import build_and_train
     cfg = _tiny_cfg()
     cfg.train.teacher_forcing_ratio = 0.0
-    model, vocab, lexicon, history = build_and_train(cfg)
+    model, vocab, lexicon, history, optim = build_and_train(cfg)
     assert len(history) == 1
     assert history[0]["train_total"] > 0
     assert history[0]["train_total"] < 1e6   # not exploded
@@ -218,6 +238,52 @@ def test_training_smoke_tf1():
     from train import build_and_train
     cfg = _tiny_cfg()
     cfg.train.teacher_forcing_ratio = 1.0
-    model, vocab, lexicon, history = build_and_train(cfg)
+    model, vocab, lexicon, history, optim = build_and_train(cfg)
     assert len(history) == 1
     assert history[0]["train_total"] > 0
+
+
+# ---------------------------------------------------------------------------
+# Test 6: encode_all called exactly once per forward pass (Phase 2B invariant)
+# ---------------------------------------------------------------------------
+
+def test_encode_called_once():
+    """encode_all must be called exactly once per _forward_scheduled_sampling call,
+    regardless of sequence length S.  Re-encoding at every decoder step was the
+    Phase 2B blocking bug: noise was drawn S times instead of once per stimulus."""
+    BOS, PAD = 9, 0
+    S = 6
+    dec_in = [[BOS] + [1] * (S - 1)]
+    batch  = _make_batch(dec_in, pad_id=PAD)
+    model  = MockModel(always_predict=2)
+
+    _forward_scheduled_sampling(model, batch, tf_ratio=0.5, pad_id=PAD, device="cpu")
+
+    assert model.encode_call_count == 1, (
+        f"Expected encode_all to be called exactly once, got {model.encode_call_count}. "
+        f"This means noise is being drawn {model.encode_call_count} times per stimulus "
+        f"instead of once (Phase 2B encode-once invariant violated)."
+    )
+    # Each route is encoded exactly once inside the single encode_all call
+    assert model.wm_encode_call_count  == 1, (
+        f"WM encoder called {model.wm_encode_call_count} times (expected 1)"
+    )
+    assert model.ltm_encode_call_count == 1, (
+        f"LTM encoder called {model.ltm_encode_call_count} times (expected 1)"
+    )
+
+
+def test_encode_called_once_large_S():
+    """Even for long sequences (S=12), encode_all is still called exactly once.
+    The WM and LTM encoders each draw noise exactly once per stimulus."""
+    BOS, PAD = 9, 0
+    S = 12
+    dec_in = [[BOS] + [1] * (S - 1)]
+    batch  = _make_batch(dec_in, pad_id=PAD)
+    model  = MockModel(always_predict=2)
+
+    _forward_scheduled_sampling(model, batch, tf_ratio=0.3, pad_id=PAD, device="cpu")
+
+    assert model.encode_call_count     == 1, f"encode_all called {model.encode_call_count}× (expected 1)"
+    assert model.wm_encode_call_count  == 1, f"WM encoder called {model.wm_encode_call_count}× (expected 1)"
+    assert model.ltm_encode_call_count == 1, f"LTM encoder called {model.ltm_encode_call_count}× (expected 1)"

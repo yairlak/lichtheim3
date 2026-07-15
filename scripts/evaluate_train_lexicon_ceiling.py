@@ -134,19 +134,21 @@ def _ar_decode_batch(model: DualRouteModel, vocab: Vocab,
     Returns a dict {route: list_of_pred_id_lists}.  Each prediction is
     stripped at the first EOS token (exclusive).
 
-    Note: wm_noise (collect=True) applies noise to the WM-isolated route only.
+    Note: wm_noise (apply_noise=True) applies noise to the WM-isolated route only.
     It does NOT apply noise to the WM component inside the full/gated route.
+    collect=False here — we want AR decode only, not diagnostic collection.
     """
     batch = make_batch(batch_forms, vocab, device)
     max_steps = max(len(f) for f in batch_forms) + 1  # +1 for possible EOS
     preds: Dict[str, List[List[int]]] = {r: [] for r in routes}
 
     for route in routes:
-        collect = (route == "wm") and wm_noise
+        apply_noise = (route == "wm") and wm_noise   # explicit noise, not via collect
         dec_input = batch["enc_in"].new_full((len(batch_forms), 1), vocab.bos_id)
         for _ in range(max_steps):
             res = model.route_logits(batch["enc_in"], batch["enc_mask"],
-                                     dec_input, route=route, collect=collect)
+                                     dec_input, route=route,
+                                     collect=False, apply_noise=apply_noise)
             next_tok = res["logits"][:, -1, :].argmax(-1, keepdim=True)
             dec_input = torch.cat([dec_input, next_tok], dim=1)
 
@@ -238,11 +240,13 @@ def evaluate_forms(model: DualRouteModel, vocab: Vocab,
         batch = make_batch(batch_forms, vocab, device)
 
         # Single forward pass per route — no dead first loop.
-        # collect=True for WM route ONLY if wm_noise is explicitly requested.
+        # apply_noise=True for WM route ONLY if wm_noise is explicitly requested.
+        # collect=False: TF ceiling eval is deterministic; no diagnostics needed here.
         batch_preds: Dict[str, torch.Tensor] = {}
         for route in routes:
-            collect = (route == "wm") and wm_noise
-            p, _ = route_predictions(model, batch, route=route, collect=collect)
+            apply_noise = (route == "wm") and wm_noise
+            p, _ = route_predictions(model, batch, route=route,
+                                     collect=False, apply_noise=apply_noise)
             batch_preds[route] = p
 
         for i, (entry, form_ids) in enumerate(zip(batch_entries, batch_forms)):

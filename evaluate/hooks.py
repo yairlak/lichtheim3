@@ -5,6 +5,21 @@ strengths and read attention, LTM lexical confidence/density), so we don't need
 generic forward hooks here. These helpers just build eval batches, run a route's
 greedy predictions, and score per-position correctness, so the evaluations don't
 duplicate boilerplate.
+
+Noise semantics (Phase 2 fix)
+------------------------------
+`collect=True` means "return intermediate representations" ONLY.
+It does NOT activate noise.
+
+`apply_noise=True` activates route noise in eval mode (lesion / stress tests).
+Pass apply_noise=True explicitly when you want noisy determinism to match an
+interference/robustness evaluation regime.
+
+Example (evaluate_train_lexicon_ceiling.py):
+    # Noisy WM eval — explicit, not via collect
+    preds, _ = route_predictions(model, batch, route="wm", apply_noise=True)
+    # Deterministic eval with diagnostic collection
+    preds, diag = route_predictions(model, batch, route="full", collect=True)
 """
 from __future__ import annotations
 
@@ -40,10 +55,16 @@ def make_batch(forms: List[List[int]], vocab, device) -> Dict[str, torch.Tensor]
 
 
 @torch.no_grad()
-def route_predictions(model, batch, route: str, collect: bool = False):
-    """Greedy argmax predictions for a route. Returns (preds, extra)."""
+def route_predictions(model, batch, route: str,
+                      collect: bool = False,
+                      apply_noise: bool = False):
+    """Greedy argmax predictions for a route. Returns (preds, extra).
+
+    collect=True    — return intermediate diagnostics; does NOT activate noise.
+    apply_noise=True — activate route noise even in eval (lesion / stress test).
+    """
     res = model.route_logits(batch["enc_in"], batch["enc_mask"], batch["dec_in"],
-                             route=route, collect=collect)
+                             route=route, collect=collect, apply_noise=apply_noise)
     preds = res["logits"].argmax(-1)            # (B, S)
     return preds, res
 

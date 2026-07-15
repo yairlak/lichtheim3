@@ -90,7 +90,8 @@ def make_collate(pad_id: int):
 
 
 def build_pool_loader(vocab: Vocab, n: int, batch_size: int, semantic_dim: int,
-                      min_len: int = 2, max_len: int = 9, seed: int = 0) -> DataLoader:
+                      min_len: int = 2, max_len: int = 9, seed: int = 0,
+                      num_workers: int = 0) -> DataLoader:
     """A loader of pronounceable (C)V(C) pseudowords for training the dorsal
     route's general serial-recall (frequency-flat, no semantics)."""
     rng = random.Random(seed)
@@ -113,12 +114,20 @@ def build_pool_loader(vocab: Vocab, n: int, batch_size: int, semantic_dim: int,
                                 freq=1.0, rank=1))
     density = {i: 0 for i in range(len(entries))}
     return make_loader(entries, vocab, density, batch_size,
-                       frequency_weighted=False, shuffle=True)
+                       frequency_weighted=False, shuffle=True,
+                       num_workers=num_workers)
 
 
 def make_loader(entries: List[LexEntry], vocab: Vocab, density: Dict[int, int],
                 batch_size: int, frequency_weighted: bool, freq_temp: float = 1.0,
-                shuffle: bool = True) -> DataLoader:
+                shuffle: bool = True, num_workers: int = 0) -> DataLoader:
+    """Build a DataLoader for a list of lexicon entries.
+
+    Args:
+        num_workers: DataLoader worker processes.  0 = main process (safe default).
+                     For GPU servers with fast storage (Jean-Zay), try 4 or 8.
+                     Benchmark before setting: on some GPFS setups, 0 is faster.
+    """
     ds = RepetitionDataset(entries, vocab, density)
     collate = make_collate(vocab.pad_id)
     if frequency_weighted:
@@ -130,6 +139,6 @@ def make_loader(entries: List[LexEntry], vocab: Vocab, density: Dict[int, int],
                                         num_samples=len(entries),
                                         replacement=True)
         return DataLoader(ds, batch_size=batch_size, sampler=sampler,
-                          collate_fn=collate)
+                          collate_fn=collate, num_workers=num_workers)
     return DataLoader(ds, batch_size=batch_size, shuffle=shuffle,
-                      collate_fn=collate)
+                      collate_fn=collate, num_workers=num_workers)

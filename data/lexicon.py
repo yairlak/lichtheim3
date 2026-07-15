@@ -45,6 +45,7 @@ def logfreq_weights(ranks, n_total: int = None) -> np.ndarray:
     decreasing weights (rank 1 highest).
     """
     ranks = np.asarray(ranks, dtype=np.float64)
+    ranks = np.maximum(ranks, 1.0)  # synthetic 0-indexed ranks → avoid log(N/0)=inf
     N = float(n_total or ranks.max())
     return np.log((N + 1.0) / ranks)
 
@@ -252,7 +253,8 @@ def build_bundled(cfg, vocab: Vocab = VOCAB, path: str = BUNDLED_PATH
                                     freq=_zipf_freq(int(r) - 1), rank=int(r)))
             if len(entries) >= cfg.max_words:
                 break
-    if len(entries) < 50:
+    min_required = min(cfg.max_words, 50)
+    if len(entries) < min_required:
         return None
     return Lexicon(entries, vocab, cfg.semantic_dim, source="bundled-en")
 
@@ -265,5 +267,5 @@ def build_lexicon(cfg, vocab: Vocab = VOCAB) -> Lexicon:
         lex = build_bundled(cfg, vocab, path=custom_path or BUNDLED_PATH)
         if lex is not None:
             return lex
-        print("[lexicon] bundled lexicon missing -> synthetic fallback.")
+        print("[lexicon] bundled lexicon unavailable (file missing or too few entries match filters) -> synthetic fallback.")
     return build_synthetic(cfg, vocab)

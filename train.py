@@ -22,19 +22,23 @@ def build_everything(cfg: Config):
     lexicon = build_lexicon(cfg.data, vocab)
     density = lexicon.neighborhood_density()
     train_entries, val_entries = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+    num_workers = getattr(cfg.train, "num_workers", 0)
 
     train_loader = make_loader(
         train_entries, vocab, density, cfg.train.batch_size,
-        frequency_weighted=True, freq_temp=cfg.data.freq_temp, shuffle=True)
+        frequency_weighted=True, freq_temp=cfg.data.freq_temp, shuffle=True,
+        num_workers=num_workers)
     val_loader = make_loader(
         val_entries, vocab, density, cfg.train.batch_size,
-        frequency_weighted=False, shuffle=False)
+        frequency_weighted=False, shuffle=False,
+        num_workers=num_workers)
 
     pool_loader = None
     if cfg.train.dorsal_pool_size > 0:
         pool_loader = build_pool_loader(
             vocab, cfg.train.dorsal_pool_size, cfg.train.batch_size,
-            cfg.data.semantic_dim, max_len=cfg.data.max_phonemes, seed=cfg.train.seed)
+            cfg.data.semantic_dim, max_len=cfg.data.max_phonemes, seed=cfg.train.seed,
+            num_workers=num_workers)
 
     model = DualRouteModel(cfg, vocab).to(cfg.train.device)
     # frozen lexical bank = GloVe vectors of the *training* lexicon
@@ -45,7 +49,10 @@ def build_everything(cfg: Config):
 
 def _forward_scheduled_sampling(model, batch, tf_ratio: float,
                                 pad_id: int, device) -> dict:
-    """Step-by-step forward with scheduled sampling (tf_ratio < 1.0).
+    """Encode-once, decode-stepwise scheduled sampling (tf_ratio < 1.0).
+
+    Encodes both routes a single time per batch (drawing all route noises once
+    per stimulus), then steps through the decoder autoregressively.
 
     At each decoder step t:
     - with probability tf_ratio   → feed the gold previous token
@@ -54,39 +61,35 @@ def _forward_scheduled_sampling(model, batch, tf_ratio: float,
     Returns a dict matching model.forward() in structure, with logits of
     shape (B, S, V) aligned to batch["dec_tgt"].
 
-    Notes
-    -----
-    - The encoder is re-run at each of the S decoder steps, making this
-      ~S× slower than the vectorised TF=1.0 path.  Only used when tf_ratio<1.
-    - WM interference noise (if configured) is applied independently at each
-      encoder call, producing different noise per step.  This differs from the
-      single-noise draw in the vectorised path.  Document in gridsearch logs.
-    - s_hat for the alignment loss is taken from step 0; it depends only on
-      enc_in (noise-free LTM encoder), so it is identical across all steps.
+    Scientific noise semantics
+    --------------------------
+    With the encode-once design, WM interference noise and LTM ventral noise
+    are each sampled ONCE per stimulus per training step (in encode_all), not
+    once per decoder step.  This is the intended cognitive interpretation:
+    one corruption of the phonological buffer per stimulus presentation.
     """
     enc_in   = batch["enc_in"]
     enc_mask = batch["enc_mask"]
     dec_in   = batch["dec_in"]    # (B, S) = [BOS, p1, ..., pT, PAD...]
     B, S     = dec_in.shape
 
+    # Encode ONCE — noise drawn once per item for this forward pass
+    encoded = model.encode_all(enc_in, enc_mask)
+    h_WM  = encoded["h_WM"]
+    s_hat = encoded["s_hat"]
+    field = encoded["field"]
+
     current_dec = dec_in[:, :1]   # start with BOS only: (B, 1)
     lists = {k: [] for k in ("logits", "wm_logits", "ltm_logits", "gate")}
-    s_hat_0: "torch.Tensor | None" = None
-    field_extra: dict = {}
 
     for step in range(S):
-        out = model(enc_in, enc_mask, current_dec)
+        out = model.decode_from_states(h_WM, s_hat, field, current_dec)
 
         # Collect only the last-position logit/gate at each step
         lists["logits"].append(out["logits"][:, -1:, :])       # (B,1,V)
         lists["wm_logits"].append(out["wm_logits"][:, -1:, :])
         lists["ltm_logits"].append(out["ltm_logits"][:, -1:, :])
         lists["gate"].append(out["gate"][:, -1:, :])           # (B,1,1)
-
-        if s_hat_0 is None:
-            s_hat_0 = out["s_hat"]
-            field_extra = {k: v for k, v in out.items()
-                           if k not in lists and k != "s_hat"}
 
         if step < S - 1:
             gold_next = dec_in[:, step + 1: step + 2]          # (B,1) gold
@@ -103,9 +106,10 @@ def _forward_scheduled_sampling(model, batch, tf_ratio: float,
         "wm_logits":  torch.cat(lists["wm_logits"],  dim=1),
         "ltm_logits": torch.cat(lists["ltm_logits"], dim=1),
         "gate":       torch.cat(lists["gate"],        dim=1),
-        "s_hat":      s_hat_0,
+        "s_hat":      s_hat,
     }
-    result.update(field_extra)
+    if field is not None:
+        result.update({f"field_{k}": v for k, v in field.items()})
     return result
 
 
@@ -165,7 +169,16 @@ def plot_loss_history(history, path: str) -> None:
 
 
 def build_and_train(cfg: Config, out_dir: str = None
-                    ) -> Tuple[DualRouteModel, Vocab, Lexicon, list]:
+                    ) -> Tuple[DualRouteModel, Vocab, Lexicon, list,
+                               "torch.optim.Optimizer"]:
+    """Train model from scratch and return (model, vocab, lexicon, history, optim).
+
+    Returns optimizer as the 5th element so callers can save optimizer_state_dict
+    in fresh-mode checkpoints.  Previously, the optimizer was not exposed.
+
+    Backward compat: callers that only unpack 4 values can ignore the 5th:
+        model, vocab, lexicon, history, *_ = build_and_train(cfg)
+    """
     if cfg.train.device == "cpu" and torch.cuda.is_available():
         cfg.train.device = "cuda"
     model, vocab, lexicon, train_loader, val_loader, pool_loader = build_everything(cfg)
@@ -192,7 +205,7 @@ def build_and_train(cfg: Config, out_dir: str = None
     if out_dir is not None:
         import os
         plot_loss_history(history, os.path.join(out_dir, "training_loss.png"))
-    return model, vocab, lexicon, history
+    return model, vocab, lexicon, history, optim
 
 
 if __name__ == "__main__":

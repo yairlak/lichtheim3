@@ -37,30 +37,81 @@ class DataConfig:
 class WMConfig:
     """Dorsal recurrent serial-recall route (Botvinick & Plaut, 2006)."""
     hidden: int = 128              # bounded recurrent state -> capacity/length limits
-    interference_noise: float = 0.1  # Gaussian noise on the recalled state
+    # Gaussian noise std on the WM encoder final hidden state.
+    # Active when model.training=True OR apply_noise=True in encode/forward calls.
+    # collect=True alone does NOT activate noise.
+    # Named interference_noise for backward compatibility with old checkpoints.
+    interference_noise: float = 0.1
 
 
 @dataclass
 class LTMConfig:
-    """Ventral / lexical-semantic route."""
+    """Ventral / lexical-semantic route.
+
+    Architecture mode (ltm_encoder_mode):
+        "bigru_masked_mean"   – historical default (Phase 0/baseline):
+                                bidirectional GRU, sequence outputs, masked mean pooling.
+        "unigru_last_hidden"  – Yair 2026-07 proposal (Phase 4+):
+                                unidirectional GRU with pack_padded_sequence,
+                                last valid hidden state replaces mean pooling.
+
+    Old checkpoints without ltm_encoder_mode in their cfg_ltm dict were produced
+    with bigru_masked_mean. Load with ltm_encoder_mode="bigru_masked_mean" (default).
+    New checkpoints store ltm_encoder_mode explicitly.
+
+    Weight incompatibility: unigru_last_hidden checkpoints cannot be loaded into
+    a bigru_masked_mean model and vice versa (different to_semantic weight shapes).
+    torch.load_state_dict will raise a clear shape-mismatch error in that case.
+    """
     phon_embed_dim: int = 64
     enc_hidden: int = 256
     enc_layers: int = 1
     dec_hidden: int = 256
+    # Kept for backward compatibility with old checkpoint cfg_ltm dicts.
+    # ltm_encoder_mode is the authoritative field; this is informational only.
     bidirectional_encoder: bool = True
+    # Authoritative architecture mode (see class docstring).
+    ltm_encoder_mode: str = "bigru_masked_mean"
+    # Gaussian noise std on the aggregated LTM encoder representation (pooled or
+    # last hidden) before the semantic projection.  Analogous to WM interference_noise.
+    # Active when model.training=True or apply_noise=True in encode calls.
+    # Default 0.0 = no ventral noise (Phase 4 setting).
+    ventral_noise: float = 0.0
+
+    def __post_init__(self):
+        # ltm_encoder_mode is authoritative; bidirectional_encoder is informational.
+        # Normalise to prevent silent contradictory configs.
+        # Old checkpoints without ltm_encoder_mode land on "bigru_masked_mean"
+        # (the default), so bidirectional_encoder=True is correct for them.
+        if self.ltm_encoder_mode not in ("bigru_masked_mean", "unigru_last_hidden"):
+            raise ValueError(
+                f"Unknown ltm_encoder_mode={self.ltm_encoder_mode!r}. "
+                f"Valid: 'bigru_masked_mean', 'unigru_last_hidden'."
+            )
+        self.bidirectional_encoder = (self.ltm_encoder_mode == "bigru_masked_mean")
 
 
 @dataclass
 class GatingConfig:
     """Error-suppression gate: a confident lexical match suppresses the WM buffer.
 
-    g = sigmoid(alpha * (lexical_confidence - 0.5)); g->1 trusts the lexicon
-    (real words), g->0 hands control to the buffer (novel/non-words).
+    g = sigmoid(alpha * (lexical_confidence - gate_threshold))
+
+    g -> 1 trusts the lexicon (real words); g -> 0 hands control to the buffer
+    (novel/non-words).  gate_threshold=0.5 means the crossover point is at
+    c_LTM=0.5 (equal cosine similarity to nearest known word and to no known word).
+
+    gate_threshold was hard-coded to 0.5 in Phase 0/baseline.  It is now a
+    configurable hyperparameter for Phase 7 grid search.
     """
     alpha: float = 4.0             # gate sharpness
     # prior on route usage: target mean gate (fraction of LTM use) for the
     # regularizer. 0.5 = no bias; raise to encourage lexical reliance.
     usage_prior: float = 0.5
+    # Routing threshold τ in g = sigmoid(α·(c_LTM − τ)).
+    # Phase 4: fixed at 0.5 (historical default).
+    # Phase 7: search over {0.3, 0.5, 0.7}.
+    gate_threshold: float = 0.5
 
 
 @dataclass
@@ -93,6 +144,13 @@ class TrainConfig:
     # own argmax prediction is used otherwise.  Validation always uses TF=1.0
     # regardless of this setting.  See train._forward_scheduled_sampling.
     teacher_forcing_ratio: float = 1.0
+    # DataLoader num_workers.  0 = main process (safe default everywhere).
+    # For Jean-Zay or other GPU servers with fast storage, test 4 or 8.
+    num_workers: int = 0
+    # Periodic checkpoint interval in epochs.  0 = disabled (save only at end).
+    # With --save_every_epochs 5 the script writes epoch-level checkpoints named
+    # <ckpt_stem>.epoch_NNNN<ext> alongside the final checkpoint.
+    save_every_epochs: int = 0
 
 
 @dataclass

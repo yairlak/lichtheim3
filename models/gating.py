@@ -7,16 +7,21 @@ returns a value `g in [0, 1]` per decode step and combines the two routes as:
 
 so `g -> 1` means "trust the lexicon", `g -> 0` means "trust the buffer".
 
-    g = sigmoid(alpha * (lexical_confidence - 0.5))
+    g = sigmoid(alpha * (lexical_confidence - gate_threshold))
 
 where `lexical_confidence` is the LTM route's max cosine similarity to a known
 lexeme (see `ltm_route.LTMLexicon.lexical_field`). Real words land close to a
 known lexeme -> high confidence -> the ventral route wins; non-words land far
 from every lexeme -> low confidence -> the dorsal buffer has to carry the trial.
 
-This is the gate used throughout the evaluations and the lesion studies. (The
-project deliberately ships a single gating hypothesis; the git history holds
-earlier density-competition and learned-routing variants if you want to compare.)
+`gate_threshold` (default 0.5) is the crossover point: at c_LTM == gate_threshold
+the gate equals exactly 0.5 (equal blend of both routes) for any finite alpha.
+Previously hard-coded to 0.5; now a configurable field in GatingConfig for the
+Phase 7 alpha×threshold grid.
+
+The gate is WORD-LEVEL: one scalar g per item, constant across all decoder
+timesteps (broadcast to shape (B, S, 1) via expand).  It does not vary with
+phoneme position or WM noise level.  No learnable parameters.
 """
 from __future__ import annotations
 
@@ -42,7 +47,7 @@ class Gate(nn.Module):
         if field is None or "confidence" not in field:
             return torch.full((B, S, 1), 0.5, device=wm.device)
         conf = field["confidence"].view(B, 1, 1)            # (B,1,1)
-        g = torch.sigmoid(self.cfg.alpha * (conf - 0.5))
+        g = torch.sigmoid(self.cfg.alpha * (conf - self.cfg.gate_threshold))
         return g.expand(B, S, 1)
 
     def forward(self, wm: torch.Tensor, ltm: torch.Tensor,
