@@ -371,6 +371,49 @@ The following checks must be completed before any behavioral claim is published 
 
 ---
 
+## 9. Phase 1 audit updates (2026-07-15)
+
+The following items were confirmed or corrected by Phase 1 exact code inspection. They update or extend the earlier sections.
+
+### 9.1 Gate is word-level (confirmed)
+
+Confirmed from `models/gating.py:43-46`:
+- `conf.view(B, 1, 1)` → `g.expand(B, S, 1)` — the gate value `g` is computed once per item and broadcast to all `S` decoder steps.
+- Gate is **word-level (item-level scalar)**. It does not vary per phoneme or decoder step.
+
+### 9.2 Gate threshold `0.5` is hard-coded (confirmed — Phase 2 action)
+
+The `0.5` in `g = sigmoid(α · (c_LTM − 0.5))` is a **Python literal** in `gating.py:45`, not a config field. There is no `gate_threshold` in `GatingConfig`. Phase 2 must add `gate_threshold: float = 0.5` to the config and replace the literal.
+
+### 9.3 premotor_dim = 128 is hardcoded (confirmed — not in config)
+
+`premotor_dim` is a **default argument** in `DualRouteModel.__init__(self, cfg, vocab, premotor_dim=128)` at `models/dual_route.py:34`. It is not stored in any config dataclass and is not CLI-accessible. All three `to_premotor`, `dec_to_premotor`, and `motor` layers depend on this value.
+
+### 9.4 LTM backward hidden state is discarded (confirmed)
+
+In `models/ltm_route.py:62`: `out, _ = self.encoder(emb)` — the `_` is the biGRU's final hidden state `(2, B, 256)` and is **discarded**. Only `out` (all positions) is used for masked mean pooling. The last hidden state is available but unused — this is the basis for the proposed uniGRU + last hidden change.
+
+### 9.5 optimizer_state_dict is None in fresh mode (confirmed — by design)
+
+Fresh training via `scripts/train_checkpoint.py:main()` sets `optim = None` and calls `build_and_train()` which does not expose its internal optimizer. The saved checkpoint has `"optimizer_state_dict": None`. This means warm-restart from a fresh checkpoint will use a freshly initialized AdamW optimizer, not the one that produced the checkpoint. This is expected but worth noting if resuming fresh checkpoints.
+
+### 9.6 Noise drawn S times per step with TF<1 (confirmed — BLOCKING for Phase 6 with TF<1)
+
+See `docs/training_and_eval_regimes.md §2b` for full analysis. Phase 4 (sigma=0) is not affected. Phase 6 (noise grid) is conditionally blocked if the Phase 5 winner has TF<1.
+
+### 9.7 Proposed architecture changes (Yair meeting, 2026-07-15)
+
+None of the following are implemented. All require Phase 2 patch and retraining:
+
+| Proposal | Status |
+|---|---|
+| LTM: uniGRU + last hidden instead of biGRU + masked mean pool | PENDING Phase 2 |
+| LTM ventral noise (σ_LTM, analogous to WM noise) | PENDING Phase 2 |
+| Gate threshold τ as configurable hyperparameter: `g = sigmoid(α·(c_LTM − τ))` | PENDING Phase 2 |
+| Unified hidden size H ∈ {64, 128, 256} for both routes | PENDING Phase 2 (after uniGRU) |
+
+---
+
 ## Code locations (quick reference)
 
 | Equation | File | Line(s) |

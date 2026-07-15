@@ -114,6 +114,79 @@ Do not use `unseen forms` as a main figure category. Held-out real + novel real 
 
 ---
 
+## 3b. Phase 0-12 roadmap (Post-Yair-meeting, 2026-07-15)
+
+> **This supersedes Sections 4-15 below for planning purposes.** Sections 4-15 are retained as historical context and as a detailed command / metric reference.
+
+| Phase | Name | Status | Runs | Key action |
+|---|---|---|---|---|
+| **Phase 0** | Current architecture baseline | **COMPLETE** | 0 new runs (historical 120-epoch checkpoint) | AR+TF eval of `lichtheim3_30k_glove_e60_to_e120_lowlr.pt` |
+| **Phase 1** | Exact code audit | **COMPLETE (2026-07-15)** | 0 | Static inspection; all 7 docs updated |
+| **Phase 2** | Architecture/training infrastructure patch | PENDING | 0 (patch only) | uniGRU + last hidden in LTM; `gate_threshold` in GatingConfig; `ventral_noise` in LTMConfig; `--hidden_size` CLI flag; mid-training checkpointing; `num_workers>0` in DataLoader; encode-once TF<1 fix; aggregation script |
+| **Phase 3** | Jean-Zay benchmark + parallel infra | PENDING | 0 new model runs | SLURM array template; experiment manifest; 1-epoch smoke run on Jean-Zay; verify GPFS path |
+| **Phase 4** | H × TF × LR grid — 18 runs | PENDING (blocked on Phase 2) | 18 (1 seed each) | H∈{64,128,256} × TF∈{1.0,0.2,0.0} × LR∈{1e-3,5e-4}; σ=0; 30 epochs; FULL route selection only |
+| **Phase 5** | Multi-seed confirmation | PENDING (blocked on Phase 4) | 6 (top 2 configs × seeds {0,1,2}) | Confirm variance; seeds control both RNG and data split |
+| **Phase 6** | WM × LTM noise grid | PENDING (blocked on Phase 5 + encode-once fix) | ~6 | σ_WM∈{0,0.05,0.10} × σ_LTM∈{0,0.05}; fix noise semantics with TF<1 before this phase |
+| **Phase 7** | α × τ gate grid | PENDING (blocked on Phase 6 + confidence distribution log) | ~9 | α∈{2,4,8} × τ∈{0.3,0.5,0.7}; need confidence distribution logged from Phase 4-5 runs |
+| **Phase 8** | Long training / zero-error ceiling | PENDING (blocked on Phase 7) | ~2 | 60-120 epochs for best config; verify AR train exact = 1.0 |
+| **Phase 9** | Full-lexicon final retrain | PENDING (blocked on Phase 8) | 1 | Retrain on all 29,571 GloVe-covered words; selected HP from Phases 4-7 |
+| **Phase 10** | Comprehension | FUTURE | TBD | Semantic input pathway; new training objective |
+| **Phase 11** | Naming | FUTURE | TBD | Naming pathway; requires Phase 10 comprehension |
+| **Phase 12** | Ablations + late architecture | FUTURE | TBD | Learnable gate; position-level gate; biGRU vs uniGRU comparison |
+
+### Phase 2 patch scope (exact)
+
+Must be complete before Phase 4:
+
+1. `models/ltm_route.py`: add `use_last_hidden` option to `encode()`. When `bidirectional_encoder=False` and `use_last_hidden=True`: replace masked mean pool with `h[-1]` from `out, h = self.encoder(emb)`. First layer of `to_semantic` input dim: `H_LTM_enc` (not `2*H_LTM_enc`).
+2. `config.py:LTMConfig`: add `use_last_hidden: bool = True`.
+3. `config.py:GatingConfig`: add `gate_threshold: float = 0.5`.
+4. `models/gating.py:45`: replace literal `0.5` with `self.cfg.gate_threshold`.
+5. `config.py:LTMConfig`: add `ventral_noise: float = 0.0`.
+6. `models/ltm_route.py:encode()`: after pooled computation, add noise analogous to WM noise.
+7. `scripts/train_checkpoint.py`: add `--hidden_size INT` (sets WM hidden, LTM enc hidden, LTM dec hidden uniformly); add `--gate_threshold FLOAT`; add `--ventral_noise FLOAT`; add mid-training checkpoint every N epochs.
+8. `data/dataset.py:make_loader()`: set `num_workers=4` (or add CLI flag).
+9. `train.py:_forward_scheduled_sampling()`: encode-once fix — run encoders ONCE before the decode loop; pass `h_WM` and `s_hat` into the decode steps without re-encoding.
+10. `scripts/aggregate_gridsearch.py`: new script that reads all `metrics.json` files from `outputs/gridsearch/` and ranks runs by FULL route AR metrics only.
+
+### Phase 4 grid specification
+
+```
+Factor 1: H ∈ {64, 128, 256}               # unified hidden size (WM + LTM after uniGRU patch)
+Factor 2: TF ∈ {1.0, 0.2, 0.0}            # teacher_forcing_ratio
+Factor 3: LR ∈ {1e-3, 5e-4}               # learning rate
+Fixed:     sigma_WM = 0.0                  # noise off for Phase 4
+Fixed:     gate_alpha = 4.0                # current default
+Fixed:     gate_threshold = 0.5            # current default
+Fixed:     seed = 0                        # single seed for Phase 4 screening
+Fixed:     epochs = 30                     # preliminary screen (may extend in Phase 8)
+= 3 × 3 × 2 = 18 runs
+```
+
+**Run ID convention:**
+```
+p4_H064_tf1p0_lr1e-3_s0
+p4_H064_tf0p2_lr1e-3_s0
+p4_H064_tf0p0_lr1e-3_s0
+p4_H064_tf1p0_lr5e-4_s0
+...
+p4_H256_tf0p0_lr5e-4_s0
+```
+
+**Selection criterion:** FULL route AR metrics only. WM/LTM route metrics = diagnostic only.
+
+**Primary selection metric:** `val_exact_match_ar` and `wfe_pseudoword_edit_distance_ar`.
+
+**Boundary extension rule:** If any dimension's winner is at a boundary (e.g., H=256 is best, H=64 is worst), extend the grid in the winning direction before concluding Phase 4.
+
+### Phase 5 confirmation
+
+Top 2 Phase 4 configs × seeds {0, 1, 2} = 6 runs.
+
+Note: different seeds = different train/val splits (data seed = train seed). Results should be reported as "mean ± SE across seeds with different data partitions," not "same data, different initialization."
+
+---
+
 ## 4. Stage 0 - sanity checks before gridsearch
 
 No training. Run these on the current checkpoint and write a baseline summary.

@@ -63,6 +63,64 @@ SWP/Dager found teacher forcing detrimental (found `tf_ratio=0.0` best). Testing
 
 ---
 
+## 2b. CRITICAL: Noise semantics with TF < 1 (Phase 1 audit finding, 2026-07-15)
+
+> **This is a blocking issue for Phase 6 (noise grid) if TF<1 is selected.**
+
+### What the current code does (TF<1 path)
+
+In `train.py:_forward_scheduled_sampling` (lines 46-109), the training loop calls the full model at **each of the S decoder steps**:
+
+```python
+# train.py:78
+out = model(enc_in, enc_mask, current_dec)   # full model re-run at each step
+```
+
+This means:
+- WM encoder (`models/wm_route.py:47-54`) is called S times per batch.
+- Each call generates a **new independent noise draw**: `h = h + torch.randn_like(h) * sigma`
+- Result: **S different noise vectors** are applied to the WM hidden state across the S decode steps for the same stimulus.
+
+**Intended semantics:** ONE noise draw per stimulus per training step (one corruption of the phonological buffer, consistent throughout the decoding of that item).
+
+**Actual semantics with TF<1 + sigma>0:** S independent corruptions — the WM state is re-corrupted at each decoder step with a different noise sample.
+
+This was documented in the code at the time of writing (`train.py:60-63`):
+> "WM interference noise (if configured) is applied independently at each encoder call, producing different noise per step. This differs from the single-noise draw in the vectorised path. Document in gridsearch logs."
+
+### Impact
+
+| Configuration | Noise semantics | Correct? |
+|---|---|---|
+| TF=1.0, sigma>0 | 1 draw per batch item (vectorized path) | **YES** — intended |
+| TF<1, sigma=0.0 | No noise | **YES** — no issue |
+| TF<1, sigma>0 | S draws per batch item (step-by-step) | **NO** — bug |
+
+### Phase impact
+
+- **Phase 4 (H×TF×LR grid, sigma=0):** NOT AFFECTED. Phase 4 runs with `sigma_wm=0.0` — no noise drawn in any path.
+- **Phase 6 (noise grid):** AFFECTED IF TF<1 IS SELECTED. If the Phase 5 winner has `TF<1`, the Phase 6 noise grid MUST NOT launch until the encode-once fix is applied.
+- **Phase 5 (multi-seed):** NOT AFFECTED (same as Phase 4, sigma=0).
+
+### Required fix: encode-once in TF<1 path
+
+Refactor `train.py:_forward_scheduled_sampling` to:
+1. Call WM encoder ONCE before the decode loop → get `h_WM` with ONE noise draw.
+2. Call LTM encoder ONCE before the decode loop → get `s_hat` (no noise).
+3. In the decode loop, pass pre-encoded states into the decoder directly, skipping re-encoding.
+
+This requires separating the WM and LTM encode steps from the decode steps in the model forward interface. The fix is non-trivial (architecture-level refactor of how `model.forward()` is called) but must be done before Phase 6.
+
+### Decision rule
+
+```
+After Phase 5: inspect best TF value.
+If best TF = 1.0: encode-once fix NOT needed before Phase 6.
+If best TF < 1.0: encode-once fix REQUIRED before Phase 6.
+```
+
+---
+
 ## 3. WM noise during training
 
 ### Noise-off training

@@ -1,8 +1,9 @@
-# Status: DRAFT — proposal only. Do not launch training from this file before repo inspection and supervisor validation.
-# Values marked TO_INSPECT must be resolved before use.
-# Values marked REQUIRES_CODE_SUPPORT cannot be used without adding CLI flags or code changes.
+# Status: UPDATED after Phase 1 exact code audit (2026-07-15).
+# Phase 2 patch required before Phase 4 runs can be launched.
+# Values marked PENDING_IMPLEMENTATION require Phase 2 code changes.
+# Values confirmed in code are marked CONFIRMED.
 
-status: draft_proposal_only
+status: phase1_audit_complete_phase2_pending
 
 # Proposed Lichtheim3 gridsearch candidates.
 # Status: proposal to validate with Yair, not definitive truth.
@@ -24,14 +25,68 @@ meta:
 current_attested_architecture:
   phon_embed_dim: 64
   wm_hidden_dim: 128
-  ltm_encoder_hidden_dim_per_direction: 256
+  ltm_encoder_type: biGRU  # CURRENT; proposed: uniGRU after Phase 2 patch
+  ltm_encoder_hidden_dim_per_direction: 256  # biGRU: 256/dir → 512 out; uniGRU: 256 out
   ltm_decoder_hidden_dim: 256
   semantic_dim: 300
-  premotor_dim: 128
-  gate_alpha_default: 4.0
-  wm_interference_noise_default: 0.10
+  premotor_dim: 128  # HARDCODED default arg in DualRouteModel.__init__; NOT in config
+  gate_alpha_default: 4.0  # GatingConfig.alpha; CLI: --gate_alpha CONFIRMED
+  gate_threshold: 0.5  # HARD-CODED Python literal in gating.py:45; NOT in GatingConfig — PENDING_IMPLEMENTATION
+  wm_interference_noise_default: 0.10  # WMConfig.interference_noise; CLI: --interference_noise CONFIRMED
+  ventral_noise_ltm: 0.0  # NOT IMPLEMENTED anywhere — PENDING_IMPLEMENTATION
   gate_is_learned: false
-  ltm_bigru_packing: false  # known artifact; do not patch current checkpoint silently
+  ltm_bigru_packing: false  # known artifact; replaced by uniGRU proposal (not packing fix)
+  ltm_encoder_uses_last_hidden: false  # CURRENT uses masked mean pool; PROPOSED: last hidden — PENDING_IMPLEMENTATION
+
+phase2_patch_required:
+  # These must be implemented before Phase 4 runs can launch
+  - name: unigru_last_hidden_ltm
+    status: PENDING_IMPLEMENTATION
+    files: [models/ltm_route.py, config.py]
+    description: "Add use_last_hidden=True option to LTMConfig; replace masked mean pool with h[-1] in encode(); change to_semantic[0] input dim from 2*H to H"
+    blocks: phase4
+
+  - name: hidden_size_cli_flag
+    status: PENDING_IMPLEMENTATION
+    files: [scripts/train_checkpoint.py, config.py]
+    description: "Add --hidden_size INT that sets WMConfig.hidden, LTMConfig.enc_hidden, LTMConfig.dec_hidden uniformly"
+    blocks: phase4
+
+  - name: gate_threshold_config
+    status: PENDING_IMPLEMENTATION
+    files: [config.py, models/gating.py, scripts/train_checkpoint.py]
+    description: "Add gate_threshold: float = 0.5 to GatingConfig; replace literal 0.5 in gating.py:45 with self.cfg.gate_threshold; add --gate_threshold CLI"
+    blocks: phase7_only
+
+  - name: ventral_noise_ltm
+    status: PENDING_IMPLEMENTATION
+    files: [config.py, models/ltm_route.py, scripts/train_checkpoint.py]
+    description: "Add LTMConfig.ventral_noise: float = 0.0; inject noise after pooled in encode() analogous to WM noise; add --ventral_noise CLI"
+    blocks: phase6_only
+
+  - name: encode_once_tf_less_than_1
+    status: PENDING_IMPLEMENTATION
+    files: [train.py]
+    description: "In _forward_scheduled_sampling: run both encoders ONCE before decode loop; pass h_WM and s_hat into steps without re-encoding. Required to fix noise semantics with TF<1 (currently S independent noise draws instead of 1)"
+    blocks: phase6_with_tf_less_than_1
+
+  - name: mid_training_checkpoint
+    status: PENDING_IMPLEMENTATION
+    files: [scripts/train_checkpoint.py]
+    description: "Save checkpoint every N epochs to survive Jean-Zay job interruption"
+    blocks: phase3_jz
+
+  - name: dataloader_num_workers
+    status: PENDING_IMPLEMENTATION
+    files: [data/dataset.py]
+    description: "Add num_workers=4 to make_loader() for GPU server performance"
+    blocks: phase3_jz
+
+  - name: aggregate_gridsearch_script
+    status: PENDING_IMPLEMENTATION
+    files: [scripts/aggregate_gridsearch.py (new)]
+    description: "Script to read all gridsearch metrics.json files, rank by FULL-route AR metrics only"
+    blocks: phase4_analysis
 
 confirmed_by_inspection:
   # Source: config.py, train.py, train_checkpoint.py, losses.py, data/dataset.py
@@ -106,88 +161,114 @@ stage0_sanity_checks:
     - length_effect_analysis
     - check_regime_c_ar_plus_wm_noise_status
 
-stageA_optimization_decoding:
-  # UPDATED AFTER CODE PATCH (2026-07)
-  # teacher_forcing_ratio, --interference_noise, --gate_alpha are now CLI-exposed.
-  # AR eval available via --decode autoregressive in evaluate_train_lexicon_ceiling.py.
-  note: "All Stage A dimensions are now CLI-runnable. Coordinate with Yair on which TF ratios to test before launching."
-  fixed:
-    batch_size: 64  # confirmed default, CLI: --batch_size
-    dropout: NOT_IMPLEMENTED  # cannot vary
-    gate_alpha: 4.0  # keep fixed in Stage A; use --gate_alpha in Stage C
-    semantic_alignment_loss_weight: 1.0  # confirmed default; not CLI-exposed
-  candidates:
-    learning_rate:
-      - 0.001  # current default
-      - 0.0005
-    teacher_forcing_ratio:
-      - 1.0   # full TF = historical behavior; ceiling run
-      - 0.0   # fully AR = SWP/Dager-aligned
-      # - 0.2   # optional intermediate; ~5× slower than TF; ask Yair first
-    train_wm_noise_sigma:
-      - 0.10  # current default; keep fixed in Stage A; vary in Stage B
-      # - 0.0   # Stage B only
-  stage_a_minimal_grid:
-    # Start here: 2 LR × 2 TF = 4 runs (1 seed each)
-    learning_rate: [0.001, 0.0005]
-    teacher_forcing_ratio: [1.0, 0.0]
-    noise: 0.10  # fixed
-    gate_alpha: 4.0  # fixed
-  seeds_initial:
-    - 0
-  confirm_top_n: 2
-  extra_seeds_for_top_configs:
-    - 1
-    - 2
+phase4_main_grid:
+  # H × TF × LR = 18 runs
+  # Requires Phase 2 patch to be complete (uniGRU + --hidden_size flag)
+  status: PENDING_PHASE2_PATCH
 
-stageB_robustness_length:
-  use_top_configs_from_stageA: 1-2
   fixed:
-    learning_rate: selected_from_stageA
-    teacher_forcing_ratio: selected_from_stageA
+    seed: 0
+    epochs: 30  # screening run; extend in Phase 8
+    sigma_wm: 0.0  # noise off for Phase 4
+    sigma_ltm: 0.0  # noise off for Phase 4
     gate_alpha: 4.0
-    semantic_alignment_loss_weight: current_value_after_inspection
-  candidates:
-    train_wm_noise_sigma:
-      - 0.0
-      - 0.10
-    dropout_conditional_if_existing:
-      - 0.0
-      - 0.2
-  note: Do not cross all noise and dropout values unless Stage A is stable and Yair approves.
+    gate_threshold: 0.5
+    batch_size: 64
+    dropout: NOT_IMPLEMENTED
 
-stageC_gate_semantic_balance:
-  use_top_config_from_stageB: 1
-  gate_alpha_candidates:
-    - 2.0
-    - 4.0
-    - 8.0
-  semantic_alignment_loss_weight_candidates_after_inspection:
-    - current_value
-    - half_current_value
-    - double_current_value
-  note: Only run semantic loss sweep if LTM/gate diagnostics justify it.
+  candidates:
+    hidden_size:  # unified H for WM and LTM (requires Phase 2 uniGRU patch)
+      - 64
+      - 128
+      - 256
+    teacher_forcing_ratio:
+      - 1.0   # full TF = historical baseline
+      - 0.2   # scheduled sampling; ~5× slower
+      - 0.0   # fully AR = SWP/Dager-aligned; ~10× slower
+    learning_rate:
+      - 0.001
+      - 0.0005
+
+  total_runs: 18  # 3 × 3 × 2
+
+  run_id_convention: "p4_H{hidden_size:03d}_tf{tf_ratio}_lr{lr}_s{seed}"
+  example_run_ids:
+    - p4_H064_tf1p0_lr1e-3_s0
+    - p4_H128_tf0p2_lr5e-4_s0
+    - p4_H256_tf0p0_lr1e-3_s0
+
+  boundary_extension_rule: |
+    If Phase 4 winner is at a boundary of any dimension, extend before concluding:
+    - H=256 wins: add H=512 run before declaring winner
+    - H=64 wins: add H=32 run (but note phon_embed_dim=64; H<64 may be problematic)
+    - TF=0.0 wins: no extension needed (0.0 is theoretical minimum)
+    - TF=1.0 wins: consider brief check at TF=0.5 if TF=0.2 was close
+    - LR=5e-4 wins: add LR=2e-4 run
+    - LR=1e-3 wins: add LR=2e-3 run (with caution — instability risk)
+
+phase5_multi_seed:
+  # Top 2 Phase 4 configs × 3 seeds = 6 runs
+  status: PENDING_PHASE4
+  seeds: [0, 1, 2]
+  note: "Different seeds = different train/val splits. Report as 'mean ± SE across seeds with different data partitions.'"
+  top_n_from_phase4: 2
+  total_runs: 6
+
+phase6_noise_grid:
+  # WM × LTM noise grid; requires encode-once fix if best TF<1
+  status: PENDING_PHASE5
+  blocking_condition: "encode-once fix in train.py if TF<1 was selected in Phase 4"
+  candidates:
+    sigma_wm: [0.0, 0.05, 0.10]
+    sigma_ltm: [0.0, 0.05]
+  total_runs: 6  # 3 × 2; fixed at best H/TF/LR from Phase 5
+
+phase7_gate_grid:
+  # alpha × threshold grid; requires confidence distribution logged from Phase 4-5
+  status: PENDING_PHASE6
+  blocking_condition: "confidence distribution for real/pseudowords must be logged and inspected before interpreting gate grid"
+  candidates:
+    gate_alpha: [2.0, 4.0, 8.0]
+    gate_threshold: [0.3, 0.5, 0.7]
+  total_runs: 9  # 3 × 3; requires gate_threshold in GatingConfig (Phase 2 patch)
 
 selection_metrics:
   primary:
-    - train_exact_match_ar
-    - val_exact_match_ar
-    - val_edit_distance_ar
-    - val_normalized_edit_distance_ar
-    - wfe_real_seen_exact_match_ar
-    - wfe_pseudoword_exact_match_ar
-    - wfe_pseudoword_edit_distance_ar
-    - wfe_pseudoword_normalized_edit_distance_ar
-    - length_effect_slope_pseudoword_edit_ar
-    - long_short_contrast_pseudoword_edit_ar
+    # FULL route only — WM/LTM routes are diagnostic only for model selection
+    - train_exact_match_ar_full
+    - val_exact_match_ar_full
+    - val_edit_distance_ar_full
+    - val_normalized_edit_distance_ar_full
+    - wfe_real_seen_exact_match_ar_full
+    - wfe_pseudoword_exact_match_ar_full
+    - wfe_pseudoword_edit_distance_ar_full
+    - wfe_pseudoword_normalized_edit_distance_ar_full
+    - length_effect_slope_pseudoword_edit_ar_full
+    - long_short_contrast_pseudoword_edit_ar_full
   diagnostics:
-    - teacher_forced_ceiling
-    - route_full_wm_ltm_dissociation
-    - gate_distributions
-    - serial_position_curve
-    - error_type_counts
-    - wm_noise_sweep_if_regime_c_available
+    # NOT used for model selection; used for understanding only
+    - teacher_forced_ceiling_all_routes
+    - route_wm_exact_ar
+    - route_ltm_exact_ar
+    - gate_confidence_distribution_real_vs_pseudowords
+    - serial_position_curve_full_ar
+    - error_type_counts_full_ar
+    - wm_noise_sweep_full_ar
     - ssp_ar_secondary
+
+  selection_policy: |
+    FULL-ONLY SELECTION RULE:
+    WM and LTM route-isolated metrics are diagnostic information.
+    They must NOT be used to select or reject training configurations.
+    Rationale: the cognitive model's output is the FULL/gated route.
+    WM-only and LTM-only reflect incomplete processing and are not
+    interpretable as behavioral predictions.
+
+# Legacy stage names (superseded by Phase 0-12 roadmap)
+stageA_legacy_reference:
+  note: "Superseded by Phase 4. Retained for reference only."
+  was: "2 LR × 3 TF × 1 seed = 6 runs; noise fixed at 0.10"
+  replaced_by: "Phase 4: H × TF × LR = 18 runs; noise fixed at 0.0; FULL-only selection"
 
 failure_criteria:
   - nondeterministic_no_noise_eval

@@ -227,63 +227,102 @@ This is a passive benefit of mixing — not active compensation.
 
 ---
 
-## 3. Proposed revised architecture
+## 3. Proposed revised architecture (Post-Yair-meeting, 2026-07-15)
 
-### Motivation
+> **NONE of the changes in this section are implemented.** The current checkpoint uses the equations in Section 1. This section documents proposals from the Yair meeting on 2026-07-15 for Phase 2 implementation and Phase 4+ gridsearch.
 
-A more principled gate should reflect both lexical evidence (from LTM) and
-phonological buffer reliability (from WM), and potentially word length.
+### 3.1 LTM encoder: uniGRU + last hidden (Yair proposal)
 
-### Candidate gate equation
+**Current:** biGRU + masked mean pooling (described in §1, confirmed in `models/ltm_route.py:42-66`).
 
-Let:
-
+**Proposed:**
 ```
-c_LTM          = max cosine sim to semantic bank    (current confidence signal)
-r_WM,t         = WM reliability estimate at step t,
-                 e.g. margin of WM logits: max_logit − 2nd_max_logit,
-                 or 1 − H(softmax(z_WM,t))  (entropy-based)
-length(x)      = phoneme sequence length of input x
-σ_eval         = applied interference noise level (0 at test if no noise)
-```
+PROPOSED: LTM encoder = 1-layer unidirectional GRU (bidirectional=False)
+          Use last hidden state h[-1] instead of masked mean pool
 
-Proposed gate:
+out_LTM, h_LTM = GRU_enc_LTM( e_{1:T} )    # h_LTM: (1, B, H_LTM_enc)
+pooled          = h_LTM.squeeze(0)            # (B, H_LTM_enc)    ← replaces masked mean pool
 
-```
-g_t = sigmoid(
-        β₀
-      + β_L  · c_LTM
-      − β_W  · r_WM,t
-      + β_len · length(x)
-      + β_σ  · σ_eval
-      )
+s_hat = Linear_2( GELU( Linear_1( pooled ) ) )
+      ∈ R^{B × D}
 ```
 
-**Sign conventions (conceptual):**
-- `+β_L · c_LTM`: higher lexical confidence → more LTM
-- `−β_W · r_WM,t`: higher WM reliability → less LTM (WM can handle it)
-- `+β_len · length(x)`: longer sequences → more LTM reliance (or the reverse if LTM is length-sensitive — the sign should be validated empirically)
-- `+β_σ · σ_eval`: higher applied noise → more LTM
-
-**Output combination** (unchanged):
-
+With unified `H = H_WM = H_LTM_enc = H_LTM_dec`, both routes become symmetric:
 ```
-z_t = (1 − g_t) · z_WM,t + g_t · z_LTM,t
-p(y_t | y<t, x) = softmax( W_motor · z_t )
+PROPOSED: H ∈ {64, 128, 256}    (new gridsearch dimension)
+          WM: GRU(E, H), last hidden → (1, B, H)
+          LTM: GRU(E, H), last hidden → (1, B, H)
 ```
 
-### Implementation notes
+**Motivation (Yair):** Simpler, more symmetric with WM. Pack_padded_sequence and bidirectionality of LTM were not a design choice — they were defaults. UniGRU + last hidden matches WM's structure.
 
-- This is a **proposal**, not current code.
-- Signs of `β` terms are conceptual defaults and must be validated.
-- If `r_WM,t` is position-level (entropy at step t), the gate becomes
-  **position-level** — g varies across the decode sequence.
-  The current gate is item-level (g constant over t).
-- The β parameters could be learnable scalars (cheap) or a small MLP (more expressive).
-- **Would require retraining** — the current checkpoint has a parameter-free gate;
-  adding trainable β changes the training objective.
+**Files to modify:** `models/ltm_route.py:42-66`, `config.py:LTMConfig`, `scripts/train_checkpoint.py` (add `--hidden_size` or `--ltm_enc_hidden`).
 
-### Diagram addition (Mermaid)
+**Weight changes:** `to_semantic[0]` input dim changes from `2*H_LTM_enc` to `H_LTM_enc`; biGRU backward weights disappear. **Not backward-compatible with current checkpoint.**
+
+### 3.2 LTM ventral noise (Yair proposal)
+
+**Current:** No noise anywhere in LTM route (confirmed absent in `models/ltm_route.py`).
+
+**Proposed:**
+```
+PROPOSED: after computing pooled (uniGRU last hidden), before to_semantic:
+    if (model.training OR collect_ltm) AND σ_LTM > 0:
+        ε_LTM ~ N(0, σ_LTM² I),    ε_LTM ∈ R^{H_LTM_enc}
+        pooled_noisy = pooled + ε_LTM
+    else:
+        pooled_noisy = pooled                 (deterministic)
+
+s_hat = to_semantic( pooled_noisy )
+```
+
+**New config field needed:** `LTMConfig.ventral_noise: float = 0.0`
+
+**Motivation (Yair):** Symmetric with WM noise. Allows Phase 6 WM×LTM noise grid.
+
+### 3.3 Gate with configurable threshold tau (Yair proposal)
+
+**CURRENT (hard-coded literal):**
+```
+CURRENT: g = sigmoid( α · (c_LTM − 0.5) )    # 0.5 is a Python literal in gating.py:45
+```
+
+**PROPOSED:**
+```
+PROPOSED: g = sigmoid( α · (c_LTM − τ) )      # τ is a configurable hyperparameter
+
+where:
+    τ ∈ {0.3, 0.5, 0.7}   (Phase 7 gridsearch dimension)
+    α ∈ {2.0, 4.0, 8.0}   (Phase 7 gridsearch dimension)
+```
+
+**Motivation (Yair):** `0.5` is not principled — it was a convenience value. `τ` controls the crossover point between LTM-dominant and WM-dominant routing and should be a hyperparameter.
+
+**Files to modify:** `config.py:GatingConfig` (add `gate_threshold: float = 0.5`), `models/gating.py:45` (replace `0.5` with `self.cfg.gate_threshold`), `scripts/train_checkpoint.py` (add `--gate_threshold`).
+
+**Status: NOT BLOCKING for Phase 4** (Phase 4 runs at τ=0.5, the current hard-coded default).
+
+### 3.4 L2 normalization before cosine similarity — redundancy note
+
+**Current code (`ltm_route.py:91`):** `q = F.normalize(s_hat, dim=-1)` — creates tensor `q`, does NOT modify `s_hat`.
+
+**Yair observation:** `F.cosine_similarity` normalizes internally; the explicit L2 norm before it is redundant.
+
+**Decision: do not remove.** The code is correct (harmless), `s_hat` is unmodified and used downstream (`decode()`, `alignment_loss()`), and removing the explicit norm would require verifying no downstream consumer expects it. Mathematical redundancy does not mean a bug.
+
+### 3.5 Gate level: word-level confirmed (current), phoneme-level is a future proposal
+
+**Confirmed from code** (`models/gating.py:43-46`):
+```
+CURRENT: conf.view(B, 1, 1) → expand(B, S, 1) → constant g across all S decoder steps
+         Gate is WORD-LEVEL (item-level scalar).
+```
+
+A **phoneme-level gate** (g varying per timestep t) would require a fundamentally different architecture. Not proposed for Phase 4.
+
+### 3.6 Future architecture directions (not in Phase 2-4 scope)
+
+The original proposed learnable multi-input gate from the earlier document (β₀ + β_L·c_LTM − β_W·r_WM,t + β_len·len) is preserved here for reference but is deferred to Phase 12:
 
 ```mermaid
 flowchart TD
@@ -293,7 +332,7 @@ flowchart TD
     CONF["c_LTM = max cosine sim"]
     RELIABILITY["r_WM,t = WM reliability\n(margin or entropy of WM logits)"]
     LEN["length(x)"]
-    GATE_PROP["Proposed gate\ng_t = sigmoid(β₀ + β_L·c_LTM − β_W·r_WM,t + β_len·len)"]
+    GATE_PROP["Proposed learnable gate (Phase 12)\ng_t = sigmoid(β₀ + β_L·c_LTM − β_W·r_WM,t + β_len·len)"]
     MOTOR["Motor Cortex (shared)\n→ logits"]
     OUT["p(y_t | y<t, x)"]
 
@@ -391,14 +430,22 @@ LTM route should be treated as **diagnostic**, not as a faithful Ueno-style test
 
 ---
 
-## 7. Uncertainties
+## 7. Confirmed facts and resolved uncertainties (Phase 1 audit, 2026-07-15)
 
-- **Premotor dim = 128** (`premotor_dim` default in `DualRouteModel.__init__`) — confirmed from the code; not stored in config.
-- **LTM MLP exact shape:** `Linear(512, 256) → GELU → Linear(256, 300)` — confirmed from `to_semantic` in `ltm_route.py:45–48`.
-- **Gate noise invariance** is an analytical consequence of the code, verified experimentally in the audit.  No further uncertainty.
-- **β terms in proposed gate** are conceptual defaults.  The sign of `β_len` is genuinely uncertain (current data show LTM is more length-sensitive for pseudowords; it is unclear whether giving the gate length information would help or hurt and in which direction).
-- **The `usage_prior` field** in `GatingConfig` (default 0.5) is mentioned in the config as a regularizer prior but its effect on the current checkpoint is not audited here — it acts during training, not inference.
+| Item | Status | Source |
+|---|---|---|
+| `premotor_dim = 128` | **Confirmed** — hardcoded default in `DualRouteModel.__init__`, NOT in config | `models/dual_route.py:34` |
+| LTM MLP shape: `Linear(512,256)→GELU→Linear(256,300)` | **Confirmed** | `ltm_route.py:45-48` |
+| Gate noise invariance | **Confirmed analytically** — `g` depends only on `c_LTM`, not on WM route | `gating.py:43-46` |
+| `0.5` in gate is a Python literal, not configurable | **Confirmed** — no `gate_threshold` field in `GatingConfig` | `gating.py:45`, `config.py` |
+| Gate is word-level (constant across all decoder steps) | **Confirmed** — `conf.view(B,1,1).expand(B,S,1)` | `gating.py:43-46` |
+| L2 norm before cosine sim is redundant but harmless | **Confirmed** — `q = F.normalize(s_hat)` creates new tensor; `s_hat` unmodified | `ltm_route.py:91` |
+| LTM encoder hidden `_` (backward h) is discarded in encode() | **Confirmed** — `out, _ = self.encoder(emb)` at line 62 | `ltm_route.py:62` |
+| WM noise drawn S times per step with TF<1 | **Confirmed** — BLOCKING issue for Phase 6 with TF<1 | `train.py:60-63,78` |
+| `optimizer_state_dict=None` in fresh mode | **Confirmed** — `build_and_train()` does not expose optimizer | `scripts/train_checkpoint.py:158,314` |
+| β terms in learnable gate proposal | **Unresolved** — conceptual defaults; signs unvalidated | (Phase 12 scope) |
+| `usage_prior=0.5` in GatingConfig | Acts during training (gate regularizer loss), not inference | `config.py:GatingConfig`, `losses.py:53-55` |
 
 ---
 
-*Document created from code inspection of the `lichtheim3_30k_glove_e60_to_e120_lowlr.pt` checkpoint.  Proposed equations are not implemented.*
+*Document last updated 2026-07-15 (Phase 1 audit). Section 1 = current implementation confirmed from code. Section 3 = proposed changes, none implemented. Source of truth for current implementation: code files listed in §5.*

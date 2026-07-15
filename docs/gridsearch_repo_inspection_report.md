@@ -439,3 +439,158 @@ python scripts/evaluate_train_lexicon_ceiling.py \
 - `--semantic_align_weight` still config-only; not CLI-exposed.
 - Dropout still not implemented in any model module.
 - `evaluate_train_lexicon_ceiling.py` AR mode does not compute `phoneme_acc` (only exact match, edit_dist, norm_edit_dist).
+
+---
+
+## 15. Post-Yair-meeting Phase 1 exact code audit (2026-07-15)
+
+> Source of truth: static inspection of `models/ltm_route.py`, `models/wm_route.py`, `models/gating.py`, `models/dual_route.py`, `models/motor.py`, `train.py`, `scripts/train_checkpoint.py`, `evaluate/hooks.py`, `losses.py`, `data/dataset.py`, `config.py`.
+> No training run. No checkpoint loaded. No shell command executed.
+
+### 15.1 Master audit table
+
+| # | Question | Current implementation | Exact code location | Risk / issue | Phase 2 action | Status |
+|---|---|---|---|---|---|---|
+| Q1 | LTM encoder type | biGRU, `bidirectional=True`, enc_hidden=256/dir → 512-d output | `models/ltm_route.py:42-44` | Backward pass uses padding position, not last real token | Add `bidirectional_encoder=False` option + use last hidden | CONFIRMED |
+| Q1 | LTM masked mean pooling formula | `pooled = (out * m).sum(1) / m.sum(1).clamp(min=1)` where `m = enc_mask.unsqueeze(-1).float()` | `models/ltm_route.py:64-65` | With uniGRU + last hidden, this disappears | Replace with `h[-1]` (last hidden squeeze) | CONFIRMED |
+| Q1 | LTM to_semantic MLP | `Linear(512→256) → GELU → Linear(256→300)` | `models/ltm_route.py:45-48` | With uniGRU: `Linear(256→256)` first layer | First layer input dim changes from 512 to 256 | CONFIRMED |
+| Q1 | LTM last hidden available? | YES: `out, _ = self.encoder(emb)` — `_` is `(2,B,256)` but discarded | `models/ltm_route.py:62` | Last hidden already computed, just discarded | Capture `h` instead of `_`, use `h[-1]` | CONFIRMED |
+| Q2 | WM encoder type | uniGRU, `bidirectional` absent → False, hidden=128 | `models/wm_route.py:39` | Asymmetric vs LTM biGRU | uniGRU patch on LTM side makes them symmetric | CONFIRMED |
+| Q2 | WM uses pack_padded_sequence | YES: `lengths = enc_mask.sum(1).clamp(min=1).cpu(); packed = pack_padded_sequence(emb, lengths, batch_first=True, enforce_sorted=False)` | `models/wm_route.py:46-50` | LTM does not → LTM backward pass shifts with batch padding | Do not add pack to LTM yet (artifact stays in checkpoint) | CONFIRMED |
+| Q2 | WM uses last hidden | YES: `_, h = self.encoder(packed)` → `h: (1, B, 128)` directly initialises decoder | `models/wm_route.py:50-57` | WM is already last-hidden; LTM is pooled-mean | uniGRU LTM patch makes both last-hidden | CONFIRMED |
+| Q3 | WM noise tensor and shape | Added to `h: (1, B, 128)` → `h = h + torch.randn_like(h) * cfg.interference_noise` | `models/wm_route.py:53-54` | One draw per `forward()` call, but with TF<1: S draws per training step | BLOCKING for noise grid with TF<1 | CONFIRMED |
+| Q3 | WM noise active condition | `(self.training OR collect) AND sigma > 0` | `models/wm_route.py:53` | Validation always uses `model.eval()` → noise off unless collect=True | Well-defined; document per eval call | CONFIRMED |
+| Q3 | WM noise during validation | OFF: `model.eval()` and collect=False | `train.py:114`, `models/wm_route.py:53` | None | — | CONFIRMED |
+| Q4 | LTM noise exists? | NO — no noise anywhere in `models/ltm_route.py` | `models/ltm_route.py` entire file | No LTM noise mechanism | Add after `pooled` before `to_semantic` in `encode()` | CONFIRMED ABSENT |
+| Q4 | Best LTM noise location | After `pooled` (`(B,512)` with biGRU, `(B,256)` with uniGRU), before `to_semantic` | `models/ltm_route.py:65-66` | Analogous to WM: noise on encoder state before projection | New param `LTMConfig.ventral_noise: float = 0.0` | PROPOSED |
+| Q5 | L2 norm in set_semantic_bank | `bank = F.normalize(bank, dim=-1)` — normalizes bank once at setup | `models/ltm_route.py:79` | Mathematically redundant with cosine_similarity, but numerically clean and done once | Do not remove; harmless | CONFIRMED REDUNDANT BUT HARMLESS |
+| Q5 | L2 norm in lexical_field | `q = F.normalize(s_hat, dim=-1)` — creates new tensor `q`, does NOT modify `s_hat` | `models/ltm_route.py:91` | Redundant with cosine similarity; BUT `s_hat` itself is unmodified and used elsewhere in `decode()` and `alignment_loss()` | Do not remove; `s_hat` unaffected | CONFIRMED REDUNDANT BUT HARMLESS |
+| Q5 | s_hat used after normalization | `s_hat` is passed to `decode()` (via `sem_to_h0`) and to `alignment_loss()` (via `F.cosine_similarity` + `F.mse_loss`). `q` (normalized) is local to `lexical_field()` | `models/ltm_route.py:70-75`, `losses.py:48-50` | Removing normalization would NOT affect s_hat usage | No action needed | CONFIRMED |
+| Q6 | Gate equation exact | `g = torch.sigmoid(self.cfg.alpha * (conf - 0.5))` | `models/gating.py:45` | `0.5` is a **hard-coded Python literal**, not a config field | Add `gate_threshold: float = 0.5` to `GatingConfig`; change literal to `self.cfg.gate_threshold` | CONFIRMED — 0.5 IS HARD-CODED |
+| Q6 | Gate alpha configurable | YES: `self.cfg.alpha = GatingConfig.alpha = 4.0`; CLI: `--gate_alpha` | `config.py:58-63`, `scripts/train_checkpoint.py:108-112` | Already CLI-exposed | — | CONFIRMED |
+| Q6 | Files to modify for tau | `config.py:GatingConfig`, `models/gating.py:45`, `scripts/train_checkpoint.py` (add `--gate_threshold`) | Listed | Trivial 3-file patch | Phase 2 action | READY TO IMPLEMENT |
+| Q7 | Gate shape and level | `conf: (B,)` → `view(B,1,1)` → `g: (B,1,1)` → `expand(B,S,1)` | `models/gating.py:43-46` | **g is computed once per item** and broadcast to all S decoder steps | CURRENT GATE = **WORD-LEVEL (item-level scalar, constant across all t)** | CONFIRMED |
+| Q7 | Gate blend operation | `premotor = g * ltm + (1.0 - g) * wm` where shapes are `(B,S,1)*(B,S,P) + (B,S,1)*(B,S,P)` = `(B,S,P)` | `models/gating.py:51` | g does NOT vary with timestep | Word-level gate confirmed | CONFIRMED |
+| Q8 | TF=1 path | Single `model(enc_in, enc_mask, dec_in)` call; vectorized; enc + dec run once | `train.py:126` | Fast, correct | — | CONFIRMED |
+| Q8 | TF<1 path — re-encoding | At EACH of S decoder steps: `model(enc_in, enc_mask, current_dec)` — FULL model re-run including BOTH encoders | `train.py:78` | LTM encoder called S times: wasteful (identical output, no noise). WM encoder called S times: **different noise draw each time** | NOISE SEMANTICS BUG: S noise draws instead of 1. Encode-once fix needed | CONFIRMED — CRITICAL FINDING |
+| Q8 | s_hat in TF<1 path | Taken from step 0 only: `if s_hat_0 is None: s_hat_0 = out["s_hat"]` | `train.py:86-87` | s_hat for alignment loss = step 0 output (correct, since LTM encoder is deterministic) | — | CONFIRMED |
+| Q9 | Noise with TF<1 — draws | With TF<1 and sigma>0: S independent noise vectors per item per training step. Comment in code: "WM interference noise (if configured) is applied independently at each encoder call, producing different noise per step. This differs from the single-noise draw in the vectorised path." | `train.py:60-63` | SEMANTICALLY WRONG: intended = one corruption per stimulus. BLOCKING for noise grid with TF<1 | Encode-once fix before noise×TF grid | CONFIRMED — BLOCKING for Phase 6 with TF<1 |
+| Q10 | phon_embed_dim | 64 — `LTMConfig.phon_embed_dim`; shared by both routes via `self.phon_embed` | `config.py:47`, `models/dual_route.py:41` | Used by BOTH routes; shared embedding | Single param to vary both | CONFIRMED |
+| Q10 | WM hidden dims | Encoder: `WMConfig.hidden=128`; Decoder: same `cfg.hidden` → WM enc_hidden = WM dec_hidden always | `config.py:39`, `models/wm_route.py:39-40` | Constraint: WM enc and dec must be same size | `--wm_hidden INT` → sets both | CONFIRMED |
+| Q10 | LTM enc/dec hidden dims | `LTMConfig.enc_hidden=256`; `LTMConfig.dec_hidden=256`; separate configs | `config.py:48-50` | enc and dec can differ; both CLI-needed | `--ltm_enc_hidden`; `--ltm_dec_hidden` (or unified `--hidden_size`) | CONFIRMED |
+| Q10 | premotor_dim | **128 — hardcoded default arg in `DualRouteModel.__init__`, NOT in any config dataclass** | `models/dual_route.py:34` | Not configurable via CLI or config; all 3 `to_premotor` / `dec_to_premotor` / motor input depend on it | Add `premotor_dim` to `Config` or keep fixed at 128 for Phase 4 | CONFIRMED — NOT IN CONFIG |
+| Q10 | H_recurrent unified param feasibility | After uniGRU patch: setting `WMConfig.hidden = LTMConfig.enc_hidden = LTMConfig.dec_hidden = H` gives symmetric routes. `to_semantic[0]: Linear(H,H)`, `sem_to_h0: Linear(300,H)`. Clean. | Multiple files | Only `phon_embed_dim` and `premotor_dim` remain separate | `--hidden_size INT` CLI flag that sets all three | FEASIBLE AND CLEAN |
+| Q11 | Metrics exposed by evaluators | `metrics["results"][split][route]`: `exact_match`, `edit_dist`, `norm_edit_dist`, `n_errors`, `n_items` | `scripts/evaluate_train_lexicon_ceiling.py:383-416` | Full route metrics exist; WM/LTM diagnostic metrics exist | — | CONFIRMED |
+| Q11 | Aggregation/ranking script | NONE — no script aggregates multiple `metrics.json` files and ranks runs | Repo search | Manual aggregation only; gridsearch summary impossible without it | Phase 2: write `scripts/aggregate_gridsearch.py` | MISSING |
+| Q11 | FULL-only selection rule | NOT ENFORCED anywhere in code or YAML — existing YAML includes WM/LTM metrics in selection | `docs/gridsearch_candidates_proposal.yaml:172-190` | WM/LTM metrics must be demoted to diagnostic only; FULL route is primary selection | Update YAML and write aggregation script | ACTION REQUIRED |
+| Q12 | optimizer_state_dict in fresh mode | `None` — `build_and_train()` does not expose its internal optimizer; `optim = None` in `main()` after fresh training | `scripts/train_checkpoint.py:158,314` | Cannot resume a fresh checkpoint with optimizer state | Refactor: expose optimizer from `build_and_train()` or manage optimizer in `main()` | CONFIRMED — KNOWN LIMITATION |
+| Q12 | optimizer_state_dict in resume mode | SAVED: `optim.state_dict()` after resume | `scripts/train_checkpoint.py:314`, resume block lines 226-239 | Correct; also restores LR override and moves tensors to device | — | CONFIRMED |
+| Q12 | RNG state | Saved in both modes; restored in resume mode (best-effort) | `scripts/train_checkpoint.py:303-310`, resume block lines 243-254 | Not present in old checkpoints → non-reproducible resume | — | CONFIRMED |
+| Q12 | Epoch tracking | `total_epochs_trained = len(history)`, `history` concatenated across resumes | `scripts/train_checkpoint.py:330` | Correct | — | CONFIRMED |
+| Q13 | DataLoader num_workers | `0` (PyTorch default) — `make_loader()` does not set `num_workers` | `data/dataset.py:121-135` | Will bottleneck on GPU servers with slow storage (Jean-Zay GPFS/SSD) | Add `num_workers=4` (or CLI flag) before Jean-Zay | CONFIRMED — MISSING |
+| Q13 | CUDA auto-detection | YES: `cfg.train.device = "cuda" if torch.cuda.is_available() else "cpu"` | `scripts/train_checkpoint.py:133` | Works; single-GPU only | — | CONFIRMED |
+| Q13 | Per-run output isolation | User-supplied `--ckpt` and `--out_dir` flags; no auto-namespacing | CLI | Collision risk if caller does not use unique paths | Run ID convention needed | CONFIRMED — USER RESPONSIBILITY |
+| Q13 | SLURM / job array scripts | NONE | Repo search | Cannot submit parallel runs on Jean-Zay without them | Phase 3: write SLURM array template | MISSING |
+| Q13 | Checkpoint mid-training save | NONE — checkpoint saved only at the END of `main()` | `scripts/train_checkpoint.py:310-333` | Job interruption on Jean-Zay = all epochs lost | Phase 2: save checkpoint every N epochs | MISSING |
+| Q13 | Experiment manifest | NONE — no CSV/YAML tracking which runs were submitted / completed | Repo search | No automated aggregation possible | Phase 3: write manifest generator | MISSING |
+| Q14 | uniGRU + last hidden implemented? | NO — only `bidirectional=True` or `bidirectional=False` flag exists; `pooled = masked_mean_pool(...)` is always used regardless | `models/ltm_route.py:62-66` | Phase 4 grid requires uniGRU; cannot run until Phase 2 patch | Implement `use_last_hidden` option in `encode()` | BLOCKING for Phase 4 |
+| Q14 | gate_threshold configurable? | NO — `0.5` is hard-coded | `models/gating.py:45` | Phase 7 grid requires this; Phase 4 uses 0.5 default → NOT BLOCKING for Phase 4 | Add to GatingConfig + CLI in Phase 2 | NOT BLOCKING for Phase 4 |
+| Q14 | sigma_LTM implemented? | NO | `models/ltm_route.py` entire file | Phase 6 grid requires it; Phase 4 uses sigma=0 → NOT BLOCKING for Phase 4 | Phase 2 implementation after uniGRU patch | NOT BLOCKING for Phase 4 |
+| Q15 | Seed controls split? | YES: same `--seed` flag sets both `cfg.train.seed` (train RNG) and `cfg.data.seed` (split seed) | `scripts/train_checkpoint.py:128-129` | Different seeds → different train/val splits → NOT the same data across seeds | Expected for variance estimation; report as "average over different data partitions" | CONFIRMED |
+| Q16 | Noise grid with TF<1 | If best TF<1 is selected: noise semantics are wrong (S draws per step) | `train.py:60-63` | BLOCKING for Phase 6 if TF<1 is selected | Encode-once fix before noise×TF grid | CONDITIONAL BLOCKING |
+| Q17 | Confidence distribution logged? | NO — no diagnostic script logs c_LTM distribution for real vs pseudowords | Repo search | Cannot validate gate alpha / threshold grid without knowing confidence distribution | Log from Phase 4 runs before launching Phase 7 | MISSING |
+
+### 15.2 Exact WM vs LTM architecture comparison
+
+| Property | WM / dorsal | LTM / ventral (current) | LTM / ventral (proposed) |
+|---|---|---|---|
+| Encoder class | `nn.GRU(E, 128)` | `nn.GRU(E, 256, bidirectional=True)` | `nn.GRU(E, H)` |
+| Bidirectional | NO | YES | NO |
+| pack_padded_sequence | YES | NO | NO (unchanged) |
+| Encoder output used | `h: (1,B,128)` last hidden | `out: (B,T,512)` all positions | `h: (1,B,H)` last hidden |
+| Temporal pooling | NONE | masked mean pool → `(B,512)` | NONE — `h[-1]` = `h.squeeze(0): (B,H)` |
+| Projection to semantic | NONE (no semantic loss on WM) | `Linear(512,256)→GELU→Linear(256,300)` | `Linear(H,H)→GELU→Linear(H,300)` |
+| Decoder init | `h: (1,B,128)` directly | `tanh(Linear(300,256))` = `(1,B,256)` | `tanh(Linear(300,H))` = `(1,B,H)` |
+| Decoder class | `nn.GRU(E, 128)` | `nn.GRU(E, 256)` | `nn.GRU(E, H)` |
+| Premotor projection | `Linear(128, P)` | `Linear(256, P)` | `Linear(H, P)` |
+| Noise on encoder state | YES: `h += ε ~ N(0,σ²I)` | NO | `pooled += ε` OR `h += ε` (proposed) |
+
+### 15.3 Weight matrices that change with uniGRU patch
+
+With `LTMConfig.enc_hidden = H`, `LTMConfig.bidirectional_encoder = False`, using last hidden:
+
+| Tensor | Current shape | After uniGRU patch |
+|---|---|---|
+| LTM encoder `weight_ih_l0` | `(3*256, 64)` = `(768, 64)` | `(3*H, 64)` |
+| LTM encoder `weight_hh_l0` | `(3*256, 256)` = `(768, 256)` | `(3*H, H)` |
+| LTM encoder `weight_ih_l0_reverse`, `weight_hh_l0_reverse` (biGRU backward) | `(768, 64)`, `(768, 256)` | **REMOVED** |
+| `to_semantic[0].weight` (first linear) | `(256, 512)` | `(H, H)` (if enc_hidden=H) |
+| `to_semantic[0].bias` | `(256,)` | `(H,)` |
+| All other matrices (`to_semantic[2]`, `sem_to_h0`, decoder GRU, `dec_to_premotor`) | Depend on enc_hidden/dec_hidden, unchanged in shape convention | Change only if `dec_hidden` also changed to H |
+
+### 15.4 Gate word-level vs phoneme-level — exact trace
+
+```
+field["confidence"]  →  (B,)
+.view(B, 1, 1)       →  (B, 1, 1)   ← scalar per item
+sigmoid(alpha * (conf - 0.5))  →  (B, 1, 1)
+.expand(B, S, 1)     →  (B, S, 1)   ← SAME value broadcast to all S steps
+premotor = g * ltm + (1-g) * wm   shapes: (B,S,1)*(B,S,P) + (B,S,1)*(B,S,P) = (B,S,P)
+```
+
+**CURRENT GATE = WORD-LEVEL. g is computed once per item and constant across all decoder timesteps.**
+
+### 15.5 TF<1 path: what is re-run at each step
+
+```python
+# train.py:77-78 — inside loop for step in range(S):
+out = model(enc_in, enc_mask, current_dec)
+```
+
+At each step:
+- WM GRU encoder: re-run (**new noise draw if sigma>0**) — `models/wm_route.py:47-54`
+- LTM biGRU encoder: re-run (identical output, no noise, same input) — wasteful
+- LTM masked mean pooling: re-computed (identical) — wasteful
+- s_hat: re-computed (identical) — saved only from step 0 for alignment loss
+- Gate g: re-computed (identical) — same c_LTM → same g
+- WM decoder: run on `current_dec[:, :step+1]` — grows by 1 token per step
+
+**Cost**: both encoders run S times per batch. For max_phonemes=9, approximately 10× slower than TF=1.0.
+
+**Noise semantics bug**: with TF<1 and sigma>0, each step draws a NEW noise vector `ε ~ N(0,σ²I)`. The intended semantic is: ONE noise draw per stimulus (one corruption of the phonological buffer). The current implementation produces different noise at each readout step. This is semantically inconsistent with the intended model.
+
+### 15.6 Checkpoint schema — current vs Phase 2 target
+
+| Key | Current (fresh mode) | Current (resume mode) | Phase 2 target |
+|---|---|---|---|
+| `model_state_dict` | ✓ | ✓ | ✓ |
+| `optimizer_state_dict` | `None` | ✓ (AdamW state) | ✓ (always saved) |
+| `rng_states` | ✓ | ✓ | ✓ |
+| `cfg_*` (all 6 configs) | ✓ | ✓ | ✓ |
+| `history` | ✓ | ✓ (concatenated) | ✓ |
+| `git_commit` | ✓ | ✓ | ✓ |
+| `total_epochs_trained` | ✓ | ✓ | ✓ |
+| `lr_at_save` | ✓ | ✓ | ✓ |
+| `checkpoint_every_n_epochs` | — | — | **ADD: intermediate saves** |
+| `run_id` | — | — | **ADD: unique run identifier** |
+
+### 15.7 Jean-Zay readiness gaps
+
+| Gap | Severity | Phase |
+|---|---|---|
+| `num_workers=0` in DataLoader | High on GPU servers | Phase 2 |
+| No mid-training checkpoint saves | High (job interruption = lost epochs) | Phase 2 |
+| No SLURM array script | High (no parallel runs) | Phase 3 |
+| No experiment manifest | Medium (manual tracking) | Phase 3 |
+| No aggregation script | Medium (no automatic ranking) | Phase 2 |
+| `optimizer_state_dict=None` in fresh mode | Low (warm-restart acceptable) | Phase 2 |
+
+### 15.8 GO / NO-GO summary
+
+| Phase | Status | Blocking conditions |
+|---|---|---|
+| Phase 4 — H×TF×LR grid (18 runs) | **CONDITIONAL GO** after Phase 2 | uniGRU patch, `--hidden_size` CLI flag |
+| Phase 5 — multi-seed (6 runs) | **CONDITIONAL GO** after Phase 4 | Phase 4 completion |
+| Phase 6 — noise grid | **CONDITIONAL GO** after Phase 2 + Phase 5 + fix noise semantics for TF<1 | encode-once fix (if TF<1 selected), sigma_LTM implementation |
+| Phase 7 — gate grid | **CONDITIONAL GO** after Phase 5 + Phase 6 + confidence distribution log | gate_threshold in config, confidence distribution logged |
+| Phase 3 — Jean-Zay infra | **GO** in parallel with Phase 2 | SLURM template, manifest, aggregator |

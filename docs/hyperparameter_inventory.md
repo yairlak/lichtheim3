@@ -195,57 +195,96 @@ Confirmed by static inspection of `train.py`, `train_checkpoint.py`, `config.py`
 
 ---
 
-## 6. Hyperparameters already existing vs candidates vs diagnostics vs deferred architecture
+## 6. Hyperparameters: classification after Phase 1 audit (2026-07-15)
 
-### 6.1 Already existing / attested in current model
+### 6.0 Three missing parameters discovered in Phase 1 audit
+
+| Parameter | Value | Location | Status |
+|---|---|---|---|
+| `premotor_dim` | 128 | `models/dual_route.py:34` (default arg) | **NOT in any config dataclass** — hardcoded; not CLI-accessible |
+| `gate_threshold` (τ) | 0.5 | `models/gating.py:45` (Python literal) | **NOT in `GatingConfig`** — hard-coded literal; Phase 2 must add `gate_threshold: float = 0.5` to `GatingConfig` and `--gate_threshold` CLI |
+| `ventral_noise` (σ_LTM) | 0.0 | Does not exist | **NOT IMPLEMENTED anywhere** — no LTM noise mechanism; Phase 2 must add `LTMConfig.ventral_noise` and inject noise after `pooled` |
+
+### 6.1 Master classification table
+
+| Hyperparameter | Current value | Phase 4 role | Phase 6-7 role | Status | Notes |
+|---|---|---|---|---|---|
+| `H_WM` (WM hidden) | 128 | **ACTIVE SEARCH** H∈{64,128,256} | fixed at Phase 4 winner | requires uniGRU patch + `--hidden_size` CLI | Phase 2 action |
+| `H_LTM_enc` (LTM enc hidden) | 256 (per dir, biGRU) | **ACTIVE SEARCH** H∈{64,128,256} after uniGRU | fixed at Phase 4 winner | same `--hidden_size` flag (unified) | Phase 2 action |
+| `H_LTM_dec` (LTM dec hidden) | 256 | **ACTIVE SEARCH** unified with H | fixed | unified with H if symmetric | Phase 2 action |
+| `lr` (learning rate) | 1e-3 → 1e-4 | **ACTIVE SEARCH** {1e-3, 5e-4} | fixed | `--lr` CLI ✓ | Phase 4 |
+| `teacher_forcing_ratio` | 1.0 | **ACTIVE SEARCH** {1.0, 0.2, 0.0} | fixed at best TF | `--teacher_forcing_ratio` ✓ | Phase 4 |
+| `gate_alpha` (α) | 4.0 | fixed | **LATER-STAGE SEARCH** Phase 7: {2.0,4.0,8.0} | `--gate_alpha` ✓ | Phase 7 |
+| `gate_threshold` (τ) | 0.5 hard-coded | fixed at 0.5 | **LATER-STAGE SEARCH** Phase 7: {0.3,0.5,0.7} | NOT in config — **Phase 2 patch required** | Phase 7 |
+| `interference_noise` (σ_WM) | 0.10 | fixed at 0.0 (Phase 4) | **LATER-STAGE SEARCH** Phase 6: {0.0,0.05,0.10} | `--interference_noise` ✓ | Phase 6 |
+| `ventral_noise` (σ_LTM) | N/A (not implemented) | not applicable | **LATER-STAGE SEARCH** Phase 6 | NOT IMPLEMENTED — Phase 2 action | Phase 6 |
+| `seed` | 0 | 1 seed for Phase 4 screening | **ACTIVE SEARCH** Phase 5: {0,1,2} | `--seed` ✓ | Phase 5 |
+| `phon_embed_dim` | 64 | **FIXED** | fixed | shared by both routes; changing it changes both | architecture choice |
+| `premotor_dim` | 128 | **FIXED** | fixed | NOT in config; hardcoded in `dual_route.py:34` | architecture choice |
+| `semantic_dim` | 300 | **FIXED** | fixed | matches GloVe; cannot vary without new GloVe | architecture choice |
+| `batch_size` | 64 | **FIXED** | fixed | SWP used 2048 but with much larger samples/epoch | diagnostic only |
+| `epochs` | 120 historical | 30 for Phase 4 screening | 60 for Phase 8 long training | `--epochs` ✓ | Phase-dependent |
+| `optimizer` | AdamW | **FIXED** | fixed | hard-coded in `train.py:102` | fixed |
+| `weight_decay` | 1e-5 | **FIXED** | fixed | `config.py:TrainConfig` | fixed |
+| `grad_clip` | 1.0 | **FIXED** | fixed | `config.py:TrainConfig` | fixed |
+| `loss_rep` weight | 1.0 | **FIXED** | fixed | `config.py:LossConfig` | architecture choice |
+| `loss_align` weight | 1.0 | **FIXED** | fixed | config-only, no CLI | architecture choice |
+| `loss_dec` weight | 0.5 | **FIXED** | fixed | config-only, no CLI | architecture choice |
+| `loss_wm` weight | 0.5 | **FIXED** | fixed | config-only, no CLI | architecture choice |
+| `loss_gate` weight | 0.05 | **FIXED** | fixed | gate regularizer | architecture choice |
+| `usage_prior` | 0.5 | **FIXED** | fixed | `GatingConfig.usage_prior` | architecture choice |
+| `dorsal_pool_size` | 4000 | **FIXED** | fixed | pseudoword pool for WM CE | fixed |
+| `dropout` | N/A | **NOT GRIDSEARCHABLE** | not applicable | NOT IMPLEMENTED in any module | future task |
+| `bidirectional_encoder` (LTM) | True → proposed False | **FIXED** at False after uniGRU patch | fixed | Phase 2 patch | architecture choice |
+| Comprehension/naming pathway | not implemented | not applicable | not applicable | Phase 10-11 | future task |
+| Learnable gate (β terms) | not implemented | not applicable | not applicable | Phase 12 | future task |
+
+### 6.2 Already existing / attested in current model
 
 - `phon_embed_dim = 64`
 - `H_WM = 128`
-- `H_LTM_enc = 256` per direction
+- `H_LTM_enc = 256` per direction (biGRU → proposed 256 uniGRU after patch)
 - `H_LTM_dec = 256`
 - `semantic_dim = 300`
-- `premotor_dim = 128`
+- `premotor_dim = 128` (**hardcoded default, not in config**)
 - `gate_alpha = 4.0`
+- `gate_threshold = 0.5` (**Python literal, not in config**)
 - `interference_noise = 0.10`
 - fixed train/validation split: 25,136 / 4,435 words
 - GloVe alignment target and frozen semantic bank at inference
 - teacher-forced and autoregressive evaluation modes
 - deterministic/noisy evaluation distinction via `collect`
 
-### 6.2 Hyperparameters to gridsearch now, limited — UPDATED AFTER INSPECTION
+### 6.3 Active Phase 4 search candidates
 
-**Directly gridsearchable via current CLI without code changes:**
+All three dimensions are CLI-accessible (after uniGRU patch for H):
 
-1. **Learning rate** — `--lr` flag; current default 1e-3. Candidate: 5e-4. `CONFIRMED_IN_CODE / CLI_EXPOSED`.
-2. **Seed** — `--seed` flag; controls both training RNG and data split. Use 1 seed for screening. `CLI_EXPOSED`.
-3. **Batch size** — `--batch_size` flag; current default 64. Not a first priority. `CLI_EXPOSED`.
+```
+H ∈ {64, 128, 256}       → --hidden_size (Phase 2 patch needed)
+TF ∈ {1.0, 0.2, 0.0}    → --teacher_forcing_ratio ✓
+LR ∈ {1e-3, 5e-4}        → --lr ✓
+σ_WM = 0.0               → --interference_noise 0.0 (fixed for Phase 4)
+seed = 0                  → --seed 0 (fixed for Phase 4)
+→ 3 × 3 × 2 = 18 runs, 1 seed each
+```
 
-**Require code change before gridsearch (add CLI flag or modify training loop):**
-
-4. **Teacher forcing ratio** — ✓ **NOW IMPLEMENTED**. `--teacher_forcing_ratio` flag in `train_checkpoint.py`. Default `1.0` (full TF, historical behavior). `0.0`=fully AR. Intermediate values use scheduled sampling. `train.py:_forward_scheduled_sampling`.
-5. **WM noise during training** — ✓ **NOW CLI-EXPOSED**. `--interference_noise` flag in `train_checkpoint.py`. Default `None` (uses config value `0.10`). Set `0.0` to disable.
-6. **Gate alpha** — ✓ **NOW CLI-EXPOSED**. `--gate_alpha` flag in `train_checkpoint.py`. Default `None` (uses config value `4.0`).
-7. **Semantic alignment loss weight** (`L_align`)— `REQUIRES CODE SUPPORT`. Current value `1.0` confirmed in `LossConfig`. No CLI flag.
-8. **Dropout** — `NOT IMPLEMENTED IN MODEL`. No dropout module anywhere in `wm_route.py`, `ltm_route.py`, `gating.py`, or `motor.py`. Would require architecture additions before it can be tested.
-
-### 6.3 Diagnostic variants, not model-selection dimensions
+### 6.4 Diagnostic variants, not model-selection dimensions
 
 - Teacher-forced evaluation of every checkpoint as ceiling/debug only.
-- Route-isolated evaluation: full/gated, WM-only, LTM-only.
-- Fixed-gate evaluation: `g=0.0`, `0.25`, `0.5`, `0.75`, `1.0`, only if available or added as evaluation-only diagnostic.
+- Route-isolated evaluation: full/gated, WM-only, LTM-only — **diagnostic only, NOT for model selection**.
 - WM-noise evaluation sweeps after training, labelled as cognitive/noisy or stress tests.
 - LTM nearest-neighbor inspection for lexicalization errors.
-- Gate calibration plots by lexicality/length/confidence.
+- Gate confidence distribution plots by lexicality/length.
+- Confidence distribution logging (required before Phase 7 gate grid can be interpreted).
 
-### 6.4 Architecture changes to defer
+### 6.5 Architecture changes to defer
 
-- LTM biGRU packing fix.
-- Learned/noise-sensitive gate.
-- Position-level gate.
-- Separate lexical confidence from semantic comprehension.
-- Comprehension/naming heads.
-- New route dimensions or deeper recurrent stacks.
-- Any new task labelled naming/comprehension without actual semantic-input training.
+- LTM biGRU packing fix (replaced by uniGRU patch instead).
+- Learned/noise-sensitive gate (Phase 12).
+- Position-level gate (Phase 12).
+- Separate lexical confidence from semantic comprehension (Phase 10-11).
+- Comprehension/naming heads (Phase 10-11).
+- Deeper recurrent stacks, attention, Layer Norm (Phase 12).
 
 ---
 
