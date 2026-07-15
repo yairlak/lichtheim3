@@ -1,0 +1,236 @@
+# Status: DRAFT — proposal only. Do not launch training from this file before repo inspection and supervisor validation.
+# Values marked TO_INSPECT must be resolved before use.
+# Values marked REQUIRES_CODE_SUPPORT cannot be used without adding CLI flags or code changes.
+
+status: draft_proposal_only
+
+# Proposed Lichtheim3 gridsearch candidates.
+# Status: proposal to validate with Yair, not definitive truth.
+# Unknown current values must be filled after repo inspection.
+
+meta:
+  branch: eval/external-csv-datasets
+  current_checkpoint: checkpoints/lichtheim3_30k_glove_e60_to_e120_lowlr.pt
+  lexicon_path: data/lexicon_en_glove_covered.tsv
+  lexicon_total_glove_covered: 29571
+  train_split_words: 25136
+  validation_split_words: 4435
+  main_eval: autoregressive_no_noise
+  teacher_forced_use: ceiling_debug_only
+  do_not_train_on:
+    - WFE
+    - SSP
+
+current_attested_architecture:
+  phon_embed_dim: 64
+  wm_hidden_dim: 128
+  ltm_encoder_hidden_dim_per_direction: 256
+  ltm_decoder_hidden_dim: 256
+  semantic_dim: 300
+  premotor_dim: 128
+  gate_alpha_default: 4.0
+  wm_interference_noise_default: 0.10
+  gate_is_learned: false
+  ltm_bigru_packing: false  # known artifact; do not patch current checkpoint silently
+
+confirmed_by_inspection:
+  # Source: config.py, train.py, train_checkpoint.py, losses.py, data/dataset.py
+  optimizer: AdamW  # torch.optim.AdamW, train.py:102
+  optimizer_betas: [0.9, 0.999]  # PyTorch defaults
+  weight_decay: 1.0e-5  # config.py:TrainConfig.weight_decay
+  grad_clip: 1.0  # config.py:TrainConfig.grad_clip
+  batch_size: 64  # config.py:TrainConfig.batch_size, CLI: --batch_size
+  lr_default: 1.0e-3  # config.py:TrainConfig.lr, CLI: --lr
+  val_fraction: 0.15  # config.py:DataConfig.val_fraction
+  split_seed: "same as --seed flag (not separate)"
+  dropout: NOT_IMPLEMENTED  # no dropout in any model module
+  scheduler: NONE  # no LR scheduler in current code
+  training_regime: "teacher_forcing_ratio=1.0 default (full TF); scheduled sampling IMPLEMENTED (see train.py:_forward_scheduled_sampling); --teacher_forcing_ratio CLI flag AVAILABLE"
+  loss_rep: 1.0  # config.py:LossConfig.rep
+  loss_align: 1.0  # config.py:LossConfig.align (semantic alignment)
+  loss_dec: 0.5  # config.py:LossConfig.dec (LTM form regeneration CE)
+  loss_wm: 0.5  # config.py:LossConfig.wm (WM-only CE)
+  loss_gate: 0.05  # config.py:LossConfig.gate (gate usage regularizer)
+  loss_label_smoothing: 0.0
+  usage_prior: 0.5  # config.py:GatingConfig.usage_prior
+  dorsal_pool_size: 4000  # config.py:TrainConfig.dorsal_pool_size
+  checkpoint_selection_criterion: NONE  # no auto-selection, no early stopping
+  train_val_split_seed: "same as --seed CLI flag"
+  checkpoint_saved_keys:
+    - model_state_dict
+    - optimizer_state_dict
+    - rng_states
+    - cfg_data / cfg_wm / cfg_ltm / cfg_gating / cfg_loss / cfg_train
+    - history
+    - git_commit
+    - total_epochs_trained
+    - lr_at_save
+
+requires_code_support:
+  teacher_forcing_ratio:
+    status: IMPLEMENTED  # ← PATCHED 2026-07
+    detail: "train.py:_forward_scheduled_sampling; --teacher_forcing_ratio in train_checkpoint.py. Default 1.0 (TF). 0.0=fully AR. Validation always TF. ~S× slower for ratio<1."
+    patch_effort: done
+  dropout:
+    status: NOT_IMPLEMENTED
+    detail: "No dropout in wm_route.py, ltm_route.py, gating.py, motor.py. Would require architecture additions."
+    patch_effort: medium
+  interference_noise_cli:
+    status: CLI_EXPOSED  # ← PATCHED 2026-07
+    detail: "--interference_noise float in train_checkpoint.py. Default None (uses WMConfig default 0.10). Set 0.0 to disable training-time noise."
+    patch_effort: done
+  gate_alpha_cli:
+    status: CLI_EXPOSED  # ← PATCHED 2026-07
+    detail: "--gate_alpha float in train_checkpoint.py. Default None (uses GatingConfig default 4.0)."
+    patch_effort: done
+  align_loss_weight_cli:
+    status: CONFIG_ONLY_NOT_CLI
+    detail: "LossConfig.align=1.0 exists but is not a CLI flag."
+    patch_effort: "1-line: p.add_argument('--align_weight', type=float, default=None)"
+  train_ar_eval:
+    status: IMPLEMENTED  # ← PATCHED 2026-07
+    detail: "--decode autoregressive flag added to evaluate_train_lexicon_ceiling.py. Outputs norm_edit_dist. AR outputs to <out_dir>/ar/ for backward compat. --include_val supported."
+    patch_effort: done
+
+stage0_sanity_checks:
+  training_runs: 0
+  evaluations:
+    - train_teacher_forced_no_noise
+    - train_autoregressive_no_noise
+    - val_teacher_forced_no_noise
+    - val_autoregressive_no_noise
+    - wfe_teacher_forced_no_noise
+    - wfe_autoregressive_no_noise
+    - route_isolated_full_wm_ltm
+    - deterministic_repeat_check
+    - length_effect_analysis
+    - check_regime_c_ar_plus_wm_noise_status
+
+stageA_optimization_decoding:
+  # UPDATED AFTER CODE PATCH (2026-07)
+  # teacher_forcing_ratio, --interference_noise, --gate_alpha are now CLI-exposed.
+  # AR eval available via --decode autoregressive in evaluate_train_lexicon_ceiling.py.
+  note: "All Stage A dimensions are now CLI-runnable. Coordinate with Yair on which TF ratios to test before launching."
+  fixed:
+    batch_size: 64  # confirmed default, CLI: --batch_size
+    dropout: NOT_IMPLEMENTED  # cannot vary
+    gate_alpha: 4.0  # keep fixed in Stage A; use --gate_alpha in Stage C
+    semantic_alignment_loss_weight: 1.0  # confirmed default; not CLI-exposed
+  candidates:
+    learning_rate:
+      - 0.001  # current default
+      - 0.0005
+    teacher_forcing_ratio:
+      - 1.0   # full TF = historical behavior; ceiling run
+      - 0.0   # fully AR = SWP/Dager-aligned
+      # - 0.2   # optional intermediate; ~5× slower than TF; ask Yair first
+    train_wm_noise_sigma:
+      - 0.10  # current default; keep fixed in Stage A; vary in Stage B
+      # - 0.0   # Stage B only
+  stage_a_minimal_grid:
+    # Start here: 2 LR × 2 TF = 4 runs (1 seed each)
+    learning_rate: [0.001, 0.0005]
+    teacher_forcing_ratio: [1.0, 0.0]
+    noise: 0.10  # fixed
+    gate_alpha: 4.0  # fixed
+  seeds_initial:
+    - 0
+  confirm_top_n: 2
+  extra_seeds_for_top_configs:
+    - 1
+    - 2
+
+stageB_robustness_length:
+  use_top_configs_from_stageA: 1-2
+  fixed:
+    learning_rate: selected_from_stageA
+    teacher_forcing_ratio: selected_from_stageA
+    gate_alpha: 4.0
+    semantic_alignment_loss_weight: current_value_after_inspection
+  candidates:
+    train_wm_noise_sigma:
+      - 0.0
+      - 0.10
+    dropout_conditional_if_existing:
+      - 0.0
+      - 0.2
+  note: Do not cross all noise and dropout values unless Stage A is stable and Yair approves.
+
+stageC_gate_semantic_balance:
+  use_top_config_from_stageB: 1
+  gate_alpha_candidates:
+    - 2.0
+    - 4.0
+    - 8.0
+  semantic_alignment_loss_weight_candidates_after_inspection:
+    - current_value
+    - half_current_value
+    - double_current_value
+  note: Only run semantic loss sweep if LTM/gate diagnostics justify it.
+
+selection_metrics:
+  primary:
+    - train_exact_match_ar
+    - val_exact_match_ar
+    - val_edit_distance_ar
+    - val_normalized_edit_distance_ar
+    - wfe_real_seen_exact_match_ar
+    - wfe_pseudoword_exact_match_ar
+    - wfe_pseudoword_edit_distance_ar
+    - wfe_pseudoword_normalized_edit_distance_ar
+    - length_effect_slope_pseudoword_edit_ar
+    - long_short_contrast_pseudoword_edit_ar
+  diagnostics:
+    - teacher_forced_ceiling
+    - route_full_wm_ltm_dissociation
+    - gate_distributions
+    - serial_position_curve
+    - error_type_counts
+    - wm_noise_sweep_if_regime_c_available
+    - ssp_ar_secondary
+
+failure_criteria:
+  - nondeterministic_no_noise_eval
+  - failure_to_learn_train_repetition
+  - autoregressive_collapse
+  - pseudoword_wfe_collapse
+  - premature_eos_dominates_long_items
+  - pathological_gate_saturation
+  - missing_run_metadata
+  - accidental_training_on_wfe_or_ssp
+
+not_for_current_gridsearch:
+  teacher_forcing_ratio: "Now implemented and CLI-exposed — removed from this list. Coordinate with Yair on which ratios to include in Stage A."
+  dropout: "Not implemented in any model module."
+  gate_alpha_variations: "Now CLI-exposed via --gate_alpha — removed from this list. Use in Stage C only."
+  align_loss_weight_variations: "Config-only; still requires CLI patch before gridsearch."
+  architecture_changes:
+    - ltm_bigru_packing_fix
+    - noise_adaptive_gate
+    - position_level_gate
+    - comprehension_naming_heads
+    - new_route_dimensions
+
+questions_for_yair:
+  - "Should we implement the 1-line CLI patch for --interference_noise before Stage A, making train noise an explicit variable?"
+  - "Should training-time WM noise (sigma=0.10) be treated as a core cognitive mechanism (keep it) or an optimization artifact (test sigma=0.0)?"
+  - "Should we implement scheduled sampling / partial teacher forcing before Stage A? If yes, what TF ratios: 0.0, 0.2, 0.5?"
+  - "Is gate_alpha=4.0 an arbitrary default or already validated? Should we vary it in Stage C?"
+  - "Should checkpoint selection use val exact-match AR, or are we OK selecting manually after WFE AR diagnostics?"
+  - "How many seeds before full retrain: 3 or 10?"
+  - "Should we add --decode autoregressive to evaluate_train_lexicon_ceiling.py to get train/val AR metrics for gridsearch selection?"
+
+final_retrain_after_gridsearch:
+  lexicon: full_29571_glove_covered
+  train_on_wfe: false
+  train_on_ssp: false
+  main_evaluation: wfe_autoregressive_no_noise
+  main_wfe_grouping: trained_real_words_vs_pseudowords
+  teacher_forced: appendix_debug_only
+  noisy_eval: separate_labelled_cognitive_or_lesion_condition
+  save_metadata:
+    - git_commit
+    - exact_config
+    - seeds
+    - optimizer_state
+    - checkpoint_selection_rationale
