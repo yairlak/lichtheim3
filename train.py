@@ -43,17 +43,87 @@ def build_everything(cfg: Config):
     return model, vocab, lexicon, train_loader, val_loader, pool_loader
 
 
+def _forward_scheduled_sampling(model, batch, tf_ratio: float,
+                                pad_id: int, device) -> dict:
+    """Step-by-step forward with scheduled sampling (tf_ratio < 1.0).
+
+    At each decoder step t:
+    - with probability tf_ratio   → feed the gold previous token
+    - with probability 1-tf_ratio → feed the model's own argmax prediction
+
+    Returns a dict matching model.forward() in structure, with logits of
+    shape (B, S, V) aligned to batch["dec_tgt"].
+
+    Notes
+    -----
+    - The encoder is re-run at each of the S decoder steps, making this
+      ~S× slower than the vectorised TF=1.0 path.  Only used when tf_ratio<1.
+    - WM interference noise (if configured) is applied independently at each
+      encoder call, producing different noise per step.  This differs from the
+      single-noise draw in the vectorised path.  Document in gridsearch logs.
+    - s_hat for the alignment loss is taken from step 0; it depends only on
+      enc_in (noise-free LTM encoder), so it is identical across all steps.
+    """
+    enc_in   = batch["enc_in"]
+    enc_mask = batch["enc_mask"]
+    dec_in   = batch["dec_in"]    # (B, S) = [BOS, p1, ..., pT, PAD...]
+    B, S     = dec_in.shape
+
+    current_dec = dec_in[:, :1]   # start with BOS only: (B, 1)
+    lists = {k: [] for k in ("logits", "wm_logits", "ltm_logits", "gate")}
+    s_hat_0: "torch.Tensor | None" = None
+    field_extra: dict = {}
+
+    for step in range(S):
+        out = model(enc_in, enc_mask, current_dec)
+
+        # Collect only the last-position logit/gate at each step
+        lists["logits"].append(out["logits"][:, -1:, :])       # (B,1,V)
+        lists["wm_logits"].append(out["wm_logits"][:, -1:, :])
+        lists["ltm_logits"].append(out["ltm_logits"][:, -1:, :])
+        lists["gate"].append(out["gate"][:, -1:, :])           # (B,1,1)
+
+        if s_hat_0 is None:
+            s_hat_0 = out["s_hat"]
+            field_extra = {k: v for k, v in out.items()
+                           if k not in lists and k != "s_hat"}
+
+        if step < S - 1:
+            gold_next = dec_in[:, step + 1: step + 2]          # (B,1) gold
+            if tf_ratio <= 0.0:
+                next_tok = out["logits"][:, -1, :].argmax(-1, keepdim=True).detach()
+            else:
+                pred_next = out["logits"][:, -1, :].argmax(-1, keepdim=True).detach()
+                use_gold  = torch.rand(B, 1, device=device) < tf_ratio
+                next_tok  = torch.where(use_gold, gold_next, pred_next)
+            current_dec = torch.cat([current_dec, next_tok], dim=1)
+
+    result = {
+        "logits":     torch.cat(lists["logits"],     dim=1),   # (B,S,V)
+        "wm_logits":  torch.cat(lists["wm_logits"],  dim=1),
+        "ltm_logits": torch.cat(lists["ltm_logits"], dim=1),
+        "gate":       torch.cat(lists["gate"],        dim=1),
+        "s_hat":      s_hat_0,
+    }
+    result.update(field_extra)
+    return result
+
+
 def run_epoch(model, loader, cfg: Config, optim=None, pool_iter=None) -> dict:
     train_mode = optim is not None
     model.train(train_mode)
     pad_id = model.vocab.pad_id
     dev = cfg.train.device
+    tf_ratio = getattr(cfg.train, "teacher_forcing_ratio", 1.0)
     agg = {}
     n = 0
     for batch in loader:
         batch = {k: (v.to(dev) if torch.is_tensor(v) else v)
                  for k, v in batch.items()}
-        out = model(batch["enc_in"], batch["enc_mask"], batch["dec_in"])
+        if train_mode and tf_ratio < 1.0:
+            out = _forward_scheduled_sampling(model, batch, tf_ratio, pad_id, dev)
+        else:
+            out = model(batch["enc_in"], batch["enc_mask"], batch["dec_in"])
         losses = total_loss(out, batch, cfg.loss, pad_id,
                             usage_prior=cfg.gating.usage_prior)
         total = losses["total"]
@@ -72,7 +142,7 @@ def run_epoch(model, loader, cfg: Config, optim=None, pool_iter=None) -> dict:
             torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.train.grad_clip)
             optim.step()
         for k, v in losses.items():
-            agg[k] = agg.get(k, 0.0) + float(v) * len(batch["words"])
+            agg[k] = agg.get(k, 0.0) + v.detach().item() * len(batch["words"])
         n += len(batch["words"])
     return {k: v / max(n, 1) for k, v in agg.items()}
 

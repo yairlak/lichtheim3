@@ -92,6 +92,24 @@ def parse_args() -> argparse.Namespace:
                        "the saved optimizer LR — useful for low-LR fine-tuning.  "
                        "Recommended for continuation after plateau: current_lr / 10."
                    ))
+    p.add_argument("--teacher_forcing_ratio", type=float, default=1.0,
+                   help=(
+                       "scheduled sampling ratio: 1.0 = full teacher forcing "
+                       "(historical default); 0.0 = fully autoregressive training; "
+                       "intermediate values mix gold and predicted tokens step-by-step.  "
+                       "Validation always uses TF=1.0 regardless of this flag."
+                   ))
+    p.add_argument("--interference_noise", type=float, default=None,
+                   help=(
+                       "WM interference noise sigma during training "
+                       f"(default: {0.10} from WMConfig).  "
+                       "Set 0.0 to disable training-time WM noise."
+                   ))
+    p.add_argument("--gate_alpha", type=float, default=None,
+                   help=(
+                       "gate sharpness: g = sigmoid(alpha*(conf-0.5)) "
+                       f"(default: {4.0} from GatingConfig)."
+                   ))
     p.add_argument("--ckpt",      type=str,
                    default=os.path.join(ROOT, "checkpoints", "lichtheim3.pt"),
                    help="path to write the checkpoint file")
@@ -113,9 +131,15 @@ def main() -> None:
     cfg.data.max_words   = args.max_words
     cfg.data.lexicon_path = args.lexicon_path
     cfg.train.device     = "cuda" if torch.cuda.is_available() else "cpu"
+    cfg.train.teacher_forcing_ratio = args.teacher_forcing_ratio
     # Allow CLI LR override (used for fresh runs and low-LR continuation)
     if args.lr is not None:
         cfg.train.lr = args.lr
+    # Optional config overrides: interference_noise and gate_alpha
+    if args.interference_noise is not None:
+        cfg.wm.interference_noise = args.interference_noise
+    if args.gate_alpha is not None:
+        cfg.gating.alpha = args.gate_alpha
 
     os.makedirs(os.path.dirname(args.ckpt), exist_ok=True)
     os.makedirs(args.out_dir, exist_ok=True)
@@ -263,6 +287,9 @@ def main() -> None:
             )
         print(f"\n[train_checkpoint] epochs={args.epochs}  max_words={args.max_words}"
               f"  seed={args.seed}  device={cfg.train.device}")
+        print(f"  teacher_forcing_ratio={cfg.train.teacher_forcing_ratio}"
+              f"  interference_noise={cfg.wm.interference_noise}"
+              f"  gate_alpha={cfg.gating.alpha}")
         print(f"[train_checkpoint] checkpoint -> {args.ckpt}\n")
 
         model, vocab, lexicon, history = build_and_train(cfg, out_dir=args.out_dir)

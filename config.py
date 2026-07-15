@@ -87,6 +87,12 @@ class TrainConfig:
     # pronounceable pseudowords so it learns a general serial-recall / copy
     # (and stays lexical-frequency-invariant). 0 disables.
     dorsal_pool_size: int = 4000
+    # Scheduled sampling ratio (0.0 = fully autoregressive; 1.0 = full teacher
+    # forcing, i.e. the historical default).  At each decoder step t, the gold
+    # previous token is used with probability teacher_forcing_ratio; the model's
+    # own argmax prediction is used otherwise.  Validation always uses TF=1.0
+    # regardless of this setting.  See train._forward_scheduled_sampling.
+    teacher_forcing_ratio: float = 1.0
 
 
 @dataclass
