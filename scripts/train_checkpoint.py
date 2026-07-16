@@ -86,6 +86,20 @@ def _periodic_ckpt_path(final_path: str, epoch: int) -> str:
     return f"{base}.epoch_{epoch:04d}{ext}"
 
 
+def _as_cpu_byte_tensor(x, name="rng_state"):
+    """Normalize a saved RNG state to a CPU torch.uint8 ByteTensor."""
+    if isinstance(x, torch.Tensor):
+        return x.detach().cpu().to(torch.uint8)
+    try:
+        return torch.as_tensor(x, dtype=torch.uint8, device="cpu")
+    except Exception as e:
+        raise TypeError(
+            f"Could not convert {name} to CPU torch.uint8 ByteTensor "
+            f"(type={type(x)!r}, dtype={getattr(x, 'dtype', None)}, "
+            f"device={getattr(x, 'device', None)})"
+        ) from e
+
+
 def _build_ckpt_dict(model, optim, cfg, lexicon, train_entries, val_entries,
                      history, git_commit, resumed_from,
                      premotor_dim: int = 128) -> dict:
@@ -333,12 +347,18 @@ def main() -> None:
         if "rng_states" in resume_ckpt:
             rs = resume_ckpt["rng_states"]
             if "torch" in rs:
-                torch.set_rng_state(rs["torch"])
+                torch.set_rng_state(_as_cpu_byte_tensor(rs["torch"], "torch_rng"))
+                print("  [resume] restored torch RNG state")
             if "cuda" in rs and torch.cuda.is_available():
-                torch.cuda.set_rng_state_all(rs["cuda"])
+                cuda_states = [_as_cpu_byte_tensor(s, "cuda_rng") for s in rs["cuda"]]
+                torch.cuda.set_rng_state_all(cuda_states)
+                print("  [resume] restored CUDA RNG state")
+            else:
+                print("  [resume] no CUDA RNG state to restore")
             if "numpy" in rs:
                 import numpy as np
                 np.random.set_state(rs["numpy"])
+                print("  [resume] restored numpy RNG state")
             print("  RNG states: restored from checkpoint")
         else:
             print("  RNG states: not saved in checkpoint (non-reproducible resume)")
@@ -403,7 +423,7 @@ def main() -> None:
             # Need direct access to the training loop for periodic saves;
             # replicate build_and_train logic here to intercept each epoch.
             import itertools as _it
-            from train import build_everything, run_epoch, plot_loss_history
+            from train import plot_loss_history
             if cfg.train.device == "cpu" and torch.cuda.is_available():
                 cfg.train.device = "cuda"
             (model, vocab, lexicon,

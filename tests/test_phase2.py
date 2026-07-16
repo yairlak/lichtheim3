@@ -1133,3 +1133,46 @@ class TestAggregateNestedParsing:
         jp = summary["json_paths"]
         assert jp["full_ar_errors_train"] == "results.train.full.n_errors"
         assert jp["full_ar_exact_val"]    == "results.val.full.exact_match"
+
+
+# ----------------------------------------------------------------------------
+# Phase 5A: RNG state restoration helper (resume robustness)
+# ----------------------------------------------------------------------------
+import importlib.util as _ilu
+import os as _os
+
+_TCK = _os.path.join(_os.path.dirname(__file__), "..", "scripts", "train_checkpoint.py")
+_spec = _ilu.spec_from_file_location("train_checkpoint", _TCK)
+_tck = _ilu.module_from_spec(_spec)
+_spec.loader.exec_module(_tck)
+
+
+class TestRngStateNormalization:
+    """The resume path must accept a torch RNG state regardless of dtype/device."""
+
+    def test_accepts_normal_byte_tensor(self):
+        state = torch.get_rng_state()  # already a uint8 ByteTensor
+        out = _tck._as_cpu_byte_tensor(state, "torch_rng")
+        assert out.dtype == torch.uint8
+        assert out.device.type == "cpu"
+        # Must be accepted by torch.set_rng_state without raising
+        torch.set_rng_state(out)
+
+    def test_accepts_non_uint8_dtype(self):
+        state = torch.get_rng_state().to(torch.int64)
+        out = _tck._as_cpu_byte_tensor(state, "torch_rng")
+        assert out.dtype == torch.uint8
+        assert out.device.type == "cpu"
+        torch.set_rng_state(out)
+
+    def test_accepts_list_like(self):
+        state = torch.get_rng_state().tolist()
+        out = _tck._as_cpu_byte_tensor(state, "torch_rng")
+        assert out.dtype == torch.uint8
+        assert out.device.type == "cpu"
+        torch.set_rng_state(out)
+
+    def test_roundtrip_preserves_values(self):
+        state = torch.get_rng_state()
+        out = _tck._as_cpu_byte_tensor(state.to(torch.int64), "torch_rng")
+        assert torch.equal(out, state)
