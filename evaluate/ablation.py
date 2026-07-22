@@ -27,6 +27,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from evaluate.hooks import make_batch, route_predictions, per_position_correct
+from config import get_effective_split_seed
 
 SEVERITIES = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
 N_PATIENTS = 10
@@ -81,7 +82,7 @@ def run(model, vocab, lexicon, cfg, out_dir: str) -> dict:
     model.eval()
     device = cfg.train.device
     os.makedirs(out_dir, exist_ok=True)
-    train_e, val_e = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+    train_e, val_e = lexicon.split(cfg.data.val_fraction, get_effective_split_seed(cfg.data))
     words = [e.phonemes for e in train_e][:300]        # trained "words"
     nonwords = [e.phonemes for e in val_e][:300]       # novel "nonwords"
 

@@ -49,6 +49,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from config import Config, DataConfig, WMConfig, LTMConfig, GatingConfig, LossConfig, TrainConfig
+from config import get_effective_split_seed
 from data.phonemes import build_vocab, Vocab
 from data.lexicon import build_lexicon
 from models.dual_route import DualRouteModel
@@ -324,7 +325,7 @@ def main():
 
     vocab   = build_vocab()
     lexicon = build_lexicon(cfg.data, vocab)
-    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, get_effective_split_seed(cfg.data))
 
     bank = torch.stack([torch.tensor(e.semantic) for e in train_entries]).float().to(device)
     model = DualRouteModel(cfg, vocab).to(device)
@@ -339,6 +340,8 @@ def main():
     print(f"  glove      : {'present' if ckpt.get('glove_present') else 'ABSENT (pseudo-vectors)'}")
     print(f"  lexicon    : {lexicon.source}  max_words={cfg.data.max_words}")
     print(f"  n_train    : {len(train_entries)}  n_val: {len(val_entries)}")
+    print(f"  checkpoint_training_seed      : {cfg.train.seed}")
+    print(f"  checkpoint_split_seed_effective: {get_effective_split_seed(cfg.data)}")
     print(f"  device     : {device}")
     print(f"  decode     : {decode_mode}")
     print(f"  out_dir    : {out_dir}")
@@ -397,6 +400,8 @@ def main():
         "cfg_max_words":     cfg.data.max_words,
         "cfg_epochs":        cfg.train.epochs,
         "cfg_seed":          cfg.train.seed,
+        "checkpoint_training_seed":       cfg.train.seed,
+        "checkpoint_split_seed_effective": get_effective_split_seed(cfg.data),
         "splits_evaluated":  splits_evaluated,
         "results": {},
     }

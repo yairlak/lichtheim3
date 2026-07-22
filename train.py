@@ -7,7 +7,7 @@ from typing import Tuple
 import torch
 import torch.nn.functional as F
 
-from config import Config
+from config import Config, get_effective_split_seed
 from data.phonemes import build_vocab, Vocab
 from data.lexicon import build_lexicon, Lexicon
 from data.dataset import make_loader, build_pool_loader
@@ -21,7 +21,7 @@ def build_everything(cfg: Config):
     vocab = build_vocab()
     lexicon = build_lexicon(cfg.data, vocab)
     density = lexicon.neighborhood_density()
-    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, get_effective_split_seed(cfg.data))
     num_workers = getattr(cfg.train, "num_workers", 0)
 
     train_loader = make_loader(

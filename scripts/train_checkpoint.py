@@ -63,7 +63,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from config import (default_config, Config, DataConfig, WMConfig, LTMConfig,
+from config import (default_config, get_effective_split_seed,
+                    Config, DataConfig, WMConfig, LTMConfig,
                     GatingConfig, LossConfig, TrainConfig)
 from train import build_and_train, build_everything, run_epoch
 from utils.seed import set_seed
@@ -112,6 +113,10 @@ def _build_ckpt_dict(model, optim, cfg, lexicon, train_entries, val_entries,
     if torch.cuda.is_available():
         rng_states["cuda"] = torch.cuda.get_rng_state_all()
 
+    import hashlib as _hl
+    def _sha(entries):
+        return _hl.sha256("\n".join(sorted(e.word for e in entries)).encode()).hexdigest()
+
     return {
         "model_state_dict":      model.state_dict(),
         "optimizer_state_dict":  optim.state_dict() if optim is not None else None,
@@ -127,6 +132,9 @@ def _build_ckpt_dict(model, optim, cfg, lexicon, train_entries, val_entries,
         "lexicon_source":        lexicon.source,
         "n_train":               len(train_entries),
         "n_val":                 len(val_entries),
+        "split_seed_effective":  get_effective_split_seed(cfg.data),
+        "train_split_sha256":    _sha(train_entries),
+        "val_split_sha256":      _sha(val_entries),
         "glove_present":         os.path.exists(
                                      os.path.join(ROOT, "data", "glove.6B.300d.txt")),
         "git_commit":            git_commit,
@@ -148,6 +156,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--epochs",    type=int, default=10)
     p.add_argument("--max_words", type=int, default=4000)
     p.add_argument("--seed",      type=int, default=0)
+    p.add_argument("--split_seed", type=int, default=None,
+                   help=(
+                       "Seed for the train/val split ONLY. Omitted -> falls back "
+                       "to --seed (legacy behaviour). Pass --split_seed 0 to hold "
+                       "the partition fixed while varying --seed."
+                   ))
     p.add_argument("--batch_size", type=int, default=64)
     p.add_argument("--lexicon_path", type=str, default=None)
     p.add_argument("--resume_from", type=str, default=None,
@@ -213,6 +227,10 @@ def main() -> None:
     cfg.train.batch_size = args.batch_size
     cfg.train.seed       = args.seed
     cfg.data.seed        = args.seed
+    cfg.data.split_seed  = args.split_seed
+    SPLIT_SEED = get_effective_split_seed(cfg.data)
+    print(f"[train_checkpoint] training_seed={cfg.train.seed}  "
+          f"split_seed_effective={SPLIT_SEED}")
     cfg.data.max_words   = args.max_words
     cfg.data.lexicon_path = args.lexicon_path
     cfg.train.device     = "cuda" if torch.cuda.is_available() else "cpu"
@@ -291,7 +309,7 @@ def main() -> None:
         from data.phonemes import build_vocab
         vocab   = build_vocab()
         lexicon = build_lexicon(cfg.data, vocab)
-        train_entries, val_entries = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+        train_entries, val_entries = lexicon.split(cfg.data.val_fraction, SPLIT_SEED)
         bank = torch.stack([torch.tensor(e.semantic) for e in train_entries]).float()
         bank = bank.to(cfg.train.device)
         model = DualRouteModel(cfg, vocab).to(cfg.train.device)
@@ -432,7 +450,7 @@ def main() -> None:
                                        weight_decay=cfg.train.weight_decay)
             pool_iter = _it.cycle(pool_loader) if pool_loader is not None else None
             train_entries, val_entries = lexicon.split(cfg.data.val_fraction,
-                                                        cfg.data.seed)
+                                                        SPLIT_SEED)
             history = []
             for ep in range(cfg.train.epochs):
                 tr = run_epoch(model, train_loader, cfg, optim, pool_iter=pool_iter)
@@ -458,7 +476,7 @@ def main() -> None:
             model, vocab, lexicon, history, optim = build_and_train(
                 cfg, out_dir=args.out_dir)
             train_entries, val_entries = lexicon.split(cfg.data.val_fraction,
-                                                        cfg.data.seed)
+                                                        SPLIT_SEED)
         resumed_from = None
 
     # ----------------------------------------------------------------------- #

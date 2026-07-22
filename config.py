@@ -30,7 +30,28 @@ class DataConfig:
     # (see data.lexicon.logfreq_weights). `freq_temp` sharpens/softens the skew.
     freq_temp: float = 1.0
     val_fraction: float = 0.15
+    # `seed` drives synthetic-lexicon generation (build_synthetic) and, when
+    # `split_seed` is None, the train/validation partition as well.
     seed: int = 0
+    # Seed for the train/validation split ONLY. Decoupled from `seed` so that
+    # multi-seed studies can vary model initialisation and batch order while
+    # holding the exact train/val word sets fixed.
+    # None  -> fall back to `seed` (pre-2026-07 behaviour, and what every
+    #          checkpoint saved before this field existed implies).
+    split_seed: Optional[int] = None
+
+
+def get_effective_split_seed(data_cfg) -> int:
+    """Seed actually used for Lexicon.split().
+
+    Backward compatible: checkpoints predating `split_seed` have no such field,
+    so DataConfig(**cfg_data) leaves it None and we fall back to `seed`, exactly
+    reproducing their original partition.
+    """
+    split_seed = getattr(data_cfg, "split_seed", None)
+    if split_seed is None:
+        return int(data_cfg.seed)
+    return int(split_seed)
 
 
 @dataclass

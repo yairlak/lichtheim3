@@ -39,6 +39,8 @@ def parse_args():
                    help="force the synthetic lexicon")
     p.add_argument("--fig_dir", default="figures")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--split_seed", type=int, default=None,
+                   help="Seed for the train/val split only; omitted -> --seed.")
     return p.parse_args()
 
 
@@ -49,6 +51,7 @@ def main():
     cfg.train.batch_size = args.batch_size
     cfg.train.seed = args.seed
     cfg.data.seed = args.seed
+    cfg.data.split_seed = args.split_seed
     cfg.data.max_words = args.max_words
     if args.no_real:
         cfg.data.use_real = False

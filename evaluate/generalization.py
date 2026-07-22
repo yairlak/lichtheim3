@@ -24,6 +24,7 @@ import numpy as np
 import torch
 
 from evaluate.hooks import make_batch, route_predictions, per_position_correct
+from config import get_effective_split_seed
 from utils.plotting import grouped_bars, multiline
 
 
@@ -47,7 +48,7 @@ def run(model, vocab, lexicon, cfg, out_dir: str) -> dict:
     os.makedirs(out_dir, exist_ok=True)
 
     # identical split to training (deterministic): val == unseen words
-    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, get_effective_split_seed(cfg.data))
     seen = [e.phonemes for e in train_entries][:400]
     unseen = [e.phonemes for e in val_entries][:400]
 

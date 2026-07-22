@@ -35,6 +35,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from config import Config, DataConfig, WMConfig, LTMConfig, GatingConfig, LossConfig, TrainConfig
+from config import get_effective_split_seed
 from data.phonemes import build_vocab
 from data.lexicon import build_lexicon
 from models.dual_route import DualRouteModel
@@ -68,7 +69,7 @@ def _load(ckpt_path: str, device: str):
     cfg.train.device = device
     vocab   = build_vocab()
     lexicon = build_lexicon(cfg.data, vocab)
-    train_entries, _ = lexicon.split(cfg.data.val_fraction, cfg.data.seed)
+    train_entries, _ = lexicon.split(cfg.data.val_fraction, get_effective_split_seed(cfg.data))
     bank = torch.stack(
         [torch.tensor(e.semantic) for e in train_entries]
     ).float().to(device)
