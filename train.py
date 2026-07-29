@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import Tuple
+from typing import Optional, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -162,7 +162,12 @@ def plot_loss_history(history, path: str) -> None:
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot(ep, [h["train_total"] for h in history], label="train total")
     ax.plot(ep, [h["train_rep"] for h in history], label="train rep (motor)")
-    ax.plot(ep, [h["val_rep"] for h in history], "--", label="val rep (unseen)")
+    # val_rep is None in full-lexicon mode — skip those epochs
+    val_pts = [(h["epoch"], h["val_rep"]) for h in history
+               if h.get("val_rep") is not None]
+    if val_pts:
+        vep, vrep = zip(*val_pts)
+        ax.plot(list(vep), list(vrep), "--", label="val rep (unseen)")
     ax.set(title="Training loss", xlabel="epoch", ylabel="loss")
     ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
     fig.savefig(path, dpi=130); plt.close(fig)
@@ -186,22 +191,32 @@ def build_and_train(cfg: Config, out_dir: str = None
                               weight_decay=cfg.train.weight_decay)
     pool_iter = itertools.cycle(pool_loader) if pool_loader is not None else None
 
+    validation_enabled = (getattr(cfg.data, "split_mode", "standard") != "full_lexicon"
+                          and len(val_loader.dataset) > 0)
     print(f"[train] lexicon={len(lexicon)} ({lexicon.source}) "
           f"vocab={vocab.size} device={cfg.train.device} "
-          f"dorsal_pool={'on' if pool_iter else 'off'}")
+          f"dorsal_pool={'on' if pool_iter else 'off'} "
+          f"validation={'on' if validation_enabled else 'DISABLED'}")
     history = []
     for ep in range(cfg.train.epochs):
         tr = run_epoch(model, train_loader, cfg, optim, pool_iter=pool_iter)
-        with torch.no_grad():
-            va = run_epoch(model, val_loader, cfg, optim=None)
+        if validation_enabled:
+            with torch.no_grad():
+                va = run_epoch(model, val_loader, cfg, optim=None)
+            val_rep: Optional[float] = va.get("rep")
+            val_wm:  Optional[float] = va.get("wm")
+        else:
+            val_rep = None
+            val_wm  = None
         history.append({"epoch": ep + 1,
                         "train_total": tr["total"], "train_rep": tr["rep"],
-                        "train_wm": tr["wm"], "val_rep": va["rep"],
-                        "val_wm": va["wm"]})
+                        "train_wm": tr["wm"], "val_rep": val_rep,
+                        "val_wm": val_wm})
+        val_str = (f"val rep={val_rep:.3f} wm={val_wm:.3f}"
+                   if val_rep is not None else "val: DISABLED")
         print(f"[ep {ep+1:2d}/{cfg.train.epochs}] "
               f"train total={tr['total']:.3f} rep={tr['rep']:.3f} "
-              f"align={tr['align']:.3f} wm={tr['wm']:.3f} | "
-              f"val rep={va['rep']:.3f} wm={va['wm']:.3f}")
+              f"align={tr['align']:.3f} wm={tr['wm']:.3f} | {val_str}")
     if out_dir is not None:
         import os
         plot_loss_history(history, os.path.join(out_dir, "training_loss.png"))

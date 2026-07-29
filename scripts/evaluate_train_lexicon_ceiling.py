@@ -49,11 +49,13 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from config import Config, DataConfig, WMConfig, LTMConfig, GatingConfig, LossConfig, TrainConfig
-from config import get_effective_split_seed
+from config import get_effective_split_seed, validate_split_config
 from data.phonemes import build_vocab, Vocab
 from data.lexicon import build_lexicon
 from models.dual_route import DualRouteModel
 from evaluate.hooks import make_batch, route_predictions
+from utils.provenance import (sha256_words_ordered, sha256_words_sorted, sha256_file,
+                               PROVENANCE_SCHEMA_VERSION, V1_REQUIRED_PROVENANCE_FIELDS)
 
 CKPT_DEFAULT = os.path.join(ROOT, "checkpoints", "lichtheim3.pt")
 OUT_DIR      = os.path.join(ROOT, "outputs", "train_lexicon_ceiling")
@@ -103,6 +105,12 @@ def parse_args():
                        "the full/gated route."
                    ))
     p.add_argument("--device",       default=None)
+    p.add_argument("--ignore_provenance", action="store_true",
+                   help=(
+                       "Skip hash verification of the reconstructed training set "
+                       "against the checkpoint. For diagnostics only — never use "
+                       "to bypass a real mismatch in production."
+                   ))
     return p.parse_args()
 
 
@@ -308,6 +316,8 @@ def main():
     # Backward-compatible config load: handle checkpoints that predate new fields
     train_cfg_dict = ckpt["cfg_train"]
     train_cfg_dict.setdefault("teacher_forcing_ratio", 1.0)
+    train_cfg_dict.setdefault("save_every_epochs", 0)
+    train_cfg_dict.setdefault("num_workers", 0)
 
     cfg = Config(
         data   = DataConfig(**ckpt["cfg_data"]),
@@ -322,10 +332,183 @@ def main():
         cfg.data.lexicon_path = args.lexicon_path
     elif not hasattr(cfg.data, "lexicon_path"):
         cfg.data.lexicon_path = None
+    validate_split_config(cfg.data)
 
     vocab   = build_vocab()
     lexicon = build_lexicon(cfg.data, vocab)
-    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, get_effective_split_seed(cfg.data))
+    split_mode      = getattr(cfg.data, "split_mode", "standard")
+    split_seed_eval = (0 if split_mode == "full_lexicon"
+                       else get_effective_split_seed(cfg.data))
+    train_entries, val_entries = lexicon.split(cfg.data.val_fraction, split_seed_eval)
+
+    # --- Provenance: per-check verification of dataset invariants ---
+    ignore_provenance = getattr(args, "ignore_provenance", False)
+    ls = getattr(lexicon, "load_stats", None)
+
+    # Sentinel for "rebuilt value cannot be computed" (e.g. ls is None).
+    # Distinct from None, which is a legitimate rebuilt value (e.g. split_seed_effective
+    # in full_lexicon mode, where None == None is a valid match).
+    _NOT_AVAILABLE = object()
+
+    # Compute rebuilt values
+    train_words         = [e.word for e in train_entries]
+    rebuilt_ordered_sha = sha256_words_ordered(train_words)
+    rebuilt_sorted_sha  = sha256_words_sorted(train_words)
+    rebuilt_file_sha    = (ls.lexicon_file_sha256 if ls else _NOT_AVAILABLE)
+    is_full_lex         = (split_mode == "full_lexicon")
+
+    # Determine checkpoint generation from provenance_schema_version
+    schema_version = ckpt.get("provenance_schema_version")
+    if schema_version is not None and schema_version != PROVENANCE_SCHEMA_VERSION:
+        print(f"\n[provenance] ERROR: unsupported provenance_schema_version={schema_version!r}.")
+        print(f"  Expected {PROVENANCE_SCHEMA_VERSION}. "
+              "This checkpoint was produced by a newer version of the code.")
+        if not ignore_provenance:
+            sys.exit(1)
+
+    is_legacy = (schema_version is None)
+
+    def _pchk(label, rebuilt, saved_key, mandatory=True):
+        """Build a per-check result dict with native Python/JSON types.
+
+        Native values are stored directly so that json.dump produces the correct
+        JSON types (null, true/false, numbers, strings) instead of string
+        representations ("None", "True", etc.).
+
+        Fields:
+          rebuilt_available  : True iff rebuilt can be computed (False when _NOT_AVAILABLE).
+          checkpoint_present : True iff saved_key exists in ckpt.
+          checked            : True iff both available+present; comparison was performed.
+          match              : rebuilt == saved (None==None → True); None if not checked.
+          rebuilt            : native Python value or None when not available.
+          checkpoint         : native Python value or None when key absent.
+
+        For full_lexicon split_seed_effective:
+          rebuilt=None, checkpoint=None, rebuilt_available=True,
+          checkpoint_present=True, checked=True, match=True.
+        """
+        checkpoint_present = (saved_key in ckpt)
+        rebuilt_available  = (rebuilt is not _NOT_AVAILABLE)
+
+        if not checkpoint_present:
+            return {
+                "field": label,
+                "rebuilt":             rebuilt if rebuilt_available else None,
+                "checkpoint":          None,
+                "rebuilt_available":   rebuilt_available,
+                "checkpoint_present":  False,
+                "checked":             False,
+                "match":               None,
+                "mandatory":           mandatory,
+            }
+        saved = ckpt[saved_key]
+        if not rebuilt_available:
+            return {
+                "field": label,
+                "rebuilt":             None,
+                "checkpoint":          saved,
+                "rebuilt_available":   False,
+                "checkpoint_present":  True,
+                "checked":             False,
+                "match":               None,
+                "mandatory":           mandatory,
+            }
+        # Both available and present: compare with native types.
+        # None == None → True  (e.g. split_seed_effective in full_lexicon mode).
+        match = (rebuilt == saved)
+        return {
+            "field": label,
+            "rebuilt":             rebuilt,
+            "checkpoint":          saved,
+            "rebuilt_available":   True,
+            "checkpoint_present":  True,
+            "checked":             True,
+            "match":               match,
+            "mandatory":           mandatory,
+        }
+
+    # For v1: n_glove_found and n_glove_fallback are mandatory (real lexicon)
+    glove_mandatory = (schema_version == 1)
+
+    prov_checks = [
+        _pchk("split_mode",              split_mode,                                    "split_mode"),
+        _pchk("train_all_words",         is_full_lex,                                   "train_all_words"),
+        _pchk("validation_enabled",      not is_full_lex,                               "validation_enabled"),
+        _pchk("n_source_rows",           ls.n_source_rows if ls else _NOT_AVAILABLE,    "n_source_rows"),
+        _pchk("n_entries_after_loading", ls.n_entries_after_loading if ls else _NOT_AVAILABLE,
+              "n_entries_after_loading"),
+        _pchk("n_train",                 len(train_entries),                            "n_train"),
+        _pchk("n_val",                   len(val_entries),                              "n_val"),
+        _pchk("n_unique_train_words",    len(set(train_words)),                         "n_unique_train_words"),
+        _pchk("n_glove_found",           ls.n_glove_found if ls else _NOT_AVAILABLE,    "n_glove_found",
+              mandatory=glove_mandatory),
+        _pchk("n_glove_fallback",        ls.n_glove_fallback if ls else _NOT_AVAILABLE, "n_glove_fallback",
+              mandatory=glove_mandatory),
+        _pchk("lexicon_file_sha256",     rebuilt_file_sha,                              "lexicon_file_sha256"),
+        _pchk("ordered_training_words_sha256", rebuilt_ordered_sha,
+              "ordered_training_words_sha256"),
+        _pchk("sorted_training_words_sha256",  rebuilt_sorted_sha,
+              "sorted_training_words_sha256"),
+        # Split seed contract — None is a legitimate value for full_lexicon
+        _pchk("split_seed_used",         not is_full_lex,                               "split_seed_used"),
+        _pchk("split_seed_effective",    (None if is_full_lex
+                                          else get_effective_split_seed(cfg.data)),
+              "split_seed_effective"),
+    ]
+
+    if is_legacy:
+        provenance_verified = False
+        provenance_status   = "legacy"
+        all_checks_passed   = False
+        print("  [provenance] WARNING: legacy checkpoint (no provenance_schema_version).")
+        print("  [provenance] Strict checks skipped; provenance_verified=False.")
+        print(f"  [provenance] rebuilt ordered_sha: {rebuilt_ordered_sha[:16]}…  (unverified)")
+    else:
+        # v1: check all required fields are present
+        missing_fields = sorted(f for f in V1_REQUIRED_PROVENANCE_FIELDS if f not in ckpt)
+        if missing_fields:
+            print(f"\n  [provenance] ERROR: v1 checkpoint missing required fields:")
+            for f in missing_fields:
+                print(f"    - {f}")
+            if not ignore_provenance:
+                sys.exit(1)
+
+        # all_checks_passed requires EVERY mandatory check to be checked=True AND match=True.
+        # A mandatory check with checked=False (uncalculable rebuilt) is not a pass.
+        mandatory_checks = [c for c in prov_checks if c["mandatory"]]
+        optional_checks  = [c for c in prov_checks if not c["mandatory"]]
+
+        mandatory_ok = all(c["checked"] is True and c["match"] is True
+                           for c in mandatory_checks)
+        optional_ok  = all(c["match"] is not False for c in optional_checks)
+        all_checks_passed = mandatory_ok and optional_ok
+        provenance_verified = all_checks_passed
+
+        # Collect failures for display
+        failed_mandatory = [c for c in mandatory_checks
+                            if not (c["checked"] is True and c["match"] is True)]
+        failed_optional  = [c for c in optional_checks if c["match"] is False]
+
+        if all_checks_passed:
+            checked_n = sum(1 for c in prov_checks if c["checked"])
+            provenance_status = "verified"
+            print(f"  [provenance] ALL {checked_n} CHECKS PASSED (schema_version=1)")
+        else:
+            provenance_status = "mismatch"
+            print(f"\n  [provenance] CHECK FAILURES (schema_version=1):")
+            for c in failed_mandatory + failed_optional:
+                tag = "[MANDATORY]" if c["mandatory"] else "[optional]"
+                note = " (uncalculable)" if not c["checked"] else ""
+                # repr() for log display only; native values stay in metrics.json
+                print(f"    {tag}{note} {c['field']}:")
+                print(f"      rebuilt   : {repr(c['rebuilt'])}")
+                print(f"      checkpoint: {repr(c['checkpoint'])}")
+            if failed_mandatory:
+                if not ignore_provenance:
+                    print("\n  Use --ignore_provenance to bypass (for diagnostics only).")
+                    sys.exit(1)
+                else:
+                    print("\n  --ignore_provenance: continuing with UNVERIFIED dataset.")
 
     bank = torch.stack([torch.tensor(e.semantic) for e in train_entries]).float().to(device)
     model = DualRouteModel(cfg, vocab).to(device)
@@ -339,9 +522,12 @@ def main():
     print(f"  checkpoint : {args.ckpt}")
     print(f"  glove      : {'present' if ckpt.get('glove_present') else 'ABSENT (pseudo-vectors)'}")
     print(f"  lexicon    : {lexicon.source}  max_words={cfg.data.max_words}")
+    print(f"  split_mode : {split_mode}")
     print(f"  n_train    : {len(train_entries)}  n_val: {len(val_entries)}")
+    _split_seed_display = (None if split_mode == "full_lexicon"
+                           else get_effective_split_seed(cfg.data))
     print(f"  checkpoint_training_seed      : {cfg.train.seed}")
-    print(f"  checkpoint_split_seed_effective: {get_effective_split_seed(cfg.data)}")
+    print(f"  checkpoint_split_seed_effective: {_split_seed_display}")
     print(f"  device     : {device}")
     print(f"  decode     : {decode_mode}")
     print(f"  out_dir    : {out_dir}")
@@ -401,8 +587,28 @@ def main():
         "cfg_epochs":        cfg.train.epochs,
         "cfg_seed":          cfg.train.seed,
         "checkpoint_training_seed":       cfg.train.seed,
-        "checkpoint_split_seed_effective": get_effective_split_seed(cfg.data),
+        # split_seed_effective: None when split_mode=full_lexicon (split seed not used)
+        "checkpoint_split_seed_effective": (None if split_mode == "full_lexicon"
+                                            else get_effective_split_seed(cfg.data)),
         "splits_evaluated":  splits_evaluated,
+        "provenance": {
+            "verified":               provenance_verified,
+            "all_checks_passed":      all_checks_passed,
+            "status":                 provenance_status,
+            "ignore_provenance_flag": ignore_provenance,
+            "legacy_checkpoint":      is_legacy,
+            "split_mode":             split_mode,
+            "validation_enabled":     ckpt.get("validation_enabled",
+                                               split_mode != "full_lexicon"),
+            # split_seed_effective: None for full_lexicon (seed not used for split)
+            "split_seed_effective":   (None if split_mode == "full_lexicon"
+                                       else get_effective_split_seed(cfg.data)),
+            "glove_present":          bool(ckpt.get("glove_file_path")
+                                          or ckpt.get("glove_present")),
+            "n_glove_found":          ckpt.get("n_glove_found"),
+            "n_glove_fallback":       ckpt.get("n_glove_fallback"),
+            "checks":                 prov_checks,
+        },
         "results": {},
     }
     for split in splits_evaluated:
@@ -463,6 +669,19 @@ def _write_summary_md(metrics: dict, n_train_errors: int, out_dir: str) -> None:
     decode_mode = metrics.get("decode_mode", DECODE_TF)
     title = ("Train Lexicon AR Evaluation" if decode_mode == DECODE_AR
              else "Train Lexicon Ceiling Evaluation")
+    prov = metrics.get("provenance", {})
+    prov_status   = prov.get("status", "unknown")
+    prov_verified = prov.get("verified", False)
+    prov_icon = ("✓ VERIFIED" if prov_verified
+                 else ("⚠ legacy" if prov_status in ("legacy", "legacy_no_hash")
+                       else "✗ MISMATCH"))
+    # Extract rebuilt ordered sha from per-check list (native value, may be None)
+    _prov_checks  = prov.get("checks", [])
+    _ord_check    = next((c for c in _prov_checks
+                          if c["field"] == "ordered_training_words_sha256"), {})
+    _ord_raw      = _ord_check.get("rebuilt", prov.get("rebuilt_ordered_sha256"))
+    ordered_sha   = (f"{_ord_raw[:32]}…" if isinstance(_ord_raw, str) else "N/A")
+    split_mode_str = prov.get("split_mode", "standard")
     lines = [
         f"# {title}",
         "",
@@ -476,11 +695,14 @@ def _write_summary_md(metrics: dict, n_train_errors: int, out_dir: str) -> None:
         f"| Decode mode | {decode_mode} |",
         f"| GloVe present | {'YES' if metrics['glove_present'] else 'NO (pseudo-vectors)'} |",
         f"| Lexicon source | {metrics['lexicon_source']} |",
+        f"| split_mode | {split_mode_str} |",
         f"| max_words | {metrics['cfg_max_words']} |",
         f"| epochs | {metrics['cfg_epochs']} |",
         f"| seed | {metrics['cfg_seed']} |",
         f"| n_train | {metrics['n_train']} |",
         f"| n_val | {metrics['n_val']} |",
+        f"| Hash verification | {prov_icon} |",
+        f"| ordered_training_sha256 | `{ordered_sha}` |",
         "",
         "## Results",
         "",

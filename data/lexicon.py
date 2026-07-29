@@ -22,10 +22,12 @@ and falls back to synthetic only if the bundled file is missing.
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import random
 import zlib
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -33,6 +35,25 @@ import numpy as np
 from .phonemes import VOCAB, PHONEMES, Vocab
 
 BUNDLED_PATH = os.path.join(os.path.dirname(__file__), "lexicon_en.tsv")
+
+
+@dataclass
+class LoadStats:
+    """Statistics collected during lexicon loading — populated by build_bundled.
+
+    Stored on Lexicon.load_stats so checkpoint code can read them without
+    re-parsing the lexicon or re-loading GloVe.
+    """
+    n_source_rows: int = 0
+    n_entries_after_loading: int = 0
+    n_filtered_unknown_phoneme: int = 0
+    n_filtered_length: int = 0
+    n_unique_loaded_words: int = 0
+    n_glove_found: int = 0
+    n_glove_fallback: int = 0
+    lexicon_file_path: str = ""
+    glove_file_path: Optional[str] = None
+    lexicon_file_sha256: Optional[str] = None
 
 
 def logfreq_weights(ranks, n_total: int = None) -> np.ndarray:
@@ -69,8 +90,9 @@ class Lexicon:
         self.entries = entries
         self.vocab = vocab
         self.semantic_dim = semantic_dim
-        self.source = source  # "real" or "synthetic"
+        self.source = source  # "bundled-en" or "synthetic"
         self._density_cache: Optional[Dict[int, int]] = None
+        self.load_stats: Optional[LoadStats] = None  # set by build_bundled
 
     def __len__(self) -> int:
         return len(self.entries)
@@ -231,32 +253,62 @@ def build_bundled(cfg, vocab: Vocab = VOCAB, path: str = BUNDLED_PATH
     Semantic targets come from GloVe if `cfg.glove_path` is available, else a
     stable deterministic pseudo-vector per word (the lexicon itself is real
     either way). Frequency rank is taken straight from the file.
+
+    Populates Lexicon.load_stats (a LoadStats instance) with counters collected
+    during the single pass through the file.  GloVe is loaded once here and
+    not reloaded at checkpoint-save time.
     """
     if not os.path.exists(path):
         return None
+
     glove = _load_glove_map(cfg)
+    glove_path = getattr(cfg, "glove_path", None)
+
+    # Hash the file once (small ~600 KB file) before the parsing pass.
+    file_sha = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+    stats = LoadStats(
+        lexicon_file_path=os.path.abspath(path),
+        glove_file_path=(os.path.abspath(glove_path)
+                         if glove_path and os.path.exists(glove_path) else None),
+        lexicon_file_sha256=file_sha,
+    )
+
     entries: List[LexEntry] = []
     with open(path, "r", encoding="utf-8") as f:
         next(f)  # header: rank\tword\tarpabet
         for line in f:
+            stats.n_source_rows += 1
             r, word, arp = line.rstrip("\n").split("\t")
             phones = arp.split()
             if any(p not in vocab.stoi for p in phones):
+                stats.n_filtered_unknown_phoneme += 1
                 continue
             if not (cfg.min_phonemes <= len(phones) <= cfg.max_phonemes):
+                stats.n_filtered_length += 1
                 continue
             ids = [vocab.stoi[p] for p in phones]
             sem = (glove.get(word) if glove else None)
             if sem is None:
                 sem = _deterministic_semantic(word, cfg.semantic_dim)
+                stats.n_glove_fallback += 1
+            else:
+                stats.n_glove_found += 1
             entries.append(LexEntry(word=word, phonemes=ids, semantic=sem,
                                     freq=_zipf_freq(int(r) - 1), rank=int(r)))
             if len(entries) >= cfg.max_words:
                 break
+
+    stats.n_entries_after_loading = len(entries)
+    stats.n_unique_loaded_words = len(set(e.word for e in entries))
+
     min_required = min(cfg.max_words, 50)
     if len(entries) < min_required:
         return None
-    return Lexicon(entries, vocab, cfg.semantic_dim, source="bundled-en")
+
+    lex = Lexicon(entries, vocab, cfg.semantic_dim, source="bundled-en")
+    lex.load_stats = stats
+    return lex
 
 
 def build_lexicon(cfg, vocab: Vocab = VOCAB) -> Lexicon:

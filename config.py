@@ -8,6 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
+_VALID_SPLIT_MODES = ("standard", "full_lexicon")
+
 
 @dataclass
 class DataConfig:
@@ -39,6 +41,52 @@ class DataConfig:
     # None  -> fall back to `seed` (pre-2026-07 behaviour, and what every
     #          checkpoint saved before this field existed implies).
     split_seed: Optional[int] = None
+    # Split mode.  "standard": historical 85/15 train/val split.
+    # "full_lexicon": all loaded words go to train, validation disabled.
+    # Must be set together with val_fraction: full_lexicon ↔ val_fraction=0.0.
+    split_mode: str = "standard"
+
+    def __post_init__(self) -> None:
+        if self.split_mode not in _VALID_SPLIT_MODES:
+            raise ValueError(
+                f"Unknown split_mode={self.split_mode!r}. "
+                f"Valid values: {_VALID_SPLIT_MODES}."
+            )
+        if self.split_mode == "full_lexicon" and self.val_fraction != 0.0:
+            raise ValueError(
+                f"split_mode='full_lexicon' requires val_fraction=0.0, "
+                f"got val_fraction={self.val_fraction}."
+            )
+        if self.split_mode == "standard" and self.val_fraction == 0.0:
+            raise ValueError(
+                "val_fraction=0.0 with split_mode='standard' is ambiguous. "
+                "Use split_mode='full_lexicon' to explicitly disable validation."
+            )
+
+
+def validate_split_config(data_cfg) -> None:
+    """Re-run the split_mode / val_fraction invariants on a (possibly mutated) DataConfig.
+
+    Call this after any mutation of split_mode or val_fraction (e.g. after
+    _apply_fresh_cli) to catch contradictions that __post_init__ cannot see.
+    Raises ValueError on contradiction.
+    """
+    split_mode   = getattr(data_cfg, "split_mode", "standard")
+    val_fraction = getattr(data_cfg, "val_fraction", 0.15)
+    if split_mode not in _VALID_SPLIT_MODES:
+        raise ValueError(
+            f"Unknown split_mode={split_mode!r}. Valid values: {_VALID_SPLIT_MODES}."
+        )
+    if split_mode == "full_lexicon" and val_fraction != 0.0:
+        raise ValueError(
+            f"split_mode='full_lexicon' requires val_fraction=0.0, "
+            f"got val_fraction={val_fraction}."
+        )
+    if split_mode == "standard" and val_fraction == 0.0:
+        raise ValueError(
+            "val_fraction=0.0 with split_mode='standard' is ambiguous. "
+            "Use split_mode='full_lexicon' to explicitly disable validation."
+        )
 
 
 def get_effective_split_seed(data_cfg) -> int:
