@@ -1,6 +1,18 @@
 torch>=2.0
 numpy>=1.23
 matplotlib>=3.6
+# Edit-operation backend for the faithful behavioral replication.  Same
+# distribution and constraint as the original Dager et al. repository
+# (danieldager/swp-model @ dc09eb3, requirements.txt:13 `levenshtein>=0.26.1`;
+# swp/utils/datasets.py:11 `from Levenshtein import editops`).  This is the
+# rapidfuzz-backed `Levenshtein` package, NOT the legacy `python-Levenshtein`
+# wrapper: the two can resolve tied optimal alignments differently.  That
+# difference does NOT touch Figures 2A/2B (total raw edit distance only,
+# alignment-invariant) or Figure 2C (zip-mismatch Error_Indices, no alignment);
+# it affects the insertion/deletion/substitution taxonomy, Figure 8-style
+# error-type analyses, and any separately labelled aligned-error extension.
+# Verified installed in the lichtheim3 environment: 0.27.3 (rapidfuzz 3.14.5).
+Levenshtein>=0.26.1
 # The realistic 30k English lexicon (data/lexicon_en.tsv) is bundled, so no
 # downloads are required. Optional:
 #   - real GloVe semantic targets:  bash data/get_glove.sh  (-> data/glove.6B.300d.txt)

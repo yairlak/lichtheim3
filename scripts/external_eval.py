@@ -34,10 +34,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import platform
+import subprocess
 import sys
 import dataclasses
+import datetime
 from itertools import zip_longest
 from typing import Dict, List, Optional, Tuple
 
@@ -58,12 +62,18 @@ from data.phonemes import build_vocab, Vocab
 from data.lexicon import build_lexicon
 from models.dual_route import DualRouteModel
 from evaluate.hooks import make_batch, route_predictions, per_position_correct
+from utils.provenance import sha256_file, sha256_words_ordered, git_state
 
 # ---------------------------------------------------------------------------
 CKPT_PATH    = os.path.join(ROOT, "checkpoints", "lichtheim3.pt")
 WFE_TSV      = os.path.join(ROOT, "data", "eval_external", "wfe_eval.tsv")
 SSP_TSV      = os.path.join(ROOT, "data", "eval_external", "ssp_eval.tsv")
 OUT_DIR      = os.path.join(ROOT, "outputs", "external_eval")
+# Frozen analysis manifest (protocol freeze 2026-07-30).  Hashed into the
+# provenance block; the evaluation itself never reads it.
+ANALYSIS_MANIFEST = os.path.join(
+    ROOT, "outputs", "behavioral_wfe_fulllexicon_93a577f", "audits",
+    "wfe_analysis_item_manifest.tsv")
 DRY_WFE_N   = 10
 DRY_SSP_N   = 20
 BATCH_SIZE   = 64
@@ -71,6 +81,99 @@ BATCH_SIZE   = 64
 
 DECODE_TF = "teacher_forced"
 DECODE_AR = "autoregressive"
+
+# ---------------------------------------------------------------------------
+# Behavioral instrumentation (additive patch, protocol frozen 2026-07-30).
+# Spec: outputs/behavioral_wfe_fulllexicon_93a577f/audits/
+#       minimal_behavioral_evaluation_patch_FINAL.md
+#
+# Nothing below changes any pre-existing prediction, metric or column.  The
+# instrumentation columns are APPENDED after every pre-existing column, so the
+# pre-patch table is exactly the patched table with the new columns dropped.
+# ---------------------------------------------------------------------------
+
+OUTPUT_SCHEMA_VERSION = "behavioral_instrumentation_v1"
+
+# Value written when a quantity does not exist for a route/regime.  It is a
+# genuine absence, never a fabricated number:
+#   * eos_position       : no <eos> inside the item's forced-length readout
+#                          window (or teacher-forced regime, where there is no
+#                          autoregressive generation window at all);
+#   * gate / confidence   : these are FULL-ROUTE, word-level quantities.  The
+#                          WM-only and LTM-only routes never compute a gate
+#                          (see models/dual_route.py:route_logits), so they get
+#                          no per-route gate column at all rather than a
+#                          fabricated one.
+MISSING = ""
+
+DECODE_CONVENTION_NOTE = (
+    "forced-length autoregressive readout (prediction bounded by gold target "
+    "length; terminal insertions unobservable)"
+)
+
+
+def _first_eos_position(pred_ids: List[int], eos_id: int) -> Optional[int]:
+    """0-based index of the first <eos> in a raw generated token window.
+
+    `pred_ids` must be the RAW generated tokens for the item's readout window,
+    i.e. before EOS trimming, before target-length slicing and before any
+    conversion to phoneme strings.  Returns None when the window contains no
+    <eos>.
+
+    Convention (frozen): 0-based index INTO THE READOUT WINDOW, so that
+    `eos_position == len(predicted_symbols)` whenever an <eos> is present, and
+    `eos_position == 0` means the model emitted <eos> as its very first token
+    (empty prediction).  It is NOT a 1-based position and NOT a generated
+    length.
+    """
+    for i, idx in enumerate(pred_ids):
+        if idx == eos_id:
+            return i
+    return None
+
+
+@torch.no_grad()
+def capture_gate_and_field(model: DualRouteModel, batch: Dict[str, torch.Tensor],
+                           vocab: Vocab) -> Dict[str, List[Optional[float]]]:
+    """Word-level gate and lexical field actually used by the FULL route.
+
+    Runs one extra deterministic full-route forward on the fixed encoder input
+    with a BOS-only decoder prefix.  The gate is word-level and constant across
+    decoder timesteps (models/gating.py: `g.expand(B, S, 1)`), so a single step
+    yields exactly the value used at every step of the real decode.
+
+    The values come from the model that was reconstructed from the checkpoint,
+    hence from the checkpoint's own GatingConfig (cohort 93a577f: alpha=2.0,
+    gate_threshold=0.7) — never from dataclass defaults.  Nothing is
+    recomputed here and nothing is rounded.
+
+    No noise: `model.eval()` plus `apply_noise=False`; `collect=True` only
+    selects what is returned (see models/wm_route.py docstring).
+
+    Returns lists (one entry per batch item) for gate, confidence, margin and
+    density.  `confidence` is the top-1 cosine similarity to the semantic bank
+    that the gate consumes — not an index, not a margin, not a density, and not
+    "phonological similarity".  Entries are None if the model exposes no
+    lexical field (semantic bank absent or of size <= 1).
+    """
+    B = batch["enc_in"].shape[0]
+    dec_bos = batch["enc_in"].new_full((B, 1), vocab.bos_id)
+    res = model.route_logits(batch["enc_in"], batch["enc_mask"], dec_bos,
+                             route="full", collect=True)
+
+    gate_t = res.get("gate")
+    gate = ([float(v) for v in gate_t[:, 0, 0].tolist()]
+            if gate_t is not None else [None] * B)
+
+    def _field(key: str) -> List[Optional[float]]:
+        t = res.get(f"field_{key}")
+        if t is None:
+            return [None] * B
+        return [float(v) for v in t.reshape(B).tolist()]
+
+    return {"gate": gate, "lexical_confidence": _field("confidence"),
+            "lexical_margin": _field("margin"),
+            "lexical_density": _field("density")}
 
 _REGIME_NOTES = {
     DECODE_TF: (
@@ -187,10 +290,205 @@ def load_model_and_vocab(ckpt_path: str, device: str) -> Tuple[DualRouteModel, V
         "_val_word_set":      {e.word.lower() for e in val_entries},
         "_val_phoneme_set":   {tuple(e.phonemes) for e in val_entries},
     }
+    # --- provenance inputs captured while the objects are in hand ---------
+    meta["_provenance_inputs"] = {
+        "checkpoint_path": os.path.abspath(ckpt_path),
+        "checkpoint_sha256": sha256_file(ckpt_path),
+        "checkpoint_training_commit": ckpt.get("git_commit", "unknown"),
+        "checkpoint_training_branch": ckpt.get("git_branch", "unknown"),
+        "checkpoint_training_dirty": ckpt.get("git_dirty", "unknown"),
+        "checkpoint_epoch": ckpt.get("total_epochs_trained"),
+        "checkpoint_provenance_schema_version":
+            ckpt.get("provenance_schema_version"),
+        "seed": cfg.train.seed,
+        "split_mode": ckpt.get("split_mode"),
+        "n_train": ckpt.get("n_train"),
+        "n_val": ckpt.get("n_val"),
+        "training_lexicon_path": ckpt.get("lexicon_file_path"),
+        "training_lexicon_path_configured": cfg.data.lexicon_path,
+        "training_lexicon_sha256_checkpoint": ckpt.get("lexicon_file_sha256"),
+        "training_lexicon_sha256_observed": sha256_file(
+            os.path.join(ROOT, cfg.data.lexicon_path)
+            if cfg.data.lexicon_path else ""),
+        "ordered_training_words_sha256_checkpoint":
+            ckpt.get("ordered_training_words_sha256"),
+        "ordered_training_words_sha256_observed":
+            sha256_words_ordered([e.word for e in train_entries]),
+        "glove_path": cfg.data.glove_path,
+        "glove_present_at_training": ckpt.get("glove_present", False),
+        "n_glove_found_at_training": ckpt.get("n_glove_found"),
+        "n_glove_fallback_at_training": ckpt.get("n_glove_fallback"),
+        # Integrity signature of the semantic bank actually installed on the
+        # model (float32 bytes of the L2-normalised bank, in training order).
+        "semantic_bank_shape": list(model.ltm.semantic_bank.shape),
+        "semantic_bank_sha256": hashlib.sha256(
+            model.ltm.semantic_bank.detach().cpu().contiguous()
+            .numpy().tobytes()).hexdigest(),
+        "gate_alpha": cfg.gating.alpha,
+        "gate_threshold": cfg.gating.gate_threshold,
+        "gate_usage_prior": cfg.gating.usage_prior,
+        "wm_interference_noise": cfg.wm.interference_noise,
+        "ltm_ventral_noise": cfg.ltm.ventral_noise,
+        "ltm_encoder_mode": cfg.ltm.ltm_encoder_mode,
+        "wm_hidden": cfg.wm.hidden,
+    }
+
     print(f"  lexicon: {meta['lexicon_source']}  "
           f"n_train={meta['n_train']}  n_val={meta['n_val']}")
     print(f"  glove_present: {meta['glove_present']}")
     return model, vocab, meta
+
+
+# =========================================================  provenance  ====
+
+def _git_diff_sha256(cwd: str = ROOT) -> Tuple[str, int]:
+    """(sha256, byte length) of `git diff HEAD` — the uncommitted patch itself.
+
+    Lets a run performed on a dirty working tree be identified exactly without
+    inventing a commit that does not exist yet.  Covers TRACKED modifications
+    only; untracked new sources are covered by `_evaluation_source_sha256`.
+    """
+    try:
+        out = subprocess.check_output(
+            ["git", "diff", "HEAD"], cwd=cwd,
+            stderr=subprocess.DEVNULL, timeout=30)
+    except Exception:
+        return "unknown", -1
+    return hashlib.sha256(out).hexdigest(), len(out)
+
+
+# Every source file whose content can change an evaluation number.  Hashing
+# them directly makes the code identity complete and git-independent: it also
+# covers files that are new and still untracked, which `git diff HEAD` omits.
+_EVALUATION_SOURCE_FILES = (
+    "scripts/external_eval.py",
+    "scripts/enrich_behavioral_predictions.py",
+    "evaluate/hooks.py",
+    "models/dual_route.py",
+    "models/gating.py",
+    "models/ltm_route.py",
+    "models/wm_route.py",
+    "models/motor.py",
+    "data/lexicon.py",
+    "data/phonemes.py",
+    "config.py",
+    "utils/provenance.py",
+)
+
+
+def _evaluation_source_sha256() -> Dict[str, Optional[str]]:
+    return {rel: sha256_file(os.path.join(ROOT, rel))
+            for rel in _EVALUATION_SOURCE_FILES}
+
+
+def _levenshtein_version() -> Optional[str]:
+    """Installed `Levenshtein` version (Dager's editops backend), or None.
+
+    Recorded for provenance only; this module never calls it.
+    """
+    try:
+        import importlib.metadata as _md
+        return _md.version("Levenshtein")
+    except Exception:
+        return None
+
+
+def build_provenance(meta: dict, *, wfe_tsv: Optional[str],
+                     ssp_tsv: Optional[str], manifest_path: Optional[str],
+                     device: str, decode: str, routes: Tuple[str, ...],
+                     wm_noise: bool, argv: Optional[List[str]] = None) -> dict:
+    """Full provenance record for one evaluation run.
+
+    Evaluation-code identity is recorded HONESTLY: the current HEAD is stored
+    as `evaluation_code_base_commit`, the working tree's dirty state as
+    `evaluation_code_dirty`, and the uncommitted patch as
+    `evaluation_patch_diff_sha256`.  `evaluation_code_commit` is filled in ONLY
+    when the tree is clean — a dirty run never fabricates a commit that would
+    misdescribe the code that produced the numbers.
+    """
+    g = git_state(ROOT)
+    diff_sha, diff_len = _git_diff_sha256(ROOT)
+    dirty = g.get("dirty")
+    is_dirty = (dirty is True) or (dirty == "unknown")
+
+    prov = dict(meta.get("_provenance_inputs", {}))
+    prov.update({
+        "output_schema_version": OUTPUT_SCHEMA_VERSION,
+        "timestamp_utc": datetime.datetime.now(
+            datetime.timezone.utc).isoformat(),
+        # --- evaluation code identity (never fabricated) ------------------
+        "evaluation_code_base_commit": g.get("commit", "unknown"),
+        "evaluation_code_branch": g.get("branch", "unknown"),
+        "evaluation_code_dirty": dirty,
+        "evaluation_patch_diff_sha256": diff_sha,
+        "evaluation_patch_diff_bytes": diff_len,
+        "evaluation_source_sha256": _evaluation_source_sha256(),
+        "evaluation_code_commit": (None if is_dirty else g.get("commit")),
+        "evaluation_code_commit_note": (
+            "working tree dirty or git state unknown at run time: no final "
+            "evaluation_code_commit is claimed; identify the code by "
+            "evaluation_code_base_commit + evaluation_patch_diff_sha256"
+            if is_dirty else "clean working tree; commit is authoritative"),
+        # --- stimulus / lexicon artefacts ---------------------------------
+        "wfe_tsv_path": (os.path.abspath(wfe_tsv) if wfe_tsv else None),
+        "wfe_tsv_sha256": (sha256_file(wfe_tsv) if wfe_tsv else None),
+        "ssp_tsv_path": (os.path.abspath(ssp_tsv) if ssp_tsv else None),
+        "ssp_tsv_sha256": (sha256_file(ssp_tsv) if ssp_tsv else None),
+        "analysis_item_manifest_path": (os.path.abspath(manifest_path)
+                                        if manifest_path else None),
+        "analysis_item_manifest_sha256": (sha256_file(manifest_path)
+                                          if manifest_path else None),
+        "glove_sha256": (sha256_file(os.path.join(ROOT, prov["glove_path"]))
+                         if prov.get("glove_path") else None),
+        # --- regime -------------------------------------------------------
+        "device": device,
+        "decode_mode": decode,
+        "routes": list(routes),
+        "wm_noise_enabled": bool(wm_noise),
+        "deterministic_no_noise": (not wm_noise),
+        "apply_noise": False,
+        "teacher_forcing_in_primary_path": False,
+        "decode_convention": DECODE_CONVENTION_NOTE,
+        "eos_position_convention": (
+            "0-based index of the first <eos> inside the item's forced-length "
+            "readout window, captured before trimming; empty when the window "
+            "contains no <eos>"),
+        "gate_convention": (
+            "word-level scalar from the checkpoint's own GatingConfig, "
+            "constant across decoder timesteps; FULL route only — WM-only and "
+            "LTM-only compute no gate and therefore carry none"),
+        # --- edit-distance / editops backend ------------------------------
+        # The stored {route}_edit_dist comes from this module's internal DP
+        # (_edit_distance).  Its VALUE equals Levenshtein.distance for the same
+        # operands and is alignment-invariant, so the analyses that consume
+        # only the total — Figures 2A and 2B — do not depend on any editops
+        # backend.  Figure 2C does not either: it uses the zip-mismatch
+        # Error_Indices method with no alignment.  The insert/delete/replace
+        # SPLIT is a different matter: it is produced downstream by
+        # scripts/enrich_behavioral_predictions.py, which requires Dager's
+        # Levenshtein.editops backend in faithful mode, and it feeds the
+        # error-type taxonomy (Figure 8-style analyses) and any aligned-error
+        # extension.
+        "edit_distance_backend": "external_eval._edit_distance (internal DP)",
+        "edit_distance_total_is_alignment_invariant": True,
+        "editops_backend_for_operation_counts": "Levenshtein.editops "
+                                                "(faithful enrichment path)",
+        "editops_backend_affects": (
+            "insertion/deletion/substitution taxonomy; Figure 8-style "
+            "error-type analyses; any separately labelled aligned-error "
+            "extension"),
+        "editops_backend_does_not_affect": (
+            "Figures 2A/2B (total raw edit distance only) and Figure 2C "
+            "(zip-mismatch Error_Indices, no alignment)"),
+        "levenshtein_package_version": _levenshtein_version(),
+        "levenshtein_required_spec": "Levenshtein>=0.26.1",
+        # --- environment --------------------------------------------------
+        "python_version": platform.python_version(),
+        "torch_version": torch.__version__,
+        "platform": platform.platform(),
+        "command": " ".join(argv if argv is not None else sys.argv),
+    })
+    return prov
 
 
 # ============================================================  inference ====
@@ -200,12 +498,20 @@ def eval_batch(model: DualRouteModel, vocab: Vocab,
                forms: List[List[int]], device: str,
                routes: Tuple[str, ...] = ("full", "wm", "ltm"),
                wm_noise: bool = False,
-               ) -> Dict[str, List[List[int]]]:
+               return_instrumentation: bool = False,
+               ):
     """Return per-route predicted phoneme id sequences for a list of forms.
 
     wm_noise=False (default): collect=False for WM route → WM interference noise
     disabled → deterministic evaluation.  Pass wm_noise=True only for explicit
     diagnostic runs where noise-in-eval is desired.
+
+    return_instrumentation=False (default) preserves the historical return
+    value exactly.  With True the return becomes (preds_by_route,
+    instrumentation).  This is the TEACHER-FORCED diagnostic path: there is no
+    autoregressive generation window, so `eos_position` is absent (None) for
+    every item by construction, while the gate/lexical field — which depend
+    only on the encoder input — are captured normally.
     """
     batch = make_batch(forms, vocab, device)
     preds_by_route: Dict[str, List[List[int]]] = {}
@@ -224,7 +530,14 @@ def eval_batch(model: DualRouteModel, vocab: Vocab,
             route_preds.append(seq)
         preds_by_route[route] = route_preds
 
-    return preds_by_route
+    if not return_instrumentation:
+        return preds_by_route
+
+    instrumentation = {
+        "eos_position": {r: [None] * len(forms) for r in routes},
+    }
+    instrumentation.update(capture_gate_and_field(model, batch, vocab))
+    return preds_by_route, instrumentation
 
 
 @torch.no_grad()
@@ -232,16 +545,24 @@ def autoregressive_decode_batch(model: DualRouteModel, vocab: Vocab,
                                  forms: List[List[int]], device: str,
                                  routes: Tuple[str, ...] = ("full", "wm", "ltm"),
                                  wm_noise: bool = False,
-                                 ) -> Dict[str, List[List[int]]]:
+                                 return_instrumentation: bool = False,
+                                 ):
     """Autoregressive decoding: each step feeds the model's own previous prediction.
 
     Decodes for exactly len(form) steps per item.  If the model predicts EOS
     before the target length is reached, the output is truncated there (the
     remaining positions are treated as missing, contributing to edit distance).
+
+    return_instrumentation=False (default) preserves the historical return
+    value exactly: {route: [pred_ids, ...]}.  With True the return becomes
+    (preds_by_route, instrumentation), where instrumentation carries the raw
+    EOS positions captured BEFORE trimming plus the full-route word-level gate
+    and lexical field.  The decoding itself is byte-identical either way.
     """
     batch = make_batch(forms, vocab, device)
     max_steps = max(len(f) for f in forms)
     preds_by_route: Dict[str, List[List[int]]] = {}
+    eos_by_route: Dict[str, List[Optional[int]]] = {}
 
     for route in routes:
         collect = (route == "wm") and wm_noise
@@ -256,9 +577,16 @@ def autoregressive_decode_batch(model: DualRouteModel, vocab: Vocab,
 
         # dec_input: (B, max_steps+1) = [BOS, pred_0, ..., pred_{max_steps-1}]
         route_preds = []
+        route_eos: List[Optional[int]] = []
         for i, form in enumerate(forms):
             n_steps = len(form)
             pred_ids = dec_input[i, 1:n_steps + 1].tolist()
+            # EOS position captured from the RAW window, before trimming.
+            # Scoped to the item's own forced-length readout window: an <eos>
+            # emitted only beyond n_steps (possible because the shared loop runs
+            # to the batch maximum) is outside what this evaluation reads out
+            # and is therefore recorded as absent, exactly like no <eos> at all.
+            route_eos.append(_first_eos_position(pred_ids, vocab.eos_id))
             # Trim at first EOS so output length matches what the model intended
             seq: List[int] = []
             for idx in pred_ids:
@@ -268,8 +596,14 @@ def autoregressive_decode_batch(model: DualRouteModel, vocab: Vocab,
             route_preds.append(seq)
 
         preds_by_route[route] = route_preds
+        eos_by_route[route] = route_eos
 
-    return preds_by_route
+    if not return_instrumentation:
+        return preds_by_route
+
+    instrumentation = {"eos_position": eos_by_route}
+    instrumentation.update(capture_gate_and_field(model, batch, vocab))
+    return preds_by_route, instrumentation
 
 
 def evaluate_items(model: DualRouteModel, vocab: Vocab,
@@ -278,7 +612,8 @@ def evaluate_items(model: DualRouteModel, vocab: Vocab,
                    routes: Tuple[str, ...] = ("full", "wm", "ltm"),
                    wm_noise: bool = False,
                    decode: str = DECODE_TF,
-                   ) -> Dict[str, List[dict]]:
+                   return_instrumentation: bool = False,
+                   ):
     """
     Run inference and compute per-item metrics for each route.
 
@@ -287,18 +622,41 @@ def evaluate_items(model: DualRouteModel, vocab: Vocab,
 
     Returns:  {route: [{exact_match, phoneme_acc, edit_dist, norm_edit_dist,
                         predicted_symbols, target_symbols}, ...]}
+
+    return_instrumentation=False (default) preserves the historical return
+    value exactly.  With True the return becomes (results, instrumentation)
+    where instrumentation holds item-aligned lists:
+        eos_position         : {route: [int|None, ...]}   (per route)
+        gate, lexical_*      : [float|None, ...]          (full route, item-level)
     """
     results: Dict[str, List[dict]] = {r: [] for r in routes}
+    instr: Dict[str, object] = {
+        "eos_position": {r: [] for r in routes},
+        "gate": [], "lexical_confidence": [],
+        "lexical_margin": [], "lexical_density": [],
+    }
 
     n = len(forms_ids)
     for start in range(0, n, batch_size):
         batch_forms = forms_ids[start: start + batch_size]
         if decode == DECODE_AR:
-            preds_by_route = autoregressive_decode_batch(
-                model, vocab, batch_forms, device, routes, wm_noise=wm_noise)
+            out = autoregressive_decode_batch(
+                model, vocab, batch_forms, device, routes, wm_noise=wm_noise,
+                return_instrumentation=return_instrumentation)
         else:
-            preds_by_route = eval_batch(
-                model, vocab, batch_forms, device, routes, wm_noise=wm_noise)
+            out = eval_batch(
+                model, vocab, batch_forms, device, routes, wm_noise=wm_noise,
+                return_instrumentation=return_instrumentation)
+
+        if return_instrumentation:
+            preds_by_route, batch_instr = out
+            for r in routes:
+                instr["eos_position"][r].extend(batch_instr["eos_position"][r])
+            for k in ("gate", "lexical_confidence", "lexical_margin",
+                      "lexical_density"):
+                instr[k].extend(batch_instr[k])
+        else:
+            preds_by_route = out
 
         for r in routes:
             for i, form_ids in enumerate(batch_forms):
@@ -334,7 +692,45 @@ def evaluate_items(model: DualRouteModel, vocab: Vocab,
             print(f"  … {min(start+batch_size, n)}/{n}", end="\r")
 
     print()
-    return results
+    if not return_instrumentation:
+        return results
+
+    # Instrumentation must cover every evaluated item exactly once.
+    for r in routes:
+        assert len(instr["eos_position"][r]) == n, (
+            f"eos_position/{r}: {len(instr['eos_position'][r])} entries for "
+            f"{n} items")
+    for k in ("gate", "lexical_confidence", "lexical_margin", "lexical_density"):
+        assert len(instr[k]) == n, f"{k}: {len(instr[k])} entries for {n} items"
+    return results, instr
+
+
+def attach_instrumentation_columns(df: pd.DataFrame, instr: dict,
+                                   routes: Tuple[str, ...]) -> pd.DataFrame:
+    """Append the instrumentation columns AFTER every pre-existing column.
+
+    Ordering matters for non-regression: appending (rather than interleaving
+    per route) keeps the pre-patch column sequence as an exact prefix, so the
+    pre-patch table is recovered by dropping these columns.
+
+    `eos_position` is per route.  `gate` and the lexical field are item-level
+    FULL-route quantities: WM-only and LTM-only never compute them, so they get
+    no per-route column instead of a fabricated value.  Absent values are
+    written as MISSING ("") — never as 0, -1 or NaN-as-number.
+    """
+    df = df.copy()
+    n = len(df)
+    for route in routes:
+        vals = instr["eos_position"][route]
+        assert len(vals) == n, f"eos_position/{route}: {len(vals)} vs {n} rows"
+        df[f"{route}_eos_position"] = [MISSING if v is None else int(v)
+                                       for v in vals]
+    for col in ("gate", "lexical_confidence", "lexical_margin",
+                "lexical_density"):
+        vals = instr[col]
+        assert len(vals) == n, f"{col}: {len(vals)} vs {n} rows"
+        df[col] = [MISSING if v is None else v for v in vals]
+    return df
 
 
 # ===========================================================  WFE eval  ====
@@ -481,14 +877,19 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
     # --- Run inference ---
     print(f"  Running {decode} inference …  "
           f"(WM noise: {'ON' if wm_noise else 'OFF — deterministic'})")
-    results = evaluate_items(model, vocab, forms_ids, device, routes=routes,
-                             wm_noise=wm_noise, decode=decode)
+    results, instr = evaluate_items(model, vocab, forms_ids, device, routes=routes,
+                                    wm_noise=wm_noise, decode=decode,
+                                    return_instrumentation=True)
 
     # --- Attach results to dataframe ---
     for route in routes:
         for metric in ("exact_match", "phoneme_acc", "edit_dist", "norm_edit",
                        "predicted", "target"):
             df_valid[f"{route}_{metric}"] = [r[metric] for r in results[route]]
+
+    # --- Behavioral instrumentation (APPENDED after every pre-existing
+    #     column, so the pre-patch table is this table minus these columns) ---
+    df_valid = attach_instrumentation_columns(df_valid, instr, routes)
 
     # --- Item-level predictions TSV ---
     pred_path = os.path.join(out_dir, "item_level_predictions.tsv")
@@ -569,6 +970,11 @@ def run_wfe_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         "n_items_excluded":     len(df) - n_valid,
         "dry_run":              dry_run,
         "overall":              overall,
+        "provenance":           build_provenance(
+            meta, wfe_tsv=tsv_path, ssp_tsv=None,
+            manifest_path=(ANALYSIS_MANIFEST
+                           if os.path.exists(ANALYSIS_MANIFEST) else None),
+            device=device, decode=decode, routes=routes, wm_noise=wm_noise),
         "wfe_lexicon_overlap":  {
             "counts":   overlap_counts,
             "accuracy": overlap_accuracy,
@@ -702,13 +1108,16 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
 
     print(f"  Running {decode} inference …  "
           f"(WM noise: {'ON' if wm_noise else 'OFF — deterministic'})")
-    results = evaluate_items(model, vocab, forms_ids, device, routes=routes,
-                             wm_noise=wm_noise, decode=decode)
+    results, instr = evaluate_items(model, vocab, forms_ids, device, routes=routes,
+                                    wm_noise=wm_noise, decode=decode,
+                                    return_instrumentation=True)
 
     for route in routes:
         for metric in ("exact_match", "phoneme_acc", "edit_dist", "norm_edit",
                        "predicted", "target"):
             df_valid[f"{route}_{metric}"] = [r[metric] for r in results[route]]
+
+    df_valid = attach_instrumentation_columns(df_valid, instr, routes)
 
     pred_path = os.path.join(out_dir, "item_level_predictions.tsv")
     df_valid.to_csv(pred_path, sep="\t", index=False)
@@ -748,6 +1157,9 @@ def run_ssp_eval(model: DualRouteModel, vocab: Vocab, meta: dict,
         "n_items_evaluated":    n_valid,
         "dry_run":              dry_run,
         "overall":              overall,
+        "provenance":           build_provenance(
+            meta, wfe_tsv=None, ssp_tsv=tsv_path, manifest_path=None,
+            device=device, decode=decode, routes=routes, wm_noise=wm_noise),
         "note": (
             "SSP items are 3-phoneme CCV/VCC sequences. "
             "WM (dorsal) route is the primary target for SSP analysis. "
