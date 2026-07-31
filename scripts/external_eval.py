@@ -381,6 +381,104 @@ def _evaluation_source_sha256() -> Dict[str, Optional[str]]:
             for rel in _EVALUATION_SOURCE_FILES}
 
 
+# Directories whose Python contents can plausibly participate in an evaluation.
+# An UNTRACKED .py file here is treated as possibly-active code and therefore
+# blocks a commit-level identity claim, even though it is not in the manifest.
+_EVALUATION_SOURCE_ROOTS = ("scripts/", "models/", "evaluate/", "data/",
+                            "utils/", "tests/")
+
+_MAX_RECORDED_UNTRACKED = 50
+
+
+def untracked_evaluation_relevant(paths: List[str]) -> List[str]:
+    """Subset of untracked paths that could change evaluation behaviour.
+
+    Relevant: anything in the committed source manifest, any untracked `.py`
+    at the repository root or under an evaluation source root, and any
+    untracked directory that is (or contains) such a root.
+
+    Not relevant: data and artefact directories such as `archives/`,
+    `outputs/`, notebooks, checkpoints — they cannot alter the code path.
+    """
+    relevant: List[str] = []
+    for raw in paths:
+        p = raw.strip().strip('"')
+        if not p:
+            continue
+        if p in _EVALUATION_SOURCE_FILES:
+            relevant.append(p)
+            continue
+        if p.endswith("/"):
+            # git collapses untracked directories; treat as relevant only if it
+            # is, or sits above, an evaluation source root.
+            if any(p.startswith(r) or r.startswith(p)
+                   for r in _EVALUATION_SOURCE_ROOTS):
+                relevant.append(p)
+            continue
+        if not p.endswith(".py"):
+            continue
+        if "/" not in p or any(p.startswith(r) for r in _EVALUATION_SOURCE_ROOTS):
+            relevant.append(p)
+    return relevant
+
+
+def resolve_code_identity(g: dict) -> dict:
+    """Decide whether HEAD identifies the running evaluation code.
+
+    Pure function of a `utils.provenance.git_state()` mapping, so the policy is
+    testable without manufacturing git states.
+
+    The commit is claimed only when BOTH hold:
+      * no tracked file is modified, staged or deleted
+        (`git status --porcelain --untracked-files=no` is empty), and
+      * no untracked path is evaluation-relevant.
+
+    An intentionally untracked data directory (`archives/`) therefore no longer
+    invalidates a precisely committed source tree, while an untracked
+    `scripts/*.py` still does.  Anything unknown stays conservative: no commit
+    is claimed.
+    """
+    commit = g.get("commit", "unknown")
+    tracked_dirty = g.get("tracked_dirty", "unknown")
+    untracked_paths = list(g.get("untracked_paths") or [])
+    untracked_present = g.get("untracked_present", "unknown")
+    relevant = untracked_evaluation_relevant(untracked_paths)
+
+    tracked_clean = (tracked_dirty is False)
+    identity_known = (tracked_clean and not relevant
+                      and isinstance(commit, str) and commit != "unknown")
+
+    if identity_known:
+        note = ("tracked source matches HEAD exactly; untracked paths present "
+                "but none is evaluation-relevant"
+                if untracked_paths else
+                "clean tracked tree and no untracked paths")
+    elif not tracked_clean:
+        note = ("tracked files are modified/staged/deleted, or the tracked "
+                "state is unknown: no commit claimed. Identify the code by "
+                "evaluation_code_base_commit + evaluation_patch_diff_sha256 + "
+                "evaluation_source_sha256")
+    elif relevant:
+        note = ("untracked evaluation-relevant source present "
+                f"({relevant[:5]}): no commit claimed, because that code is "
+                "not covered by the committed source manifest")
+    else:
+        note = "git state unknown: no commit claimed"
+
+    return {
+        "evaluation_code_commit": (commit if identity_known else None),
+        "evaluation_code_base_commit": commit,
+        "evaluation_tracked_dirty": tracked_dirty,
+        "evaluation_untracked_files_present": untracked_present,
+        "evaluation_untracked_paths": untracked_paths[:_MAX_RECORDED_UNTRACKED],
+        "evaluation_untracked_paths_truncated":
+            len(untracked_paths) > _MAX_RECORDED_UNTRACKED,
+        "evaluation_untracked_paths_total": len(untracked_paths),
+        "evaluation_untracked_evaluation_relevant": relevant,
+        "evaluation_code_commit_note": note,
+    }
+
+
 def _levenshtein_version() -> Optional[str]:
     """Installed `Levenshtein` version (Dager's editops backend), or None.
 
@@ -399,17 +497,24 @@ def build_provenance(meta: dict, *, wfe_tsv: Optional[str],
                      wm_noise: bool, argv: Optional[List[str]] = None) -> dict:
     """Full provenance record for one evaluation run.
 
-    Evaluation-code identity is recorded HONESTLY: the current HEAD is stored
-    as `evaluation_code_base_commit`, the working tree's dirty state as
-    `evaluation_code_dirty`, and the uncommitted patch as
-    `evaluation_patch_diff_sha256`.  `evaluation_code_commit` is filled in ONLY
-    when the tree is clean — a dirty run never fabricates a commit that would
-    misdescribe the code that produced the numbers.
+    Evaluation-code identity is recorded HONESTLY and distinguishes TRACKED
+    changes from UNTRACKED artefacts (see `resolve_code_identity`):
+
+      * `evaluation_code_commit` is HEAD when every tracked file matches HEAD
+        and no untracked path is evaluation-relevant — an intentionally
+        untracked data directory such as `archives/` does not suppress it;
+      * it is None as soon as a tracked file is modified/staged/deleted, or an
+        untracked evaluation-relevant source appears, in which case
+        `evaluation_patch_diff_sha256` and `evaluation_source_sha256` remain
+        the authoritative identifiers;
+      * untracked paths are always recorded, never silently ignored.
+
+    A run never fabricates a commit that would misdescribe the code that
+    produced the numbers.
     """
     g = git_state(ROOT)
     diff_sha, diff_len = _git_diff_sha256(ROOT)
-    dirty = g.get("dirty")
-    is_dirty = (dirty is True) or (dirty == "unknown")
+    identity = resolve_code_identity(g)
 
     prov = dict(meta.get("_provenance_inputs", {}))
     prov.update({
@@ -417,18 +522,14 @@ def build_provenance(meta: dict, *, wfe_tsv: Optional[str],
         "timestamp_utc": datetime.datetime.now(
             datetime.timezone.utc).isoformat(),
         # --- evaluation code identity (never fabricated) ------------------
-        "evaluation_code_base_commit": g.get("commit", "unknown"),
+        **identity,
         "evaluation_code_branch": g.get("branch", "unknown"),
-        "evaluation_code_dirty": dirty,
+        # Legacy whole-tree flag (tracked OR untracked), kept for continuity
+        # with checkpoint `git_dirty`; NOT the flag that governs identity.
+        "evaluation_worktree_dirty_including_untracked": g.get("dirty"),
         "evaluation_patch_diff_sha256": diff_sha,
         "evaluation_patch_diff_bytes": diff_len,
         "evaluation_source_sha256": _evaluation_source_sha256(),
-        "evaluation_code_commit": (None if is_dirty else g.get("commit")),
-        "evaluation_code_commit_note": (
-            "working tree dirty or git state unknown at run time: no final "
-            "evaluation_code_commit is claimed; identify the code by "
-            "evaluation_code_base_commit + evaluation_patch_diff_sha256"
-            if is_dirty else "clean working tree; commit is authoritative"),
         # --- stimulus / lexicon artefacts ---------------------------------
         "wfe_tsv_path": (os.path.abspath(wfe_tsv) if wfe_tsv else None),
         "wfe_tsv_sha256": (sha256_file(wfe_tsv) if wfe_tsv else None),

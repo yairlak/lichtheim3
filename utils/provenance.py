@@ -70,14 +70,34 @@ def sha256_words_sorted(words: List[str]) -> str:
 
 
 def git_state(cwd: Optional[str] = None) -> dict:
-    """Best-effort git state: commit, branch, dirty flag.
+    """Best-effort git state: commit, branch, dirty flags, untracked paths.
 
     All values fall back to 'unknown' if git is unavailable or times out.
 
-    Returns:
-        dict with keys 'commit' (str), 'branch' (str), 'dirty' (bool or 'unknown').
+    Returns a dict with:
+        'commit'            (str)
+        'branch'            (str)
+        'dirty'             (bool | 'unknown')  — LEGACY: true if `git status
+                            --porcelain` is non-empty, i.e. tracked changes OR
+                            untracked files.  Unchanged semantics: existing
+                            checkpoints (incl. the frozen 93a577f cohort)
+                            recorded `git_dirty` with exactly this meaning.
+        'tracked_dirty'     (bool | 'unknown')  — true iff a TRACKED file is
+                            modified, staged or deleted
+                            (`git status --porcelain --untracked-files=no`).
+                            This is the flag that bears on code identity.
+        'untracked_present' (bool | 'unknown')
+        'untracked_paths'   (list[str])         — untracked entries as git
+                            reports them, directories collapsed (e.g.
+                            'archives/').  Never silently dropped: callers
+                            decide which untracked paths matter to them.
+
+    Separating the two is what lets an intentionally untracked data directory
+    coexist with a precisely identified, committed source tree.
     """
-    result: dict = {"commit": "unknown", "branch": "unknown", "dirty": "unknown"}
+    result: dict = {"commit": "unknown", "branch": "unknown", "dirty": "unknown",
+                    "tracked_dirty": "unknown", "untracked_present": "unknown",
+                    "untracked_paths": []}
     _timeout = 10
 
     try:
@@ -103,7 +123,21 @@ def git_state(cwd: Optional[str] = None) -> dict:
             ["git", "status", "--porcelain"],
             cwd=cwd, stderr=subprocess.DEVNULL, timeout=_timeout,
         )
-        result["dirty"] = bool(out.decode().strip())
+        text = out.decode()
+        result["dirty"] = bool(text.strip())
+        untracked = [line[3:] for line in text.splitlines()
+                     if line.startswith("?? ")]
+        result["untracked_paths"] = untracked
+        result["untracked_present"] = bool(untracked)
+    except Exception:
+        pass
+
+    try:
+        out = subprocess.check_output(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=cwd, stderr=subprocess.DEVNULL, timeout=_timeout,
+        )
+        result["tracked_dirty"] = bool(out.decode().strip())
     except Exception:
         pass
 

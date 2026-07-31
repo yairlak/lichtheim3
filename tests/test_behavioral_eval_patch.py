@@ -36,6 +36,7 @@ from config import (Config, DataConfig, WMConfig, LTMConfig, GatingConfig,
 from data.phonemes import build_vocab
 from models.dual_route import DualRouteModel
 from evaluate.hooks import make_batch
+from utils.provenance import git_state
 from scripts import external_eval as ee
 from scripts import enrich_behavioral_predictions as enr
 from scripts.enrich_behavioral_predictions import (
@@ -417,7 +418,12 @@ def test_D_required_fields_present(tmp_path):
                                decode=ee.DECODE_AR, routes=("full", "wm", "ltm"),
                                wm_noise=False, argv=["external_eval.py", "--x"])
     for field in ("checkpoint_training_commit", "evaluation_code_base_commit",
-                  "evaluation_code_dirty", "evaluation_patch_diff_sha256",
+                  "evaluation_code_commit", "evaluation_tracked_dirty",
+                  "evaluation_untracked_files_present",
+                  "evaluation_untracked_paths",
+                  "evaluation_untracked_evaluation_relevant",
+                  "evaluation_source_sha256",
+                  "evaluation_patch_diff_sha256",
                   "seed", "checkpoint_epoch", "checkpoint_sha256",
                   "wfe_tsv_path", "wfe_tsv_sha256", "device", "decode_mode",
                   "routes", "deterministic_no_noise", "decode_convention",
@@ -473,18 +479,184 @@ def test_D_source_hashes_cover_untracked_new_files(tmp_path):
         assert src[rel] == on_disk
 
 
-def test_D_dirty_tree_never_fabricates_a_commit(tmp_path):
+def test_D_tracked_dirty_state_is_reported_honestly(tmp_path):
     prov = ee.build_provenance(_fake_meta(tmp_path), wfe_tsv=None, ssp_tsv=None,
                                manifest_path=None, device="cpu",
                                decode=ee.DECODE_AR, routes=("full",),
                                wm_noise=False)
-    real_dirty = bool(subprocess.check_output(
-        ["git", "status", "--porcelain"], cwd=ROOT).decode().strip())
-    assert prov["evaluation_code_dirty"] == real_dirty
-    if prov["evaluation_code_dirty"] is not False:
+    real_tracked_dirty = bool(subprocess.check_output(
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        cwd=ROOT).decode().strip())
+    assert prov["evaluation_tracked_dirty"] == real_tracked_dirty
+    if real_tracked_dirty:
         assert prov["evaluation_code_commit"] is None, \
-            "a dirty run must not claim a final evaluation_code_commit"
+            "a tracked-dirty run must not claim an evaluation_code_commit"
     assert len(prov["evaluation_patch_diff_sha256"]) in (64, len("unknown"))
+    # untracked paths are recorded, never silently dropped
+    real_untracked = [l[3:] for l in subprocess.check_output(
+        ["git", "status", "--porcelain"], cwd=ROOT).decode().splitlines()
+        if l.startswith("?? ")]
+    assert prov["evaluation_untracked_files_present"] == bool(real_untracked)
+    assert prov["evaluation_untracked_paths_total"] == len(real_untracked)
+
+
+# ==========================  H  code identity: tracked vs untracked  ========
+#
+# `archives/` is intentionally untracked, so whole-tree dirtiness cannot be the
+# criterion for code identity.  Only TRACKED modifications — plus untracked
+# files that could actually be executed — may suppress the commit claim.
+
+def _git(repo, *args):
+    return subprocess.check_output(
+        ["git", *args], cwd=repo,
+        stderr=subprocess.DEVNULL).decode().strip()
+
+
+@pytest.fixture
+def temp_repo(tmp_path):
+    """A tiny git repo containing one file from the evaluation source manifest."""
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "models").mkdir()
+    _git(repo.parent, "init", "-q", str(repo))
+    _git(repo, "config", "user.email", "t@example.invalid")
+    _git(repo, "config", "user.name", "test")
+    (repo / "scripts" / "external_eval.py").write_text("# eval source\n")
+    (repo / "models" / "gating.py").write_text("# model source\n")
+    (repo / "README.md").write_text("readme\n")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "initial")
+    return repo
+
+
+def test_H_completely_clean_repository_claims_head(temp_repo):
+    g = git_state(str(temp_repo))
+    head = _git(temp_repo, "rev-parse", "HEAD")
+    assert g["tracked_dirty"] is False
+    assert g["untracked_present"] is False
+    ident = ee.resolve_code_identity(g)
+    assert ident["evaluation_code_commit"] == head
+    assert ident["evaluation_code_base_commit"] == head
+    assert ident["evaluation_untracked_paths"] == []
+
+
+def test_H_untracked_archives_does_not_suppress_the_commit(temp_repo):
+    """The exact situation in lichtheim3: clean tracked tree + archives/."""
+    (temp_repo / "archives").mkdir()
+    (temp_repo / "archives" / "bundle.tar.gz").write_bytes(b"binary blob")
+    g = git_state(str(temp_repo))
+    head = _git(temp_repo, "rev-parse", "HEAD")
+
+    assert g["tracked_dirty"] is False
+    assert g["untracked_present"] is True
+    assert g["dirty"] is True, "legacy whole-tree flag must still see it"
+
+    ident = ee.resolve_code_identity(g)
+    assert ident["evaluation_code_commit"] == head, \
+        "an untracked data directory must not invalidate a clean source tree"
+    # recorded, not ignored
+    assert any("archives" in p for p in ident["evaluation_untracked_paths"])
+    assert ident["evaluation_untracked_files_present"] is True
+    assert ident["evaluation_untracked_evaluation_relevant"] == []
+
+
+def test_H_modified_tracked_source_suppresses_the_commit(temp_repo):
+    (temp_repo / "scripts" / "external_eval.py").write_text("# modified\n")
+    g = git_state(str(temp_repo))
+    assert g["tracked_dirty"] is True
+    ident = ee.resolve_code_identity(g)
+    assert ident["evaluation_code_commit"] is None
+    assert ident["evaluation_code_base_commit"] == _git(temp_repo, "rev-parse", "HEAD")
+    assert "tracked files are modified" in ident["evaluation_code_commit_note"]
+
+
+def test_H_staged_tracked_source_suppresses_the_commit(temp_repo):
+    (temp_repo / "scripts" / "external_eval.py").write_text("# staged change\n")
+    _git(temp_repo, "add", "scripts/external_eval.py")
+    g = git_state(str(temp_repo))
+    assert g["tracked_dirty"] is True
+    assert ee.resolve_code_identity(g)["evaluation_code_commit"] is None
+
+
+def test_H_deleted_tracked_source_suppresses_the_commit(temp_repo):
+    (temp_repo / "models" / "gating.py").unlink()
+    g = git_state(str(temp_repo))
+    assert g["tracked_dirty"] is True
+    assert ee.resolve_code_identity(g)["evaluation_code_commit"] is None
+
+
+def test_H_untracked_evaluation_source_suppresses_the_commit(temp_repo):
+    """Conservative: uncommitted code that could run blocks the claim."""
+    (temp_repo / "scripts" / "sneaky_eval_helper.py").write_text("x = 1\n")
+    g = git_state(str(temp_repo))
+    assert g["tracked_dirty"] is False
+    ident = ee.resolve_code_identity(g)
+    assert ident["evaluation_code_commit"] is None
+    assert "scripts/sneaky_eval_helper.py" in \
+        ident["evaluation_untracked_evaluation_relevant"]
+    assert "untracked evaluation-relevant source" in \
+        ident["evaluation_code_commit_note"]
+
+
+def test_H_head_commit_is_recorded_exactly(temp_repo):
+    (temp_repo / "scripts" / "external_eval.py").write_text("# second commit\n")
+    _git(temp_repo, "add", "-A")
+    _git(temp_repo, "commit", "-q", "-m", "second")
+    head = _git(temp_repo, "rev-parse", "HEAD")
+    ident = ee.resolve_code_identity(git_state(str(temp_repo)))
+    assert ident["evaluation_code_commit"] == head
+    assert ident["evaluation_code_base_commit"] == head
+    assert len(head) == 40
+
+
+def test_H_relevance_classifier_boundaries():
+    rel = ee.untracked_evaluation_relevant
+    # not relevant: data / artefact paths
+    assert rel(["archives/", "outputs/", "checkpoints/", "data/glove.6B.300d.txt",
+                "notes.md", "figures/plot.png"]) == []
+    # relevant: manifest members, eval-root python, root-level python
+    assert rel(["scripts/external_eval.py"]) == ["scripts/external_eval.py"]
+    assert rel(["models/new_route.py"]) == ["models/new_route.py"]
+    assert rel(["utils/helper.py"]) == ["utils/helper.py"]
+    assert rel(["hotfix.py"]) == ["hotfix.py"]
+    assert rel(["scripts/"]) == ["scripts/"]
+    # data/ is an evaluation source root, so untracked .py there counts
+    assert rel(["data/loader_override.py"]) == ["data/loader_override.py"]
+    # but a data FILE under it does not
+    assert rel(["data/eval_external/wfe_eval.tsv"]) == []
+
+
+def test_H_unknown_git_state_stays_conservative():
+    ident = ee.resolve_code_identity(
+        {"commit": "unknown", "tracked_dirty": "unknown",
+         "untracked_present": "unknown", "untracked_paths": []})
+    assert ident["evaluation_code_commit"] is None
+    ident2 = ee.resolve_code_identity(
+        {"commit": "a" * 40, "tracked_dirty": "unknown",
+         "untracked_present": False, "untracked_paths": []})
+    assert ident2["evaluation_code_commit"] is None, \
+        "unknown tracked state must not be treated as clean"
+
+
+def test_H_untracked_paths_are_capped_but_counted():
+    many = [f"junk/file_{i}.txt" for i in range(120)]
+    ident = ee.resolve_code_identity(
+        {"commit": "b" * 40, "tracked_dirty": False,
+         "untracked_present": True, "untracked_paths": many})
+    assert ident["evaluation_untracked_paths_total"] == 120
+    assert len(ident["evaluation_untracked_paths"]) == ee._MAX_RECORDED_UNTRACKED
+    assert ident["evaluation_untracked_paths_truncated"] is True
+    assert ident["evaluation_code_commit"] == "b" * 40
+
+
+def test_H_legacy_git_state_dirty_semantics_unchanged(temp_repo):
+    """Checkpoint `git_dirty` meaning must not shift under existing readers."""
+    assert git_state(str(temp_repo))["dirty"] is False
+    (temp_repo / "archives").mkdir()
+    (temp_repo / "archives" / "x.bin").write_bytes(b"z")
+    assert git_state(str(temp_repo))["dirty"] is True, \
+        "legacy 'dirty' must still count untracked files"
+    assert git_state(str(temp_repo))["tracked_dirty"] is False
 
 
 # ==================================================  E  manifest enrichment ==
