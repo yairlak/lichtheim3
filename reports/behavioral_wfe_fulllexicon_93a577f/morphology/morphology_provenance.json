@@ -5,22 +5,12 @@
   "evaluation_code_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
   "sprint1_analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
   "sprint1_provenance_closure_commit": "178f6a55428100a04bcea11966b653f5f444877e",
-  "analysis_code_base_commit": "178f6a55428100a04bcea11966b653f5f444877e",
-  "morphology_analysis_code_commit": null,
-  "morphology_analysis_code_commit_note": "null before the Sprint-2 commit; the implementation is identified by morphology_source_sha256 and the tracked-file modification list below",
-  "analysis_code_dirty": true,
-  "analysis_code_modified_tracked_files": [
-    "docs/behavioral_wfe_fulllexicon.md",
-    "ocs/behavioral_wfe_analysis_matrix.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
-  ],
-  "analysis_code_untracked_files": [
-    "reports/behavioral_wfe_fulllexicon_93a577f/morphology/",
-    "scripts/behavioral_analysis/morphology.py",
-    "scripts/behavioral_analysis/plot_morphology.py",
-    "tests/test_behavioral_morphology.py"
-  ],
+  "analysis_code_base_commit": "96d162677681a4b6cc98236c8cad1921008d3f9c",
+  "morphology_analysis_code_commit": "96d162677681a4b6cc98236c8cad1921008d3f9c",
+  "morphology_analysis_code_commit_note": "a tracked provenance file cannot contain the SHA of the commit that contains it, so the closure is a separate commit",
+  "analysis_code_dirty": false,
+  "analysis_code_modified_tracked_files": [],
+  "analysis_code_untracked_files": [],
   "morphology_source_sha256": {
     "scripts/behavioral_analysis/morphology.py": "5166edbfbb494a709051e7337add169df75a81f303198391bb4e3095380e8483",
     "scripts/behavioral_analysis/plot_morphology.py": "69f1e08cd86fcecb4783d7e7ee0638c2099d5459e4415a7dfdcfc000b6eb252e"
@@ -104,7 +94,7 @@
     "Levenshtein": "0.27.3"
   },
   "model_inference_performed": false,
-  "generation_timestamp": "2026-08-03T12:24:48.220047+00:00",
+  "generation_timestamp": "2026-08-03T12:58:47.525687+00:00",
   "output_sha256": {
     "reports/behavioral_wfe_fulllexicon_93a577f/morphology/morphology_analysis_spec.md": "0224edaada087bdaf2f2c3da72cb7b820565ce56e9e2fc303790fcd90d87c8b1",
     "reports/behavioral_wfe_fulllexicon_93a577f/morphology/morphology_results.md": "4162c7ee92a8ad5d78032cae0ff6adb7e2607e65adb63f54e52bb532f10a1264",
@@ -136,5 +126,9 @@
     "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology.svg": "95dbab842c61795976b97df87bd111be8cfba8cd1a1bc251b75d56fc2009cf88",
     "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology_caption.md": "7201816318a0b4aef64e913d952f8312b69e8b35b6e89dd1d498cc15af2bf9f4",
     "reports/behavioral_wfe_fulllexicon_93a577f/morphology/validation/morphology_test_log.txt": "a0017b0c1ebf7722b1822bc5616fceba002b78c1dd69c3fcb9475aa141df7226"
-  }
+  },
+  "morphology_analysis_code_commit_role": "commit A - the scientific morphology analysis and report commit; this provenance file is closed by a separate commit B, which is NOT the morphology analysis-code commit",
+  "morphology_analysis_code_dirty": false,
+  "morphology_analysis_code_untracked_files": [],
+  "provenance_closure": "Sprint 2"
 }
