@@ -61,5 +61,14 @@
   "no_source_data_changed": true,
   "no_frozen_protocol_changed": true,
   "word_error_figure": "FIGURE_NOT_CREATED_DUE_TO_CEILING_OR_SPARSE_ERRORS",
-  "n_files_hashed": 37
+  "n_files_hashed": 37,
+  "provenance_closure": {
+    "commit_a": "1aa1df8a36b6a28b50e7508eae099fd0c4a237e6",
+    "commit_a_role": "scientific frequency analysis and report",
+    "commit_b_role": "provenance closure only; contains no analysis code, figure, plotting table, caption or scientific estimate",
+    "frequency_analysis_code_commit_points_to": "commit A",
+    "reason_two_commits": "a tracked provenance file cannot contain the SHA of the commit that contains it",
+    "scientific_fields_changed_by_closure": "none - only analysis-code identity and timestamp metadata",
+    "scientific_artefacts_byte_identical_after_closure": true
+  }
 }

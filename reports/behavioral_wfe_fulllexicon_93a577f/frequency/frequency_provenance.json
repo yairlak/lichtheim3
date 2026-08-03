@@ -5,22 +5,12 @@
   "evaluation_code_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
   "sprint1_analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
   "morphology_analysis_code_commit": "96d162677681a4b6cc98236c8cad1921008d3f9c",
-  "analysis_code_base_commit": "469732d173142f9a9062ad536c9043d6d22d7c32",
-  "frequency_analysis_code_commit": null,
-  "frequency_analysis_code_commit_note": "null before the Sprint-3 commit; the implementation is identified by frequency_source_sha256 plus the tracked-modification and untracked lists below",
-  "analysis_code_dirty": true,
-  "analysis_code_modified_tracked_files": [
-    "docs/behavioral_wfe_fulllexicon.md",
-    "ocs/behavioral_wfe_analysis_matrix.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
-  ],
-  "analysis_code_untracked_files": [
-    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/",
-    "scripts/behavioral_analysis/frequency.py",
-    "scripts/behavioral_analysis/plot_frequency.py",
-    "tests/test_behavioral_frequency.py"
-  ],
+  "analysis_code_base_commit": "1aa1df8a36b6a28b50e7508eae099fd0c4a237e6",
+  "frequency_analysis_code_commit": "1aa1df8a36b6a28b50e7508eae099fd0c4a237e6",
+  "frequency_analysis_code_commit_note": "a tracked provenance file cannot contain the SHA of the commit that contains it, so the closure is a separate commit",
+  "analysis_code_dirty": false,
+  "analysis_code_modified_tracked_files": [],
+  "analysis_code_untracked_files": [],
   "frequency_source_sha256": {
     "scripts/behavioral_analysis/frequency.py": "f1f1ce49b6a03082d603efa859463491aa1d625fde8228930e6a18b1e63bee31",
     "scripts/behavioral_analysis/plot_frequency.py": "04fc611d98aae171c15158c929dd1fa000f1b417089f986a525437d5dee58c65"
@@ -123,7 +113,7 @@
     "Levenshtein": "0.27.3"
   },
   "model_inference_performed": false,
-  "generation_timestamp": "2026-08-03T13:35:47.528780+00:00",
+  "generation_timestamp": "2026-08-03T13:48:08.809350+00:00",
   "output_sha256": {
     "reports/behavioral_wfe_fulllexicon_93a577f/frequency/frequency_analysis_spec.md": "ed1a9b3703e35a92ea4ee7b364805f59c3d4c0e19069560a99353439c24e1b1a",
     "reports/behavioral_wfe_fulllexicon_93a577f/frequency/frequency_results.md": "e5ed0e6669dee9b1c1e494bd66514a7b1e21c085cfe0037089820267818a0b76",
@@ -159,5 +149,9 @@
     "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.svg": "022513ee06b96516fb3ad2274de46a14aff7e0194b16d1eb4c72962029c40cc0",
     "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route_caption.md": "d70b4ccabdccb3d61b66d316d9d0577842360283cf97ebadb8b88844cc30964c",
     "reports/behavioral_wfe_fulllexicon_93a577f/frequency/validation/frequency_test_log.txt": "fef5571a7917c397909e26794a91c0ad7d56f2e41bd21edba8b8b79f9b81b570"
-  }
+  },
+  "frequency_analysis_code_commit_role": "commit A - the scientific frequency analysis and report commit; this provenance file is closed by a separate commit B, which is NOT the frequency analysis-code commit and contains no code, figure, plotting table, caption or estimate",
+  "frequency_analysis_code_dirty": false,
+  "frequency_analysis_code_untracked_files": [],
+  "provenance_closure": "Sprint 3"
 }
