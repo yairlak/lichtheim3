@@ -1,0 +1,145 @@
+{
+  "sprint": 4,
+  "analysis": "error taxonomy and premature EOS",
+  "checks_total": 26,
+  "checks_passed": 26,
+  "verdict": "PASS",
+  "regenerated_files_compared": 46,
+  "published_artefacts": 57,
+  "living_file_policy": [
+    "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
+    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
+  ],
+  "checks": [
+    {
+      "check": "all authored artefacts exist",
+      "status": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "check": "expected table counts per section",
+      "status": "PASS",
+      "detail": "{'faithful/tables': 4, 'clean/tables': 8, 'eos/tables': 10, 'strata/tables': 5, 'examples': 2}; 27 analysis tables + 2 seed-22 example TSVs"
+    },
+    {
+      "check": "every figure has PNG+PDF+SVG",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every PNG is 300 dpi",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every figure has a standalone caption",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every figure has its exact plotting TSV",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "regeneration byte-identical",
+      "status": "PASS",
+      "detail": "46 regenerated files compared; differing=[]"
+    },
+    {
+      "check": "operations reconstruct edit distance",
+      "status": "PASS",
+      "detail": "14400/14400 rows"
+    },
+    {
+      "check": "87 premature-EOS events reproduce from item-level data",
+      "status": "PASS",
+      "detail": "item-level=87, published=87"
+    },
+    {
+      "check": "route distribution reproduces (LTM 82, FULL 3, WM 2)",
+      "status": "PASS",
+      "detail": "{'full': 3, 'ltm': 82, 'wm': 2}"
+    },
+    {
+      "check": "no observed EOS at or beyond the boundary",
+      "status": "PASS",
+      "detail": "ON_TIME_EOS and LATE_EOS are structurally unobservable"
+    },
+    {
+      "check": "EOS classification reproduces the published class counts",
+      "status": "PASS",
+      "detail": "{'EOS_NOT_OBSERVED': 12657, 'PREMATURE_EOS': 87}"
+    },
+    {
+      "check": "no trained real item silently filtered",
+      "status": "PASS",
+      "detail": "n=671"
+    },
+    {
+      "check": "all four seeds retained",
+      "status": "PASS",
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    {
+      "check": "exact-zero sensitivity kept separate from the four-seed mean",
+      "status": "PASS",
+      "detail": "separate column present; seed 21 included everywhere"
+    },
+    {
+      "check": "seed-22 examples obey the frozen deterministic sorting",
+      "status": "PASS",
+      "detail": "22 rows; seed set = [22]"
+    },
+    {
+      "check": "common-scale primary taxonomy figure retained",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "zoom exists because and only because the frozen ratio exceeds 10",
+      "status": "PASS",
+      "detail": "ratio=22.95, threshold=10.0, fires=True, figure=True"
+    },
+    {
+      "check": "Sprint-1 outputs unchanged (37 entries, living files excluded by policy)",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "Sprint-2 outputs unchanged (33 entries, living files excluded by policy)",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "Sprint-3 outputs unchanged (37 entries, living files excluded by policy)",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "production outputs unchanged (36 entries, strict)",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "canonical table unchanged",
+      "status": "PASS",
+      "detail": "8988aff6fac55ca3\u2026"
+    },
+    {
+      "check": "no inference, no checkpoint load, no absolute path in Sprint-4 source",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "output manifest declares no model inference",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "source dataset unchanged (no WFE or lexicon file written)",
+      "status": "PASS",
+      "detail": ""
+    }
+  ]
+}
