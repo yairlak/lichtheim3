@@ -1,0 +1,160 @@
+{
+  "sprint": 5,
+  "analysis": "adapted feature importance (A15)",
+  "checks_total": 29,
+  "checks_passed": 29,
+  "verdict": "PASS",
+  "published_artefacts": 42,
+  "regenerations_compared": 2,
+  "living_file_policy": [
+    "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
+    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
+  ],
+  "checks": [
+    {
+      "check": "all authored artefacts exist",
+      "status": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "check": "expected table counts per section",
+      "status": "PASS",
+      "detail": "{'clean_joint/tables': 8, 'clean_interactions/tables': 6, 'route_specific/tables': 6, '_control': 2}"
+    },
+    {
+      "check": "every figure has PNG+PDF+SVG",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every PNG is 300 dpi",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every figure has a standalone caption",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every figure has its exact plotting TSVs",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "interaction figure exists iff the frozen 2-seed criterion holds",
+      "status": "PASS",
+      "detail": "criterion met in 4 of 4 seeds; status=FIGURE_CREATED"
+    },
+    {
+      "check": "deterministic regeneration twice, byte-identical",
+      "status": "PASS",
+      "detail": "34 files compared per run; differing=[]"
+    },
+    {
+      "check": "published split matches the recomputed split",
+      "status": "PASS",
+      "detail": "850 train / 212 test items"
+    },
+    {
+      "check": "no item leakage between train and test",
+      "status": "PASS",
+      "detail": "850+212=1062"
+    },
+    {
+      "check": "grouped split identical across seeds (item-derived, seed-independent)",
+      "status": "PASS",
+      "detail": "split is a function of the item list only"
+    },
+    {
+      "check": "all three route rows of an item stay on one side, every seed",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "100 permutation repeats present for every seed x factor",
+      "status": "PASS",
+      "detail": "100..100 per cell, 16 cells"
+    },
+    {
+      "check": "seed 21 present in every published table",
+      "status": "PASS",
+      "detail": "all four seeds"
+    },
+    {
+      "check": "exact-zero sensitivity kept separate from the four-seed mean",
+      "status": "PASS",
+      "detail": "separate column; seed 21 never dropped"
+    },
+    {
+      "check": "seed interval is not labelled a hierarchical bootstrap",
+      "status": "PASS",
+      "detail": "seed-resampling interval over four checkpoints"
+    },
+    {
+      "check": "lexicality/exposure confounding holds and is respected",
+      "status": "PASS",
+      "detail": "two non-empty cells; exposure never a clean-set predictor"
+    },
+    {
+      "check": "no pseudoword carries a frequency value",
+      "status": "PASS",
+      "detail": "non-null = 0"
+    },
+    {
+      "check": "faithful A11 outputs unchanged",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "no file in the faithful directory was touched during Sprint 5",
+      "status": "PASS",
+      "detail": "10 files, all older than the preflight; touched=[]"
+    },
+    {
+      "check": "production manifest unchanged (36 entries, strict)",
+      "status": "PASS",
+      "detail": "36/36"
+    },
+    {
+      "check": "sprint1 manifest unchanged (37 entries, living files excluded by policy)",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "morphology manifest unchanged (33 entries, living files excluded by policy)",
+      "status": "PASS",
+      "detail": "33/33"
+    },
+    {
+      "check": "frequency manifest unchanged (37 entries, living files excluded by policy)",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "error_taxonomy manifest unchanged (57 entries, strict)",
+      "status": "PASS",
+      "detail": "57/57"
+    },
+    {
+      "check": "canonical table unchanged",
+      "status": "PASS",
+      "detail": "8988aff6fac55ca3\u2026"
+    },
+    {
+      "check": "no source dataset modified",
+      "status": "PASS",
+      "detail": "no data/ path in git status"
+    },
+    {
+      "check": "no inference, no checkpoint load, no absolute path",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "output manifest declares no inference and no faithful contact",
+      "status": "PASS",
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "sprint": 5,
+  "analysis": "adapted feature importance (A15)",
+  "generation_timestamp": "2026-08-03",
+  "experiment": "behavioral_wfe_fulllexicon_93a577f",
+  "cohort": "fulllexicon_cohort_93a577f",
+  "adapted_fi_analysis_code_commit": "f352de120bda68e3d8497c3ef17f98014d515037",
+  "adapted_fi_analysis_code_commit_role": "commit A - the scientific analysis code, tests and report commit. This provenance file is closed by a separate commit B, which is NOT the analysis-code commit.",
+  "adapted_fi_analysis_code_dirty": false,
+  "adapted_fi_analysis_code_untracked_files": [],
+  "current_code_base_commit": "f352de120bda68e3d8497c3ef17f98014d515037",
+  "training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+  "evaluation_code_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
+  "sprint1_analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+  "morphology_analysis_code_commit": "96d162677681a4b6cc98236c8cad1921008d3f9c",
+  "frequency_analysis_code_commit": "1aa1df8a36b6a28b50e7508eae099fd0c4a237e6",
+  "error_taxonomy_analysis_code_commit": "62ae51b4018e7ab35f6e6a69eae282db3d917f27",
+  "prior_analysis_commits": {
+    "sprint1": [
+      "f626a69",
+      "178f6a5"
+    ],
+    "sprint2": [
+      "96d1626",
+      "469732d"
+    ],
+    "sprint3": [
+      "1aa1df8",
+      "b550580"
+    ],
+    "sprint4": [
+      "62ae51b",
+      "697917d"
+    ]
+  },
+  "working_tree_state_at_generation": {
+    "clean": false,
+    "modified_tracked": [],
+    "untracked": [
+      "archives/",
+      "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/feature_importance_provenance.json",
+      "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/"
+    ],
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncommitted_diff_definition": "sha256 of `git diff` stdout bytes, tracked unstaged changes only"
+  },
+  "source_files": {
+    "scripts/behavioral_analysis/feature_importance.py": {
+      "sha256": "79f6cb401b2cb307216617d207ffe6cf9035e06298879f53f88bb347a41fe8e3",
+      "tracked_at_generation": true,
+      "bytes": 19107
+    },
+    "scripts/behavioral_analysis/plot_feature_importance.py": {
+      "sha256": "9dc5966bdd723dd9567acd09ebe20698e5fc969b4d9414ea8f233151d6e201a1",
+      "tracked_at_generation": true,
+      "bytes": 25058
+    },
+    "tests/test_behavioral_feature_importance.py": {
+      "sha256": "aa6f6fdcec1c8005223b9a832e526fe9dff527895b6b83adfced5f87c4dbbb90",
+      "tracked_at_generation": true,
+      "bytes": 27338
+    }
+  },
+  "living_documents": {
+    "docs/behavioral_wfe_fulllexicon.md": {
+      "sha256": "49acd79b3116f868bd54a283d79d3eda0a27bd98d4597b0ebb9c9beb7dbb18c7",
+      "tracked": true,
+      "modified_vs_head": false
+    },
+    "docs/behavioral_wfe_analysis_matrix.md": {
+      "sha256": "67b646e2c532bcbd1f79a4ddbbced95cd0a8c58d76846dbbcf58df6becf0c7ea",
+      "tracked": true,
+      "modified_vs_head": false
+    },
+    "reports/behavioral_wfe_fulllexicon_93a577f/README.md": {
+      "sha256": "c6fa184cf38acb40d68db2aa17f526228e4c89579aadc8bef789d977dbed8023",
+      "tracked": true,
+      "modified_vs_head": false
+    },
+    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv": {
+      "sha256": "228c3a93f2689693f01622a153c5338def4fb0028fe80b9c2af3f937f8c92b00",
+      "tracked": true,
+      "modified_vs_head": false
+    }
+  },
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "canonical_table_rows": 14400,
+  "dataset_paths": {
+    "wfe_tsv": "data/eval_external/wfe_eval.tsv",
+    "wfe_csv": "data/raw-nwr_swp/wfe.csv",
+    "training_lexicon": "data/lexicon_en_glove_covered.tsv",
+    "glove": "data/glove.6B.300d.txt",
+    "item_manifest": "outputs/behavioral_wfe_fulllexicon_93a577f/audits/wfe_analysis_item_manifest.tsv"
+  },
+  "dataset_sha256": {
+    "wfe_tsv": "d3602815a95ee07f565f5703407dd1e8f0e025061dc89d01de99154a86d0a015",
+    "wfe_csv": "295d8e795927235f65141eb3a517611e418a706559d52db97ed47cdb9b0e0b43",
+    "training_lexicon": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "glove": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed",
+    "item_manifest": "9db97522254167ea55a3cdbbc0953052b1368bacfeacc1920b4ffadf6f609194"
+  },
+  "checkpoint_paths": {
+    "19": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_19_epoch_0155.pt",
+    "20": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_20_epoch_0130.pt",
+    "21": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_21_epoch_0145.pt",
+    "22": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_22_epoch_0140.pt"
+  },
+  "checkpoint_sha256": {
+    "19": "7d05f9c2ad5a53e705f7d55ccde2581754918938d8ca888da35c0a859666478e",
+    "20": "b44548b6916ea89c6f099402b78031063445e572932acee8dd7558a73dfc6cfb",
+    "21": "ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf",
+    "22": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595"
+  },
+  "checkpoints_loaded_in_sprint5": false,
+  "datasets_modified_in_sprint5": false,
+  "clean_set_definition": {
+    "name": "LICHTHEIM_CLEAN",
+    "n_items": 1062,
+    "TRAINED_REAL_EXACT": 671,
+    "NOVEL_PSEUDOWORD": 391,
+    "rows_per_seed": 3186,
+    "routes": [
+      "full",
+      "wm",
+      "ltm"
+    ],
+    "lengths": [
+      3,
+      4,
+      5,
+      7,
+      8,
+      9
+    ],
+    "length_6_present": false,
+    "morphology_levels": [
+      "complex",
+      "simple"
+    ]
+  },
+  "identifiability_constraints": {
+    "lexicality_exposure_perfectly_confounded": true,
+    "evidence": "the lexicality x exposure_status crosstab has exactly two non-empty cells",
+    "never_in_one_model": [
+      "lexicality",
+      "lichtheim_exposure_status"
+    ],
+    "reported_factor_name": "lexicality/exposure contrast",
+    "claims_separation_of_lexicality_and_exposure": false,
+    "zipf_in_all_item_clean_model": false,
+    "zipf_reason": "undefined for pseudowords; never imputed as zero",
+    "pseudoword_frequency_assigned": false
+  },
+  "model_formulas": {
+    "A_clean_main_effects": "raw_edit_distance ~ route + lexicality + length_z + morphology",
+    "B_clean_interactions": "A + route:length_z + route:lexicality + route:morphology + lexicality:length_z + morphology:length_z",
+    "C_route_specific": "raw_edit_distance ~ lexicality + length_z + morphology, fitted separately for full, wm and ltm",
+    "higher_order_interactions": false,
+    "post_hoc_interaction_selection": false,
+    "primary_outcome": "raw_edit_distance",
+    "secondary_descriptive_outcome": "word_error"
+  },
+  "reference_levels": {
+    "route": "wm",
+    "lexicality": "pseudo",
+    "morphology": "complex"
+  },
+  "split": {
+    "scheme": "80/20 train/test grouped by item_id",
+    "random_state": 42,
+    "test_size": 0.2,
+    "n_train_items": 850,
+    "n_test_items": 212,
+    "grouped_by": "item_id",
+    "all_route_rows_same_side": true,
+    "reused_across_seeds": true,
+    "reused_across_models": true,
+    "row_level_split": false,
+    "train_items_sha256": "ec5104ce711db2e28897677da5c91b889eb34a5446852db1fe231861ce10acbc",
+    "test_items_sha256": "c20f0f486d3a2c40f52873a61fc365a8c0613776ec7003f09e2cc47af109c05d",
+    "train_items_file": "_control/fi_train_items.tsv",
+    "test_items_file": "_control/fi_test_items.tsv"
+  },
+  "estimator": {
+    "model": "Ridge",
+    "alpha": 1.0,
+    "tuned_on_wfe": false,
+    "hyperparameter_search": false
+  },
+  "scores": {
+    "primary": "held-out R2",
+    "secondary": "held-out MAE"
+  },
+  "permutation": {
+    "n_repeats": 100,
+    "random_state": 42,
+    "operates_on": "raw factors before feature engineering",
+    "item_factor_rule": "permuted across held-out item_ids; the same permuted value is applied to all three route rows of that item",
+    "route_rule": "permuted within each held-out item, preserving one FULL, one WM and one LTM row",
+    "derived_terms_rebuilt": true,
+    "independent_dummy_or_interaction_permutation": false,
+    "signed": false
+  },
+  "uncertainty": {
+    "seeds": [
+      19,
+      20,
+      21,
+      22
+    ],
+    "seed21_excluded": false,
+    "exact_zero_sensitivity_seeds": [
+      19,
+      20,
+      22
+    ],
+    "exact_zero_replaces_primary": false,
+    "within_and_between_seed_reported_separately": true,
+    "seed_interval": {
+      "resamples": 10000,
+      "random_seed": 20260730,
+      "label": "seed-resampling interval over four checkpoints",
+      "is_hierarchical_bootstrap": false
+    }
+  },
+  "faithful_a11": {
+    "directory": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication",
+    "recomputed": false,
+    "replaced": false,
+    "overwritten": false,
+    "pooled_with_adapted": false,
+    "sha256": {
+      "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf": "46fe4b912f824b14a3fa0045ba4e7b725065dafe8da1b3709caa18e943dc68d9",
+      "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png": "27e056d1176d97dc89e0b7eebd5e804c752e20421cb251e816117a7eb1e5a779",
+      "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv": "215ef9192552efce38a4e8adecea34273399f71a1fc8db1b0e7be0b59343d025"
+    },
+    "note": "read only to record hashes; no Sprint-5 command writes into this directory"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "matplotlib": "3.11.0",
+    "scipy": "1.17.1",
+    "sklearn": "1.9.0"
+  },
+  "output_sha256": {
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/faithful_vs_adapted.md": "2a289c5a563cf1bf5848a4070f039d1456480595ef0d09af60bcffbb6d8db7df",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/feature_importance_analysis_spec.md": "1d043ed09ab41e7e22b14159cf3175b6c53bef98d1360089061503f2f3115fa4",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/feature_importance_commit_plan.md": "6add1d1bf7cb1fd0d97d8d1d4aa981151d618a67145dc33962a4e5e491b0e0fa",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/feature_importance_results.md": "d79ac16da0c8e05c13331cbea95fe1528d641ea0f71accf6ae96236768922d62",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/feature_importance_analysis_spec.json": "adda073bbd51328fd3c6554981e8431835e13ac859fe1416fdbca7406347989c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/feature_importance_output_manifest.json": "2417251edb55d93d5a9aaec58e8a3d8287087dcac78869789f57de42780f950a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/feature_importance_preflight.json": "92f16ba4d5b90974ec2d65718620c78bf7b89364a9d9213fb78e38bc70871cf5",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/fi_test_items.tsv": "73db88900dab222160a2497e7b5dc0bfb112ca2479cf16b6680378c2bd37d757",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/fi_train_items.tsv": "5a591a8ff175d47e55bbfd31a1ae720bf9ea36cbc9e47baced74666be24937ba",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_block_drop_utility.tsv": "6d773bf4ca0b0fa343fdcdc6eeadfb8119133c0fec207c5139e8efcca84820ff",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_exact_zero_sensitivity.tsv": "542d08b6b32062021221980a64b9e75bbcf0057a4fceca49e4682e407960a7cc",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_figure_decision.tsv": "f4836c8513a3b0ad5c657c4476e1fc8e0031ab92c18ce26c1e1951bbf9bcf821",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_model_coefficients.tsv": "2e1880428295046cea0ca4d178a78b230e00329a5743b0c7098b7168e7384f94",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_model_fit.tsv": "008e828c7cebd395f224c6c43a58b377e75ccacc9e90e3a8ea3b8ed3455cb8a1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_model_incremental_utility.tsv": "3bb9329ea7d51b38193965d7c399d453629932676a17a798a50e3694ebf94b08",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility.pdf": "0e00107f21c84645655fc3b790cfb5f5087015ec784a3e7c9d59e163b8721a8b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility.png": "d71c939d95da94779f7661dd3a1fe20f922a488e8ac6a36f0cacf5c1f960fd27",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility.svg": "b582555c79f71b07ac143194606a94e92ee579ad079fed59f31da7a5722f4dd9",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility_caption.md": "1134f0fa3ce6fb83153484cda0824eb351460bbbaf2b0dbd3804adee8847946c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_exact_zero_sensitivity.tsv": "82dd6a96eed2735eddee0b0e798f47fd1b65233a34ebb6c8249e69b1d0a68935",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_importance.tsv": "2d4e6bc38fe5cb10c9da97cf437b9513866da8568ca6aca477a3aa196863313e",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_importance_repeats.tsv": "f9c11e4c7f37ca669b1be7a1fe138b86ff0dea6ee520e2b25274e82a8f03f760",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_rank_stability.tsv": "7a51dc8c049337a9733e99d03bf90f167b76e6e702ab831b904b8f48b0e83f27",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_ranks.tsv": "25a806ff47724a48dc0bd6033c89d965d8cee2e6ce23295e6e8266eaea50bb4d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_model_coefficients.tsv": "167a31541b542bcca7e35618cc14e31682f551921928a41f04b09e4699e6a1e2",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_model_fit.tsv": "1a9e24e4921b7bc878b4e635d5f76b17bb6a208d2bfa3b022b144a2c73134869",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_seed_summary.tsv": "598e31f39767503d5405eaf9807912bd36bc0fa046ed78e909b2c50299d21293",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance.pdf": "f035c6ad40fa21bfcec3f0998a1ab75d0e503a23de1481a64e3541626448019f",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance.png": "bc1df944d56ff4d5fafa7b4de9cb6bcc99c01d55fedb51f54e272174750d39e9",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance.svg": "5dc7a34adeec496a009209c6b04db24653d6601eb0f89a9ec869152316f08720",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance_caption.md": "23cc1f077d572cd1456e2dceb8dae63f79516a9a18db6cdd13188b13d00feeb0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_coefficients.tsv": "0d81d9ef8d080dcf37d1e90f9d33b59b8be81f14c5954303e5fc1bb41081dfea",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_exact_zero_sensitivity.tsv": "d0b700f41518e8eb95575160d6558a87a1de70b266b223b628e802fa94490e35",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_factor_importance.tsv": "165e6512553b41ee35d994068b20aef36413bd8265b1b3beb840d251c9a4a988",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_factor_importance_repeats.tsv": "4a45dbeb12ebd231fcdd0f7f5aa45c33742e4d72cf24b17a4dd102b47c004339",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_factor_ranks.tsv": "e381105f627af826786ef895a7faabf86b647d3a8c41427de2d869d56dfa48cd",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_model_fit.tsv": "cc73eb77326481817b630becafdd75316bf4cf9cf87cae78ab0d2ae019cb25f0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance.pdf": "b08b0148418f9693d9b6aee24dba3950c0df2403906c5ef93055276aae0f029a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance.png": "738ab26255672406a263309f1365340c260530c7fb39edf865c8f9afd04b5ca2",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance.svg": "68c463ef102a74eefff888c779493e675fadc4ea3e3b21abc264a146972186b1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance_caption.md": "58e28a3b2aeb20750ee303c9254a651f3efd663fe89c27016a5097738195aa2d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/feature_importance_diff_review.md": "099ed344e59db8228d7f2323eb6b66634cffc54aa2a84b1c7f861f69ca6baa6c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/feature_importance_output_inventory.tsv": "9a038bf2eb372e1cf694b04219b7a5053c695696d37fa8e89405e4e659fe813f",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/feature_importance_outputs.sha256": "77c823419f292eff3b7b50145367d18d481928f3fbfd48f901ae0381c42bfb4c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/feature_importance_test_log.txt": "836148e59ff56e0598b7b7166021c06f45d8d32859a4533b56603b009b9acc90",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/feature_importance_validation.json": "3443a4a937ce5ab0f2b750e6ca73280965189c1bcbd17cad466fba218bbf7ed8"
+  },
+  "guarantees": {
+    "model_inference_performed": false,
+    "checkpoint_loaded": false,
+    "retraining": false,
+    "architecture_changed": false,
+    "evaluation_code_changed": false,
+    "source_dataset_changed": false,
+    "canonical_table_changed": false,
+    "prior_sprint_scientific_outputs_changed": false,
+    "wfe_hyperparameter_tuning": false,
+    "row_level_leakage_split": false,
+    "pooled_faithful_adapted_claim": false,
+    "ssp_computed": false,
+    "causal_claim_made": false,
+    "architectural_recommendation_made": false
+  }
+}
