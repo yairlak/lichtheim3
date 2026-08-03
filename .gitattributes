@@ -1,0 +1,13 @@
+# Generated data and figure files: exempt from whitespace checks.
+# TSVs legitimately end rows with empty trailing columns, and matplotlib's SVG
+# path data contains trailing spaces.  Neither is a code-style defect, and
+# rewriting them would corrupt the exact plotting tables and vector output.
+*.tsv -whitespace
+*.svg -whitespace
+
+# Binary artefacts: never diffed or merged as text.
+*.png binary
+*.pdf binary
+*.pt binary
+*.npy binary
+*.tar.gz binary

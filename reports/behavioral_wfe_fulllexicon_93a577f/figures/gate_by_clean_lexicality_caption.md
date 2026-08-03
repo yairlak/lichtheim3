@@ -1,0 +1,3 @@
+**Gate and lexical confidence (clean WFE set).** One point per seed. The dotted line at g = 0.5 marks equal WM/LTM weighting. The gate is a word-level scalar computed for the FULL route only; WM-only and LTM-only never compute it. Lexical confidence is the top-1 cosine similarity between the encoded form and the semantic bank. The gate is not a probability that the stimulus is a word, and lexical confidence is not phonological similarity.
+
+Real words were restricted to WFE words encountered during training with the same phonological form. Pseudowords were restricted to WFE pseudowords whose phonological form was absent from the training lexicon.

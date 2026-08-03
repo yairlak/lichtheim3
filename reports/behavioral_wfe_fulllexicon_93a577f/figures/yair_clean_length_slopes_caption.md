@@ -1,0 +1,3 @@
+**Length-effect slopes by route (clean WFE set).** Left: per-seed OLS slopes of raw edit distance on continuous phoneme length, for each route; black dashes mark the mean over seeds. Right: the primary contrast, LTM slope minus WM slope, with all four seed values shown individually (seed 21 included), the mean in black and a 95% hierarchical bootstrap interval (B = 10,000, random seed 20260730).
+
+Real words were restricted to WFE words encountered during training with the same phonological form. Pseudowords were restricted to WFE pseudowords whose phonological form was absent from the training lexicon.

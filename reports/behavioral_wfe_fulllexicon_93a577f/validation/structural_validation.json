@@ -1,0 +1,132 @@
+{
+  "verdict": "PASS",
+  "n_checks": 31,
+  "n_failures": 0,
+  "checks": {
+    "canonical_14400_rows": {
+      "pass": true,
+      "detail": "14400"
+    },
+    "four_seeds": {
+      "pass": true,
+      "detail": ""
+    },
+    "three_routes": {
+      "pass": true,
+      "detail": ""
+    },
+    "seed21_present": {
+      "pass": true,
+      "detail": ""
+    },
+    "no_duplicate_seed_item_route": {
+      "pass": true,
+      "detail": ""
+    },
+    "ops_sum_to_edit_distance": {
+      "pass": true,
+      "detail": ""
+    },
+    "clean_total_1062": {
+      "pass": true,
+      "detail": "1062"
+    },
+    "clean_real_671": {
+      "pass": true,
+      "detail": "671"
+    },
+    "clean_pseudo_391": {
+      "pass": true,
+      "detail": "391"
+    },
+    "clean_only_two_strata": {
+      "pass": true,
+      "detail": ""
+    },
+    "clean_lengths_exclude_6": {
+      "pass": true,
+      "detail": "[np.int64(3), np.int64(4), np.int64(5), np.int64(7), np.int64(8), np.int64(9)]"
+    },
+    "table_present_yair_clean_length_by_route.tsv": {
+      "pass": true,
+      "detail": ""
+    },
+    "table_columns_yair_clean_length_by_route.tsv": {
+      "pass": true,
+      "detail": "[]"
+    },
+    "table_seeds_yair_clean_length_by_route.tsv": {
+      "pass": true,
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    "table_lengths_yair_clean_length_by_route.tsv": {
+      "pass": true,
+      "detail": "[np.int64(3), np.int64(4), np.int64(5), np.int64(7), np.int64(8), np.int64(9)]"
+    },
+    "table_present_clean_length_slopes_by_seed.tsv": {
+      "pass": true,
+      "detail": ""
+    },
+    "table_columns_clean_length_slopes_by_seed.tsv": {
+      "pass": true,
+      "detail": "[]"
+    },
+    "table_seeds_clean_length_slopes_by_seed.tsv": {
+      "pass": true,
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    "table_present_clean_route_length_contrasts.tsv": {
+      "pass": true,
+      "detail": ""
+    },
+    "table_columns_clean_route_length_contrasts.tsv": {
+      "pass": true,
+      "detail": "[]"
+    },
+    "table_seeds_clean_route_length_contrasts.tsv": {
+      "pass": true,
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    "table_present_yair_clean_serial_position_interpolated.tsv": {
+      "pass": true,
+      "detail": ""
+    },
+    "table_columns_yair_clean_serial_position_interpolated.tsv": {
+      "pass": true,
+      "detail": "[]"
+    },
+    "table_present_gate_by_clean_lexicality.tsv": {
+      "pass": true,
+      "detail": ""
+    },
+    "table_columns_gate_by_clean_lexicality.tsv": {
+      "pass": true,
+      "detail": "[]"
+    },
+    "table_seeds_gate_by_clean_lexicality.tsv": {
+      "pass": true,
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    "table_present_gate_by_exposure_status.tsv": {
+      "pass": true,
+      "detail": ""
+    },
+    "table_columns_gate_by_exposure_status.tsv": {
+      "pass": true,
+      "detail": "[]"
+    },
+    "table_seeds_gate_by_exposure_status.tsv": {
+      "pass": true,
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    "bootstrap_replicates_recorded": {
+      "pass": true,
+      "detail": ""
+    },
+    "bootstrap_seed_recorded": {
+      "pass": true,
+      "detail": ""
+    }
+  },
+  "model_inference_performed": false
+}

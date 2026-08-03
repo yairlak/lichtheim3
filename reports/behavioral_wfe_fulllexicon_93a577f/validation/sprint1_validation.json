@@ -1,0 +1,73 @@
+{
+  "sprint": 1,
+  "date": "2026-08-03T02:19:45.366226+00:00",
+  "tests": {
+    "test_behavioral_analysis.py": {
+      "passed": 54,
+      "failed": 0
+    },
+    "test_behavioral_eval_patch.py": {
+      "passed": 51,
+      "failed": 0
+    },
+    "full_suite_not_slow": {
+      "passed": 276,
+      "failed": 0,
+      "deselected": 4
+    }
+  },
+  "structural_validation": {
+    "verdict": "PASS",
+    "n_checks": 31,
+    "n_failures": 0
+  },
+  "manifests": {
+    "production_scientific_FINAL": {
+      "ok": 36,
+      "failed": 0
+    },
+    "production_operational_logs_FINAL": {
+      "ok": 5,
+      "failed": 0
+    },
+    "original_production_outputs": "HISTORICAL/SUPERSEDED - 40/41 by design, see manifest_closure_note.md"
+  },
+  "deterministic_regeneration": {
+    "runs": 2,
+    "tsv_identical": 8,
+    "svg_identical": 5,
+    "pdf_identical": 5,
+    "png_identical": 5,
+    "caption_identical": 5,
+    "differing": 0,
+    "note": "achieved via matplotlib svg.hashsalt and suppressed embedded timestamps"
+  },
+  "numerical_non_regression": {
+    "slopes_rows": 24,
+    "contrasts_rows": 8,
+    "length_cell_means_rows": 144,
+    "serial_position_rows": 600,
+    "gate_rows": 8,
+    "bootstrap_ci_rows": 2,
+    "max_abs_diff": 0.0
+  },
+  "no_production_prediction_changed": true,
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "canonical_table_unchanged": true,
+  "model_inference_performed": false,
+  "source_data_changed": false,
+  "frozen_protocol_changed": false,
+  "tracked_source_dirty": false,
+  "n_report_files": 40,
+  "verdict": "PASS",
+  "diff_sha256": "421f69e1597ab9be13c31a39aeb1e91b6ca115351dd91dfcda4aa92faa55a353",
+  "n_report_files_hashed": 37,
+  "manifest_self_exclusions": {
+    "files": [
+      "sprint1_output_inventory.tsv",
+      "sprint1_outputs.sha256",
+      "sprint1_validation.json"
+    ],
+    "reason": "a manifest cannot contain its own hash; excluded so the manifest verifies 100% (same policy as the production closure)"
+  }
+}

@@ -1,0 +1,9 @@
+analysis_set	stratum	label	quantity	metric	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition	mean_over_seeds	min	max	range	all_same_sign
+LICHTHEIM_CLEAN	pseudo	Pseudowords	full_length_slope	raw_edit_distance	0.01045986356152287	0.0016894570559408551	0.022116872223483977	10000	10000	20260730	95% percentile interval					
+LICHTHEIM_CLEAN	pseudo	Pseudowords	ltm_length_slope	raw_edit_distance	0.22131223020892457	0.17327195472817972	0.27049841036799044	10000	10000	20260730	95% percentile interval					
+LICHTHEIM_CLEAN	pseudo	Pseudowords	ltm_minus_wm	raw_edit_distance	0.20420846429794215	0.15524616043291578	0.2535739268966192	10000	10000	20260730	95% percentile interval	0.20428875211834963	0.1827547860651787	0.2459267058444267	0.06317191977924799	True
+LICHTHEIM_CLEAN	pseudo	Pseudowords	wm_length_slope	raw_edit_distance	0.017103765910982442	0.002563394418209733	0.035691258910235384	10000	10000	20260730	95% percentile interval					
+LICHTHEIM_CLEAN	real	Real words	full_length_slope	raw_edit_distance	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval					
+LICHTHEIM_CLEAN	real	Real words	ltm_length_slope	raw_edit_distance	0.007791556671179743	0.0007210717160249785	0.019770163333895266	10000	10000	20260730	95% percentile interval					
+LICHTHEIM_CLEAN	real	Real words	ltm_minus_wm	raw_edit_distance	0.007791556671179743	0.0007210717160249785	0.019770163333895266	10000	10000	20260730	95% percentile interval	0.007835839248260652	0.0006534623550642748	0.01772838684971419	0.017074924494649917	True
+LICHTHEIM_CLEAN	real	Real words	wm_length_slope	raw_edit_distance	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval					

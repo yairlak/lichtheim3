@@ -1,0 +1,42 @@
+=== SPRINT 1 VALIDATION LOG ===
+HEAD e876b755d0475ed11e5fbc0419a0bd8860dfd325  branch feat/full-lexicon-ceiling
+
+### [1] new behavioral analysis tests
+......................................................                   [100%]
+54 passed in 0.86s
+exit=0
+
+### [2] existing behavioral eval patch tests
+...................................................                      [100%]
+51 passed in 3.16s
+exit=0
+
+### [3] lightweight existing suite
+........................................................................ [ 78%]
+............................................................             [100%]
+276 passed, 4 deselected in 78.59s (0:01:18)
+exit=0
+
+### [4] deterministic double regeneration
+run A exit=0
+run B exit=0
+-- TSV byte-identity --
+  identical TSVs: 8   differing: 0
+-- SVG byte-identity --
+  DIFFERS: gate_by_clean_lexicality.svg
+  DIFFERS: gate_by_exposure_status.svg
+  DIFFERS: yair_clean_length_by_route.svg
+  DIFFERS: yair_clean_length_slopes.svg
+  DIFFERS: yair_clean_serial_position.svg
+  identical SVGs: 0   differing: 5
+-- caption byte-identity --
+  identical captions: 5
+-- vs published reports/ copies --
+  TSVs matching published: 8
+
+### [4b] double regeneration after determinism fixes (svg.hashsalt + no embedded timestamps)
+  tsv: identical=8 differing=0
+  svg: identical=5 differing=0
+  pdf: identical=5 differing=0
+  md: identical=5 differing=0
+  png: identical=5 differing=0

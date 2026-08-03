@@ -1,0 +1,46 @@
+{
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "out_dir": "reports/behavioral_wfe_fulllexicon_93a577f/figures",
+  "figures": {
+    "yair_clean_length_by_route": {
+      "table": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route.tsv",
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route_caption.md"
+    },
+    "yair_clean_length_slopes": {
+      "table": "reports/behavioral_wfe_fulllexicon_93a577f/figures/clean_length_slopes_by_seed.tsv",
+      "contrasts": "reports/behavioral_wfe_fulllexicon_93a577f/figures/clean_route_length_contrasts.tsv",
+      "bootstrap": "reports/behavioral_wfe_fulllexicon_93a577f/figures/clean_bootstrap_results.tsv",
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_slopes.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_slopes.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_slopes.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_slopes_caption.md"
+    },
+    "yair_clean_serial_position": {
+      "table": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position_interpolated.tsv",
+      "positions": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position.tsv",
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position_caption.md"
+    },
+    "gate_by_clean_lexicality": {
+      "table": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality.tsv",
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality_caption.md"
+    },
+    "gate_by_exposure_status": {
+      "table": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status.tsv",
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status_caption.md"
+    }
+  },
+  "model_inference_performed": false
+}
