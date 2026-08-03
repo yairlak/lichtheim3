@@ -69,5 +69,18 @@
       "sprint1_validation.json"
     ],
     "reason": "a manifest cannot contain its own hash; excluded so the manifest verifies 100% (same policy as the production closure)"
+  },
+  "provenance_closure": {
+    "commit_a": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+    "commit_a_role": "scientific analysis code and report",
+    "commit_b_role": "provenance closure only; commit B is NOT the analysis-code commit",
+    "analysis_code_commit_points_to": "commit A",
+    "reason_two_commits": "a tracked provenance file cannot contain the SHA of the commit that contains it",
+    "post_commit_regeneration": {
+      "artefacts_compared": 28,
+      "byte_identical": 28,
+      "differing": 0
+    },
+    "scientific_fields_changed_between_pre_and_post_commit_provenance": "none; analysis_source_sha256 updated only because plotting.py received the Phase-7 determinism fix (svg.hashsalt, PDF CreationDate) after the stale first provenance was written, and now matches the blob committed in A"
   }
 }

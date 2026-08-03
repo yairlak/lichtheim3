@@ -1,10 +1,12 @@
 {
+  "provenance_closure": "Sprint 1",
   "training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
   "evaluation_code_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
+  "analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+  "analysis_code_commit_role": "commit A - the scientific analysis code and report commit; this provenance file is closed by a separate commit B, which is NOT the analysis-code commit",
   "analysis_code_base_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
-  "analysis_code_commit": null,
-  "analysis_code_commit_note": "null until the Sprint-1 commit exists; identify the working tree by analysis_source_sha256",
   "analysis_code_dirty": false,
+  "analysis_code_untracked_files": [],
   "analysis_source_sha256": {
     "scripts/behavioral_analysis/__init__.py": "36f067416d492defec0f0a76b344190be2171ee5f2d7b2eedb09a46244a2098e",
     "scripts/behavioral_analysis/bootstrap.py": "00a84444f9717b99c58d5405b2c6aa1ef201f6805923e4f462c4c4864b6b6a63",
@@ -14,7 +16,7 @@
     "scripts/behavioral_analysis/compute.py": "bcc267ea243c7cc800823cb9ef4172f7a593eaf083e1577833b59101e1c70edb",
     "scripts/behavioral_analysis/io.py": "4dc0b3d7689fb1772eda19fcb1c1c828a698a7d8314dbe7afb9398c0f348211c",
     "scripts/behavioral_analysis/make_figures.py": "225347f7cc0da90699c30f9f75c7d841139774a4d198fea42168d57f946b8461",
-    "scripts/behavioral_analysis/plotting.py": "452ffdc9d5c49aaf8152858811b575d9306753da904391e1d4a1cb6b72df691a",
+    "scripts/behavioral_analysis/plotting.py": "4db95bde6136dd1170c01fd4f52a5b1a25227a6261f6720dc783acf478220f62",
     "scripts/behavioral_analysis/validate_outputs.py": "2571c50887d16d33c26e2f9a27adf6424ac61fea8cf1adeee6213f90d1b3f41e"
   },
   "checkpoint_paths": {
@@ -43,13 +45,13 @@
     "glove": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed",
     "item_manifest": "9db97522254167ea55a3cdbbc0953052b1368bacfeacc1920b4ffadf6f609194"
   },
-  "analysis_manifest_sha256": "78b6bb04ff6212b02a3119c5abb8e60cebdc88aaf180ecb392e793456df87b9b",
-  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
   "production_manifest_sha256": {
     "original_historical": "3c44a2123cd39d82fab628d0adf40db01680335f3e927023be1d6576bb2ede77",
     "scientific_FINAL": "13b7473a610d9c084ff3d0984f1b34b879afc8df6fcf075e7b6b3c0845b4c712",
     "operational_logs_FINAL": "a2be551a44f5a23cf97ab7b0cfdbaf2edfdfe0370d5dbcab8eb25ca8c9ff4743"
   },
+  "analysis_manifest_sha256": "78b6bb04ff6212b02a3119c5abb8e60cebdc88aaf180ecb392e793456df87b9b",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
   "python_version": "3.11.15",
   "numpy_version": "2.4.6",
   "pandas_version": "3.0.3",
@@ -77,38 +79,5 @@
     "NOVEL_PSEUDOWORD": 391
   },
   "model_inference_performed": false,
-  "generation_timestamp": "2026-08-03T02:14:25.838483+00:00",
-  "analysis_code_untracked_files": [
-    "docs/behavioral_wfe_analysis_matrix.md",
-    "docs/behavioral_wfe_fulllexicon.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_code_migration.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis_provenance.json",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/clean_bootstrap_results.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/clean_length_slopes_by_seed.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/clean_route_length_contrasts.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/figure_manifest.json",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality_caption.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status_caption.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route_caption.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_slopes_caption.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position.tsv",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position_caption.md",
-    "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position_interpolated.tsv",
-    "scripts/behavioral_analysis/__init__.py",
-    "scripts/behavioral_analysis/bootstrap.py",
-    "scripts/behavioral_analysis/build_canonical_table.py",
-    "scripts/behavioral_analysis/close_production_manifest.py",
-    "scripts/behavioral_analysis/common.py",
-    "scripts/behavioral_analysis/compute.py",
-    "scripts/behavioral_analysis/io.py",
-    "scripts/behavioral_analysis/make_figures.py",
-    "scripts/behavioral_analysis/plotting.py",
-    "scripts/behavioral_analysis/validate_outputs.py",
-    "tests/test_behavioral_analysis.py"
-  ],
-  "analysis_code_dirty_note": "analysis_code_dirty reflects TRACKED modifications only and is false because the Sprint-1 package is still untracked. The package files are listed in analysis_code_untracked_files and pinned by analysis_source_sha256; after the Sprint-1 commit, analysis_code_commit becomes the authoritative identifier."
+  "generation_timestamp": "2026-08-03T12:00:19.023481+00:00"
 }
