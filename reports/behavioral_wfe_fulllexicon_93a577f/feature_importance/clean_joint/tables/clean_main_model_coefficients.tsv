@@ -1,0 +1,25 @@
+model	seed	term	coefficient	reference_levels	signed	note
+clean_main_effects	19	(intercept)	0.10384714939312045	route=wm; lexicality=pseudo; morphology=complex	True	model intercept
+clean_main_effects	19	length_z	0.08264299028986725	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	19	lexicality_real	-0.1787287481644323	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	19	morphology_simple	0.02623009532088727	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	19	route_full	0.0009078347933537864	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	19	route_ltm	0.22652475606244868	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	20	(intercept)	0.11324762522362962	route=wm; lexicality=pseudo; morphology=complex	True	model intercept
+clean_main_effects	20	length_z	0.06051194418293146	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	20	lexicality_real	-0.16757261473201046	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	20	morphology_simple	-0.0045803722907729215	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	20	route_full	-0.0025733465766084765	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	20	route_ltm	0.19249128327063006	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	21	(intercept)	0.14282605887296262	route=wm; lexicality=pseudo; morphology=complex	True	model intercept
+clean_main_effects	21	length_z	0.08054656463763514	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	21	lexicality_real	-0.2080225813063172	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	21	morphology_simple	0.025250241886840892	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	21	route_full	-0.01549105045715453	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	21	route_ltm	0.19837498949584212	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	22	(intercept)	0.1165926135684499	route=wm; lexicality=pseudo; morphology=complex	True	model intercept
+clean_main_effects	22	length_z	0.06271441734586596	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	22	lexicality_real	-0.18315808004249837	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	22	morphology_simple	0.0075985180540358455	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	22	route_full	-0.0025912553054606258	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table
+clean_main_effects	22	route_ltm	0.20774952025270613	route=wm; lexicality=pseudo; morphology=complex	True	coefficients are signed; grouped permutation importance is unsigned and lives in a separate table

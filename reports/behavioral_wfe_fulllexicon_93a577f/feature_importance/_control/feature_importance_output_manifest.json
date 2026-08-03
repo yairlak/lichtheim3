@@ -1,0 +1,58 @@
+{
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "out_root": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance",
+  "n_train_items": 850,
+  "n_test_items": 212,
+  "split_grouped_by": "item_id",
+  "split_reused_across_seeds": true,
+  "ridge_alpha": 1.0,
+  "permutation_repeats": 100,
+  "interaction_figure": "FIGURE_CREATED",
+  "figures": {
+    "clean_adapted_factor_importance": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance_caption.md"
+    },
+    "interaction_block_utility": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility_caption.md"
+    },
+    "route_specific_factor_importance": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance_caption.md"
+    }
+  },
+  "tables": [
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/fi_test_items.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/_control/fi_train_items.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_block_drop_utility.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_exact_zero_sensitivity.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_figure_decision.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_model_coefficients.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_model_fit.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/tables/interaction_model_incremental_utility.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_exact_zero_sensitivity.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_importance.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_importance_repeats.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_rank_stability.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_factor_ranks.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_model_coefficients.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_model_fit.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/tables/clean_main_seed_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_coefficients.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_exact_zero_sensitivity.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_factor_importance.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_factor_importance_repeats.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_factor_ranks.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/tables/route_specific_model_fit.tsv"
+  ],
+  "model_inference_performed": false,
+  "faithful_a11_touched": false
+}

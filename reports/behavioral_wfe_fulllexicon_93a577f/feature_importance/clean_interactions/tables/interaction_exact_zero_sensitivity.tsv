@@ -1,0 +1,2 @@
+factor	quantity	seed_values	mean_over_seeds	min	max	range	seed21_included	exact_zero_seeds_mean	seed_interval_low	seed_interval_high	seed_interval_label	n_resamples	random_seed	is_hierarchical_bootstrap	exact_zero_seeds	replaces_primary
+(interaction model)	delta_r2_vs_main	19:+0.144388; 20:+0.092375; 21:+0.097089; 22:+0.113703	0.1118887485849297	0.0923754167647377	0.144388016965997	0.05201260020125931	True	0.11682206966626289	0.09473210105283392	0.1325632090597303	seed-resampling interval over four checkpoints	10000	20260730	False	19; 20; 22	False

@@ -1,0 +1,5 @@
+model	seed	outcome	n_train_rows	n_test_rows	n_train_items	n_test_items	n_test_nonzero	ridge_alpha	outcome_status	model_status	negative_test_r2	train_r2	test_r2	test_mae
+clean_main_effects	19	raw_edit_distance	2550	636	850	212	23	1.0	OK	OK	False	0.11595493121165235	0.1200568618544342	0.20442874073833425
+clean_main_effects	20	raw_edit_distance	2550	636	850	212	21	1.0	OK	OK	False	0.09693384222267354	0.0941263999937183	0.1779560914690178
+clean_main_effects	21	raw_edit_distance	2550	636	850	212	19	1.0	OK	OK	False	0.10765184005975525	0.0760161876280967	0.1822559631051126
+clean_main_effects	22	raw_edit_distance	2550	636	850	212	18	1.0	OK	OK	False	0.1005744475104452	0.09072960302589061	0.16916195407990936

@@ -1,0 +1,2 @@
+criterion	seeds_with_positive_delta_r2	seeds_with_positive_delta_mae	figure_created	status
+meaningful held-out utility in at least two seeds	4	4	True	FIGURE_CREATED

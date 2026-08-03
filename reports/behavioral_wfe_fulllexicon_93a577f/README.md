@@ -92,6 +92,38 @@ Results and finding categories: `error_taxonomy/error_taxonomy_results.md`.
 Factual handoff for a future mechanistic study, with no causal claim:
 `error_taxonomy/length_effect_mechanism_handoff.md`.
 
+## Sprint 5 — adapted feature importance
+
+`feature_importance/` holds the Sprint-5 adapted analysis (A15): a clean-set
+joint main-effects model across all three routes (primary), a predeclared
+two-way interaction model, and route-specific models. The specification was
+frozen in `feature_importance/feature_importance_analysis_spec.md` before any
+model was fitted.
+
+| Figure | Plotting tables | Caption |
+|---|---|---|
+| `feature_importance/clean_joint/figures/clean_adapted_factor_importance` | `clean_main_factor_importance.tsv`, `..._repeats.tsv`, `clean_main_model_fit.tsv`, `clean_main_model_coefficients.tsv`, `clean_main_factor_ranks.tsv`, `..._rank_stability.tsv`, `clean_main_seed_summary.tsv`, `clean_main_exact_zero_sensitivity.tsv` | `..._caption.md` |
+| `feature_importance/clean_interactions/figures/interaction_block_utility` | `interaction_block_drop_utility.tsv`, `interaction_model_incremental_utility.tsv`, `interaction_model_fit.tsv`, `interaction_model_coefficients.tsv`, `interaction_figure_decision.tsv`, `interaction_exact_zero_sensitivity.tsv` | `..._caption.md` |
+| `feature_importance/route_specific/figures/route_specific_factor_importance` | `route_specific_factor_importance.tsv`, `..._repeats.tsv`, `route_specific_model_fit.tsv`, `route_specific_coefficients.tsv`, `route_specific_factor_ranks.tsv`, `route_specific_exact_zero_sensitivity.tsv` | `..._caption.md` |
+
+**Two constraints govern every claim here.** On the clean set **lexicality and
+training exposure are perfectly confounded** — every Real item is
+`TRAINED_REAL_EXACT` and every Pseudo item is `NOVEL_PSEUDOWORD` — so the two
+never enter one model and the factor is reported as a **lexicality/exposure
+contrast**. **Zipf frequency is undefined for pseudowords**, is never imputed,
+and is excluded from every all-item clean model (see Sprint 3 for the
+trained-real frequency analysis).
+
+The split is **grouped by `item_id`** so all three route rows of an item stay
+together, and the identical split is reused across all four seeds and all three
+models. Permutation acts on **raw factors**, rebuilding every derived column.
+Grouped importance is **unsigned**; coefficients are reported separately, with
+route as two contrasts (LTM − WM, FULL − WM) and never one collapsed number.
+
+The **faithful** Dager feature importance (A11) is a **separate** analysis and
+is not recomputed, replaced or pooled: `feature_importance/faithful_vs_adapted.md`.
+Results and finding categories: `feature_importance/feature_importance_results.md`.
+
 ## Source tables
 
 Figures derive from the validated canonical table
@@ -111,6 +143,7 @@ per-seed enriched production tables under
 | `morphology/validation/morphology_outputs.sha256` | Sprint-2 outputs | authoritative |
 | `frequency/validation/frequency_outputs.sha256` | Sprint-3 outputs | authoritative |
 | `error_taxonomy/validation/error_taxonomy_outputs.sha256` | Sprint-4 outputs | authoritative |
+| `feature_importance/validation/feature_importance_outputs.sha256` | Sprint-5 outputs | authoritative |
 
 **Living-file policy.** `README.md` and `analysis_matrix.tsv` are living
 documents that each sprint extends; every earlier manifest lists them, so their

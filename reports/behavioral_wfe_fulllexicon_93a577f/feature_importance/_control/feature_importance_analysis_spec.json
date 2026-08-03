@@ -1,0 +1,257 @@
+{
+  "analysis": "adapted feature importance (A15)",
+  "estimator": {
+    "alpha": 1.0,
+    "hyperparameter_search": false,
+    "model": "Ridge",
+    "tuned_on_wfe": false
+  },
+  "faithful_a11": {
+    "location": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/",
+    "pooled_with_adapted": false,
+    "recomputed": false,
+    "replaced": false
+  },
+  "frozen_before_any_model_fitted": true,
+  "frozen_date": "2026-08-03",
+  "identifiability": {
+    "clean_pseudo": "NOVEL_PSEUDOWORD (391)",
+    "clean_real": "TRAINED_REAL_EXACT (671)",
+    "factor_label": "lexicality/exposure contrast",
+    "lexicality_exposure_perfectly_confounded": true,
+    "never_both_in_one_model": [
+      "lexicality",
+      "lichtheim_exposure_status"
+    ],
+    "valid_clean_factors": [
+      "route",
+      "lexicality",
+      "target_length",
+      "morphology"
+    ],
+    "zipf_in_clean_all_item_model": false,
+    "zipf_reason": "undefined for pseudowords; never imputed as zero"
+  },
+  "interaction_utility": {
+    "delta_mae": "main_effects_test_mae - interaction_test_mae",
+    "delta_r2": "interaction_test_r2 - main_effects_test_r2",
+    "figure_condition": "meaningful held-out utility in at least two seeds",
+    "large_coefficient_alone_is_not_evidence": true,
+    "otherwise_record": "FIGURE_NOT_CREATED_DUE_TO_NO_STABLE_INCREMENTAL_UTILITY",
+    "per_block_method": "refit without each predeclared block (drop-block)",
+    "positive_means": "improvement",
+    "post_hoc_selection": false
+  },
+  "models": {
+    "A_clean_main_effects": {
+      "dataset": "LICHTHEIM_CLEAN",
+      "raw_factors": [
+        "route",
+        "lexicality",
+        "length",
+        "morphology"
+      ],
+      "role": "primary",
+      "rows_per_seed": 3186
+    },
+    "B_clean_interactions": {
+      "dataset": "LICHTHEIM_CLEAN",
+      "higher_order_interactions": false,
+      "post_hoc_selection": false,
+      "predeclared_blocks": [
+        "route_x_length",
+        "route_x_lexicality",
+        "route_x_morphology",
+        "lexicality_x_length",
+        "morphology_x_length"
+      ],
+      "raw_factors": [
+        "route",
+        "lexicality",
+        "length",
+        "morphology"
+      ],
+      "role": "secondary"
+    },
+    "C_route_specific": {
+      "dataset": "LICHTHEIM_CLEAN",
+      "fit_per_route": [
+        "full",
+        "wm",
+        "ltm"
+      ],
+      "raw_factors": [
+        "lexicality",
+        "length",
+        "morphology"
+      ],
+      "role": "secondary",
+      "rows_per_seed_per_route": 1062
+    },
+    "D_exposure_sensitivity": {
+      "dataset": "ALL_WITH_EXPOSURE_STRATA",
+      "frequency_included": false,
+      "lexicality_included": false,
+      "merged_with_clean_claim": false,
+      "raw_factors": [
+        "route",
+        "exposure_status",
+        "length",
+        "morphology"
+      ],
+      "role": "optional descriptive sensitivity",
+      "small_cell_flags": {
+        "SMALL_CELL": 20,
+        "VERY_SMALL_CELL": 10
+      }
+    }
+  },
+  "outcome_variance_policy": {
+    "all_zero": "do not fit or interpret; record ALL_ZERO_OUTCOME; report ceiling-limited",
+    "negative_r2": "retain, mark NEGATIVE_TEST_R2, use MAE sensitivity, never suppress",
+    "statuses": [
+      "OK",
+      "ALL_ZERO_OUTCOME",
+      "NEAR_ZERO_VARIANCE",
+      "NEGATIVE_TEST_R2",
+      "INSUFFICIENT_ERRORS",
+      "NON_ESTIMABLE",
+      "NUMERICAL_FAILURE"
+    ],
+    "unstable_ranking_is_not_evidence_of_absence": true
+  },
+  "outcomes": {
+    "primary": "raw_edit_distance",
+    "secondary_descriptive": "word_error"
+  },
+  "permutation_importance": {
+    "data": "held-out test set",
+    "derived_terms_rebuilt": [
+      "encoding",
+      "standardization",
+      "declared interaction terms"
+    ],
+    "independent_dummy_or_interaction_permutation": false,
+    "item_level_factors": [
+      "lexicality",
+      "length",
+      "morphology"
+    ],
+    "item_level_rule": "permute values across held-out item_ids; apply the permuted value to all three route rows of that item",
+    "n_repeats": 100,
+    "operates_on": "raw factors before feature engineering",
+    "random_state": 42,
+    "reported_as": [
+      "drop in held-out R2",
+      "increase in held-out MAE"
+    ],
+    "route_rule": "permute route labels within each held-out item, preserving one FULL, one WM and one LTM row",
+    "saved_per_seed_and_factor": [
+      "mean",
+      "std",
+      "min",
+      "max",
+      "repeat-level table"
+    ]
+  },
+  "presentation": {
+    "all_four_seeds_visible": true,
+    "ceiling_limited_routes": "labelled, never drawn as artificial zero importance",
+    "mae_sensitivity_location": "companion panel or table",
+    "mean_prominent": true,
+    "palette": "neutral factor palette",
+    "primary_visual_measure": "held-out R2 drop",
+    "red_blue_reason": "these are model diagnostics, not real/pseudo observations; the reserved lexicality colours would mislead",
+    "red_or_blue_used": false,
+    "within_seed_spread_distinguishable_from_between_seed": true
+  },
+  "prohibitions": {
+    "architectural_recommendation": true,
+    "causal_claim": true,
+    "checkpoint_inference": true,
+    "pooled_faithful_adapted_claim": true,
+    "pseudoword_frequency": true,
+    "row_level_leakage_split": true,
+    "ssp": true
+  },
+  "result_categories": [
+    "ROBUST",
+    "STABLE_RANKING",
+    "CONSISTENT_BUT_SMALL",
+    "UNSTABLE_ACROSS_SEEDS",
+    "NEGATIVE_TEST_R2",
+    "CEILING_LIMITED",
+    "SPARSE_ERROR_LIMITED",
+    "NON_ESTIMABLE",
+    "DESCRIPTIVE_ONLY"
+  ],
+  "scores": {
+    "primary": "held-out R2",
+    "secondary": "held-out mean absolute error",
+    "secondary_reason": "sparse zero-heavy outcomes can give unstable or negative held-out R2"
+  },
+  "sign_policy": {
+    "artificial_single_sign_for_multilevel_factor": false,
+    "binary_factors": "coefficient relative to the frozen reference level",
+    "coefficients_reported_separately": true,
+    "faithful_a11_keeps_historical_convention": true,
+    "grouped_importance_signed": false,
+    "length": "standardized coefficient with sign",
+    "multi_column_factors_collapsed_into_one_signed_number": false,
+    "route": [
+      "full_vs_wm",
+      "ltm_vs_wm"
+    ]
+  },
+  "split": {
+    "all_route_rows_same_split": true,
+    "grouping_unit": "item_id",
+    "random_state": 42,
+    "recorded_in": [
+      "_control/fi_train_items.tsv",
+      "_control/fi_test_items.tsv"
+    ],
+    "row_level_split_allowed": false,
+    "same_split_across_models": true,
+    "same_split_across_seeds": true,
+    "scheme": "80/20 train/test grouped by item_id",
+    "test_size": 0.2
+  },
+  "sprint": 5,
+  "standardization": {
+    "applied_to": "test items with the fitted transform",
+    "categorical_encoding_fitted_on": "training data only",
+    "numeric_fitted_on": "training items only",
+    "reference_levels": {
+      "lexicality": "pseudo",
+      "morphology": "complex",
+      "route": "wm"
+    },
+    "reference_levels_declared_before_fitting": true,
+    "reused_across_seeds": true
+  },
+  "uncertainty": {
+    "exact_zero_replaces_primary": false,
+    "exact_zero_sensitivity_seeds": [
+      19,
+      20,
+      22
+    ],
+    "permutation_repeats_treated_as_model_seeds": false,
+    "seed21_excluded": false,
+    "seed_interval": {
+      "is_hierarchical_bootstrap": false,
+      "label": "seed-resampling interval over four checkpoints",
+      "random_seed": 20260730,
+      "resamples": 10000,
+      "why_not": "items are not resampled and the model is not refitted"
+    },
+    "seeds_primary": [
+      19,
+      20,
+      21,
+      22
+    ],
+    "within_seed_and_between_seed_shown_separately": true
+  }
+}

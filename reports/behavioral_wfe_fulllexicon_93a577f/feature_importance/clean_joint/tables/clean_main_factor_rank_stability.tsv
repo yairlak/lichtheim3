@@ -1,0 +1,5 @@
+factor	ranks_by_seed	modal_rank	min_rank	max_rank	rank_range	identical_in_all_seeds	stability
+length	19:3; 20:3; 21:3; 22:3	3	3	3	0	True	STABLE_RANKING
+lexicality	19:2; 20:2; 21:1; 22:2	2	1	2	1	False	CONSISTENT_BUT_SMALL
+morphology	19:4; 20:4; 21:4; 22:4	4	4	4	0	True	STABLE_RANKING
+route	19:1; 20:1; 21:2; 22:1	1	1	2	1	False	CONSISTENT_BUT_SMALL

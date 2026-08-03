@@ -38,7 +38,7 @@ Nothing beyond priority 2 was computed in Sprint 1.
 | A12 | Clean morphology x length | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 3 | none |
 | A13 | Faithful morphology x length | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **ALREADY_VALIDATED** | 3 | none |
 | A14 | Trained-real frequency | TRAINED_REAL_FREQUENCY_PRIMARY | 671 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 4 | none |
-| A15 | Adapted feature importance | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **NEEDS_COMPUTATION** | 7 | sprint 5 |
+| A15 | Adapted feature importance | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 7 | none |
 | A16 | Faithful error taxonomy | FAITHFUL_WFE_ALL | 1200 | full | insertions;deletions;substitutions | faithful | **ALREADY_VALIDATED** | 6 | none |
 | A17 | Clean error taxonomy | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | insertions;deletions;substitutions | adapted | **ALREADY_VALIDATED** | 6 | none |
 | A18 | Premature EOS | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | premature_eos rate | adapted | **ALREADY_VALIDATED** | 6 | none |
@@ -71,7 +71,7 @@ change an analysis set, the seed policy or the bootstrap.
   `reports/behavioral_wfe_fulllexicon_93a577f/morphology/`.
 - **Sprint 3** (commits `1aa1df8`, `b550580`): A14 — word frequency on trained
   real words. `reports/behavioral_wfe_fulllexicon_93a577f/frequency/`.
-- **Sprint 4**: A16–A18 — Levenshtein error taxonomy and the premature-EOS
+- **Sprint 4** (commits `62ae51b`, `697917d`): A16–A18 — Levenshtein error taxonomy and the premature-EOS
   decoder diagnostic, kept strictly separate.
   `reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/`. The EOS
   indexing convention was audited from committed source before any EOS
@@ -80,3 +80,9 @@ change an analysis set, the seed policy or the bootstrap.
   unobservable, and `EOS_NOT_OBSERVED` means only that no EOS was observed
   within the instrumented evaluation horizon. A22 remains `OUT_OF_SCOPE`:
   Sprint 4 produced a factual, non-causal handoff document only.
+- **Sprint 5**: A15 — adapted feature importance on the clean set, across all
+  three routes. `reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/`.
+  Kept strictly separate from the faithful A11, which was not recomputed,
+  replaced or pooled. On the clean set lexicality and training exposure are
+  perfectly confounded, so the factor is reported as a lexicality/exposure
+  contrast; Zipf is excluded because it is undefined for pseudowords.

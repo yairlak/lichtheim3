@@ -1,0 +1,153 @@
+{
+  "sprint": 5,
+  "analysis": "adapted feature importance (A15)",
+  "date": "2026-08-03",
+  "branch": "feat/full-lexicon-ceiling",
+  "head": "697917d5141769bf02d08ba853b3c767e18e6370",
+  "origin": "697917d5141769bf02d08ba853b3c767e18e6370",
+  "checks_total": 25,
+  "checks_passed": 25,
+  "verdict": "PASS",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "faithful_a11_outputs_sha256": {
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf": "46fe4b912f824b14a3fa0045ba4e7b725065dafe8da1b3709caa18e943dc68d9",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png": "27e056d1176d97dc89e0b7eebd5e804c752e20421cb251e816117a7eb1e5a779",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv": "215ef9192552efce38a4e8adecea34273399f71a1fc8db1b0e7be0b59343d025"
+  },
+  "faithful_a11_note": "A11 lives under outputs/.../behavioral_analysis/faithful_replication/, not under reports/. It is read-only for Sprint 5 and is never recomputed, replaced or pooled with the adapted analysis.",
+  "identifiability": {
+    "lexicality_exposure_confounded": true,
+    "clean_real_is_exactly": "TRAINED_REAL_EXACT (671)",
+    "clean_pseudo_is_exactly": "NOVEL_PSEUDOWORD (391)",
+    "consequence": "lexicality and exposure_status must never enter the same clean-set model; the clean factor is labelled a lexicality/exposure contrast",
+    "zipf_excluded_from_clean_fi": true,
+    "zipf_reason": "undefined for pseudowords; never imputed as zero"
+  },
+  "checks": [
+    {
+      "check": "branch is feat/full-lexicon-ceiling",
+      "status": "PASS",
+      "detail": "feat/full-lexicon-ceiling"
+    },
+    {
+      "check": "HEAD is the Sprint-4 provenance-closure commit",
+      "status": "PASS",
+      "detail": "697917d5141769bf02d08ba853b3c767e18e6370"
+    },
+    {
+      "check": "origin equals HEAD",
+      "status": "PASS",
+      "detail": "origin=697917d5141769bf02d08ba853b3c767e18e6370"
+    },
+    {
+      "check": "tracked tree clean",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "archives/ is the only untracked path",
+      "status": "PASS",
+      "detail": "['archives/']"
+    },
+    {
+      "check": "canonical-table hash unchanged",
+      "status": "PASS",
+      "detail": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67"
+    },
+    {
+      "check": "canonical rows = 14,400",
+      "status": "PASS",
+      "detail": "14400"
+    },
+    {
+      "check": "clean set = 1,062 unique items",
+      "status": "PASS",
+      "detail": "1062"
+    },
+    {
+      "check": "clean real = 671 TRAINED_REAL_EXACT",
+      "status": "PASS",
+      "detail": "671"
+    },
+    {
+      "check": "clean pseudo = 391 NOVEL_PSEUDOWORD",
+      "status": "PASS",
+      "detail": "391"
+    },
+    {
+      "check": "rows per seed = 3,186 (1,062 x 3 routes)",
+      "status": "PASS",
+      "detail": "3186"
+    },
+    {
+      "check": "four seeds",
+      "status": "PASS",
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    {
+      "check": "three routes",
+      "status": "PASS",
+      "detail": "['full', 'ltm', 'wm']"
+    },
+    {
+      "check": "seed 21 retained",
+      "status": "PASS",
+      "detail": "present in canonical and every analysis set"
+    },
+    {
+      "check": "lexicality and exposure perfectly confounded on the clean set",
+      "status": "PASS",
+      "detail": "{'NOVEL_PSEUDOWORD': {'pseudo': 391, 'real': 0}, 'TRAINED_REAL_EXACT': {'pseudo': 0, 'real': 671}}"
+    },
+    {
+      "check": "no Zipf value manufactured for pseudowords",
+      "status": "PASS",
+      "detail": "non-null pseudoword zipf = 0"
+    },
+    {
+      "check": "morphology values are exactly simple/complex",
+      "status": "PASS",
+      "detail": "['complex', 'simple']"
+    },
+    {
+      "check": "lengths are exactly 3,4,5,7,8,9",
+      "status": "PASS",
+      "detail": "[3, 4, 5, 7, 8, 9]"
+    },
+    {
+      "check": "no length 6 present",
+      "status": "PASS",
+      "detail": "confirmed"
+    },
+    {
+      "check": "faithful A11 feature-importance outputs present and hashed",
+      "status": "PASS",
+      "detail": "['outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf', 'outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png', 'outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv']"
+    },
+    {
+      "check": "production manifest verifies under its documented policy",
+      "status": "PASS",
+      "detail": "36/36"
+    },
+    {
+      "check": "sprint1 manifest verifies under its documented policy",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "morphology manifest verifies under its documented policy",
+      "status": "PASS",
+      "detail": "33/33"
+    },
+    {
+      "check": "frequency manifest verifies under its documented policy",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "error_taxonomy manifest verifies under its documented policy",
+      "status": "PASS",
+      "detail": "57/57"
+    }
+  ]
+}

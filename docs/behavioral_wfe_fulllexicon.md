@@ -202,12 +202,73 @@ evaluates true, and it never replaces the primary.
 Results: `error_taxonomy/error_taxonomy_results.md`. Factual, non-causal handoff
 for a future mechanistic study: `error_taxonomy/length_effect_mechanism_handoff.md`.
 
+## Adapted feature importance (Sprint 5)
+
+`scripts/behavioral_analysis/feature_importance.py` and
+`plot_feature_importance.py` implement the adapted feature-importance estimands
+(A15), frozen in
+`reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/feature_importance_analysis_spec.md`
+before any model was fitted.
+
+```bash
+python -m scripts.behavioral_analysis.plot_feature_importance \
+    --out_root reports/behavioral_wfe_fulllexicon_93a577f/feature_importance
+```
+
+**Adapted, not faithful.** The faithful Dager analysis (A11) is a separate
+analysis on 1,200 source-labelled items, FULL route only, with no route factor.
+It is never recomputed, replaced or pooled with A15, and the two are never
+placed on one quantitative axis: `feature_importance/faithful_vs_adapted.md`.
+
+**Two identifiability constraints.** On `LICHTHEIM_CLEAN` lexicality and
+training exposure are **perfectly confounded** — every Real item is
+`TRAINED_REAL_EXACT` and every Pseudo item is `NOVEL_PSEUDOWORD` — so the two
+never enter the same model and the factor is reported as a **lexicality/exposure
+contrast**; no claim separates them. **Zipf frequency is undefined for
+pseudowords**, is never imputed as zero, and is therefore excluded from every
+all-item clean model.
+
+**Leakage rule.** The 80/20 split (`random_state = 42`) is drawn over items, so
+all three route rows of an item stay in the same side, and the **identical item
+split is reused across all four seeds and all three models** — a seed difference
+is then a model difference, never a split difference. No row-level split is
+permitted. The exact ids are in `_control/fi_train_items.tsv` and
+`fi_test_items.tsv`.
+
+**Permutation semantics.** Importance permutes **raw factors**, not model
+columns: item-level factors are permuted across held-out items with the same
+value applied to all three route rows, route labels are permuted **within** an
+item preserving one FULL/WM/LTM row each, and encoding, standardization and
+every declared interaction term are then rebuilt. Dummy and interaction columns
+are never permuted independently. 100 repeats, `random_state = 42`,
+Ridge `alpha = 1.0` (never tuned on the WFE).
+
+**Sign policy.** Grouped importance is **unsigned** — no artificial single sign
+for a multilevel factor. Coefficients live in separate tables, relative to the
+frozen reference levels route = WM, lexicality = Pseudoword, morphology =
+Complex, with route reported as two contrasts (LTM − WM and FULL − WM).
+
+**Scores.** Held-out R² is primary and held-out MAE is the required sensitivity,
+because the outcome is zero-heavy. A negative held-out R² is retained and
+labelled `NEGATIVE_TEST_R2`, never suppressed; an all-zero outcome is not
+fitted; a ceiling-limited route is labelled rather than given an artificial zero
+importance. An unstable ranking is never read as evidence that a factor is
+unrepresented.
+
+**Uncertainty.** Within-seed permutation spread and between-seed spread are
+reported separately, and the 100 repeats are never treated as independent model
+seeds. The four-checkpoint interval is labelled a **"seed-resampling interval
+over four checkpoints"**; the term *hierarchical bootstrap* stays reserved for
+Sprints 1–4, where items are genuinely resampled.
+
+Results: `feature_importance/feature_importance_results.md`.
+
 ## Where future analyses go
 
-Adapted feature importance and the deferred SSP analysis would be added as
-further modules inside `scripts/behavioral_analysis/`, following the same
-pattern: estimands frozen in a spec file first, statistics in a compute module,
-presentation in a plot module. The sprint order and status of every planned
+The deferred SSP analysis (A19) would be added as a further module inside
+`scripts/behavioral_analysis/`, following the same pattern: estimands frozen in
+a spec file first, statistics in a compute module, presentation in a plot
+module. The sprint order and status of every planned
 analysis is `docs/behavioral_wfe_analysis_matrix.md`.
 
 ## Provenance
