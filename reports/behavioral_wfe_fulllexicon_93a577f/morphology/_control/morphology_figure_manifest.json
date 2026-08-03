@@ -1,0 +1,20 @@
+{
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "out_root": "reports/behavioral_wfe_fulllexicon_93a577f/morphology",
+  "figures": {
+    "faithful_length_lexicality_morphology": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology_caption.md"
+    },
+    "clean_length_morphology_by_route": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/clean_adapted/figures/clean_length_morphology_by_route.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/clean_adapted/figures/clean_length_morphology_by_route.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/clean_adapted/figures/clean_length_morphology_by_route.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/clean_adapted/figures/clean_length_morphology_by_route_caption.md"
+    }
+  },
+  "model_inference_performed": false
+}

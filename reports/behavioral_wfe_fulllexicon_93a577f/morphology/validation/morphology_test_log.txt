@@ -1,0 +1,31 @@
+=== SPRINT 2 MORPHOLOGY VALIDATION LOG ===
+HEAD 178f6a55428100a04bcea11966b653f5f444877e  branch feat/full-lexicon-ceiling
+
+### [1] morphology tests
+.............................                                            [100%]
+29 passed in 0.59s
+exit=0
+
+### [2] sprint-1 analysis tests (non-regression)
+......................................................                   [100%]
+54 passed in 0.68s
+exit=0
+
+### [3] full lightweight suite
+.................                                                        [100%]
+305 passed, 4 deselected in 76.49s (0:01:16)
+exit=0
+
+### [4] Sprint-1 non-regression detail
+  Sprint-1 figures/plotting tables: byte-identical (0 changed)
+  Living documents intentionally updated: README.md, analysis_matrix.tsv
+
+### [5] deterministic double regeneration
+  files compared: 24   byte-identical: 24
+
+### [6] published outputs match a fresh regeneration
+  compared: 24   identical: 24
+
+### [7] PNG dpi check
+  clean_length_morphology_by_route.png: (299.9994, 299.9994)
+  faithful_length_lexicality_morphology.png: (299.9994, 299.9994)

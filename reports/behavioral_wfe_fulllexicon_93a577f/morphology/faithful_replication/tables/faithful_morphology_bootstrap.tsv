@@ -1,0 +1,5 @@
+dataset_regime	route	source_lexicality	label	metric	quantity	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	raw_edit_distance	morphology_contrast	0.006180375	-0.01875	0.03375	10000	10000	20260730	95% percentile interval
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	raw_edit_distance	morphology_length_interaction	0.0036303624768531237	-0.012035677159493389	0.02067413271338073	10000	10000	20260730	95% percentile interval
+FAITHFUL_WFE_ALL	full	real	Real words	raw_edit_distance	morphology_contrast	-0.0013427500000000002	-0.01	0.006874999999999999	10000	10000	20260730	95% percentile interval
+FAITHFUL_WFE_ALL	full	real	Real words	raw_edit_distance	morphology_length_interaction	-0.0008932896164913227	-0.0063166997858923124	0.004835750117830329	10000	10000	20260730	95% percentile interval

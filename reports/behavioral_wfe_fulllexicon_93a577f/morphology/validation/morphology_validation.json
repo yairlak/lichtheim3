@@ -1,0 +1,65 @@
+{
+  "sprint": 2,
+  "analysis": "morphology x phoneme length",
+  "verdict": "PASS",
+  "tests": {
+    "test_behavioral_morphology.py": {
+      "passed": 29,
+      "failed": 0
+    },
+    "test_behavioral_analysis.py": {
+      "passed": 54,
+      "failed": 0
+    },
+    "full_suite_not_slow": {
+      "passed": 305,
+      "failed": 0,
+      "deselected": 4
+    }
+  },
+  "expected_outputs_present": {
+    "figures": 6,
+    "tables": 16,
+    "total_files": 31
+  },
+  "png_dpi": 300,
+  "pdf_present": true,
+  "svg_present": true,
+  "deterministic_regeneration": {
+    "runs": 2,
+    "files_compared": 24,
+    "byte_identical": 24,
+    "differing": 0
+  },
+  "published_matches_fresh_regeneration": {
+    "compared": 24,
+    "identical": 24
+  },
+  "seed21_present_in_all_primary_tables": true,
+  "exact_zero_sensitivity_reported_separately": true,
+  "production_outputs_unchanged": {
+    "ok": 36,
+    "failed": []
+  },
+  "sprint1_scientific_outputs_unchanged": {
+    "ok": 35,
+    "failed": [],
+    "living_documents_intentionally_updated": [
+      "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
+      "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
+    ],
+    "note": "README.md and analysis_matrix.tsv are living documents each sprint extends; no Sprint-1 figure, plotting table, caption, manifest or provenance record changed"
+  },
+  "no_inference_performed": true,
+  "no_source_data_changed": true,
+  "no_frozen_protocol_changed": true,
+  "word_error_figure": "FIGURE_NOT_CREATED_DUE_TO_CEILING",
+  "cell_audit": {
+    "faithful_cells": 24,
+    "faithful_flagged": 0,
+    "clean_cells_per_route": 24,
+    "clean_small_cells": 2,
+    "clean_very_small_cells": 0,
+    "no_cell_excluded": true
+  }
+}

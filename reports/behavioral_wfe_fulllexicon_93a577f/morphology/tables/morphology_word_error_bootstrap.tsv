@@ -1,0 +1,17 @@
+dataset_regime	route	source_lexicality	label	metric	quantity	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	word_error	morphology_contrast	0.0012338750000000002	-0.013749999999999998	0.01625	10000	10000	20260730	95% percentile interval
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	word_error	morphology_length_interaction	0.0005339184206218046	-0.008849396500636169	0.009970060776053846	10000	10000	20260730	95% percentile interval
+FAITHFUL_WFE_ALL	full	real	Real words	word_error	morphology_contrast	-0.0013111874999999999	-0.0075	0.0037500000000000003	10000	10000	20260730	95% percentile interval
+FAITHFUL_WFE_ALL	full	real	Real words	word_error	morphology_length_interaction	-0.0009493718062742513	-0.005605595182832302	0.00313338280379302	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	word_error	morphology_contrast	0.0015177102412475797	-0.013880893819666125	0.016870322884504685	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	word_error	morphology_length_interaction	0.0006746017409433151	-0.008941549677641202	0.010313061253255576	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	word_error	morphology_contrast	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	word_error	morphology_length_interaction	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	word_error	morphology_contrast	0.02518385184991365	-0.041217489141242375	0.09219870218221772	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	word_error	morphology_length_interaction	-0.009235050087820437	-0.044010840797480716	0.025845758307855158	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	word_error	morphology_contrast	-0.002502459016393443	-0.011752049180327868	0.00546448087431694	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	word_error	morphology_length_interaction	-0.00063873802283054	-0.006392720540908016	0.004396141389010018	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	word_error	morphology_contrast	-0.0036162109477209698	-0.02153435553927469	0.014430863729132862	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	word_error	morphology_length_interaction	-0.0021653749483780864	-0.013199041644828751	0.00869208479406942	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	word_error	morphology_contrast	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	word_error	morphology_length_interaction	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval

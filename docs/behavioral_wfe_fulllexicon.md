@@ -101,13 +101,36 @@ stratum cell; B = 10,000; random seed 20260730; 95 % percentile interval); the
 faithful zip-mismatch serial-position method. Red and blue encode lexicality
 only and are never reused for another variable.
 
+## Morphology analysis (Sprint 2)
+
+`scripts/behavioral_analysis/morphology.py` and `plot_morphology.py` implement
+the morphology × phoneme-length estimands, frozen in
+`reports/behavioral_wfe_fulllexicon_93a577f/morphology/morphology_analysis_spec.md`
+before any morphology result was inspected.
+
+```bash
+python -m scripts.behavioral_analysis.plot_morphology \
+    --out_root reports/behavioral_wfe_fulllexicon_93a577f/morphology
+```
+
+Sign conventions: `morphology_contrast = mean(simple) − mean(complex)`
+(positive ⇒ simple items worse); `morphology_length_interaction =
+simple_slope − complex_slope` (positive ⇒ length effect stronger for simple).
+Morphology is carried by **line style only** — complex solid, simple dashed —
+because red and blue remain reserved for lexicality.
+
+Small-cell flags are frozen: `VERY_SMALL_CELL` n < 10, `SMALL_CELL`
+10 ≤ n < 20. No cell is ever excluded; flags are descriptive.
+
+Results: `morphology/morphology_results.md`.
+
 ## Where future analyses go
 
-Morphology, frequency, adapted feature importance, error taxonomy and premature
-EOS will be added as further modules inside `scripts/behavioral_analysis/`,
-each with its own compute function in `compute.py` and plot function in
-`plotting.py`. The sprint order and status of every planned analysis is
-`docs/behavioral_wfe_analysis_matrix.md`.
+Frequency, adapted feature importance, error taxonomy and premature EOS will be
+added as further modules inside `scripts/behavioral_analysis/`, following the
+morphology pattern: estimands frozen in a spec file first, statistics in a
+compute module, presentation in a plot module. The sprint order and status of
+every planned analysis is `docs/behavioral_wfe_analysis_matrix.md`.
 
 ## Provenance
 

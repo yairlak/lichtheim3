@@ -1,0 +1,106 @@
+{
+  "date": "2026-08-03T12:11:50.563959+00:00",
+  "sprint": 2,
+  "phase": "morphology_preflight",
+  "verdict": "PASS",
+  "n_checks": 21,
+  "n_failures": 0,
+  "failures": [],
+  "checks": {
+    "branch": {
+      "pass": true,
+      "detail": ""
+    },
+    "head_is_sprint1_closure": {
+      "pass": true,
+      "detail": "178f6a55428100a04bcea11966b653f5f444877e"
+    },
+    "origin_equals_head": {
+      "pass": true,
+      "detail": ""
+    },
+    "tracked_tree_clean": {
+      "pass": true,
+      "detail": ""
+    },
+    "only_archives_untracked": {
+      "pass": true,
+      "detail": "['archives/']"
+    },
+    "canonical_hash_matches_sprint1_provenance": {
+      "pass": true,
+      "detail": "8988aff6fac55ca3\u2026"
+    },
+    "sprint1_analysis_code_commit_is_A": {
+      "pass": true,
+      "detail": ""
+    },
+    "canonical_rows_14400": {
+      "pass": true,
+      "detail": "14400"
+    },
+    "four_seeds": {
+      "pass": true,
+      "detail": ""
+    },
+    "three_routes": {
+      "pass": true,
+      "detail": ""
+    },
+    "faithful_1200": {
+      "pass": true,
+      "detail": "1200"
+    },
+    "clean_1062": {
+      "pass": true,
+      "detail": "1062"
+    },
+    "clean_real_671": {
+      "pass": true,
+      "detail": "671"
+    },
+    "clean_pseudo_391": {
+      "pass": true,
+      "detail": "391"
+    },
+    "morphology_labels_simple_complex": {
+      "pass": true,
+      "detail": "['complex', 'simple']"
+    },
+    "lengths_3_4_5_7_8_9": {
+      "pass": true,
+      "detail": "[np.int64(3), np.int64(4), np.int64(5), np.int64(7), np.int64(8), np.int64(9)]"
+    },
+    "no_length_6": {
+      "pass": true,
+      "detail": ""
+    },
+    "lexicality_real_pseudo": {
+      "pass": true,
+      "detail": ""
+    },
+    "production_scientific_manifest_100pct": {
+      "pass": true,
+      "detail": "36 OK / 0 failed"
+    },
+    "production_operational_manifest_100pct": {
+      "pass": true,
+      "detail": "5 OK / 0 failed"
+    },
+    "sprint1_report_manifest_100pct": {
+      "pass": true,
+      "detail": "37 OK / 0 failed"
+    }
+  },
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "sprint1_analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+  "sprint1_provenance_closure_commit": "178f6a55428100a04bcea11966b653f5f444877e",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.17.1",
+    "sklearn": "1.9.0",
+    "matplotlib": "3.11.0"
+  }
+}

@@ -23,6 +23,23 @@ formats are byte-identical across runs.
 
 `figures/figure_manifest.json` records every path plus the canonical-table hash.
 
+## Sprint 2 — morphology × phoneme length
+
+`morphology/` holds the Sprint-2 analysis: a script-faithful replication on all
+1,200 original WFE items (FULL route) and an adapted clean-set analysis across
+FULL/WM/LTM. The specification was frozen in
+`morphology/morphology_analysis_spec.md` before any result was inspected.
+
+| Figure | Plotting table | Caption |
+|---|---|---|
+| `morphology/faithful_replication/figures/faithful_length_lexicality_morphology` | `faithful_length_lexicality_morphology_plot.tsv` | `..._caption.md` |
+| `morphology/clean_adapted/figures/clean_length_morphology_by_route` | `clean_length_morphology_by_route_plot.tsv` | `..._caption.md` |
+
+Contrast, interaction, route-contrast, bootstrap, exact-zero-sensitivity and
+cell-count tables sit beside each figure. Word-error counterparts are tables
+only — no word-error figure was produced (`FIGURE_NOT_CREATED_DUE_TO_CEILING`).
+Results and finding categories: `morphology/morphology_results.md`.
+
 ## Source tables
 
 Figures derive from the validated canonical table

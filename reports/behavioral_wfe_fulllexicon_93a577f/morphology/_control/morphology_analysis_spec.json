@@ -1,0 +1,154 @@
+{
+  "frozen_at": "2026-08-03T12:12:41.144344+00:00",
+  "frozen_before_any_result_inspected": true,
+  "sprint": 2,
+  "scope": "morphology x phoneme length only",
+  "out_of_scope": [
+    "frequency",
+    "feature_importance",
+    "error_taxonomy",
+    "SSP",
+    "causal_length_effect_diagnostics"
+  ],
+  "analyses": {
+    "faithful": {
+      "analysis_set": "FAITHFUL_WFE_ALL",
+      "n_items": 1200,
+      "routes": [
+        "full"
+      ],
+      "labels": "original Dager real/pseudo and simple/complex",
+      "lengths": [
+        3,
+        4,
+        5,
+        7,
+        8,
+        9
+      ],
+      "primary_metric": "raw_edit_distance",
+      "secondary_metric": "word_error",
+      "note": "stimulus-level replication; NOT a trained-versus-novel analysis"
+    },
+    "adapted": {
+      "analysis_set": "LICHTHEIM_CLEAN",
+      "n_items": 1062,
+      "routes": [
+        "full",
+        "wm",
+        "ltm"
+      ],
+      "real_definition": "TRAINED_REAL_EXACT (671)",
+      "pseudo_definition": "NOVEL_PSEUDOWORD (391)",
+      "lengths": [
+        3,
+        4,
+        5,
+        7,
+        8,
+        9
+      ],
+      "primary_metric": "raw_edit_distance",
+      "secondary_metric": "word_error"
+    }
+  },
+  "never_merged_into_one_statistical_claim": true,
+  "estimands": {
+    "descriptive_cells": {
+      "grain": "seed x route x dataset_regime x source_lexicality x morphology x phoneme_length",
+      "quantities": [
+        "n_items",
+        "mean_raw_edit_distance",
+        "word_error_rate",
+        "total_raw_edit_distance",
+        "n_erroneous_items"
+      ]
+    },
+    "morphology_contrast": {
+      "grain": "seed x route x dataset_regime x source_lexicality",
+      "definition": "mean(simple) - mean(complex)",
+      "metrics": [
+        "raw_edit_distance",
+        "word_error_rate"
+      ],
+      "sign_convention": "positive = more errors for morphologically simple items"
+    },
+    "morphology_length_interaction": {
+      "grain": "seed x route x dataset_regime x source_lexicality",
+      "definition": "simple_length_slope - complex_length_slope",
+      "estimator": "OLS of metric on continuous phoneme length, fitted separately within morphology",
+      "sign_convention": "positive = length effect stronger for simple items"
+    },
+    "route_contrasts": {
+      "applies_to": "LICHTHEIM_CLEAN only",
+      "contrasts": [
+        "ltm_minus_wm",
+        "full_minus_wm",
+        "ltm_minus_full"
+      ],
+      "applied_to_quantities": [
+        "morphology_contrast",
+        "morphology_length_interaction"
+      ]
+    }
+  },
+  "statistical_policy": {
+    "primary_inference_unit": "seed-level estimates",
+    "bootstrap": {
+      "method": "hierarchical: resample seeds with replacement, then items with replacement within the relevant cells",
+      "replicates": 10000,
+      "random_seed": 20260730,
+      "ci": "95% percentile interval",
+      "unchanged_from_sprint1": true
+    },
+    "reported_per_quantity": [
+      "every seed estimate",
+      "four-seed mean",
+      "range",
+      "bootstrap interval",
+      "exact-zero sensitivity (seeds 19,20,22)"
+    ],
+    "seed_policy": "seeds 19,20,21,22 primary; seed 21 never silently excluded",
+    "no_reliance_on_visual_divergence_alone": true,
+    "no_absence_claim_when_route_at_ceiling": true,
+    "high_order_regression_not_sole_result": true,
+    "multiple_comparison_correction": "Holm within each declared analysis family, if p-values are produced; p-values not required"
+  },
+  "word_error_limitation": {
+    "do_not_force_logistic_fit": true,
+    "fallback": "descriptive contrasts + bootstrap intervals",
+    "status_labels": [
+      "NON_ESTIMABLE_DUE_TO_CEILING",
+      "COMPLETE_SEPARATION"
+    ]
+  },
+  "small_cell_policy": {
+    "no_cell_excluded": true,
+    "flags": {
+      "VERY_SMALL_CELL": "n < 10",
+      "SMALL_CELL": "10 <= n < 20",
+      "OK": "n >= 20"
+    },
+    "thresholds_frozen": true,
+    "very_small_cells_are_descriptive_only": true
+  },
+  "visual_encoding": {
+    "real": "red",
+    "pseudo": "blue",
+    "complex": "solid",
+    "simple": "dashed",
+    "red_blue_reserved_for_lexicality_only": true,
+    "morphology_by_line_style_only": true,
+    "seed_traces": "light and thin",
+    "mean": "prominent"
+  },
+  "finding_categories": [
+    "ROBUST",
+    "CONSISTENT_BUT_SMALL",
+    "INCONSISTENT_ACROSS_SEEDS",
+    "CEILING_LIMITED",
+    "SMALL_CELL_DESCRIPTIVE",
+    "NON_ESTIMABLE"
+  ],
+  "no_causal_claims": true
+}

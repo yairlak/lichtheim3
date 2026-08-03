@@ -35,8 +35,8 @@ Nothing beyond priority 2 was computed in Sprint 1.
 | A09 | Faithful Figure 2A | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **NEEDS_FORMATTING_ONLY** | 3 | promote plotting to tracked package |
 | A10 | Faithful Figure 2C | FAITHFUL_WFE_ALL | 1200 | full | positional error rate | faithful | **NEEDS_FORMATTING_ONLY** | 3 | promote plotting to tracked package |
 | A11 | Faithful feature importance | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **NEEDS_FORMATTING_ONLY** | 5 | promote to tracked package |
-| A12 | Clean morphology x length | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **NEEDS_COMPUTATION** | 3 | sprint 2 |
-| A13 | Faithful morphology x length | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **NEEDS_COMPUTATION** | 3 | sprint 2 |
+| A12 | Clean morphology x length | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 3 | none |
+| A13 | Faithful morphology x length | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **ALREADY_VALIDATED** | 3 | none |
 | A14 | Trained-real frequency | TRAINED_REAL_FREQUENCY_PRIMARY | 671 | full;wm;ltm | raw_edit_distance | adapted | **NEEDS_COMPUTATION** | 4 | sprint 3 |
 | A15 | Adapted feature importance | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **NEEDS_COMPUTATION** | 7 | sprint 5 |
 | A16 | Faithful error taxonomy | FAITHFUL_WFE_ALL | 1200 | full | insertions;deletions;substitutions | faithful | **NEEDS_COMPUTATION** | 6 | sprint 4 |
@@ -61,3 +61,10 @@ and answers a different question.
 Every `NEEDS_COMPUTATION` row must be computed with the same frozen
 conventions recorded in `docs/behavioral_wfe_fulllexicon.md`; none of them may
 change an analysis set, the seed policy or the bootstrap.
+
+## Sprint history
+
+- **Sprint 1** (commits `f626a69`, `178f6a5`): A01–A08 — code promotion,
+  manifest closure, documentation, and the five core figures.
+- **Sprint 2**: A12–A13 — morphology × phoneme length, faithful and adapted.
+  Results in `reports/behavioral_wfe_fulllexicon_93a577f/morphology/`.

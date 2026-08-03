@@ -1,0 +1,25 @@
+dataset_regime	route	source_lexicality	label	morphology	phoneme_length	n_items	cell_flag
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	complex	3	21	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	complex	4	46	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	complex	5	33	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	complex	7	33	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	complex	8	34	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	complex	9	33	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	simple	3	33	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	simple	4	34	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	simple	5	33	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	simple	7	33	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	simple	8	34	OK
+FAITHFUL_WFE_ALL	full	pseudo	Pseudowords	simple	9	33	OK
+FAITHFUL_WFE_ALL	full	real	Real words	complex	3	29	OK
+FAITHFUL_WFE_ALL	full	real	Real words	complex	4	41	OK
+FAITHFUL_WFE_ALL	full	real	Real words	complex	5	130	OK
+FAITHFUL_WFE_ALL	full	real	Real words	complex	7	78	OK
+FAITHFUL_WFE_ALL	full	real	Real words	complex	8	64	OK
+FAITHFUL_WFE_ALL	full	real	Real words	complex	9	58	OK
+FAITHFUL_WFE_ALL	full	real	Real words	simple	3	86	OK
+FAITHFUL_WFE_ALL	full	real	Real words	simple	4	69	OK
+FAITHFUL_WFE_ALL	full	real	Real words	simple	5	45	OK
+FAITHFUL_WFE_ALL	full	real	Real words	simple	7	124	OK
+FAITHFUL_WFE_ALL	full	real	Real words	simple	8	48	OK
+FAITHFUL_WFE_ALL	full	real	Real words	simple	9	28	OK

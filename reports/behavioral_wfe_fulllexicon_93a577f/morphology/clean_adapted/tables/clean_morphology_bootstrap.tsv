@@ -1,0 +1,13 @@
+dataset_regime	route	source_lexicality	label	metric	quantity	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	raw_edit_distance	morphology_contrast	0.00679710607567115	-0.018917787430006806	0.03493118425872625	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	raw_edit_distance	morphology_length_interaction	0.003922890011273003	-0.01276089813719099	0.02135559144062361	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	raw_edit_distance	morphology_contrast	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	raw_edit_distance	morphology_length_interaction	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	raw_edit_distance	morphology_contrast	0.03699394787796325	-0.15655973624993463	0.23246605002878226	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	raw_edit_distance	morphology_length_interaction	-0.020742235386549727	-0.11809550646654682	0.07480774170132871	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	raw_edit_distance	morphology_contrast	-0.0056008743169398915	-0.030601092896174867	0.017486338797814208	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	raw_edit_distance	morphology_length_interaction	-0.002327343242122727	-0.021111550846712988	0.013391708976686489	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	raw_edit_distance	morphology_contrast	-0.002107327698990006	-0.04179967554555445	0.03663391595583229	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	raw_edit_distance	morphology_length_interaction	-0.0013792271869201495	-0.026551543959786816	0.022766790864681096	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	raw_edit_distance	morphology_contrast	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	raw_edit_distance	morphology_length_interaction	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval

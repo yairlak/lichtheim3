@@ -1,0 +1,9 @@
+dataset_regime	source_lexicality	morphology	n_items_total	n_length_cells	min_cell_n	max_cell_n	n_small_cells	n_very_small_cells	balanced_across_lengths
+FAITHFUL_WFE_ALL	pseudo	complex	200	6	21	46	0	0	False
+FAITHFUL_WFE_ALL	pseudo	simple	200	6	33	34	0	0	False
+FAITHFUL_WFE_ALL	real	complex	400	6	29	130	0	0	False
+FAITHFUL_WFE_ALL	real	simple	400	6	28	124	0	0	False
+LICHTHEIM_CLEAN	pseudo	complex	197	6	19	45	1	0	False
+LICHTHEIM_CLEAN	pseudo	simple	194	6	28	34	0	0	False
+LICHTHEIM_CLEAN	real	complex	305	6	17	101	1	0	False
+LICHTHEIM_CLEAN	real	simple	366	6	21	112	0	0	False
