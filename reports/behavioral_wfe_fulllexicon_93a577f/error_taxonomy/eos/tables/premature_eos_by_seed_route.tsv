@@ -1,0 +1,25 @@
+seed	route	source_lexicality	label	n_items	n_premature	premature_eos_rate	mean_eos_shortfall_per_item	conditional_mean_eos_shortfall	n_eos_not_observed	n_eos_unavailable	n_on_time_observed	n_late_observed
+19	full	pseudo	Pseudowords	391	2	0.005115089514066497	0.005115089514066497	1.0	389	0	0	0
+20	full	pseudo	Pseudowords	391	0	0.0	0.0		391	0	0	0
+21	full	pseudo	Pseudowords	391	1	0.0025575447570332483	0.0025575447570332483	1.0	390	0	0	0
+22	full	pseudo	Pseudowords	391	0	0.0	0.0		391	0	0	0
+19	full	real	Real words	671	0	0.0	0.0		671	0	0	0
+20	full	real	Real words	671	0	0.0	0.0		671	0	0	0
+21	full	real	Real words	671	0	0.0	0.0		671	0	0	0
+22	full	real	Real words	671	0	0.0	0.0		671	0	0	0
+19	ltm	pseudo	Pseudowords	391	26	0.06649616368286446	0.0741687979539642	1.1153846153846154	365	0	0	0
+20	ltm	pseudo	Pseudowords	391	14	0.03580562659846547	0.03836317135549872	1.0714285714285714	377	0	0	0
+21	ltm	pseudo	Pseudowords	391	24	0.061381074168797956	0.0639386189258312	1.0416666666666667	367	0	0	0
+22	ltm	pseudo	Pseudowords	391	18	0.04603580562659847	0.04859335038363171	1.0555555555555556	373	0	0	0
+19	ltm	real	Real words	671	0	0.0	0.0		671	0	0	0
+20	ltm	real	Real words	671	0	0.0	0.0		671	0	0	0
+21	ltm	real	Real words	671	0	0.0	0.0		671	0	0	0
+22	ltm	real	Real words	671	0	0.0	0.0		671	0	0	0
+19	wm	pseudo	Pseudowords	391	1	0.0025575447570332483	0.0025575447570332483	1.0	390	0	0	0
+20	wm	pseudo	Pseudowords	391	1	0.0025575447570332483	0.0025575447570332483	1.0	390	0	0	0
+21	wm	pseudo	Pseudowords	391	0	0.0	0.0		391	0	0	0
+22	wm	pseudo	Pseudowords	391	0	0.0	0.0		391	0	0	0
+19	wm	real	Real words	671	0	0.0	0.0		671	0	0	0
+20	wm	real	Real words	671	0	0.0	0.0		671	0	0	0
+21	wm	real	Real words	671	0	0.0	0.0		671	0	0	0
+22	wm	real	Real words	671	0	0.0	0.0		671	0	0	0

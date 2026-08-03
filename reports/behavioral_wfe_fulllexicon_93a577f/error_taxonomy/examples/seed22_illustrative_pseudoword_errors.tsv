@@ -1,0 +1,23 @@
+seed	route	item_id	target	prediction	target_length	predicted_length	raw_edit_distance	substitutions	deletions	insertions	eos_position	expected_eos_position	eos_class	eos_shortfall	morphology	size
+22	full	wfe_0801	G AA S T R IY EH N T	G AA R T S IY EH N T	9	9	2.0	2	0	0		9	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_0800	S OW L OW K AH M AO F	S OW L OW K EY M OW	9	8	3.0	2	1	0	8.0	9	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_0972	S AH M T AH B AH L	S AH M B AH T	8	6	3.0	1	2	0	6.0	8	PREMATURE_EOS	2.0	complex	long
+22	ltm	wfe_0995	W UH M AH N G AH L	W UH M AH N JH IY	8	7	3.0	2	1	0	7.0	8	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1007	AE L AH D K W AO R EY	AE L D AH K W AO R	9	8	3.0	0	2	1	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_0801	G AA S T R IY EH N T	G AA R T S IY EH R K	9	9	4.0	4	0	0		9	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_0830	S T OW G R IH CH ER IY	S T OW G R AH S T UH	9	9	4.0	4	0	0		9	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_0873	SH OW IH K	V AE R IY	4	4	4.0	4	0	0		4	EOS_NOT_OBSERVED		complex	short
+22	ltm	wfe_0936	D AH S OW SH IY OW	AH S T OW JH IY	7	6	4.0	1	2	1	6.0	7	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1013	EH K S K L UH R AA L	EH K S K L AA L ER IY	9	9	4.0	4	0	0		9	EOS_NOT_OBSERVED		complex	long
+22	ltm	wfe_1021	W IH N Y UW F AE K T	AY N Y UW M AE P T	9	8	4.0	3	1	0	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1106	S M AA Z IY	N AE M IY Z	5	5	4.0	2	1	1		5	EOS_NOT_OBSERVED		simple	short
+22	ltm	wfe_1136	TH AE M AH S AH Z	M OW P AH D AH Z	7	7	4.0	4	0	0		7	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_1151	K OW N ER M EY T	K OW N AE N F IH	7	7	4.0	4	0	0		7	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_1155	AH S L AH T IH F	AH S T AH L F AY	7	7	4.0	4	0	0		7	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_1176	V IY OW K S IH D AH	V IY EH S K AE D AH	8	8	4.0	2	1	1		8	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_0805	S P EH R IY B AO R M	P S EH R IY T AO K L	9	9	5.0	3	1	1		9	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_0823	EH V ER R IY AH L IH S	EH V R ER IY S IH L	9	8	5.0	2	2	1	8.0	9	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_1194	AE NG K S IH M AH TH	W IH NG K S IH Z UW	8	8	5.0	3	1	1		8	EOS_NOT_OBSERVED		simple	long
+22	ltm	wfe_1011	OW N AH S T R AE N D	OW N AH Z UH N S T	9	8	6.0	5	1	0	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_0981	R EY V ER S OW L D	V OW R M EY S T ER	8	8	8.0	2	3	3		8	EOS_NOT_OBSERVED		complex	long
+22	wm	wfe_1007	AE L AH D K W AO R EY	AE L AH D K AO L NG IH	9	9	4.0	4	0	0		9	EOS_NOT_OBSERVED		complex	long

@@ -1,0 +1,13 @@
+route	source_lexicality	broad_length	n_items	premature_eos_and_deletion	premature_eos_without_deletion	deletion_without_premature_eos	neither	n_premature_eos	n_with_deletion	p_deletion_given_premature_eos	p_premature_eos_given_deletion	not_causal
+full	pseudo	Long	800	3	0	4	793	3	7	1.0	0.42857142857142855	True
+full	pseudo	Short	764	0	0	0	764	0	0			True
+full	real	Long	1320	0	0	0	1320	0	0			True
+full	real	Short	1364	0	0	0	1364	0	0			True
+ltm	pseudo	Long	800	78	0	93	629	78	171	1.0	0.45614035087719296	True
+ltm	pseudo	Short	764	4	0	14	746	4	18	1.0	0.2222222222222222	True
+ltm	real	Long	1320	0	0	2	1318	0	2		0.0	True
+ltm	real	Short	1364	0	0	0	1364	0	0			True
+wm	pseudo	Long	800	2	0	8	790	2	10	1.0	0.2	True
+wm	pseudo	Short	764	0	0	0	764	0	0			True
+wm	real	Long	1320	0	0	0	1320	0	0			True
+wm	real	Short	1364	0	0	0	1364	0	0			True

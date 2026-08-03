@@ -1,0 +1,25 @@
+dataset_regime	route	source_lexicality	label	quantity	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	mean_deletions_per_item	0.004469117647058823	0.0	0.011508951406649618	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	mean_deletions_per_item	0.13695946291560104	0.10485933503836317	0.17199488491048595	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	mean_deletions_per_item	0.007546227621483376	0.0006393861892583121	0.01790281329923274	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	mean_deletions_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	mean_deletions_per_item	0.0007488077496274216	0.0	0.0029806259314456036	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	mean_deletions_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	mean_insertions_per_item	0.002562851662404092	0.0	0.0076726342710997444	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	mean_insertions_per_item	0.08067212276214833	0.05690537084398977	0.10549872122762148	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	mean_insertions_per_item	0.006295907928388747	0.0	0.017263427109974423	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	mean_insertions_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	mean_insertions_per_item	0.0007488077496274216	0.0	0.0029806259314456036	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	mean_insertions_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	mean_raw_edit_distance_per_item	0.015923593350383635	0.0025575447570332483	0.03388746803069054	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	mean_raw_edit_distance_per_item	0.5589280690537084	0.4616368286445013	0.6604859335038362	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	mean_raw_edit_distance_per_item	0.026484974424552433	0.004475703324808184	0.055626598465473145	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	mean_raw_edit_distance_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	mean_raw_edit_distance_per_item	0.013403204172876304	0.003725782414307005	0.029433681073025336	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	mean_raw_edit_distance_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	pseudo	Pseudowords	mean_substitutions_per_item	0.008891624040920717	0.0012787723785166241	0.020460358056265986	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	pseudo	Pseudowords	mean_substitutions_per_item	0.3412964833759591	0.27621483375959077	0.4111253196930946	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	pseudo	Pseudowords	mean_substitutions_per_item	0.012642838874680307	0.0012787723785166241	0.028132992327365727	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	full	real	Real words	mean_substitutions_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	ltm	real	Real words	mean_substitutions_per_item	0.01190558867362146	0.0029806259314456036	0.02682563338301043	10000	10000	20260730	95% percentile interval
+LICHTHEIM_CLEAN	wm	real	Real words	mean_substitutions_per_item	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval

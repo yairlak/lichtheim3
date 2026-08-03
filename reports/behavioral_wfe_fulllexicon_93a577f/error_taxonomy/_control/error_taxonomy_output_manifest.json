@@ -1,0 +1,70 @@
+{
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "out_root": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy",
+  "editops_backend": "Levenshtein.editops",
+  "editops_version": "0.27.3",
+  "zoom_rule_fired": true,
+  "figures": {
+    "faithful_figure8a_error_types": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/figures/faithful_figure8a_error_types.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/figures/faithful_figure8a_error_types.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/figures/faithful_figure8a_error_types.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/figures/faithful_figure8a_error_types_caption.md"
+    },
+    "clean_error_taxonomy_by_route": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_by_route.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_by_route.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_by_route.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_by_route_caption.md"
+    },
+    "clean_error_taxonomy_full_wm_zoom": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_full_wm_zoom.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_full_wm_zoom.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_full_wm_zoom.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_full_wm_zoom_caption.md"
+    },
+    "premature_eos_by_route": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/figures/premature_eos_by_route.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/figures/premature_eos_by_route.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/figures/premature_eos_by_route.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/figures/premature_eos_by_route_caption.md"
+    }
+  },
+  "tables": [
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_bootstrap.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_by_exact_length.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_cells.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_composition.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_route_contrasts.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_route_contrasts_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/tables/clean_error_taxonomy_zoom_rule.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_by_broad_length.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_by_exact_length.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_by_exposure_status.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_by_seed_route.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_by_seed_route_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_class_counts.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_deletion_overlap.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_deletion_overlap_by_length.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_length_slopes.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/tables/premature_eos_length_slopes_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/tables/faithful_condition_cell_counts.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/tables/faithful_condition_composition.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/tables/faithful_condition_error_types.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/tables/faithful_condition_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/strata/tables/exposure_error_taxonomy.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/strata/tables/exposure_error_taxonomy_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/strata/tables/morphology_error_taxonomy.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/strata/tables/morphology_error_taxonomy_summary.tsv",
+    "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/strata/tables/morphology_premature_eos.tsv"
+  ],
+  "examples": {
+    "errors": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/examples/seed22_illustrative_pseudoword_errors.tsv",
+    "premature_eos": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/examples/seed22_illustrative_premature_eos.tsv",
+    "readme": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/examples/README.md"
+  },
+  "model_inference_performed": false,
+  "eos_and_levenshtein_kept_separate": true
+}

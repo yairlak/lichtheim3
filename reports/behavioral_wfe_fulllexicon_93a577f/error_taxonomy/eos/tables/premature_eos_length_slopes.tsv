@@ -1,0 +1,25 @@
+seed	route	source_lexicality	label	n_items	n_premature	intercept	length_slope	model_status	model_type	logistic_forced
+19	full	pseudo	Pseudowords	391	2	-0.015361546446939964	0.0033597837434970737	INSUFFICIENT_EVENTS	linear probability (descriptive)	False
+20	full	pseudo	Pseudowords	391	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+21	full	pseudo	Pseudowords	391	1	-0.007680773223469982	0.0016798918717485368	INSUFFICIENT_EVENTS	linear probability (descriptive)	False
+22	full	pseudo	Pseudowords	391	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+19	full	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+20	full	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+21	full	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+22	full	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+19	ltm	pseudo	Pseudowords	391	26	-0.15036511030205527	0.03558235758627932	OK	linear probability (descriptive)	False
+20	ltm	pseudo	Pseudowords	391	14	-0.07229154405131955	0.017736464005063343	OK	linear probability (descriptive)	False
+21	ltm	pseudo	Pseudowords	391	24	-0.13147963574738927	0.031644371622840624	OK	linear probability (descriptive)	False
+22	ltm	pseudo	Pseudowords	391	18	-0.07482321208339128	0.019830413732524546	OK	linear probability (descriptive)	False
+19	ltm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+20	ltm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+21	ltm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+22	ltm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+19	wm	pseudo	Pseudowords	391	1	-0.007680773223469982	0.0016798918717485368	INSUFFICIENT_EVENTS	linear probability (descriptive)	False
+20	wm	pseudo	Pseudowords	391	1	-0.007680773223469982	0.0016798918717485368	INSUFFICIENT_EVENTS	linear probability (descriptive)	False
+21	wm	pseudo	Pseudowords	391	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+22	wm	pseudo	Pseudowords	391	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+19	wm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+20	wm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+21	wm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False
+22	wm	real	Real words	671	0	0.0	0.0	ALL_ZERO_OUTCOME	linear probability (descriptive)	False

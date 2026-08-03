@@ -1,0 +1,139 @@
+{
+  "date": "2026-08-03T14:08:00.166226+00:00",
+  "sprint": 4,
+  "phase": "error_taxonomy_preflight",
+  "verdict": "PASS",
+  "n_checks": 29,
+  "n_failures": 0,
+  "failures": [],
+  "checks": {
+    "branch": {
+      "pass": true,
+      "detail": ""
+    },
+    "head_is_sprint3_closure": {
+      "pass": true,
+      "detail": "b550580455046a8c420e4a62cefeeb435815804b"
+    },
+    "origin_equals_head": {
+      "pass": true,
+      "detail": ""
+    },
+    "tracked_tree_clean": {
+      "pass": true,
+      "detail": ""
+    },
+    "only_archives_untracked": {
+      "pass": true,
+      "detail": "['archives/']"
+    },
+    "canonical_hash_unchanged": {
+      "pass": true,
+      "detail": ""
+    },
+    "canonical_14400": {
+      "pass": true,
+      "detail": "14400"
+    },
+    "four_seeds": {
+      "pass": true,
+      "detail": ""
+    },
+    "three_routes": {
+      "pass": true,
+      "detail": ""
+    },
+    "faithful_1200": {
+      "pass": true,
+      "detail": ""
+    },
+    "clean_1062": {
+      "pass": true,
+      "detail": "1062"
+    },
+    "clean_real_671": {
+      "pass": true,
+      "detail": ""
+    },
+    "clean_pseudo_391": {
+      "pass": true,
+      "detail": ""
+    },
+    "six_exposure_statuses": {
+      "pass": true,
+      "detail": "6"
+    },
+    "insertions_integer_nonneg": {
+      "pass": true,
+      "detail": ""
+    },
+    "deletions_integer_nonneg": {
+      "pass": true,
+      "detail": ""
+    },
+    "substitutions_integer_nonneg": {
+      "pass": true,
+      "detail": ""
+    },
+    "ops_reconstruct_edit_distance": {
+      "pass": true,
+      "detail": "0"
+    },
+    "editops_backend_recorded": {
+      "pass": true,
+      "detail": "Levenshtein.editops"
+    },
+    "editops_version_0_27_3": {
+      "pass": true,
+      "detail": "0.27.3"
+    },
+    "eos_fields_present_all_routes": {
+      "pass": true,
+      "detail": ""
+    },
+    "canonical_has_eos_position": {
+      "pass": true,
+      "detail": ""
+    },
+    "eos_equals_predicted_length_when_present": {
+      "pass": true,
+      "detail": "0 violations of 121"
+    },
+    "eos_strictly_below_target_length": {
+      "pass": true,
+      "detail": "0 out of range"
+    },
+    "eos_observed_count": {
+      "pass": true,
+      "detail": "121 observed EOS across 4 seeds x 3 routes"
+    },
+    "production_manifest_immutable": {
+      "pass": true,
+      "detail": "36 OK"
+    },
+    "sprint1_manifest_immutable": {
+      "pass": true,
+      "detail": "35 OK"
+    },
+    "morphology_manifest_immutable": {
+      "pass": true,
+      "detail": "33 OK"
+    },
+    "frequency_manifest_immutable": {
+      "pass": true,
+      "detail": "37 OK"
+    }
+  },
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "editops_backend": "Levenshtein.editops",
+  "editops_version": "0.27.3",
+  "n_observed_eos_events": 121,
+  "sprint3_analysis_code_commit": "1aa1df8a36b6a28b50e7508eae099fd0c4a237e6",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "matplotlib": "3.11.0",
+    "Levenshtein": "0.27.3"
+  }
+}

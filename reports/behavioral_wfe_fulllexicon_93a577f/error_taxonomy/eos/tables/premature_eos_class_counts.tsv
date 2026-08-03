@@ -1,0 +1,61 @@
+seed	route	eos_class	n_items	n	structurally_observable	note
+19	full	EOS_NOT_OBSERVED	1062	1060	True	ambiguous: correct stop or no stop
+20	full	EOS_NOT_OBSERVED	1062	1062	True	ambiguous: correct stop or no stop
+21	full	EOS_NOT_OBSERVED	1062	1061	True	ambiguous: correct stop or no stop
+22	full	EOS_NOT_OBSERVED	1062	1062	True	ambiguous: correct stop or no stop
+19	full	EOS_UNAVAILABLE	1062	0	True	
+20	full	EOS_UNAVAILABLE	1062	0	True	
+21	full	EOS_UNAVAILABLE	1062	0	True	
+22	full	EOS_UNAVAILABLE	1062	0	True	
+19	full	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+20	full	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+21	full	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+22	full	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+19	full	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+20	full	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+21	full	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+22	full	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+19	full	PREMATURE_EOS	1062	2	True	
+20	full	PREMATURE_EOS	1062	0	True	
+21	full	PREMATURE_EOS	1062	1	True	
+22	full	PREMATURE_EOS	1062	0	True	
+19	ltm	EOS_NOT_OBSERVED	1062	1036	True	ambiguous: correct stop or no stop
+20	ltm	EOS_NOT_OBSERVED	1062	1048	True	ambiguous: correct stop or no stop
+21	ltm	EOS_NOT_OBSERVED	1062	1038	True	ambiguous: correct stop or no stop
+22	ltm	EOS_NOT_OBSERVED	1062	1044	True	ambiguous: correct stop or no stop
+19	ltm	EOS_UNAVAILABLE	1062	0	True	
+20	ltm	EOS_UNAVAILABLE	1062	0	True	
+21	ltm	EOS_UNAVAILABLE	1062	0	True	
+22	ltm	EOS_UNAVAILABLE	1062	0	True	
+19	ltm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+20	ltm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+21	ltm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+22	ltm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+19	ltm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+20	ltm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+21	ltm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+22	ltm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+19	ltm	PREMATURE_EOS	1062	26	True	
+20	ltm	PREMATURE_EOS	1062	14	True	
+21	ltm	PREMATURE_EOS	1062	24	True	
+22	ltm	PREMATURE_EOS	1062	18	True	
+19	wm	EOS_NOT_OBSERVED	1062	1061	True	ambiguous: correct stop or no stop
+20	wm	EOS_NOT_OBSERVED	1062	1061	True	ambiguous: correct stop or no stop
+21	wm	EOS_NOT_OBSERVED	1062	1062	True	ambiguous: correct stop or no stop
+22	wm	EOS_NOT_OBSERVED	1062	1062	True	ambiguous: correct stop or no stop
+19	wm	EOS_UNAVAILABLE	1062	0	True	
+20	wm	EOS_UNAVAILABLE	1062	0	True	
+21	wm	EOS_UNAVAILABLE	1062	0	True	
+22	wm	EOS_UNAVAILABLE	1062	0	True	
+19	wm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+20	wm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+21	wm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+22	wm	LATE_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+19	wm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+20	wm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+21	wm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+22	wm	ON_TIME_EOS	1062	0	False	outside the readout window; cannot occur in this instrumentation
+19	wm	PREMATURE_EOS	1062	1	True	
+20	wm	PREMATURE_EOS	1062	1	True	
+21	wm	PREMATURE_EOS	1062	0	True	
+22	wm	PREMATURE_EOS	1062	0	True	

@@ -1,0 +1,49 @@
+seed	route	source_lexicality	label	broad_length	n_items	n_premature	premature_eos_rate	mean_eos_shortfall_per_item	conditional_mean_eos_shortfall	n_eos_not_observed	n_eos_unavailable	n_on_time_observed	n_late_observed
+19	full	pseudo	Pseudowords	Long	200	2	0.01	0.01	1.0	198	0	0	0
+20	full	pseudo	Pseudowords	Long	200	0	0.0	0.0		200	0	0	0
+21	full	pseudo	Pseudowords	Long	200	1	0.005	0.005	1.0	199	0	0	0
+22	full	pseudo	Pseudowords	Long	200	0	0.0	0.0		200	0	0	0
+19	full	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+20	full	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+21	full	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+22	full	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+19	full	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+20	full	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+21	full	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+22	full	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+19	full	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+20	full	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+21	full	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+22	full	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+19	ltm	pseudo	Pseudowords	Long	200	25	0.125	0.14	1.12	175	0	0	0
+20	ltm	pseudo	Pseudowords	Long	200	13	0.065	0.07	1.0769230769230769	187	0	0	0
+21	ltm	pseudo	Pseudowords	Long	200	23	0.115	0.12	1.0434782608695652	177	0	0	0
+22	ltm	pseudo	Pseudowords	Long	200	17	0.085	0.09	1.0588235294117647	183	0	0	0
+19	ltm	pseudo	Pseudowords	Short	191	1	0.005235602094240838	0.005235602094240838	1.0	190	0	0	0
+20	ltm	pseudo	Pseudowords	Short	191	1	0.005235602094240838	0.005235602094240838	1.0	190	0	0	0
+21	ltm	pseudo	Pseudowords	Short	191	1	0.005235602094240838	0.005235602094240838	1.0	190	0	0	0
+22	ltm	pseudo	Pseudowords	Short	191	1	0.005235602094240838	0.005235602094240838	1.0	190	0	0	0
+19	ltm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+20	ltm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+21	ltm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+22	ltm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+19	ltm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+20	ltm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+21	ltm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+22	ltm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+19	wm	pseudo	Pseudowords	Long	200	1	0.005	0.005	1.0	199	0	0	0
+20	wm	pseudo	Pseudowords	Long	200	1	0.005	0.005	1.0	199	0	0	0
+21	wm	pseudo	Pseudowords	Long	200	0	0.0	0.0		200	0	0	0
+22	wm	pseudo	Pseudowords	Long	200	0	0.0	0.0		200	0	0	0
+19	wm	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+20	wm	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+21	wm	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+22	wm	pseudo	Pseudowords	Short	191	0	0.0	0.0		191	0	0	0
+19	wm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+20	wm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+21	wm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+22	wm	real	Real words	Long	330	0	0.0	0.0		330	0	0	0
+19	wm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+20	wm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+21	wm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0
+22	wm	real	Real words	Short	341	0	0.0	0.0		341	0	0	0

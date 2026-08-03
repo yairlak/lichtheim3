@@ -1,0 +1,7 @@
+route	source_lexicality	n_items	premature_eos_and_deletion	premature_eos_without_deletion	deletion_without_premature_eos	neither	n_premature_eos	n_with_deletion	p_deletion_given_premature_eos	p_premature_eos_given_deletion	not_causal
+full	pseudo	1564	3	0	4	1557	3	7	1.0	0.42857142857142855	True
+full	real	2684	0	0	0	2684	0	0			True
+ltm	pseudo	1564	82	0	107	1375	82	189	1.0	0.43386243386243384	True
+ltm	real	2684	0	0	2	2682	0	2		0.0	True
+wm	pseudo	1564	2	0	8	1554	2	10	1.0	0.2	True
+wm	real	2684	0	0	0	2684	0	0			True

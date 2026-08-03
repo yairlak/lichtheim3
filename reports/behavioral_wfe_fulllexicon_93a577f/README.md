@@ -57,6 +57,41 @@ counterparts are tables only — no word-error figure was produced
 (`FIGURE_NOT_CREATED_DUE_TO_CEILING_OR_SPARSE_ERRORS`). Results and finding
 categories: `frequency/frequency_results.md`.
 
+## Sprint 4 — error taxonomy and premature EOS
+
+`error_taxonomy/` holds two analyses that are deliberately **never merged**: the
+Levenshtein taxonomy (substitutions, deletions, insertions) and the
+premature-EOS decoder diagnostic. A deletion is not a premature EOS, and no
+fourth edit operation exists. The EOS indexing convention was audited from
+committed source first (`error_taxonomy/eos_convention.md`), and the analysis
+specification was frozen before any summary was computed
+(`error_taxonomy/error_taxonomy_analysis_spec.md`).
+
+| Figure | Plotting tables | Caption |
+|---|---|---|
+| `error_taxonomy/faithful/figures/faithful_figure8a_error_types` | `faithful_condition_error_types.tsv`, `faithful_condition_summary.tsv`, `faithful_condition_composition.tsv`, `faithful_condition_cell_counts.tsv` | `..._caption.md` |
+| `error_taxonomy/clean/figures/clean_error_taxonomy_by_route` | `clean_error_taxonomy_cells.tsv`, `..._summary.tsv`, `..._by_exact_length.tsv`, `..._composition.tsv`, `..._route_contrasts.tsv`, `..._route_contrasts_summary.tsv`, `..._bootstrap.tsv`, `..._zoom_rule.tsv` | `..._caption.md` |
+| `error_taxonomy/clean/figures/clean_error_taxonomy_full_wm_zoom` | same tables as above | `..._caption.md` |
+| `error_taxonomy/eos/figures/premature_eos_by_route` | ten `premature_eos_*.tsv` tables | `..._caption.md` |
+
+The clean taxonomy figure uses **one common absolute y-scale across routes**.
+The `_full_wm_zoom` companion exists because the frozen >10× rule evaluated
+true (observed ratio 22.95, `clean_error_taxonomy_zoom_rule.tsv`); it **does not
+replace** the common-scale primary.
+
+**EOS observability.** The readout window holds exactly L tokens at indices
+0…L−1, so an EOS at the correct boundary (index L) is outside it. Only
+`PREMATURE_EOS` is positively observable; `ON_TIME_EOS` and `LATE_EOS` are
+structurally unobservable; `EOS_NOT_OBSERVED` means **no EOS was observed within
+the instrumented evaluation horizon** and is ambiguous with respect to eventual
+stopping — it is never read as correct stopping.
+
+Exposure and morphology descriptives are in `error_taxonomy/strata/tables/`;
+deterministic seed-22 illustrations (no inference) in `error_taxonomy/examples/`.
+Results and finding categories: `error_taxonomy/error_taxonomy_results.md`.
+Factual handoff for a future mechanistic study, with no causal claim:
+`error_taxonomy/length_effect_mechanism_handoff.md`.
+
 ## Source tables
 
 Figures derive from the validated canonical table
@@ -73,6 +108,14 @@ per-seed enriched production tables under
 | `full_wfe_evaluation/_control/production_scientific_outputs_FINAL.sha256` | 36 immutable scientific outputs | authoritative, verifies 100 % |
 | `full_wfe_evaluation/_control/production_operational_logs_FINAL.sha256` | 5 append-only operational logs | authoritative as of closure |
 | `validation/sprint1_outputs.sha256` | every file in this report directory | authoritative |
+| `morphology/validation/morphology_outputs.sha256` | Sprint-2 outputs | authoritative |
+| `frequency/validation/frequency_outputs.sha256` | Sprint-3 outputs | authoritative |
+| `error_taxonomy/validation/error_taxonomy_outputs.sha256` | Sprint-4 outputs | authoritative |
+
+**Living-file policy.** `README.md` and `analysis_matrix.tsv` are living
+documents that each sprint extends; every earlier manifest lists them, so their
+hashes are expected to change and are not scientific regressions. Every other
+artefact recorded in an earlier manifest must stay byte-identical.
 
 Why the original manifest reads 40/41: `full_wfe_evaluation/_control/manifest_closure_note.md`.
 

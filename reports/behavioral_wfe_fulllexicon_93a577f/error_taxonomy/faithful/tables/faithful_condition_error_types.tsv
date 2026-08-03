@@ -1,0 +1,49 @@
+dataset_regime	route	seed	condition	condition_order	source_lexicality	size	morphology	n_items	n_erroneous_items	cell_flag	total_edit_operations	mean_edit_distance_per_item	total_substitutions	mean_substitutions_per_item	mean_substitutions_per_erroneous_item	proportion_substitutions	total_deletions	mean_deletions_per_item	mean_deletions_per_erroneous_item	proportion_deletions	total_insertions	mean_insertions_per_item	mean_insertions_per_erroneous_item	proportion_insertions	composition_status
+FAITHFUL_WFE_ALL	full	19	RLCH	0	real	long	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	RLCH	0	real	long	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	RLCH	0	real	long	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RLCH	0	real	long	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	RLCL	1	real	long	complex	100	2	OK	3.0	0.03	0.0	0.0	0.0	0.0	2.0	0.02	1.0	0.6666666666666666	1.0	0.01	0.5	0.3333333333333333	OK
+FAITHFUL_WFE_ALL	full	20	RLCL	1	real	long	complex	100	1	OK	1.0	0.01	0.0	0.0	0.0	0.0	1.0	0.01	1.0	1.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	21	RLCL	1	real	long	complex	100	1	OK	1.0	0.01	0.0	0.0	0.0	0.0	1.0	0.01	1.0	1.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	22	RLCL	1	real	long	complex	100	1	OK	2.0	0.02	0.0	0.0	0.0	0.0	1.0	0.01	1.0	0.5	1.0	0.01	1.0	0.5	OK
+FAITHFUL_WFE_ALL	full	19	RLSH	2	real	long	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	RLSH	2	real	long	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	RLSH	2	real	long	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RLSH	2	real	long	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	RLSL	3	real	long	simple	100	1	OK	2.0	0.02	2.0	0.02	2.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	20	RLSL	3	real	long	simple	100	1	OK	1.0	0.01	1.0	0.01	1.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	21	RLSL	3	real	long	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RLSL	3	real	long	simple	100	1	OK	2.0	0.02	2.0	0.02	2.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	19	RSCH	4	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	RSCH	4	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	RSCH	4	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RSCH	4	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	RSCL	5	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	RSCL	5	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	RSCL	5	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RSCL	5	real	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	RSSH	6	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	RSSH	6	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	RSSH	6	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RSSH	6	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	RSSL	7	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	RSSL	7	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	RSSL	7	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	RSSL	7	real	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	PLS	8	pseudo	long	simple	100	4	OK	7.0	0.07	2.0	0.02	0.5	0.2857142857142857	3.0	0.03	0.75	0.42857142857142855	2.0	0.02	0.5	0.2857142857142857	OK
+FAITHFUL_WFE_ALL	full	20	PLS	8	pseudo	long	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	PLS	8	pseudo	long	simple	100	3	OK	6.0	0.06	2.0	0.02	0.6666666666666666	0.3333333333333333	2.0	0.02	0.6666666666666666	0.3333333333333333	2.0	0.02	0.6666666666666666	0.3333333333333333	OK
+FAITHFUL_WFE_ALL	full	22	PLS	8	pseudo	long	simple	100	1	OK	2.0	0.02	2.0	0.02	2.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	19	PSC	9	pseudo	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	PSC	9	pseudo	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	PSC	9	pseudo	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	PSC	9	pseudo	short	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	PLC	10	pseudo	long	complex	100	2	OK	2.0	0.02	1.0	0.01	0.5	0.5	1.0	0.01	0.5	0.5	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	20	PLC	10	pseudo	long	complex	100	1	OK	2.0	0.02	2.0	0.02	2.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	21	PLC	10	pseudo	long	complex	100	4	OK	6.0	0.06	5.0	0.05	1.25	0.8333333333333334	1.0	0.01	0.25	0.16666666666666666	0.0	0.0	0.0	0.0	OK
+FAITHFUL_WFE_ALL	full	22	PLC	10	pseudo	long	complex	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	19	PSS	11	pseudo	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	20	PSS	11	pseudo	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	21	PSS	11	pseudo	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION
+FAITHFUL_WFE_ALL	full	22	PSS	11	pseudo	short	simple	100	0	OK	0.0	0.0	0.0	0.0			0.0	0.0			0.0	0.0			NO_ERRORS_FOR_COMPOSITION

@@ -1,0 +1,19 @@
+seed	route	item_id	target	prediction	target_length	predicted_length	raw_edit_distance	substitutions	deletions	insertions	eos_position	expected_eos_position	eos_class	eos_shortfall	morphology	size
+22	ltm	wfe_0800	S OW L OW K AH M AO F	S OW L OW K EY M OW	9	8	3.0	2	1	0	8.0	9	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_0823	EH V ER R IY AH L IH S	EH V R ER IY S IH L	9	8	5.0	2	2	1	8.0	9	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_0825	S T AO R S T AH N T	S T AO R S T AH L	9	8	2.0	1	1	0	8.0	9	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_0936	D AH S OW SH IY OW	AH S T OW JH IY	7	6	4.0	1	2	1	6.0	7	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_0963	Y UW N IY Z IH K	Y UW N IY IH TH	7	6	2.0	1	1	0	6.0	7	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_0976	R EH D ER L AH T IY	R EH D ER L AH T	8	7	1.0	0	1	0	7.0	8	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_0995	W UH M AH N G AH L	W UH M AH N JH IY	8	7	3.0	2	1	0	7.0	8	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_0996	R EH D AH F AH L IY	R EH D AH F AH L	8	7	1.0	0	1	0	7.0	8	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1007	AE L AH D K W AO R EY	AE L D AH K W AO R	9	8	3.0	0	2	1	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1009	R IY AH D IY N S AH Z	R IY AH D IY N AH S	9	8	2.0	1	1	0	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1011	OW N AH S T R AE N D	OW N AH Z UH N S T	9	8	6.0	5	1	0	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1021	W IH N Y UW F AE K T	AY N Y UW M AE P T	9	8	4.0	3	1	0	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1024	D IY D AH N IH S AH Z	D IY D AH N S AH Z	9	8	1.0	0	1	0	8.0	9	PREMATURE_EOS	1.0	complex	long
+22	ltm	wfe_1095	N AW N D	N AW D	4	3	1.0	0	1	0	3.0	4	PREMATURE_EOS	1.0	simple	short
+22	ltm	wfe_1133	S IH N AH M P T	S IH N AH P M	7	6	2.0	1	1	0	6.0	7	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_1158	D UH R IY V AH T	D UH R IY V ER	7	6	2.0	1	1	0	6.0	7	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_1190	T UH R F AO R IY AH	T UH R F AO R OW	8	7	2.0	1	1	0	7.0	8	PREMATURE_EOS	1.0	simple	long
+22	ltm	wfe_0972	S AH M T AH B AH L	S AH M B AH T	8	6	3.0	1	2	0	6.0	8	PREMATURE_EOS	2.0	complex	long

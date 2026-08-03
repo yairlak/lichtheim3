@@ -153,13 +153,62 @@ attempted, and **no absence of frequency encoding may be claimed**.
 
 Results: `frequency/frequency_results.md`.
 
+## Error taxonomy and premature EOS (Sprint 4)
+
+`scripts/behavioral_analysis/error_taxonomy.py` (Levenshtein operations),
+`eos_diagnostics.py` (decoder EOS diagnostic) and `plot_error_taxonomy.py`
+(figures, tables, examples). Estimands frozen in
+`reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/error_taxonomy_analysis_spec.md`;
+the EOS indexing convention was audited from committed source **before** any EOS
+distribution was read and frozen in `error_taxonomy/eos_convention.md`.
+
+```bash
+python -m scripts.behavioral_analysis.plot_error_taxonomy \
+    --out_root reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy
+```
+
+**Two analyses, never conflated.** Operations are exactly substitution,
+deletion and insertion, read from the counts produced by `Levenshtein.editops`
+0.27.3 during the production evaluation; nothing re-aligns a sequence and **no
+fourth operation exists**. Premature EOS is a separate decoder diagnostic. A
+deletion is not automatically a premature EOS, a premature EOS is not one
+deletion, several deletions may follow one early stop, and early stops may
+coexist with substitutions or insertions.
+
+**EOS observability.** `eos_position` is a 0-based index into the item's readout
+window (`dec_input[i, 1:n_steps+1]`, exactly L tokens at indices 0…L−1); the
+expected boundary is index L, which is outside the window. Therefore:
+
+| Class | Meaning | Observable? |
+|---|---|---|
+| `PREMATURE_EOS` | EOS observed at index < L | yes — the only positively observable class |
+| `ON_TIME_EOS` | EOS at index L | **no** — structurally unobservable |
+| `LATE_EOS` | EOS beyond L | **no** — structurally unobservable |
+| `EOS_NOT_OBSERVED` | **no EOS was observed within the instrumented evaluation horizon** | yes, but **ambiguous** with respect to eventual stopping |
+| `EOS_UNAVAILABLE` | field absent or non-numeric | yes (none occur in this cohort) |
+
+Zero observed `ON_TIME_EOS` does **not** mean the decoder never stops correctly,
+and zero observed `LATE_EOS` does **not** mean late stopping never occurs.
+`EOS_NOT_OBSERVED` is never read as correct stopping, on-time stopping,
+successful completion, or the absence of an EOS-related problem. The frozen
+class labels are kept unchanged; only their observability is clarified.
+
+Presentation: operation type is encoded by **hatch**, never by red or blue,
+which stay reserved for lexicality. The clean taxonomy figure keeps **one common
+absolute y-scale across routes**; a `_full_wm_zoom` companion is emitted only
+when the frozen rule *max mean LTM operation count > 10 × max mean FULL/WM*
+evaluates true, and it never replaces the primary.
+
+Results: `error_taxonomy/error_taxonomy_results.md`. Factual, non-causal handoff
+for a future mechanistic study: `error_taxonomy/length_effect_mechanism_handoff.md`.
+
 ## Where future analyses go
 
-Adapted feature importance, error taxonomy and premature EOS will be
-added as further modules inside `scripts/behavioral_analysis/`, following the
-morphology pattern: estimands frozen in a spec file first, statistics in a
-compute module, presentation in a plot module. The sprint order and status of
-every planned analysis is `docs/behavioral_wfe_analysis_matrix.md`.
+Adapted feature importance and the deferred SSP analysis would be added as
+further modules inside `scripts/behavioral_analysis/`, following the same
+pattern: estimands frozen in a spec file first, statistics in a compute module,
+presentation in a plot module. The sprint order and status of every planned
+analysis is `docs/behavioral_wfe_analysis_matrix.md`.
 
 ## Provenance
 
@@ -175,7 +224,12 @@ pinned separately (see `manifest_closure_note.md`).
 - Four seeds only; the bootstrap draws from 35 distinct seed multisets, so
   intervals are coarse and descriptive.
 - Forced-length readout means terminal insertions are unobservable — this
-  matches the original Dager implementation.
+  matches the original Dager implementation. The same horizon makes EOS timing
+  at or after the correct boundary unobservable, so `ON_TIME_EOS` and
+  `LATE_EOS` cannot appear in any table and `EOS_NOT_OBSERVED` is ambiguous.
+- `Levenshtein.editops` tie-breaking can move counts between substitution,
+  deletion and insertion without changing the total edit distance, so the
+  operation split is backend-dependent while the total is not.
 - FULL and WM are at ceiling on trained real words, so their zero slope there
   is a floor rather than a demonstrated absence of a length effect.
 - The clean-set restriction was frozen in advance but removes the harder

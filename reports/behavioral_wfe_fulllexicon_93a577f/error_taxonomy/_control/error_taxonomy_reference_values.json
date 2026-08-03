@@ -1,0 +1,255 @@
+{
+  "_note": "Frozen Sprint-4 reference values, generated once from the published tables and thereafter treated as immutable expectations by tests/test_behavioral_error_taxonomy.py. Do not regenerate to make a failing test pass.",
+  "clean_cells_mean_over_seeds": {
+    "full|pseudo|Long": {
+      "deletions": 0.00875,
+      "insertions": 0.005,
+      "n_erroneous_items_total": 15,
+      "n_items": 200,
+      "substitutions": 0.0175,
+      "total_edit_operations": 25.0
+    },
+    "full|pseudo|Short": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 0,
+      "n_items": 191,
+      "substitutions": 0.0,
+      "total_edit_operations": 0.0
+    },
+    "full|real|Long": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 0,
+      "n_items": 330,
+      "substitutions": 0.0,
+      "total_edit_operations": 0.0
+    },
+    "full|real|Short": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 0,
+      "n_items": 341,
+      "substitutions": 0.0,
+      "total_edit_operations": 0.0
+    },
+    "ltm|pseudo|Long": {
+      "deletions": 0.245,
+      "insertions": 0.14,
+      "n_erroneous_items_total": 303,
+      "n_items": 200,
+      "substitutions": 0.57375,
+      "total_edit_operations": 767.0
+    },
+    "ltm|pseudo|Short": {
+      "deletions": 0.023560209,
+      "insertions": 0.018324607,
+      "n_erroneous_items_total": 62,
+      "n_items": 191,
+      "substitutions": 0.098167539,
+      "total_edit_operations": 107.0
+    },
+    "ltm|real|Long": {
+      "deletions": 0.001515152,
+      "insertions": 0.001515152,
+      "n_erroneous_items_total": 12,
+      "n_items": 330,
+      "substitutions": 0.021969697,
+      "total_edit_operations": 33.0
+    },
+    "ltm|real|Short": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 2,
+      "n_items": 341,
+      "substitutions": 0.002199413,
+      "total_edit_operations": 3.0
+    },
+    "wm|pseudo|Long": {
+      "deletions": 0.015,
+      "insertions": 0.0125,
+      "n_erroneous_items_total": 21,
+      "n_items": 200,
+      "substitutions": 0.025,
+      "total_edit_operations": 42.0
+    },
+    "wm|pseudo|Short": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 0,
+      "n_items": 191,
+      "substitutions": 0.0,
+      "total_edit_operations": 0.0
+    },
+    "wm|real|Long": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 0,
+      "n_items": 330,
+      "substitutions": 0.0,
+      "total_edit_operations": 0.0
+    },
+    "wm|real|Short": {
+      "deletions": 0.0,
+      "insertions": 0.0,
+      "n_erroneous_items_total": 0,
+      "n_items": 341,
+      "substitutions": 0.0,
+      "total_edit_operations": 0.0
+    }
+  },
+  "eos_class_totals": {
+    "EOS_NOT_OBSERVED": 12657,
+    "EOS_UNAVAILABLE": 0,
+    "LATE_EOS": 0,
+    "ON_TIME_EOS": 0,
+    "PREMATURE_EOS": 87
+  },
+  "eos_deletion_overlap_pooled": {
+    "full|pseudo": {
+      "deletion_without_premature_eos": 4,
+      "neither": 1557,
+      "premature_eos_and_deletion": 3,
+      "premature_eos_without_deletion": 0
+    },
+    "full|real": {
+      "deletion_without_premature_eos": 0,
+      "neither": 2684,
+      "premature_eos_and_deletion": 0,
+      "premature_eos_without_deletion": 0
+    },
+    "ltm|pseudo": {
+      "deletion_without_premature_eos": 107,
+      "neither": 1375,
+      "premature_eos_and_deletion": 82,
+      "premature_eos_without_deletion": 0
+    },
+    "ltm|real": {
+      "deletion_without_premature_eos": 2,
+      "neither": 2682,
+      "premature_eos_and_deletion": 0,
+      "premature_eos_without_deletion": 0
+    },
+    "wm|pseudo": {
+      "deletion_without_premature_eos": 8,
+      "neither": 1554,
+      "premature_eos_and_deletion": 2,
+      "premature_eos_without_deletion": 0
+    },
+    "wm|real": {
+      "deletion_without_premature_eos": 0,
+      "neither": 2684,
+      "premature_eos_and_deletion": 0,
+      "premature_eos_without_deletion": 0
+    }
+  },
+  "faithful_figure8a": {
+    "condition_order": [
+      "RLCH",
+      "RLCL",
+      "RLSH",
+      "RLSL",
+      "RSCH",
+      "RSCL",
+      "RSSH",
+      "RSSL",
+      "PLS",
+      "PSC",
+      "PLC",
+      "PSS"
+    ],
+    "mean_over_seeds": {
+      "PLC": {
+        "deletions": 0.005,
+        "insertions": 0.0,
+        "substitutions": 0.02
+      },
+      "PLS": {
+        "deletions": 0.0125,
+        "insertions": 0.01,
+        "substitutions": 0.015
+      },
+      "PSC": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "PSS": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "RLCH": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "RLCL": {
+        "deletions": 0.0125,
+        "insertions": 0.005,
+        "substitutions": 0.0
+      },
+      "RLSH": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "RLSL": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0125
+      },
+      "RSCH": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "RSCL": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "RSSH": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      },
+      "RSSL": {
+        "deletions": 0.0,
+        "insertions": 0.0,
+        "substitutions": 0.0
+      }
+    },
+    "n_items_per_condition": 100
+  },
+  "ltm_pseudo_eos_length_slopes_by_seed": {
+    "19": 0.035582358,
+    "20": 0.017736464,
+    "21": 0.031644372,
+    "22": 0.019830414
+  },
+  "premature_eos_events_by_route": {
+    "full": 3,
+    "ltm": 82,
+    "wm": 2
+  },
+  "premature_eos_events_total": 87,
+  "routes": [
+    "full",
+    "wm",
+    "ltm"
+  ],
+  "seeds": [
+    19,
+    20,
+    21,
+    22
+  ],
+  "zoom_rule": {
+    "max_mean_full_wm": 0.025,
+    "max_mean_ltm": 0.57375,
+    "ratio": 22.95,
+    "rule_fires": true,
+    "threshold": 10.0
+  }
+}

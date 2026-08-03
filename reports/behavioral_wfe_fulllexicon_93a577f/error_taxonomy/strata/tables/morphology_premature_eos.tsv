@@ -1,0 +1,49 @@
+seed	route	source_lexicality	morphology	n_items	n_premature	premature_eos_rate	mean_eos_shortfall_per_item	conditional_mean_eos_shortfall	n_eos_not_observed	n_eos_unavailable	n_on_time_observed	n_late_observed
+19	full	pseudo	complex	197	1	0.005076142131979695	0.005076142131979695	1.0	196	0	0	0
+20	full	pseudo	complex	197	0	0.0	0.0		197	0	0	0
+21	full	pseudo	complex	197	1	0.005076142131979695	0.005076142131979695	1.0	196	0	0	0
+22	full	pseudo	complex	197	0	0.0	0.0		197	0	0	0
+19	full	pseudo	simple	194	1	0.005154639175257732	0.005154639175257732	1.0	193	0	0	0
+20	full	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+21	full	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+22	full	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+19	full	real	complex	305	0	0.0	0.0		305	0	0	0
+20	full	real	complex	305	0	0.0	0.0		305	0	0	0
+21	full	real	complex	305	0	0.0	0.0		305	0	0	0
+22	full	real	complex	305	0	0.0	0.0		305	0	0	0
+19	full	real	simple	366	0	0.0	0.0		366	0	0	0
+20	full	real	simple	366	0	0.0	0.0		366	0	0	0
+21	full	real	simple	366	0	0.0	0.0		366	0	0	0
+22	full	real	simple	366	0	0.0	0.0		366	0	0	0
+19	ltm	pseudo	complex	197	12	0.06091370558375635	0.06598984771573604	1.0833333333333333	185	0	0	0
+20	ltm	pseudo	complex	197	7	0.03553299492385787	0.04060913705583756	1.1428571428571428	190	0	0	0
+21	ltm	pseudo	complex	197	12	0.06091370558375635	0.06091370558375635	1.0	185	0	0	0
+22	ltm	pseudo	complex	197	11	0.05583756345177665	0.06091370558375635	1.0909090909090908	186	0	0	0
+19	ltm	pseudo	simple	194	14	0.07216494845360824	0.08247422680412371	1.1428571428571428	180	0	0	0
+20	ltm	pseudo	simple	194	7	0.03608247422680412	0.03608247422680412	1.0	187	0	0	0
+21	ltm	pseudo	simple	194	12	0.061855670103092786	0.06701030927835051	1.0833333333333333	182	0	0	0
+22	ltm	pseudo	simple	194	7	0.03608247422680412	0.03608247422680412	1.0	187	0	0	0
+19	ltm	real	complex	305	0	0.0	0.0		305	0	0	0
+20	ltm	real	complex	305	0	0.0	0.0		305	0	0	0
+21	ltm	real	complex	305	0	0.0	0.0		305	0	0	0
+22	ltm	real	complex	305	0	0.0	0.0		305	0	0	0
+19	ltm	real	simple	366	0	0.0	0.0		366	0	0	0
+20	ltm	real	simple	366	0	0.0	0.0		366	0	0	0
+21	ltm	real	simple	366	0	0.0	0.0		366	0	0	0
+22	ltm	real	simple	366	0	0.0	0.0		366	0	0	0
+19	wm	pseudo	complex	197	1	0.005076142131979695	0.005076142131979695	1.0	196	0	0	0
+20	wm	pseudo	complex	197	1	0.005076142131979695	0.005076142131979695	1.0	196	0	0	0
+21	wm	pseudo	complex	197	0	0.0	0.0		197	0	0	0
+22	wm	pseudo	complex	197	0	0.0	0.0		197	0	0	0
+19	wm	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+20	wm	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+21	wm	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+22	wm	pseudo	simple	194	0	0.0	0.0		194	0	0	0
+19	wm	real	complex	305	0	0.0	0.0		305	0	0	0
+20	wm	real	complex	305	0	0.0	0.0		305	0	0	0
+21	wm	real	complex	305	0	0.0	0.0		305	0	0	0
+22	wm	real	complex	305	0	0.0	0.0		305	0	0	0
+19	wm	real	simple	366	0	0.0	0.0		366	0	0	0
+20	wm	real	simple	366	0	0.0	0.0		366	0	0	0
+21	wm	real	simple	366	0	0.0	0.0		366	0	0	0
+22	wm	real	simple	366	0	0.0	0.0		366	0	0	0

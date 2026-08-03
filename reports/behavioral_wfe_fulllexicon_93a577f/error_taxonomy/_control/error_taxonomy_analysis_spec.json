@@ -1,0 +1,227 @@
+{
+  "frozen_at": "2026-08-03T14:10:19.532990+00:00",
+  "frozen_before_any_result_inspected": true,
+  "sprint": 4,
+  "scope": [
+    "error_taxonomy",
+    "premature_eos_descriptive"
+  ],
+  "out_of_scope": [
+    "feature_importance",
+    "SSP",
+    "new_morphology_inference",
+    "new_frequency_inference",
+    "ablations",
+    "causal_explanations"
+  ],
+  "levenshtein": {
+    "operations": [
+      "substitution",
+      "deletion",
+      "insertion"
+    ],
+    "backend": "Levenshtein.editops",
+    "version": "0.27.3",
+    "counts_read_from_stored_tsvs": true,
+    "no_fourth_operation": true,
+    "no_custom_aligner": true,
+    "tie_breaking_note": "affects the insertion/deletion/substitution split but not total edit distance"
+  },
+  "eos_separate_from_taxonomy": {
+    "deletion_implies_premature_eos": false,
+    "premature_eos_equals_one_deletion": false,
+    "separate_tables_figures_claims": true
+  },
+  "forced_length_limitation": "terminal insertions beyond the target horizon are unobservable",
+  "estimands": {
+    "primary_operation_outcome": {
+      "measure": "mean operations per evaluated item",
+      "not_conditioned_on_error": true,
+      "grain": "seed x dataset_regime x route x lexicality/exposure x short_long x morphology where relevant",
+      "also_recorded": [
+        "n_items",
+        "n_erroneous_items",
+        "total_operation_count",
+        "mean_per_item",
+        "mean_per_erroneous_item"
+      ]
+    },
+    "error_composition": {
+      "definition": "operation_count / total_edit_operations",
+      "secondary": true,
+      "zero_total_label": "NO_ERRORS_FOR_COMPOSITION",
+      "no_zero_over_zero": true
+    },
+    "faithful_figure8a": {
+      "set": "FAITHFUL_WFE_ALL",
+      "route": "full",
+      "n_items": 1200,
+      "conditions": 12,
+      "ordering": "original source ordering",
+      "seeds": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "labels_are_not_exposure": true,
+      "figures_8b_8c_out_of_scope": true
+    },
+    "clean_route_analysis": {
+      "set": "LICHTHEIM_CLEAN",
+      "routes": [
+        "full",
+        "wm",
+        "ltm"
+      ],
+      "real": "TRAINED_REAL_EXACT (671)",
+      "pseudo": "NOVEL_PSEUDOWORD (391)",
+      "short": [
+        3,
+        4,
+        5
+      ],
+      "long": [
+        7,
+        8,
+        9
+      ]
+    },
+    "route_contrasts": {
+      "pairs": [
+        "ltm_minus_wm",
+        "full_minus_wm",
+        "ltm_minus_full"
+      ],
+      "applied_to": [
+        "each operation",
+        "total_edit_operations"
+      ],
+      "real_words_marked_ceiling_limited": true
+    },
+    "premature_eos": {
+      "primary": "mean_eos_shortfall_per_item (all items, zero for non-premature)",
+      "also": [
+        "premature_eos_rate",
+        "conditional_mean_eos_shortfall"
+      ],
+      "conditional_is_secondary": true,
+      "grain": "seed, route, clean lexicality, exact phoneme length, short/long, exposure status"
+    },
+    "eos_length_slope": {
+      "model": "premature_eos_binary ~ phoneme_length",
+      "type": "linear probability, transparent and descriptive",
+      "logistic_not_forced": true,
+      "statuses": [
+        "OK",
+        "ALL_ZERO_OUTCOME",
+        "ALL_ONE_OUTCOME",
+        "INSUFFICIENT_EVENTS",
+        "NON_ESTIMABLE"
+      ]
+    },
+    "eos_deletion_overlap": {
+      "table": "2x2 per stratum",
+      "cells": [
+        "premature_eos_and_deletion",
+        "premature_eos_no_deletion",
+        "deletion_no_premature_eos",
+        "neither"
+      ],
+      "reported": [
+        "P(deletion | premature EOS)",
+        "P(premature EOS | deletion)",
+        "counts",
+        "denominators"
+      ],
+      "not_causal": true
+    }
+  },
+  "statistical_policy": {
+    "primary_seeds": [
+      19,
+      20,
+      21,
+      22
+    ],
+    "seed_level_visible": true,
+    "bootstrap": {
+      "method": "hierarchical: seeds then items",
+      "replicates": 10000,
+      "random_seed": 20260730,
+      "ci": "95% percentile interval",
+      "unchanged_since_sprint1": true
+    },
+    "exact_zero_sensitivity_seeds": [
+      19,
+      20,
+      22
+    ],
+    "reported": [
+      "each seed",
+      "mean",
+      "range",
+      "bootstrap interval"
+    ],
+    "p_values_required": false,
+    "sparse_labels": [
+      "SPARSE_ERROR_LIMITED",
+      "SPARSE_EOS_LIMITED",
+      "CEILING_LIMITED",
+      "DESCRIPTIVE_ONLY",
+      "NON_ESTIMABLE"
+    ]
+  },
+  "small_cell_policy": {
+    "no_exclusion": true,
+    "flags": {
+      "SMALL_CELL": "n < 20",
+      "VERY_SMALL_CELL": "n < 10"
+    },
+    "n_le_7_descriptive_only": true
+  },
+  "presentation": {
+    "red": "Real words",
+    "blue": "Pseudowords",
+    "operation_type_encoding": "hatch / marker shape / neutral shading",
+    "red_blue_never_encode_operation_type": true,
+    "clean_figure_common_absolute_y_scale": true,
+    "zoom_rule": {
+      "trigger": "max mean LTM operation count > 10 x max mean FULL/WM operation count",
+      "output": "clean_error_taxonomy_full_wm_zoom",
+      "contains": [
+        "full",
+        "wm"
+      ],
+      "never_replaces_primary": true,
+      "frozen_before_plotting": true
+    },
+    "all_seed_values_visible": true
+  },
+  "seed22_illustrations": {
+    "seed": 22,
+    "declared_before_analysis": true,
+    "max_per_route": 20,
+    "set": "LICHTHEIM_CLEAN pseudowords, erroneous only",
+    "ordering": [
+      "raw_edit_distance desc",
+      "eos_shortfall desc (missing last)",
+      "item_id asc"
+    ],
+    "not_a_representative_sample": true,
+    "no_inference": true
+  },
+  "result_categories": [
+    "ROBUST",
+    "CONSISTENT_BUT_SMALL",
+    "INCONSISTENT_ACROSS_SEEDS",
+    "CEILING_LIMITED",
+    "SPARSE_ERROR_LIMITED",
+    "SPARSE_EOS_LIMITED",
+    "DESCRIPTIVE_ONLY",
+    "NON_ESTIMABLE"
+  ],
+  "no_causal_claims": true,
+  "no_claim_premature_eos_causes_length_effect": true,
+  "no_architectural_recommendations": true
+}

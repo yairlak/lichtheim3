@@ -1,0 +1,2 @@
+rule	trigger	max_mean_ltm_operation_per_item	max_mean_full_wm_operation_per_item	ratio	rule_fires	zoom_figure_produced	zoom_replaces_primary	frozen_before_results
+frozen zoom rule (error_taxonomy_analysis_spec.md)	max mean LTM operation count > 10 x max mean FULL/WM operation count	0.57375	0.025	22.95	True	True	False	True
