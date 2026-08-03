@@ -1,0 +1,28 @@
+{
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "out_root": "reports/behavioral_wfe_fulllexicon_93a577f/frequency",
+  "frequency_class_verification": {
+    "n_items": 671,
+    "n_mismatched_labels": 0,
+    "n_in_excluded_gap": 0,
+    "n_low": 292,
+    "n_high": 379,
+    "labels_verified_from_zipf": true
+  },
+  "figures": {
+    "trained_real_frequency_by_route": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route_caption.md"
+    },
+    "frequency_confidence_gate": {
+      "png": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate.png",
+      "pdf": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate.pdf",
+      "svg": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate.svg",
+      "caption": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate_caption.md"
+    }
+  },
+  "model_inference_performed": false
+}

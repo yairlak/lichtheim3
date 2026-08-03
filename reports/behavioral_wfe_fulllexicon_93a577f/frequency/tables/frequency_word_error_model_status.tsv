@@ -1,0 +1,4 @@
+dataset_regime	route	n_erroneous_items_total_over_seeds	model_status	logistic_fit_attempted	reason
+TRAINED_REAL_FREQUENCY_PRIMARY	full	0	ALL_ZERO_OUTCOME	False	zero word errors in every seed: no finite logistic MLE exists; fit not attempted; no absence of frequency encoding is claimed
+TRAINED_REAL_FREQUENCY_PRIMARY	ltm	14	SPARSE_ERROR_LIMITED	False	too few errors for a stable logistic fit; descriptive high/low rates and bootstrap contrasts reported instead
+TRAINED_REAL_FREQUENCY_PRIMARY	wm	0	ALL_ZERO_OUTCOME	False	zero word errors in every seed: no finite logistic MLE exists; fit not attempted; no absence of frequency encoding is claimed

@@ -40,6 +40,23 @@ cell-count tables sit beside each figure. Word-error counterparts are tables
 only — no word-error figure was produced (`FIGURE_NOT_CREATED_DUE_TO_CEILING`).
 Results and finding categories: `morphology/morphology_results.md`.
 
+## Sprint 3 — word frequency
+
+`frequency/` holds the Sprint-3 analysis on trained real words (671), with
+pronunciation-variant (678), exact-zero-seed and untrained-real (122)
+sensitivity analyses kept separate. The specification was frozen in
+`frequency/frequency_analysis_spec.md` before any result was inspected.
+
+| Figure | Plotting tables | Caption |
+|---|---|---|
+| `frequency/primary/figures/trained_real_frequency_by_route` | `trained_real_frequency_slopes.tsv`, `..._bootstrap.tsv`, `..._route_contrasts.tsv`, `trained_real_high_low_descriptives.tsv`, `trained_real_zipf_length_models.tsv` | `..._caption.md` |
+| `frequency/gate_confidence/figures/frequency_confidence_gate` | `frequency_confidence_slopes.tsv`, `frequency_gate_slopes.tsv`, `..._bootstrap.tsv` | `..._caption.md` |
+
+Distribution and confound tables are in `frequency/tables/`. Word-error
+counterparts are tables only — no word-error figure was produced
+(`FIGURE_NOT_CREATED_DUE_TO_CEILING_OR_SPARSE_ERRORS`). Results and finding
+categories: `frequency/frequency_results.md`.
+
 ## Source tables
 
 Figures derive from the validated canonical table

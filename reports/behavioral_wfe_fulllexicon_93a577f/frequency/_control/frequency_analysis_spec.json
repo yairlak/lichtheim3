@@ -1,0 +1,177 @@
+{
+  "frozen_at": "2026-08-03T13:20:08.200103+00:00",
+  "frozen_before_any_result_inspected": true,
+  "sprint": 3,
+  "scope": "word frequency effect only",
+  "out_of_scope": [
+    "feature_importance",
+    "error_taxonomy",
+    "SSP",
+    "morphology_extensions",
+    "causal_length_effect_diagnostics"
+  ],
+  "frequency_defined_only_for_real_words": true,
+  "pseudowords_never_assigned_frequency": true,
+  "pseudowords_never_in_zipf_models": true,
+  "dataset_regimes": {
+    "TRAINED_REAL_FREQUENCY_PRIMARY": {
+      "n": 671,
+      "composition": "TRAINED_REAL_EXACT",
+      "role": "primary"
+    },
+    "TRAINED_REAL_FREQUENCY_SENSITIVITY": {
+      "n": 678,
+      "composition": "671 TRAINED_REAL_EXACT + 7 TRAINED_REAL_PRON_VARIANT",
+      "role": "sensitivity",
+      "variant_status_kept_explicit": true
+    },
+    "UNTRAINED_REAL": {
+      "n": 122,
+      "role": "separate sensitivity",
+      "never_merged_without_exposure_factor": true
+    },
+    "FAITHFUL_ALL_REAL": {
+      "n": 800,
+      "role": "descriptive only",
+      "not_primary_claim": true
+    }
+  },
+  "zipf_thresholds": {
+    "low": "<= 3.5",
+    "high": ">= 4.0",
+    "excluded_interval": "(3.5, 4.0)"
+  },
+  "estimands": {
+    "continuous_frequency_slope": {
+      "grain": "seed x route x dataset_regime",
+      "formula": "raw_edit_distance ~ standardized_zipf",
+      "records": [
+        "intercept",
+        "zipf_slope",
+        "n_items",
+        "n_erroneous_items",
+        "model_status"
+      ],
+      "sign_convention": "negative slope = higher frequency, fewer errors",
+      "primary": true
+    },
+    "length_adjusted_model": {
+      "grain": "seed x route x dataset_regime",
+      "formula": "raw_edit_distance ~ standardized_zipf + standardized_phoneme_length + standardized_zipf:standardized_phoneme_length",
+      "records": [
+        "zipf_main_effect",
+        "length_coefficient",
+        "zipf_x_length_interaction",
+        "model_status"
+      ],
+      "centering_note": "both predictors centred; the Zipf main effect is the slope at mean length"
+    },
+    "high_low_contrast": {
+      "grain": "seed x route x dataset_regime",
+      "definition": "low_frequency_mean_error - high_frequency_mean_error",
+      "metrics": [
+        "raw_edit_distance",
+        "word_error"
+      ],
+      "sign_convention": "positive = low-frequency words harder",
+      "secondary": true
+    },
+    "frequency_by_route": {
+      "pairs": [
+        "ltm_minus_wm",
+        "full_minus_wm",
+        "ltm_minus_full"
+      ],
+      "raw_route_slope_difference": "slope_A - slope_B",
+      "frequency_benefit_route_difference": "(-slope_A) - (-slope_B) = slope_B - slope_A",
+      "benefit_orientation": "positive = route A shows the larger frequency benefit",
+      "both_signs_reported": true
+    },
+    "frequency_by_confidence": {
+      "formula": "lexical_confidence ~ standardized_zipf",
+      "outcome_definition": "top-1 cosine similarity to the semantic bank",
+      "forbidden_labels": [
+        "word probability",
+        "phonological similarity"
+      ]
+    },
+    "frequency_by_gate": {
+      "formula": "gate ~ standardized_zipf",
+      "gate_definition": "word-level scalar from the FULL-route computation",
+      "linked_to_confidence": "gate = sigmoid(2.0*(confidence - 0.7)); monotonic transform",
+      "treated_as_linked_not_independent": true
+    }
+  },
+  "standardization": {
+    "procedure": "means and SDs computed once per dataset regime from item-level values (identical across seeds and routes); the resulting standardized item covariates are reused unchanged in every seed and route model within that regime",
+    "no_per_seed_restandardization": true,
+    "no_per_route_restandardization": true
+  },
+  "statistical_policy": {
+    "primary_reporting_unit": "seed-level estimates",
+    "bootstrap": {
+      "method": "hierarchical: seeds with replacement, then items with replacement within the declared analysis set",
+      "replicates": 10000,
+      "random_seed": 20260730,
+      "ci": "95% percentile interval",
+      "unchanged_since_sprint1": true
+    },
+    "reported": [
+      "all four seed estimates",
+      "four-seed mean",
+      "range",
+      "bootstrap interval",
+      "exact-zero sensitivity (seeds 19,20,22)"
+    ],
+    "seed_policy": "19,20,21,22 primary; 21 never silently excluded",
+    "p_values_optional": true,
+    "no_forcing_unstable_models": true,
+    "allowed_model_statuses": [
+      "OK",
+      "ALL_ZERO_OUTCOME",
+      "COMPLETE_SEPARATION",
+      "INSUFFICIENT_ERRORS",
+      "CONSTANT_OUTCOME",
+      "NON_ESTIMABLE",
+      "NUMERICAL_FAILURE"
+    ]
+  },
+  "ceiling_policy": {
+    "trigger": "seed x route with zero total edit distance and zero word errors",
+    "raw_slope": "structurally 0 for descriptive purposes",
+    "inferential_status": "ALL_ZERO_OUTCOME",
+    "logistic_fit_attempted": false,
+    "absence_claim_permitted": false,
+    "statement": "a zero behavioural slope under ceiling means the measure cannot identify an effect, not that the route lacks frequency information"
+  },
+  "multiple_comparisons": {
+    "primary_family": "continuous Zipf slopes for FULL/WM/LTM, primary trained set, raw edit distance",
+    "secondary_families": [
+      "high_low",
+      "zipf_x_length",
+      "confidence",
+      "gate",
+      "sensitivity_datasets"
+    ],
+    "correction": "Holm within each declared family if p-values are produced"
+  },
+  "presentation": {
+    "frequency_colour_scale": "neutral",
+    "red_blue_forbidden_in_frequency_figures": true,
+    "red_blue_reserved_for": "real/pseudo lexicality",
+    "all_four_seed_points_visible": true,
+    "continuous_zipf_primary_high_low_secondary": true,
+    "confidence_and_gate_on_separate_panels": true
+  },
+  "result_categories": [
+    "ROBUST",
+    "CONSISTENT_BUT_SMALL",
+    "INCONSISTENT_ACROSS_SEEDS",
+    "CEILING_LIMITED",
+    "SPARSE_ERROR_LIMITED",
+    "NON_ESTIMABLE",
+    "DESCRIPTIVE_ONLY"
+  ],
+  "no_causal_claims": true,
+  "no_zero_slope_as_proof_of_absence": true
+}

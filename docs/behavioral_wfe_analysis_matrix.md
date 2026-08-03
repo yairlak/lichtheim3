@@ -37,7 +37,7 @@ Nothing beyond priority 2 was computed in Sprint 1.
 | A11 | Faithful feature importance | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **NEEDS_FORMATTING_ONLY** | 5 | promote to tracked package |
 | A12 | Clean morphology x length | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 3 | none |
 | A13 | Faithful morphology x length | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **ALREADY_VALIDATED** | 3 | none |
-| A14 | Trained-real frequency | TRAINED_REAL_FREQUENCY_PRIMARY | 671 | full;wm;ltm | raw_edit_distance | adapted | **NEEDS_COMPUTATION** | 4 | sprint 3 |
+| A14 | Trained-real frequency | TRAINED_REAL_FREQUENCY_PRIMARY | 671 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 4 | none |
 | A15 | Adapted feature importance | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **NEEDS_COMPUTATION** | 7 | sprint 5 |
 | A16 | Faithful error taxonomy | FAITHFUL_WFE_ALL | 1200 | full | insertions;deletions;substitutions | faithful | **NEEDS_COMPUTATION** | 6 | sprint 4 |
 | A17 | Clean error taxonomy | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | insertions;deletions;substitutions | adapted | **NEEDS_COMPUTATION** | 6 | sprint 4 |
@@ -66,5 +66,8 @@ change an analysis set, the seed policy or the bootstrap.
 
 - **Sprint 1** (commits `f626a69`, `178f6a5`): A01–A08 — code promotion,
   manifest closure, documentation, and the five core figures.
-- **Sprint 2**: A12–A13 — morphology × phoneme length, faithful and adapted.
-  Results in `reports/behavioral_wfe_fulllexicon_93a577f/morphology/`.
+- **Sprint 2** (commits `96d1626`, `469732d`): A12–A13 — morphology × phoneme
+  length, faithful and adapted. No robust morphology effect.
+  `reports/behavioral_wfe_fulllexicon_93a577f/morphology/`.
+- **Sprint 3**: A14 — word frequency on trained real words.
+  `reports/behavioral_wfe_fulllexicon_93a577f/frequency/`.

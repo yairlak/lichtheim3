@@ -1,0 +1,2 @@
+dataset_regime	n	mean	sd	min	q25	median	q75	max	n_low	n_high	n_in_excluded_gap	n_mismatched_stored_labels	corr_zipf_length
+TRAINED_REAL_FREQUENCY_PRIMARY	671	4.112891207153503	0.9009237308138054	2.87	3.29	4.23	4.71	7.01	292	379	0	0	-0.18953313994201076

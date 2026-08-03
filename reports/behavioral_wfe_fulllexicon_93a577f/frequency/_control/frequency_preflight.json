@@ -1,0 +1,174 @@
+{
+  "date": "2026-08-03T13:19:05.250725+00:00",
+  "sprint": 3,
+  "phase": "frequency_preflight",
+  "verdict": "PASS",
+  "n_checks": 38,
+  "n_failures": 0,
+  "failures": [],
+  "checks": {
+    "branch": {
+      "pass": true,
+      "detail": ""
+    },
+    "head_is_sprint2_closure": {
+      "pass": true,
+      "detail": "469732d173142f9a9062ad536c9043d6d22d7c32"
+    },
+    "origin_equals_head": {
+      "pass": true,
+      "detail": ""
+    },
+    "tracked_tree_clean": {
+      "pass": true,
+      "detail": ""
+    },
+    "only_archives_untracked": {
+      "pass": true,
+      "detail": "['archives/']"
+    },
+    "canonical_hash_unchanged": {
+      "pass": true,
+      "detail": "8988aff6fac55ca3\u2026"
+    },
+    "canonical_14400": {
+      "pass": true,
+      "detail": "14400"
+    },
+    "four_seeds": {
+      "pass": true,
+      "detail": ""
+    },
+    "three_routes": {
+      "pass": true,
+      "detail": ""
+    },
+    "primary_671": {
+      "pass": true,
+      "detail": "671"
+    },
+    "sensitivity_678": {
+      "pass": true,
+      "detail": "678"
+    },
+    "untrained_real_122": {
+      "pass": true,
+      "detail": "122"
+    },
+    "primary_all_trained_real_exact": {
+      "pass": true,
+      "detail": "['TRAINED_REAL_EXACT']"
+    },
+    "sensitivity_strata": {
+      "pass": true,
+      "detail": "['TRAINED_REAL_EXACT', 'TRAINED_REAL_PRON_VARIANT']"
+    },
+    "sensitivity_has_7_variants": {
+      "pass": true,
+      "detail": "7"
+    },
+    "primary_no_pseudowords": {
+      "pass": true,
+      "detail": "['real']"
+    },
+    "primary_all_finite_zipf": {
+      "pass": true,
+      "detail": "0 non-finite"
+    },
+    "primary_no_zipf_in_3.5_4.0_gap": {
+      "pass": true,
+      "detail": "0"
+    },
+    "primary_low_le_3.5": {
+      "pass": true,
+      "detail": "max=3.5"
+    },
+    "primary_high_ge_4.0": {
+      "pass": true,
+      "detail": "min=4.0"
+    },
+    "primary_classes_only_high_low": {
+      "pass": true,
+      "detail": "['high', 'low']"
+    },
+    "sensitivity_no_pseudowords": {
+      "pass": true,
+      "detail": "['real']"
+    },
+    "sensitivity_all_finite_zipf": {
+      "pass": true,
+      "detail": "0 non-finite"
+    },
+    "sensitivity_no_zipf_in_3.5_4.0_gap": {
+      "pass": true,
+      "detail": "0"
+    },
+    "sensitivity_low_le_3.5": {
+      "pass": true,
+      "detail": "max=3.5"
+    },
+    "sensitivity_high_ge_4.0": {
+      "pass": true,
+      "detail": "min=4.0"
+    },
+    "sensitivity_classes_only_high_low": {
+      "pass": true,
+      "detail": "['high', 'low']"
+    },
+    "untrained_no_pseudowords": {
+      "pass": true,
+      "detail": "['real']"
+    },
+    "untrained_all_finite_zipf": {
+      "pass": true,
+      "detail": "0 non-finite"
+    },
+    "untrained_no_zipf_in_3.5_4.0_gap": {
+      "pass": true,
+      "detail": "0"
+    },
+    "untrained_low_le_3.5": {
+      "pass": true,
+      "detail": "max=3.5"
+    },
+    "untrained_high_ge_4.0": {
+      "pass": true,
+      "detail": "min=4.0"
+    },
+    "untrained_classes_only_high_low": {
+      "pass": true,
+      "detail": "['high', 'low']"
+    },
+    "zipf_identical_across_seeds_and_routes": {
+      "pass": true,
+      "detail": "0 items vary"
+    },
+    "no_pseudoword_in_any_frequency_set": {
+      "pass": true,
+      "detail": ""
+    },
+    "production_manifest_immutable": {
+      "pass": true,
+      "detail": "36 OK"
+    },
+    "sprint1_manifest_immutable_files": {
+      "pass": true,
+      "detail": "35 OK (living files excluded by policy)"
+    },
+    "morphology_manifest_immutable": {
+      "pass": true,
+      "detail": "33 OK"
+    }
+  },
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "sprint1_analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+  "morphology_analysis_code_commit": "96d162677681a4b6cc98236c8cad1921008d3f9c",
+  "sprint2_provenance_closure_commit": "469732d173142f9a9062ad536c9043d6d22d7c32",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.0"
+  }
+}

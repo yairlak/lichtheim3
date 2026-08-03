@@ -1,0 +1,23 @@
+=== SPRINT 3 FREQUENCY VALIDATION LOG ===
+HEAD 469732d173142f9a9062ad536c9043d6d22d7c32  branch feat/full-lexicon-ceiling
+
+### [1] frequency tests
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+40 passed, 2 warnings in 1.27s
+exit=0
+
+### [2] morphology + sprint1 tests (non-regression)
+...........                                                              [100%]
+83 passed in 0.79s
+exit=0
+
+### [3] full lightweight suite
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+345 passed, 4 deselected, 2 warnings in 80.28s (0:01:20)
+exit=0
+
+### [4] deterministic double regeneration
+  compared: 28  byte-identical: 28
+
+### [5] published vs fresh regeneration
+  compared: 28  identical: 28

@@ -1,0 +1,163 @@
+{
+  "sprint": 3,
+  "analysis": "word frequency effect",
+  "training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+  "evaluation_code_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
+  "sprint1_analysis_code_commit": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+  "morphology_analysis_code_commit": "96d162677681a4b6cc98236c8cad1921008d3f9c",
+  "analysis_code_base_commit": "469732d173142f9a9062ad536c9043d6d22d7c32",
+  "frequency_analysis_code_commit": null,
+  "frequency_analysis_code_commit_note": "null before the Sprint-3 commit; the implementation is identified by frequency_source_sha256 plus the tracked-modification and untracked lists below",
+  "analysis_code_dirty": true,
+  "analysis_code_modified_tracked_files": [
+    "docs/behavioral_wfe_fulllexicon.md",
+    "ocs/behavioral_wfe_analysis_matrix.md",
+    "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
+    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
+  ],
+  "analysis_code_untracked_files": [
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/",
+    "scripts/behavioral_analysis/frequency.py",
+    "scripts/behavioral_analysis/plot_frequency.py",
+    "tests/test_behavioral_frequency.py"
+  ],
+  "frequency_source_sha256": {
+    "scripts/behavioral_analysis/frequency.py": "f1f1ce49b6a03082d603efa859463491aa1d625fde8228930e6a18b1e63bee31",
+    "scripts/behavioral_analysis/plot_frequency.py": "04fc611d98aae171c15158c929dd1fa000f1b417089f986a525437d5dee58c65"
+  },
+  "analysis_source_sha256": {
+    "scripts/behavioral_analysis/__init__.py": "36f067416d492defec0f0a76b344190be2171ee5f2d7b2eedb09a46244a2098e",
+    "scripts/behavioral_analysis/bootstrap.py": "00a84444f9717b99c58d5405b2c6aa1ef201f6805923e4f462c4c4864b6b6a63",
+    "scripts/behavioral_analysis/build_canonical_table.py": "9afc5054802934cf4dd2d936ade20b0f2922746d3c6eeb4b38a5c226bf17e883",
+    "scripts/behavioral_analysis/close_production_manifest.py": "89614cbff68ae40c8da7b26e1007b769af9a36a51859f72128bdcec389000cd9",
+    "scripts/behavioral_analysis/common.py": "8e1c5183080a89339c4f857cdc773faf7c2e2c92b983d8c3ccb2ffb628282185",
+    "scripts/behavioral_analysis/compute.py": "bcc267ea243c7cc800823cb9ef4172f7a593eaf083e1577833b59101e1c70edb",
+    "scripts/behavioral_analysis/frequency.py": "f1f1ce49b6a03082d603efa859463491aa1d625fde8228930e6a18b1e63bee31",
+    "scripts/behavioral_analysis/io.py": "4dc0b3d7689fb1772eda19fcb1c1c828a698a7d8314dbe7afb9398c0f348211c",
+    "scripts/behavioral_analysis/make_figures.py": "225347f7cc0da90699c30f9f75c7d841139774a4d198fea42168d57f946b8461",
+    "scripts/behavioral_analysis/morphology.py": "5166edbfbb494a709051e7337add169df75a81f303198391bb4e3095380e8483",
+    "scripts/behavioral_analysis/plot_frequency.py": "04fc611d98aae171c15158c929dd1fa000f1b417089f986a525437d5dee58c65",
+    "scripts/behavioral_analysis/plot_morphology.py": "69f1e08cd86fcecb4783d7e7ee0638c2099d5459e4415a7dfdcfc000b6eb252e",
+    "scripts/behavioral_analysis/plotting.py": "4db95bde6136dd1170c01fd4f52a5b1a25227a6261f6720dc783acf478220f62",
+    "scripts/behavioral_analysis/validate_outputs.py": "2571c50887d16d33c26e2f9a27adf6424ac61fea8cf1adeee6213f90d1b3f41e"
+  },
+  "test_source_sha256": {
+    "tests/test_behavioral_frequency.py": "8441f01d3f06d0f218ae23a696f61792658946ba207b66857bede2c3139ca808"
+  },
+  "checkpoint_sha256": {
+    "19": "7d05f9c2ad5a53e705f7d55ccde2581754918938d8ca888da35c0a859666478e",
+    "20": "b44548b6916ea89c6f099402b78031063445e572932acee8dd7558a73dfc6cfb",
+    "21": "ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf",
+    "22": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595"
+  },
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "dataset_sha256": {
+    "wfe_tsv": "d3602815a95ee07f565f5703407dd1e8f0e025061dc89d01de99154a86d0a015",
+    "training_lexicon": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "item_manifest": "9db97522254167ea55a3cdbbc0953052b1368bacfeacc1920b4ffadf6f609194"
+  },
+  "production_manifest_sha256": {
+    "scientific_FINAL": "13b7473a610d9c084ff3d0984f1b34b879afc8df6fcf075e7b6b3c0845b4c712"
+  },
+  "sprint1_manifest_sha256": "b96606f0895e495a4889e9ed48b1e602b9668a33ad715877fc734504845f53fc",
+  "morphology_manifest_sha256": "8f27236e1860241795488fa35d2f70fd7ef455ed56d30afcbcf1f167847794cc",
+  "frequency_set_definitions": {
+    "TRAINED_REAL_FREQUENCY_PRIMARY": {
+      "n": 671,
+      "composition": "TRAINED_REAL_EXACT",
+      "role": "primary"
+    },
+    "TRAINED_REAL_FREQUENCY_SENSITIVITY": {
+      "n": 678,
+      "composition": "671 exact + 7 pronunciation variants"
+    },
+    "UNTRAINED_REAL": {
+      "n": 122,
+      "role": "separate sensitivity"
+    },
+    "FAITHFUL_ALL_REAL": {
+      "n": 800,
+      "role": "descriptive only"
+    }
+  },
+  "zipf_thresholds": {
+    "low": "<= 3.5",
+    "high": ">= 4.0",
+    "excluded_interval": "(3.5, 4.0)",
+    "labels_recomputed_from_zipf": true,
+    "n_mismatched_labels": 0,
+    "n_in_excluded_gap": 0
+  },
+  "standardization_procedure": "means and SDs computed once per dataset regime from the item-level values of seed 19 / route full (items identical across seeds and routes); the resulting standardized item covariates are reused unchanged in every seed and route model within that regime",
+  "model_formulas": {
+    "continuous": "raw_edit_distance ~ standardized_zipf",
+    "length_adjusted": "raw_edit_distance ~ standardized_zipf + standardized_phoneme_length + standardized_zipf:standardized_phoneme_length",
+    "confidence": "lexical_confidence ~ standardized_zipf",
+    "gate": "gate ~ standardized_zipf"
+  },
+  "sign_conventions": {
+    "zipf_slope": "negative = higher frequency, fewer errors",
+    "high_low_contrast": "low_mean - high_mean; positive = low-frequency harder",
+    "raw_route_slope_difference": "slope_A - slope_B",
+    "frequency_benefit_route_difference": "(-slope_A) - (-slope_B); positive = route A larger benefit"
+  },
+  "bootstrap": {
+    "method": "hierarchical: seeds with replacement, then items within the declared analysis set",
+    "replicates": 10000,
+    "random_seed": 20260730,
+    "ci": "95% percentile interval",
+    "unchanged_since_sprint1": true
+  },
+  "seed_policy": "19,20,21,22 primary; 21 never excluded; 19,20,22 exact-zero sensitivity only",
+  "ceiling_policy": {
+    "all_zero_outcome_label": "ALL_ZERO_OUTCOME",
+    "logistic_attempted": false,
+    "absence_claim_permitted": false
+  },
+  "package_versions": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.0",
+    "Levenshtein": "0.27.3"
+  },
+  "model_inference_performed": false,
+  "generation_timestamp": "2026-08-03T13:35:47.528780+00:00",
+  "output_sha256": {
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/frequency_analysis_spec.md": "ed1a9b3703e35a92ea4ee7b364805f59c3d4c0e19069560a99353439c24e1b1a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/frequency_results.md": "e5ed0e6669dee9b1c1e494bd66514a7b1e21c085cfe0037089820267818a0b76",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/_control/frequency_analysis_spec.json": "6f080b271b31829d1a95cc4002aa9860cad825dbdd5fe08ec862225cf824eb2e",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/_control/frequency_figure_manifest.json": "d483c29eac859d0e87eca3dda2151c2d9ed22129bbd633ec2abced2d8c3db0e8",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/_control/frequency_preflight.json": "411113521be3a820fd341b664e7687211ecda33f531b5036c627251d43c72d6f",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/frequency_cell_counts.tsv": "94c306e6ecd2f18b63aa818b045a4f0f66cad5c8c4a5ff43fc9a286f8ad17d15",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/frequency_exposure_comparison.tsv": "65aacd4d9ab28a47e04cb3d6024acaecd057bbcd72c24dfaee77fbb63972ff97",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/frequency_word_error_model_status.tsv": "a9a77428ccdc42224a315fef35063e11111b8333b4eef7f11d45b657f80ce351",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/trained_real_frequency_by_length.tsv": "5d9c088f3333a31d46fc4682bc73544302740b51e93dc8d44b272683204870af",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/trained_real_frequency_by_morphology.tsv": "7e618c4df93c3536525228287b61825900979c821cbaf3688ecdb9f28e6ade6e",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/trained_real_frequency_distribution.tsv": "e835a517d06dc64900e2a4188c25879549d0c8a72658f89a253f36be8311acd1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/tables/trained_real_frequency_word_error.tsv": "4fbde4acbe7c61706f52088298bcc0e2d1923da3f06bdeafdbb830ec58e1f7a5",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/sensitivity/exact_zero_seed_sensitivity.tsv": "c536163089f21a4e31b2a738db69166b30b6813ef0661ce4e902aea676a0b0a5",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/sensitivity/faithful_all_real_frequency_description.tsv": "233bb1f0458828ea393e6df23ac5a698855ae62ec2afb19846320ee24698c54a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/sensitivity/pronunciation_variant_sensitivity.tsv": "e6750d69c62474ff1f0ffae3e75c842328691502027859dac974bbf85091fda8",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/sensitivity/untrained_real_frequency_slopes.tsv": "cf145ae36d8ebe410a68a0960a8ede3b83ff0d6a949876563f57d20fa5692c54",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/sensitivity/untrained_real_high_low.tsv": "13cdf7e60ed79fc00835d38cd58c962799e7f822ab2b8fdcadb1c2a817733ba0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/tables/frequency_confidence_gate_bootstrap.tsv": "a5b41718254e9f16afe65f975c29a0ae4581d6a30352da0d7ab11dbc483f53d1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/tables/frequency_confidence_slopes.tsv": "e52fa1bdd79356040dfbe50eabdd335a39e88118bb965bd16d524394a89a51e0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/tables/frequency_gate_slopes.tsv": "e7f5e6c9d6cf5edcb3bbb7fe4c51765368429e31656ea48d5cd203d8d0c7348d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate.pdf": "ab5360e766e2ef88883fb381075b4ab4a9dcaa12ae12b8b023695679fbdc7d53",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate.png": "fe436568b04e0246a2fda2b6432a8a0d6c0e036665c53e60ab8e6bd88f458f97",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate.svg": "91ec624b9a48e0e3954774a99759e807f124915c8ffa544e870f066673c92896",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate_caption.md": "a95365631b1f76d17d3302d85a883ff5ee633f4bfacf54c6945b6854ad60ac3d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/tables/trained_real_frequency_bootstrap.tsv": "a451a6b93d7ac47146ef53432b0c4ee3fd7387566159ed9f2f1955c084c5c5ae",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/tables/trained_real_frequency_route_contrasts.tsv": "7623ba6d18c5cd0f7fabf594b8767e0ca41338352c96a2b2f04466bb6f62a53c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/tables/trained_real_frequency_slopes.tsv": "3eb44125f4af11f489f5c89f8ab3877929f476710eaa0337692bd91c31c007da",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/tables/trained_real_high_low_descriptives.tsv": "6c74077ef29e3c6cbe49f9d24f5306ecf97198c865e8d546b1219a4e96fdd07a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/tables/trained_real_zipf_length_models.tsv": "a4bfa0e3e92b687824f222a64934453b88c3c419ae150ce2ea321e0bfe589ec0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.pdf": "4aa1f41ebfcc01b0c771038af8fdea32da3872215a0c754feeabb7eefd5be856",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.png": "dffa3148283c60d6c3f099d7bef46e4589aa97716c844bd44a2d9fff71ad5d94",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route.svg": "022513ee06b96516fb3ad2274de46a14aff7e0194b16d1eb4c72962029c40cc0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route_caption.md": "d70b4ccabdccb3d61b66d316d9d0577842360283cf97ebadb8b88844cc30964c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/frequency/validation/frequency_test_log.txt": "fef5571a7917c397909e26794a91c0ad7d56f2e41bd21edba8b8b79f9b81b570"
+  }
+}

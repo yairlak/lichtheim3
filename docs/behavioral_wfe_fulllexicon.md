@@ -124,9 +124,38 @@ Small-cell flags are frozen: `VERY_SMALL_CELL` n < 10, `SMALL_CELL`
 
 Results: `morphology/morphology_results.md`.
 
+## Frequency analysis (Sprint 3)
+
+`scripts/behavioral_analysis/frequency.py` and `plot_frequency.py` implement
+the word-frequency estimands, frozen in
+`reports/behavioral_wfe_fulllexicon_93a577f/frequency/frequency_analysis_spec.md`
+before any frequency result was inspected.
+
+```bash
+python -m scripts.behavioral_analysis.plot_frequency \
+    --out_root reports/behavioral_wfe_fulllexicon_93a577f/frequency
+```
+
+Frequency is defined **only for real words**; no pseudoword is ever assigned a
+Zipf value or admitted to a Zipf model. Sign conventions: a **negative Zipf
+slope** means higher-frequency words have fewer errors; a **positive low−high
+contrast** means low-frequency words are harder. Route contrasts are reported
+in both orientations (`raw_route_slope_difference` and
+`frequency_benefit_route_difference`) so no sign is ambiguous.
+
+Standardization is fixed once per dataset regime from the item-level values and
+reused unchanged across every seed and route. Frequency figures use a
+**neutral colour scale** — red and blue stay reserved for lexicality.
+
+Under the frozen ceiling policy, a `seed × route` cell with zero errors and
+zero edit distance is labelled `ALL_ZERO_OUTCOME`, no logistic fit is
+attempted, and **no absence of frequency encoding may be claimed**.
+
+Results: `frequency/frequency_results.md`.
+
 ## Where future analyses go
 
-Frequency, adapted feature importance, error taxonomy and premature EOS will be
+Adapted feature importance, error taxonomy and premature EOS will be
 added as further modules inside `scripts/behavioral_analysis/`, following the
 morphology pattern: estimands frozen in a spec file first, statistics in a
 compute module, presentation in a plot module. The sprint order and status of

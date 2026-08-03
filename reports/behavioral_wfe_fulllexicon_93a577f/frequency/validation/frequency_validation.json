@@ -1,0 +1,65 @@
+{
+  "sprint": 3,
+  "analysis": "word frequency effect",
+  "verdict": "PASS",
+  "tests": {
+    "test_behavioral_frequency.py": {
+      "passed": 40,
+      "failed": 0
+    },
+    "morphology_and_sprint1": {
+      "passed": 83,
+      "failed": 0
+    },
+    "full_suite_not_slow": {
+      "passed": 345,
+      "failed": 0,
+      "deselected": 4
+    }
+  },
+  "expected_outputs": {
+    "figures": 6,
+    "tables": 20,
+    "total_files": 37
+  },
+  "png_dpi": 300,
+  "pdf_present": true,
+  "svg_present": true,
+  "deterministic_regeneration": {
+    "runs": 2,
+    "files_compared": 28,
+    "byte_identical": 28,
+    "differing": 0
+  },
+  "published_matches_fresh_regeneration": {
+    "compared": 28,
+    "identical": 28
+  },
+  "primary_set_exactly_671": true,
+  "no_pseudoword_frequency_analysis": true,
+  "all_four_seeds_present": true,
+  "seed21_present": true,
+  "exact_zero_sensitivity_separate": true,
+  "production_outputs_unchanged": {
+    "ok": 36,
+    "failed": []
+  },
+  "sprint1_scientific_unchanged": {
+    "ok": 35,
+    "failed": [],
+    "living_documents_intentionally_updated": [
+      "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
+      "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
+    ]
+  },
+  "morphology_outputs_unchanged": {
+    "ok": 33,
+    "failed": []
+  },
+  "canonical_table_unchanged": true,
+  "no_inference_performed": true,
+  "no_source_data_changed": true,
+  "no_frozen_protocol_changed": true,
+  "word_error_figure": "FIGURE_NOT_CREATED_DUE_TO_CEILING_OR_SPARSE_ERRORS",
+  "n_files_hashed": 37
+}

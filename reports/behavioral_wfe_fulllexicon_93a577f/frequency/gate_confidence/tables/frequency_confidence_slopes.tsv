@@ -1,0 +1,5 @@
+dataset_regime	seed	outcome	outcome_definition	n_items	intercept	zipf_slope	model_status	linked_outcomes_note
+TRAINED_REAL_FREQUENCY_PRIMARY	19	lexical_confidence	top-1 cosine similarity to the semantic bank	671	0.6118460478796867	0.09313835681992085	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent
+TRAINED_REAL_FREQUENCY_PRIMARY	20	lexical_confidence	top-1 cosine similarity to the semantic bank	671	0.6161221989753882	0.09060382321806397	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent
+TRAINED_REAL_FREQUENCY_PRIMARY	21	lexical_confidence	top-1 cosine similarity to the semantic bank	671	0.6166619020673806	0.08992019251438242	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent
+TRAINED_REAL_FREQUENCY_PRIMARY	22	lexical_confidence	top-1 cosine similarity to the semantic bank	671	0.6124352472105609	0.09186871406436942	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent

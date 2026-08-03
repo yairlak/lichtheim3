@@ -1,0 +1,4 @@
+lichtheim_exposure_status	n_items	mean_zipf	sd_zipf	min_zipf	max_zipf	n_low	n_high	note
+TRAINED_REAL_EXACT	671	4.112891207153503	0.9009237308138054	2.87	7.01	292	379	descriptive only; the mixed 800-item set is never the primary Lichtheim3 frequency claim
+TRAINED_REAL_PRON_VARIANT	7	4.435714285714286	0.5632896573657624	3.29	4.96	1	6	descriptive only; the mixed 800-item set is never the primary Lichtheim3 frequency claim
+UNTRAINED_REAL	122	3.310573770491803	0.3610185297328369	2.88	4.42	107	15	descriptive only; the mixed 800-item set is never the primary Lichtheim3 frequency claim

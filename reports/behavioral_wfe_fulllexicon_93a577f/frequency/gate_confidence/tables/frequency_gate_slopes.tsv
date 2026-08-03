@@ -1,0 +1,5 @@
+dataset_regime	seed	outcome	outcome_definition	n_items	intercept	zipf_slope	model_status	linked_outcomes_note
+TRAINED_REAL_FREQUENCY_PRIMARY	19	gate	word-level FULL-route gate	671	0.45663888243911166	0.04587633172460363	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent
+TRAINED_REAL_FREQUENCY_PRIMARY	20	gate	word-level FULL-route gate	671	0.4587001525165427	0.044684169697287036	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent
+TRAINED_REAL_FREQUENCY_PRIMARY	21	gate	word-level FULL-route gate	671	0.45895752319635824	0.04434185982660955	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent
+TRAINED_REAL_FREQUENCY_PRIMARY	22	gate	word-level FULL-route gate	671	0.4569099615654185	0.04529361011753512	OK	gate is a deterministic monotonic transform of lexical confidence; the two are linked, not independent

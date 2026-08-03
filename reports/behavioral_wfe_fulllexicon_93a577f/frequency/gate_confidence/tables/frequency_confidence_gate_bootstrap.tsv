@@ -1,0 +1,3 @@
+dataset_regime	outcome	quantity	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition
+TRAINED_REAL_FREQUENCY_PRIMARY	gate	zipf_slope	0.04504246113835917	0.042715071180018174	0.04739891900009092	10000	10000	20260730	95% percentile interval
+TRAINED_REAL_FREQUENCY_PRIMARY	lexical_confidence	zipf_slope	0.09136944615666738	0.08663067383153385	0.09618952419329056	10000	10000	20260730	95% percentile interval

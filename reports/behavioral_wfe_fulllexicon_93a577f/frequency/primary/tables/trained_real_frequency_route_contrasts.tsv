@@ -1,0 +1,13 @@
+dataset_regime	seed	route_contrast	slope_route_A	slope_route_B	raw_route_slope_difference	frequency_benefit_route_difference	raw_difference_meaning	benefit_meaning	status_route_A	status_route_B
+TRAINED_REAL_FREQUENCY_PRIMARY	19	full_minus_wm	0.0	0.0	0.0	0.0	slope(full) - slope(wm)	positive = FULL shows the larger frequency benefit than WM	ALL_ZERO_OUTCOME	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	20	full_minus_wm	0.0	0.0	0.0	0.0	slope(full) - slope(wm)	positive = FULL shows the larger frequency benefit than WM	ALL_ZERO_OUTCOME	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	21	full_minus_wm	0.0	0.0	0.0	0.0	slope(full) - slope(wm)	positive = FULL shows the larger frequency benefit than WM	ALL_ZERO_OUTCOME	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	22	full_minus_wm	0.0	0.0	0.0	0.0	slope(full) - slope(wm)	positive = FULL shows the larger frequency benefit than WM	ALL_ZERO_OUTCOME	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	19	ltm_minus_full	-0.017988434819097014	0.0	-0.017988434819097014	0.017988434819097014	slope(ltm) - slope(full)	positive = LTM shows the larger frequency benefit than FULL	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	20	ltm_minus_full	-0.009079185123656866	0.0	-0.009079185123656866	0.009079185123656866	slope(ltm) - slope(full)	positive = LTM shows the larger frequency benefit than FULL	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	21	ltm_minus_full	-0.016502930753506884	0.0	-0.016502930753506884	0.016502930753506884	slope(ltm) - slope(full)	positive = LTM shows the larger frequency benefit than FULL	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	22	ltm_minus_full	-0.008301128561567648	0.0	-0.008301128561567648	0.008301128561567648	slope(ltm) - slope(full)	positive = LTM shows the larger frequency benefit than FULL	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	19	ltm_minus_wm	-0.017988434819097014	0.0	-0.017988434819097014	0.017988434819097014	slope(ltm) - slope(wm)	positive = LTM shows the larger frequency benefit than WM	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	20	ltm_minus_wm	-0.009079185123656866	0.0	-0.009079185123656866	0.009079185123656866	slope(ltm) - slope(wm)	positive = LTM shows the larger frequency benefit than WM	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	21	ltm_minus_wm	-0.016502930753506884	0.0	-0.016502930753506884	0.016502930753506884	slope(ltm) - slope(wm)	positive = LTM shows the larger frequency benefit than WM	OK	ALL_ZERO_OUTCOME
+TRAINED_REAL_FREQUENCY_PRIMARY	22	ltm_minus_wm	-0.008301128561567648	0.0	-0.008301128561567648	0.008301128561567648	slope(ltm) - slope(wm)	positive = LTM shows the larger frequency benefit than WM	OK	ALL_ZERO_OUTCOME

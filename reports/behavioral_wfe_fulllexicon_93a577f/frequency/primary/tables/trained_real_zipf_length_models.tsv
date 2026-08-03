@@ -1,0 +1,13 @@
+dataset_regime	seed	route	n_items	intercept	zipf_main_effect	length_coefficient	zipf_x_length_interaction	model_status	centering_note
+TRAINED_REAL_FREQUENCY_PRIMARY	19	full	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	20	full	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	21	full	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	22	full	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	19	ltm	671	0.01742145923595338	-0.02543177430082716	0.03345208491119003	-0.03389142509630132	OK	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	20	ltm	671	0.004425525950262896	-0.013750471945993069	0.009612949600836654	-0.01596575078784086	OK	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	21	ltm	671	0.010745289346307876	-0.022988290568333996	0.012855342756702677	-0.021937273408715017	OK	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	22	ltm	671	0.007041881760659108	-0.009225138311101356	-0.0002369708906386078	-0.0021615379140568548	OK	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	19	wm	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	20	wm	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	21	wm	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length
+TRAINED_REAL_FREQUENCY_PRIMARY	22	wm	671	0.0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	both predictors centred: the Zipf main effect is the slope at mean length

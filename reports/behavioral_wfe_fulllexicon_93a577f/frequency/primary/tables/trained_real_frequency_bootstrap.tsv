@@ -1,0 +1,7 @@
+dataset_regime	route	metric	quantity	bootstrap_mean	ci_low	ci_high	n_replicates	n_finite_replicates	random_seed	ci_definition
+TRAINED_REAL_FREQUENCY_PRIMARY	full_minus_wm	raw_edit_distance	raw_route_slope_difference	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+TRAINED_REAL_FREQUENCY_PRIMARY	ltm_minus_full	raw_edit_distance	raw_route_slope_difference	-0.012931746439284143	-0.02878416342531637	-0.002716276961587997	10000	10000	20260730	95% percentile interval
+TRAINED_REAL_FREQUENCY_PRIMARY	ltm_minus_wm	raw_edit_distance	raw_route_slope_difference	-0.012931746439284143	-0.02878416342531637	-0.002716276961587997	10000	10000	20260730	95% percentile interval
+TRAINED_REAL_FREQUENCY_PRIMARY	full	raw_edit_distance	zipf_slope	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval
+TRAINED_REAL_FREQUENCY_PRIMARY	ltm	raw_edit_distance	zipf_slope	-0.012931746439284143	-0.02878416342531637	-0.002716276961587997	10000	10000	20260730	95% percentile interval
+TRAINED_REAL_FREQUENCY_PRIMARY	wm	raw_edit_distance	zipf_slope	0.0	0.0	0.0	10000	10000	20260730	95% percentile interval

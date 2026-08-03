@@ -1,0 +1,13 @@
+dataset_regime	seed	route	metric	n_items	n_erroneous_items	total_raw_edit_distance	intercept	zipf_slope	model_status	sign_convention
+TRAINED_REAL_FREQUENCY_PRIMARY	19	full	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	20	full	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	21	full	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	22	full	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	19	ltm	raw_edit_distance	671	4	16.0	0.02384500745156482	-0.017988434819097014	OK	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	20	ltm	raw_edit_distance	671	3	5.0	0.007451564828614005	-0.009079185123656866	OK	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	21	ltm	raw_edit_distance	671	3	10.0	0.014903129657228011	-0.016502930753506884	OK	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	22	ltm	raw_edit_distance	671	4	5.0	0.0074515648286140055	-0.008301128561567648	OK	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	19	wm	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	20	wm	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	21	wm	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
+TRAINED_REAL_FREQUENCY_PRIMARY	22	wm	raw_edit_distance	671	0	0.0	0.0	0.0	ALL_ZERO_OUTCOME	negative slope = higher frequency, fewer errors
