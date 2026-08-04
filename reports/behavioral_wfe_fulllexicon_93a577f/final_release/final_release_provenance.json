@@ -1,0 +1,310 @@
+{
+  "release": "final publication and closure",
+  "generation_timestamp": "2026-08-04",
+  "experiment": "behavioral_wfe_fulllexicon_93a577f",
+  "cohort": "fulllexicon_cohort_93a577f",
+  "final_release_analysis_code_commit": "4813289598fbec47c48d70b77217cd94e52b3243",
+  "final_release_analysis_code_commit_role": "commit A - the final-release code, tests and publication tree. This provenance file is closed by a separate commit B.",
+  "final_release_analysis_code_dirty": false,
+  "final_release_analysis_code_untracked_files": [],
+  "current_code_base_commit": "4813289598fbec47c48d70b77217cd94e52b3243",
+  "training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+  "evaluation_code_commit": "e876b755d0475ed11e5fbc0419a0bd8860dfd325",
+  "sprint_commits": {
+    "sprint1": {
+      "scientific": "f626a6950fd69d772474a0ac74c0d191d6003fce",
+      "provenance_closure": "178f6a5"
+    },
+    "sprint2_morphology": {
+      "scientific": "96d162677681a4b6cc98236c8cad1921008d3f9c",
+      "provenance_closure": "469732d173142f9a9062ad536c9043d6d22d7c32"
+    },
+    "sprint3_frequency": {
+      "scientific": "1aa1df8a36b6a28b50e7508eae099fd0c4a237e6",
+      "provenance_closure": "b550580455046a8c420e4a62cefeeb435815804b"
+    },
+    "sprint4_error_taxonomy": {
+      "scientific": "62ae51b4018e7ab35f6e6a69eae282db3d917f27",
+      "provenance_closure": "697917d5141769bf02d08ba853b3c767e18e6370"
+    },
+    "sprint5_feature_importance": {
+      "scientific": "f352de120bda68e3d8497c3ef17f98014d515037",
+      "provenance_closure": "2edf9f3b54af202b554054f926d8fa9b457e6c3a"
+    },
+    "final_release": {
+      "scientific": "4813289598fbec47c48d70b77217cd94e52b3243",
+      "provenance_closure": null
+    }
+  },
+  "working_tree_state_at_generation": {
+    "clean": false,
+    "modified_tracked": [],
+    "untracked": [
+      "archives/",
+      "handoffs/",
+      "reports/behavioral_wfe_fulllexicon_93a577f/final_release/final_release_provenance.json",
+      "reports/behavioral_wfe_fulllexicon_93a577f/final_release/validation/"
+    ],
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncommitted_diff_definition": "sha256 of `git diff` stdout bytes"
+  },
+  "source_files": {
+    "scripts/behavioral_analysis/final_release.py": {
+      "sha256": "09328d70768a793553f542172897e9b18ba76ce16d2914def3a9ce4af1331f8d",
+      "tracked_at_generation": true
+    },
+    "scripts/behavioral_analysis/plot_final_release.py": {
+      "sha256": "d2a0f2449b2256b72634e2a795a2fa3e03b194919c675c32c7ceb5d295bfdd4a",
+      "tracked_at_generation": true
+    },
+    "tests/test_behavioral_final_release.py": {
+      "sha256": "3f36cbb9171fe32306b2203d46a8b596e87634185027743aee689ee711459fa3",
+      "tracked_at_generation": true
+    }
+  },
+  "living_documents": {
+    "docs/behavioral_wfe_fulllexicon.md": {
+      "sha256": "23fe800aed66cd539d7e8af62a02d7752beb047f2bd6c2dcb7521cfa3967e581",
+      "modified_vs_head": false
+    },
+    "docs/behavioral_wfe_analysis_matrix.md": {
+      "sha256": "81bf67391facc6be27af8ad50e6c6eee6c3085eedcc54169c22d3e8093a81d40",
+      "modified_vs_head": false
+    },
+    "reports/behavioral_wfe_fulllexicon_93a577f/README.md": {
+      "sha256": "128604ead947fa2801313fc34f6656d607117e8c337f179b090feed53831638f",
+      "modified_vs_head": false
+    },
+    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv": {
+      "sha256": "7e9c5c9c24541b117f07f3f8e2ba89c86f18948d30a52b24aee7ed02a9eab723",
+      "modified_vs_head": false
+    }
+  },
+  "canonical_table": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "canonical_table_rows": 14400,
+  "dataset_paths": {
+    "wfe_tsv": "data/eval_external/wfe_eval.tsv",
+    "wfe_csv": "data/raw-nwr_swp/wfe.csv",
+    "training_lexicon": "data/lexicon_en_glove_covered.tsv",
+    "glove": "data/glove.6B.300d.txt",
+    "item_manifest": "outputs/behavioral_wfe_fulllexicon_93a577f/audits/wfe_analysis_item_manifest.tsv"
+  },
+  "dataset_sha256": {
+    "wfe_tsv": "d3602815a95ee07f565f5703407dd1e8f0e025061dc89d01de99154a86d0a015",
+    "wfe_csv": "295d8e795927235f65141eb3a517611e418a706559d52db97ed47cdb9b0e0b43",
+    "training_lexicon": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "glove": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed",
+    "item_manifest": "9db97522254167ea55a3cdbbc0953052b1368bacfeacc1920b4ffadf6f609194"
+  },
+  "checkpoint_paths": {
+    "19": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_19_epoch_0155.pt",
+    "20": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_20_epoch_0130.pt",
+    "21": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_21_epoch_0145.pt",
+    "22": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_22_epoch_0140.pt"
+  },
+  "checkpoint_sha256": {
+    "19": "7d05f9c2ad5a53e705f7d55ccde2581754918938d8ca888da35c0a859666478e",
+    "20": "b44548b6916ea89c6f099402b78031063445e572932acee8dd7558a73dfc6cfb",
+    "21": "ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf",
+    "22": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595"
+  },
+  "checkpoints_loaded_in_final_release": false,
+  "prior_manifest_sha256": {
+    "production_scientific": "13b7473a610d9c084ff3d0984f1b34b879afc8df6fcf075e7b6b3c0845b4c712",
+    "production_operational": "a2be551a44f5a23cf97ab7b0cfdbaf2edfdfe0370d5dbcab8eb25ca8c9ff4743",
+    "sprint1": "b96606f0895e495a4889e9ed48b1e602b9668a33ad715877fc734504845f53fc",
+    "morphology": "8f27236e1860241795488fa35d2f70fd7ef455ed56d30afcbcf1f167847794cc",
+    "frequency": "f88d8b4fdb8eee4bb7e257f9b22bad54ab57d6a3309cf1ba7f16318b8bc2a1f8",
+    "error_taxonomy": "ba790a1c22dae65390f1d25ef073f1c5ca75aed2b1825852821037876f3447a9",
+    "feature_importance": "cb283e6cb050aa4a86413f7428ac42c8ee795c6b501c2ee16e0ec85780d81725"
+  },
+  "prior_manifest_paths": {
+    "production_scientific": "outputs/behavioral_wfe_fulllexicon_93a577f/full_wfe_evaluation/_control/production_scientific_outputs_FINAL.sha256",
+    "production_operational": "outputs/behavioral_wfe_fulllexicon_93a577f/full_wfe_evaluation/_control/production_operational_logs_FINAL.sha256",
+    "sprint1": "reports/behavioral_wfe_fulllexicon_93a577f/validation/sprint1_outputs.sha256",
+    "morphology": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/validation/morphology_outputs.sha256",
+    "frequency": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/validation/frequency_outputs.sha256",
+    "error_taxonomy": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/validation/error_taxonomy_outputs.sha256",
+    "feature_importance": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/validation/feature_importance_outputs.sha256"
+  },
+  "faithful_a11_and_legacy_sha256": {
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/README_faithful_replication.md": "9031495acebad4fb73fbff5d3ef0daf23597b58b2da5e630881a6c5d1ec1317f",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.pdf": "dc6ed55de287df14e28e6c50b94f90743a5d1b6be772f29e0cd525de85004c11",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.png": "4b0689f72ea80f564eff052ea88cba5a5e7f16d2d60cb48b7cd6082f8999dd18",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A_table.tsv": "0d6a55fd561b989bb7aeea079c2c84cd8207b593fae1e12a52c4976b55609ef6",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf": "46fe4b912f824b14a3fa0045ba4e7b725065dafe8da1b3709caa18e943dc68d9",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png": "27e056d1176d97dc89e0b7eebd5e804c752e20421cb251e816117a7eb1e5a779",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv": "215ef9192552efce38a4e8adecea34273399f71a1fc8db1b0e7be0b59343d025",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.pdf": "27a23e2d34d79236caec29b2f7c088d25adcc75b2eed31714aea61205ee7aeb5",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.png": "a3054641ef445c58f761c1930c9b422e99251d57d04133232d4ae26cb0d42c85",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C_table.tsv": "038339be36c026f6a27c499d5b1aa57d092ae8b4b4e1eb693ed3156b3716a887"
+  },
+  "a09_a10_a11_source_tables": {
+    "A09": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A_table.tsv",
+    "A10": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C_table.tsv",
+    "A11": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv"
+  },
+  "a09_a10_a11_recomputed": false,
+  "a09_a10_a11_rendering_policy": "rendered from the stored authoritative tables; no model refitted, so A11's Ridge alpha=1.0, its 80/20 random_state=42 split, its n_repeats=100 random_state=42 permutation and its historical signed convention are preserved by construction",
+  "figure_selection_spec": "final_release/_control/final_release_spec.json",
+  "figure_selection_spec_sha256": "2638943acffd81ca6e4cb8890947b130b50192bc1a8d8238bbb59aaeb43ce44c",
+  "final_figure_index_sha256": "4c3998d24ca04641074e49765980caebb9b385222790019b732aacbb71e4f89c",
+  "final_table_index_sha256": "205c202bcbb68fdc12dbd47c64fcca31c3f564f7f0b15d57ddf044fec2a0953a",
+  "release_manifest_sha256": "14eb92e4ff2ce47de65e94396473cab628fb60f12da21a0f4af022884c8d8032",
+  "output_sha256": {
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/.DS_Store": "e2d42bab6d418db960b803f865114dca4a38ab7153d3b249223e5206309311e1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/README.md": "29f377c6b0f4ce674e9a2d80f45fbddafcb9169c2870b0c26afb4ade630eacda",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/a09_a10_a11_audit.md": "f87960f2382947290dda467353366308c8721f57d99d72989a9ee02480bdfdbf",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/executive_summary.md": "d8738fd0a7cca648b94a87e6c483a3ea16f2382fbcdf064d98974fc69374b14e",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/faithful_vs_adapted_summary.md": "01616d5fa0bd4cb77b9eea888e742651996c554c88343e6a05d64079e3830031",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/final_figure_selection.md": "f0b8bb5aa2ab7a02240f77fc8933155261849f2fe1c3e59752afa6a4b796bb57",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/final_release_commit_plan.md": "88c24eaa2b1389212982cb55a74dccc7fb0e91fc8671a8b57f5aafe4f48539b3",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/final_release_spec.md": "6029084f44405581381a35bfa0ae8167b81f26ddf090a787909abc3d1709b518",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/final_table_selection.md": "4068f692171ffb4637995ab493e73bd0193d83533122ee0008bc676d00db3f7b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/robust_findings_and_limitations.md": "34304878041326ffdd27614facf31ed171cbb87546896ac10b5d7d3dca3592ce",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/yair_brief.md": "c02b20c9019279628c399b4b256a0d6a4b03f570ed82d827dc78f3e0aa46f860",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/_control/a09_a10_a11_audit.json": "12e3511162b67afcb625cd022835a02d8318cd3c4fbb42cb1d257243c8e0e57b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/_control/final_release_manifest.json": "14eb92e4ff2ce47de65e94396473cab628fb60f12da21a0f4af022884c8d8032",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/_control/final_release_preflight.json": "a8ff74cb7ed41dc997255bf579f712012e06761e9bf08d833d70d428d8f3d2ea",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/_control/final_release_spec.json": "2638943acffd81ca6e4cb8890947b130b50192bc1a8d8238bbb59aaeb43ce44c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/tables/analysis_status_summary.tsv": "45e0431f915e4e03cb979390ad348692f6c3adfb4e545bf8771351cf5a54c98f",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/tables/checkpoint_summary.tsv": "c4d20cfa1434beee40ac4e4795e8da9685955dae2bf5bda4c128dcac6e5ca6d7",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/tables/dataset_regime_summary.tsv": "59adda93fce524d1d3b9eaf5f8e3e6a432b1a38b517b09ca614b27bc3ce5bbf4",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/tables/final_figure_index.tsv": "4c3998d24ca04641074e49765980caebb9b385222790019b732aacbb71e4f89c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/tables/final_table_index.tsv": "205c202bcbb68fdc12dbd47c64fcca31c3f564f7f0b15d57ddf044fec2a0953a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/tables/key_results_summary.tsv": "b4985232fca32e43088099b0ffbbe9c43b8abd11299ddce64eec60a8965bf12d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S10_frequency_confidence_gate_caption.md": "a95365631b1f76d17d3302d85a883ff5ee633f4bfacf54c6945b6854ad60ac3d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S11_gate_by_clean_lexicality_caption.md": "7fde95436318b25c1e4d7ef37e264ffd5d8a7ae4b3dddf570e04f1dca971b10c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S12_gate_by_exposure_status_caption.md": "36c4acfd9c80983f6c174349d9e53d240ad0678b1a671feb45f734829b226774",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S1_A09_faithful_figure2A_caption.md": "228d72c1798c5ede021c0882419c717107b87960868422242028a9dfec59eba1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S2_A10_faithful_figure2C_caption.md": "e71346f1eb7b30130e839e18a0d40481aaa45552ad1a2cc83de19c62630c4a3e",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S3_A11_faithful_figure2B_caption.md": "d897936e6fcda90fbceb62decd7b50182861fac04d07cffb60cc72f8c7508110",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S4_clean_error_taxonomy_full_wm_zoom_caption.md": "9ac2b28d8f1a9352f35f9dcfc083089e034b9fe56cf7ed03c6036aa071cc4aa4",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S5_faithful_figure8a_error_types_caption.md": "cdeaa1e8f2472c0d30bba49fcf52bc3b0fcf2404775f6a85d5426ad424f41fa2",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S6_clean_length_morphology_by_route_caption.md": "790236ba43f7bbde8f00622f51ad5377bc255909cc0b2e1ccb494dd1dcb89237",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S7_faithful_length_lexicality_morphology_caption.md": "7201816318a0b4aef64e913d952f8312b69e8b35b6e89dd1d498cc15af2bf9f4",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S8_route_specific_factor_importance_caption.md": "58e28a3b2aeb20750ee303c9254a651f3efd663fe89c27016a5097738195aa2d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/supplementary/S9_interaction_block_utility_caption.md": "1134f0fa3ce6fb83153484cda0824eb351460bbbaf2b0dbd3804adee8847946c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F1_yair_clean_length_by_route_caption.md": "0824bf6df357a378081818a6b640cb6ab0205ac2f6c1eddbc76e54c3cff100a2",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F2_yair_clean_length_slopes_caption.md": "bec15fbebd639e63d1bccdf4e631ac0d4f3a615eb217e236cf4d22fc46337ba8",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F3_yair_clean_serial_position_caption.md": "a50d6fbdd0b8539da2f0c4f59ed75027ab15e2af3a088a7e6946667f4bdf4d3b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F4_clean_error_taxonomy_by_route_caption.md": "009a66c0f4bd6091f1b18cfe8e06dccbcacde1f9de3fd7f5ec2ce1b8c963f106",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F5_premature_eos_by_route_caption.md": "f97271142e607dac6272a9a53df282f680530aba2abcf7274935b14cdae1f5b0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F6_trained_real_frequency_by_route_caption.md": "d70b4ccabdccb3d61b66d316d9d0577842360283cf97ebadb8b88844cc30964c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/captions/main/F7_clean_adapted_factor_importance_caption.md": "23cc1f077d572cd1456e2dceb8dae63f79516a9a18db6cdd13188b13d00feeb0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/tables/faithful_figure2A_table.tsv": "0d6a55fd561b989bb7aeea079c2c84cd8207b593fae1e12a52c4976b55609ef6",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/tables/faithful_figure2B_feature_importance.tsv": "215ef9192552efce38a4e8adecea34273399f71a1fc8db1b0e7be0b59343d025",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/tables/faithful_figure2C_table.tsv": "038339be36c026f6a27c499d5b1aa57d092ae8b4b4e1eb693ed3156b3716a887",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A09_faithful_figure2A.pdf": "ab9d018b1ad9e76bc2b4fbdbd0fcb8d044dcb0195cd8c35af005aaab0122c032",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A09_faithful_figure2A.png": "a5373054652d0a0d2cff141098cb1d04dffc8afe2cec9fe97d5f15ee9e54bcc3",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A09_faithful_figure2A.svg": "d718036031560d61a8c519ef1729fd1423e1d379c7051615a0b9b592bb0e3c1a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A09_faithful_figure2A_caption.md": "228d72c1798c5ede021c0882419c717107b87960868422242028a9dfec59eba1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A10_faithful_figure2C.pdf": "232c3cc9b2324c7201a7960dc5ce75ded44e139ca32d312f47b0f1f6a27b4ac6",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A10_faithful_figure2C.png": "ef01df05aff26920a533b4566735927b006d3d4ee0a2d5ce1d19e35916ac30e7",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A10_faithful_figure2C.svg": "fd7408adc0f01db029c803efb42c3b37848e9d2538a438b0831fd8f1072eeaae",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A10_faithful_figure2C_caption.md": "e71346f1eb7b30130e839e18a0d40481aaa45552ad1a2cc83de19c62630c4a3e",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A11_faithful_figure2B.pdf": "8d941442297b99f5813e711428802863d596461f252988b3a0c7ccb1af1bcbf7",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A11_faithful_figure2B.png": "306e8b2a2bfbe75dd83aa3a0adbc2a0e7e35d5c03486b93dccf3dc19e2391369",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A11_faithful_figure2B.svg": "d71e200215a5345d0fab9098d918d51b0095bb7ace76400a7d41e539e4aa947d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A11_faithful_figure2B_caption.md": "d897936e6fcda90fbceb62decd7b50182861fac04d07cffb60cc72f8c7508110",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/.DS_Store": "ee2f4aae9661ab736c2b01888d89bd16587a83fdbb074ac0e5d59dbdfec82383",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S10_frequency_confidence_gate.pdf": "ab5360e766e2ef88883fb381075b4ab4a9dcaa12ae12b8b023695679fbdc7d53",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S10_frequency_confidence_gate.png": "fe436568b04e0246a2fda2b6432a8a0d6c0e036665c53e60ab8e6bd88f458f97",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S10_frequency_confidence_gate.svg": "91ec624b9a48e0e3954774a99759e807f124915c8ffa544e870f066673c92896",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S11_gate_by_clean_lexicality.pdf": "34954bbdc6a55e4a4b8d251e6491a78d9eaaaaf3be551ae3758681d3c75957ed",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S11_gate_by_clean_lexicality.png": "6a5e58a796e74bad19ce79e0803a78bf93b70b1cdc6b12e6d9af9710d0c2ea1a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S11_gate_by_clean_lexicality.svg": "0fdcf95de4f2cec32e423561f9fb8bb017b05cc1d9ac9019084290d756238375",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S12_gate_by_exposure_status.pdf": "b11cbff3847a9748e0ab42bd513703bd5ac8d4397d46f0f5a510f44e319881cb",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S12_gate_by_exposure_status.png": "7e59756d915f585e67c22d25cad862f49e4bc8af6cced3755d2b59841b0463d7",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S12_gate_by_exposure_status.svg": "a5294d24ea4e4ac397275a0256c05f5b3b3eacfa558640c5a763fd240b27cb77",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S1_A09_faithful_figure2A.pdf": "ab9d018b1ad9e76bc2b4fbdbd0fcb8d044dcb0195cd8c35af005aaab0122c032",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S1_A09_faithful_figure2A.png": "a5373054652d0a0d2cff141098cb1d04dffc8afe2cec9fe97d5f15ee9e54bcc3",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S1_A09_faithful_figure2A.svg": "d718036031560d61a8c519ef1729fd1423e1d379c7051615a0b9b592bb0e3c1a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S2_A10_faithful_figure2C.pdf": "232c3cc9b2324c7201a7960dc5ce75ded44e139ca32d312f47b0f1f6a27b4ac6",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S2_A10_faithful_figure2C.png": "ef01df05aff26920a533b4566735927b006d3d4ee0a2d5ce1d19e35916ac30e7",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S2_A10_faithful_figure2C.svg": "fd7408adc0f01db029c803efb42c3b37848e9d2538a438b0831fd8f1072eeaae",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S3_A11_faithful_figure2B.pdf": "8d941442297b99f5813e711428802863d596461f252988b3a0c7ccb1af1bcbf7",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S3_A11_faithful_figure2B.png": "306e8b2a2bfbe75dd83aa3a0adbc2a0e7e35d5c03486b93dccf3dc19e2391369",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S3_A11_faithful_figure2B.svg": "d71e200215a5345d0fab9098d918d51b0095bb7ace76400a7d41e539e4aa947d",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S4_clean_error_taxonomy_full_wm_zoom.pdf": "1c8d304a7906652dc3f3384e87012aa86f03945ec98a12e5b37803de6f1d0b90",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S4_clean_error_taxonomy_full_wm_zoom.png": "22641766876bf37eefa87135041daaf1483999543ca30406f9361265d75518a2",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S4_clean_error_taxonomy_full_wm_zoom.svg": "420db534b6a58c6c4380f6789034d090c893a01521e2abc2af6b9f764d8fd849",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S5_faithful_figure8a_error_types.pdf": "eb860ef6e5fef0a08cf210c29f46b291d7cc9e411bf43f0dd49d001d7564323b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S5_faithful_figure8a_error_types.png": "e3189f6ecc04d5bc72441747d1672adad596fb5a53fd19e665e079d1a06014ab",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S5_faithful_figure8a_error_types.svg": "e703cb8ea8f58825c74459753a9a47e29d399a94fe898eae32b279596ff5265f",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S6_clean_length_morphology_by_route.pdf": "53090710bc3676931014800f66108c862fae2cb4ed07611c1a3fb781f339176b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S6_clean_length_morphology_by_route.png": "8917baba815dd8211e27cd2ad50e202fde1f41cf9e5e46c3dae5af29d90474bb",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S6_clean_length_morphology_by_route.svg": "8e75c8bb69b2bc39713b6730446a1271c4ea579657f15c8914439dace2abdea9",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S7_faithful_length_lexicality_morphology.pdf": "32294b34e0b286172c3b121260e0bc21ea571e46d979d10d9b064a855f56e4ee",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S7_faithful_length_lexicality_morphology.png": "166d8961ffda6635250a9115a49b98d51c8ea2d308e0b570f219ec514034b453",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S7_faithful_length_lexicality_morphology.svg": "95dbab842c61795976b97df87bd111be8cfba8cd1a1bc251b75d56fc2009cf88",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S8_route_specific_factor_importance.pdf": "b08b0148418f9693d9b6aee24dba3950c0df2403906c5ef93055276aae0f029a",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S8_route_specific_factor_importance.png": "738ab26255672406a263309f1365340c260530c7fb39edf865c8f9afd04b5ca2",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S8_route_specific_factor_importance.svg": "68c463ef102a74eefff888c779493e675fadc4ea3e3b21abc264a146972186b1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S9_interaction_block_utility.pdf": "0e00107f21c84645655fc3b790cfb5f5087015ec784a3e7c9d59e163b8721a8b",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S9_interaction_block_utility.png": "d71c939d95da94779f7661dd3a1fe20f922a488e8ac6a36f0cacf5c1f960fd27",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/supplementary/S9_interaction_block_utility.svg": "b582555c79f71b07ac143194606a94e92ee579ad079fed59f31da7a5722f4dd9",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F1_yair_clean_length_by_route.pdf": "0bc36fcac075b1d6394ad4c7b465b716dc6fe01d45264389336f573d70172bff",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F1_yair_clean_length_by_route.png": "94f4778f4e0487680cf1f6f09d77dd3306bf79d804b054e4f8cdf4365666cdfd",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F1_yair_clean_length_by_route.svg": "87699fc324b437beafd4b6c21235faacbc4c87292f116fa91066d035659abf10",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F2_yair_clean_length_slopes.pdf": "1da795faa0ecc024a735b87a3c8e23684f4b9f6865dd790a07ddda610d201041",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F2_yair_clean_length_slopes.png": "73180fa90ce2a304cda165ee6b3dc372e0dc6b2753eb2297e0b758bc01372464",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F2_yair_clean_length_slopes.svg": "bc71499641fa1a5a4c03059282cb607ba4beb05dc4298523e6da8b9969b195df",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F3_yair_clean_serial_position.pdf": "422b204793407bbee85a2be1422b660c9edfc480760777104439008c1af61b35",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F3_yair_clean_serial_position.png": "ac3f5921472ab619de4e8c0fd3f7a2ca23f259fea866042bd10ab0eeff5f225c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F3_yair_clean_serial_position.svg": "1b2fb75ef386c41525348194f226af7e69663181a0830c388d8c442ed4528076",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F4_clean_error_taxonomy_by_route.pdf": "31b859f1e7605b001a490087ea465d78fddd4f19094f8f25d1cd0aad9d640f49",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F4_clean_error_taxonomy_by_route.png": "576d570108d32cb04af334fb8188a7dd356f0d447cc82bd5931791604c42875c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F4_clean_error_taxonomy_by_route.svg": "081821e6ff1cfa365fd1d383c1ae734251577b356687b64fab43b703d119d843",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F5_premature_eos_by_route.pdf": "693c9de57f4fca7bf14adc92d59b5c855bcad4856c53b4f2615c216d60667639",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F5_premature_eos_by_route.png": "566dbaafe5a7e5b7ea200ce5f704de6dd3ede0b8d16ed124012c37a70cd930b1",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F5_premature_eos_by_route.svg": "d939fa59fa9780620ed02fba4afd1e9b2d18ca78cc3624dadbb47a55768e3b9c",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F6_trained_real_frequency_by_route.pdf": "4aa1f41ebfcc01b0c771038af8fdea32da3872215a0c754feeabb7eefd5be856",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F6_trained_real_frequency_by_route.png": "dffa3148283c60d6c3f099d7bef46e4589aa97716c844bd44a2d9fff71ad5d94",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F6_trained_real_frequency_by_route.svg": "022513ee06b96516fb3ad2274de46a14aff7e0194b16d1eb4c72962029c40cc0",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F7_clean_adapted_factor_importance.pdf": "f035c6ad40fa21bfcec3f0998a1ab75d0e503a23de1481a64e3541626448019f",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F7_clean_adapted_factor_importance.png": "bc1df944d56ff4d5fafa7b4de9cb6bcc99c01d55fedb51f54e272174750d39e9",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/figures/main/F7_clean_adapted_factor_importance.svg": "5dc7a34adeec496a009209c6b04db24653d6601eb0f89a9ec869152316f08720",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/validation/final_release_diff_review.md": "90f1fc2d0668d2d6c5ad4703e9a484933309d471fb9e6af6500a1a3da6f52e62",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/validation/final_release_output_inventory.tsv": "ef72abaa4eb0bbfdf1eb4f6c0d4b21367ff01bf9e769b77a5c62488f3c135250",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/validation/final_release_outputs.sha256": "6d7da07463df1a7567c9493836b35d0dba4fc5cd5bb12eaef3329fd67a715487",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/validation/final_release_test_log.txt": "c80fd8e08f7b45e3e7c0f4e4c0fbdb3b5094737e730ceac67b6eab9f710d5216",
+    "reports/behavioral_wfe_fulllexicon_93a577f/final_release/validation/final_release_validation.json": "5aa872cd689e25ca7929344a15c7429be6dcc7bcb0b0004b0c740c01d3987f2c"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "matplotlib": "3.11.0",
+    "scipy": "1.17.1",
+    "sklearn": "1.9.0",
+    "Levenshtein": "0.27.3"
+  },
+  "ssp_status": {
+    "row": "A19",
+    "status": "OPTIONAL_DEFERRED",
+    "started": false,
+    "outputs_generated": false,
+    "note": "deferred since the protocol freeze; a different stimulus set answering a different question"
+  },
+  "mechanism_project_separation": "The causal length-effect mechanism (A22) is OUT_OF_SCOPE for the behavioral program and is maintained as a SEPARATE project. This release ships only a factual, non-causal handoff at reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/length_effect_mechanism_handoff.md. No behavioral result here localizes the mechanism to the LTM encoder, the compressed semantic representation, the LTM decoder, autoregressive accumulation or the gate.",
+  "guarantees": {
+    "model_inference_performed": false,
+    "checkpoint_loaded": false,
+    "retraining": false,
+    "architecture_changed": false,
+    "evaluation_code_changed": false,
+    "source_dataset_changed": false,
+    "canonical_table_changed": false,
+    "prior_scientific_outputs_changed": false,
+    "new_statistical_analysis": false,
+    "new_uncertainty_method": false,
+    "new_feature_importance_model": false,
+    "faithful_adapted_pooling": false,
+    "faithful_outputs_overwritten": false,
+    "ssp_computed": false,
+    "causal_mechanism_conclusion": false,
+    "architectural_recommendation": false
+  }
+}

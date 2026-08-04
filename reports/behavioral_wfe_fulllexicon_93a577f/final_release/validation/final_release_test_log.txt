@@ -1,0 +1,31 @@
+Final publication and closure release: test log
+Date: 2026-08-04   Base commit: 2edf9f3b54af202b554054f926d8fa9b457e6c3a
+Python: 3.11.15
+
+=== 1. Final-release tests ===
+$ python -m pytest tests/test_behavioral_final_release.py -q
+....................................................                     [100%]
+52 passed in 0.41s
+
+=== 2. All behavioral-analysis suites ===
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+300 passed, 2 warnings in 17.19s
+
+=== 3. Full suite ===
+$ python -m pytest tests/ -m "not slow" -q
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+523 passed, 4 deselected, 2 warnings in 91.53s (0:01:31)
+
+=== 4. Deterministic regeneration ===
+Two independent regenerations, 96 files each, compared against the published tree: 0 differing.
+The release manifest is compared after collapsing the out_root prefixes, since
+every recorded path is written relative to the repository root; all hashes and
+equality verdicts match exactly.
+
+=== 5. Validation ===
+29/29 PASS - see final_release_validation.json
+
+NOTE: the two RuntimeWarnings come from a synthetic Sprint-3 frequency fixture
+with a zero-variance length column. Pre-existing, benign, unrelated, unchanged.

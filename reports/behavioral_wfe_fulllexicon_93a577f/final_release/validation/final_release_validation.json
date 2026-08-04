@@ -1,0 +1,162 @@
+{
+  "release": "final publication and closure",
+  "checks_total": 29,
+  "checks_passed": 29,
+  "verdict": "PASS",
+  "published_artefacts": 114,
+  "main_figures": 7,
+  "supplementary_figures": 12,
+  "regenerations_compared": 2,
+  "ssp_status": "OPTIONAL_DEFERRED",
+  "living_file_policy": [
+    "reports/behavioral_wfe_fulllexicon_93a577f/README.md",
+    "reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv"
+  ],
+  "checks": [
+    {
+      "check": "all expected release files exist",
+      "status": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "check": "7 MAIN and 12 SUPPLEMENTARY figures selected",
+      "status": "PASS",
+      "detail": "7 / 12"
+    },
+    {
+      "check": "every selected figure has PNG+PDF+SVG",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every selected PNG is 300 dpi",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "every selected figure has a caption",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "all selected source/release hashes match",
+      "status": "PASS",
+      "detail": "79 copies, 0 mismatched"
+    },
+    {
+      "check": "no release copy written outside final_release/",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "sources never moved or deleted",
+      "status": "PASS",
+      "detail": "legacy files=10"
+    },
+    {
+      "check": "A09/A10/A11 numerical non-regression exact (byte-identical tables)",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "A09/A10/A11 each have a rendered figure and caption",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "each caption is the byte-identical caption of its source figure",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "production manifest verifies (36 entries)",
+      "status": "PASS",
+      "detail": "36/36"
+    },
+    {
+      "check": "sprint1 manifest verifies (37 entries)",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "morphology manifest verifies (33 entries)",
+      "status": "PASS",
+      "detail": "33/33"
+    },
+    {
+      "check": "frequency manifest verifies (37 entries)",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "error_taxonomy manifest verifies (57 entries)",
+      "status": "PASS",
+      "detail": "57/57"
+    },
+    {
+      "check": "feature_importance manifest verifies (42 entries)",
+      "status": "PASS",
+      "detail": "42/42"
+    },
+    {
+      "check": "faithful A09/A10/A11 sources unchanged",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "canonical table unchanged",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "no source dataset modified",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "deterministic regeneration twice, byte-identical",
+      "status": "PASS",
+      "detail": "96 files per run; differing=[]"
+    },
+    {
+      "check": "release manifest identical modulo the out_root path prefix",
+      "status": "PASS",
+      "detail": "every recorded source hash, release hash and equality verdict matches"
+    },
+    {
+      "check": "no SSP output generated",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "A19 remains OPTIONAL_DEFERRED",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "A09/A10/A11 closed as ALREADY_VALIDATED_FORMATTED",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "no inference, no checkpoint load, no absolute path",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "release manifest declares no inference and no new value",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "final README paths resolve",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "Yair brief paths resolve",
+      "status": "PASS",
+      "detail": "[]"
+    }
+  ]
+}
