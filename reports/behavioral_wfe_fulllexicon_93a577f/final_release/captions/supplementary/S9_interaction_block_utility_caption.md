@@ -1,0 +1,7 @@
+**Held-out drop-block utility of the five predeclared interaction blocks.** Each value is the held-out R² lost when that block alone is removed and the model is refitted; positive means the block carries held-out information. Blocks were **declared before fitting** and no post-hoc selection was performed; a large coefficient alone is never treated as evidence that a block matters. One marker per seed, black bar the mean.
+
+Ridge (alpha = 1.0, not tuned on the WFE), an 80/20 train/test split **grouped by item** so all three route rows of an item stay together and the identical item split is reused across all four seeds, and **factor-level grouped permutation importance** on the held-out items with 100 repeats (random_state 42): permuting a raw factor rebuilds every encoded, standardized and interaction column derived from it, and dummy or interaction columns are never permuted independently.
+
+LICHTHEIM_CLEAN comprises 671 trained real words (TRAINED_REAL_EXACT) and 391 novel pseudowords (NOVEL_PSEUDOWORD). **Lexicality and training exposure are perfectly confounded in this set** — every Real item is trained and every Pseudo item is novel — so the factor is a lexicality/exposure contrast and the model cannot separate the two. Zipf frequency is undefined for pseudowords and is excluded; it is never imputed (see Sprint 3 for the trained-real frequency analysis).
+
+Neutral palette; red and blue are not used.

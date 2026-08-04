@@ -1,0 +1,3 @@
+**Length effect by route (clean WFE set).** Mean raw Levenshtein edit distance against phoneme length for the FULL, WM-only and LTM-only routes. Thin dotted lines with small markers are individual seeds (19, 20, 21, 22); thick lines with large markers are the mean across seeds; shaded bands are 95% hierarchical bootstrap intervals (seeds resampled, then items within stratum; B = 10,000, random seed 20260730). The three panels share a y-axis. Length 6 is absent from the WFE by construction.
+
+Real words were restricted to WFE words encountered during training with the same phonological form. Pseudowords were restricted to WFE pseudowords whose phonological form was absent from the training lexicon.

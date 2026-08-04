@@ -1,0 +1,3 @@
+**Clean-set morphology by route.** Mean raw Levenshtein edit distance against phoneme length, split by route (columns) and lexicality (rows) so that no panel carries eight overlapping curves. Complex = solid, simple = dashed; red is used only for Real words and blue only for Pseudowords. Thin traces are individual seeds (19, 20, 21, 22, all shown); thick lines are the mean across seeds. Panels share a y-axis.
+
+Real words were restricted to WFE words encountered during training with the same phonological form. Pseudowords were restricted to WFE pseudowords whose phonological form was absent from the training lexicon.

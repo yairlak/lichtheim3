@@ -124,6 +124,18 @@ The **faithful** Dager feature importance (A11) is a **separate** analysis and
 is not recomputed, replaced or pooled: `feature_importance/faithful_vs_adapted.md`.
 Results and finding categories: `feature_importance/feature_importance_results.md`.
 
+## Final release
+
+`final_release/` is the publication-facing tree: 7 main figures (F1-F7), 12
+supplementary (S1-S12), each as PNG (300 dpi) + PDF + SVG with a standalone
+caption; the executive summary; the faithful-versus-adapted summary; the Yair
+brief; the robust-findings table; and the formatted A09/A10/A11 outputs rendered
+from their stored authoritative tables. It **copies** selected files and never
+moves or overwrites a source. Start at `final_release/README.md`.
+
+**Project status: core WFE behavioral analysis complete; SSP (A19) optional and
+deferred; mechanism analysis maintained as a separate project.**
+
 ## Source tables
 
 Figures derive from the validated canonical table
@@ -144,6 +156,7 @@ per-seed enriched production tables under
 | `frequency/validation/frequency_outputs.sha256` | Sprint-3 outputs | authoritative |
 | `error_taxonomy/validation/error_taxonomy_outputs.sha256` | Sprint-4 outputs | authoritative |
 | `feature_importance/validation/feature_importance_outputs.sha256` | Sprint-5 outputs | authoritative |
+| `final_release/validation/final_release_outputs.sha256` | final-release outputs | authoritative |
 
 **Living-file policy.** `README.md` and `analysis_matrix.tsv` are living
 documents that each sprint extends; every earlier manifest lists them, so their

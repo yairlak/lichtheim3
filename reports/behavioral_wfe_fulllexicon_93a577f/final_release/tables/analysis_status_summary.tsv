@@ -1,0 +1,23 @@
+analysis_id	analysis_name	faithful_or_adapted	final_status	closed_in
+A01	Script versioning and code promotion	n/a	ALREADY_VALIDATED	Sprint 1
+A02	Production manifest closure	n/a	ALREADY_VALIDATED	Sprint 1
+A03	Documentation and portable provenance	n/a	ALREADY_VALIDATED	Sprint 1
+A04	Clean length curves	adapted	ALREADY_VALIDATED	Sprint 1
+A05	Clean length slopes and LTM-WM contrast	adapted	ALREADY_VALIDATED	Sprint 1
+A06	Clean serial position	faithful	ALREADY_VALIDATED	Sprint 1
+A07	Gate and confidence, clean set	adapted	ALREADY_VALIDATED	Sprint 1
+A08	Gate and confidence by exposure status	adapted	ALREADY_VALIDATED	Sprint 1
+A09	Faithful Figure 2A	faithful	ALREADY_VALIDATED_FORMATTED	final release
+A10	Faithful Figure 2C	faithful	ALREADY_VALIDATED_FORMATTED	final release
+A11	Faithful feature importance	faithful	ALREADY_VALIDATED_FORMATTED	final release
+A12	Clean morphology x length	adapted	ALREADY_VALIDATED	Sprint 2
+A13	Faithful morphology x length	faithful	ALREADY_VALIDATED	Sprint 2
+A14	Trained-real frequency	adapted	ALREADY_VALIDATED	Sprint 3
+A15	Adapted feature importance	adapted	ALREADY_VALIDATED	Sprint 5
+A16	Faithful error taxonomy	faithful	ALREADY_VALIDATED	Sprint 4
+A17	Clean error taxonomy	adapted	ALREADY_VALIDATED	Sprint 4
+A18	Premature EOS	adapted	ALREADY_VALIDATED	Sprint 4
+A19	SSP / sonority	faithful	OPTIONAL_DEFERRED	not started
+A20	Neural representations	adapted	OUT_OF_SCOPE	separate project
+A21	Route ablations	adapted	OUT_OF_SCOPE	separate project
+A22	Causal length-effect mechanism	adapted	OUT_OF_SCOPE	separate project

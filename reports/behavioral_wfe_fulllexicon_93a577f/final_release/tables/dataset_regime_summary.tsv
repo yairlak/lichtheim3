@@ -1,0 +1,6 @@
+dataset_regime	n_items	composition	kind	caveat
+ALL_WITH_EXPOSURE_STRATA	1200	six training-exposure categories	adapted	three categories have n <= 7 and are descriptive only
+FAITHFUL_WFE_ALL	1200	all original WFE items with their source labels	faithful	122 source-real items were never trained; 9 source-pseudo items collide with the training lexicon; source labels are not training exposure
+LICHTHEIM_CLEAN	1062	671 TRAINED_REAL_EXACT + 391 NOVEL_PSEUDOWORD	adapted	lexicality and training exposure are perfectly confounded; the factor is a lexicality/exposure contrast
+TRAINED_REAL_FREQUENCY_PRIMARY	671	trained real words with a Zipf value	adapted	frequency is undefined for pseudowords and is never imputed
+TRAINED_REAL_FREQUENCY_SENSITIVITY	678	adds the 7 pronunciation-variant words	adapted	sensitivity only; never the primary claim

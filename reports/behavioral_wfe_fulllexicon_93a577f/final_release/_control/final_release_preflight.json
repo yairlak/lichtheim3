@@ -1,0 +1,193 @@
+{
+  "sprint": "final release",
+  "date": "2026-08-04",
+  "branch": "feat/full-lexicon-ceiling",
+  "head": "2edf9f3b54af202b554054f926d8fa9b457e6c3a",
+  "origin": "2edf9f3b54af202b554054f926d8fa9b457e6c3a",
+  "checks_total": 27,
+  "checks_passed": 27,
+  "verdict": "PASS",
+  "canonical_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "manifest_results": {
+    "production": "36/36",
+    "production_logs": "5/5",
+    "sprint1": "37/37",
+    "morphology": "33/33",
+    "frequency": "37/37",
+    "error_taxonomy": "57/57",
+    "feature_importance": "42/42"
+  },
+  "legacy_source_sha256": {
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/README_faithful_replication.md": "9031495acebad4fb73fbff5d3ef0daf23597b58b2da5e630881a6c5d1ec1317f",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.pdf": "dc6ed55de287df14e28e6c50b94f90743a5d1b6be772f29e0cd525de85004c11",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.png": "4b0689f72ea80f564eff052ea88cba5a5e7f16d2d60cb48b7cd6082f8999dd18",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A_table.tsv": "0d6a55fd561b989bb7aeea079c2c84cd8207b593fae1e12a52c4976b55609ef6",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf": "46fe4b912f824b14a3fa0045ba4e7b725065dafe8da1b3709caa18e943dc68d9",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png": "27e056d1176d97dc89e0b7eebd5e804c752e20421cb251e816117a7eb1e5a779",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv": "215ef9192552efce38a4e8adecea34273399f71a1fc8db1b0e7be0b59343d025",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.pdf": "27a23e2d34d79236caec29b2f7c088d25adcc75b2eed31714aea61205ee7aeb5",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.png": "a3054641ef445c58f761c1930c9b422e99251d57d04133232d4ae26cb0d42c85",
+    "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C_table.tsv": "038339be36c026f6a27c499d5b1aa57d092ae8b4b4e1eb693ed3156b3716a887"
+  },
+  "matrix_statuses": {
+    "A01": "ALREADY_VALIDATED",
+    "A02": "ALREADY_VALIDATED",
+    "A03": "ALREADY_VALIDATED",
+    "A04": "ALREADY_VALIDATED",
+    "A05": "ALREADY_VALIDATED",
+    "A06": "ALREADY_VALIDATED",
+    "A07": "ALREADY_VALIDATED",
+    "A08": "ALREADY_VALIDATED",
+    "A09": "NEEDS_FORMATTING_ONLY",
+    "A10": "NEEDS_FORMATTING_ONLY",
+    "A11": "NEEDS_FORMATTING_ONLY",
+    "A12": "ALREADY_VALIDATED",
+    "A13": "ALREADY_VALIDATED",
+    "A14": "ALREADY_VALIDATED",
+    "A15": "ALREADY_VALIDATED",
+    "A16": "ALREADY_VALIDATED",
+    "A17": "ALREADY_VALIDATED",
+    "A18": "ALREADY_VALIDATED",
+    "A19": "OPTIONAL",
+    "A20": "OUT_OF_SCOPE",
+    "A21": "OUT_OF_SCOPE",
+    "A22": "OUT_OF_SCOPE"
+  },
+  "checks": [
+    {
+      "check": "branch is feat/full-lexicon-ceiling",
+      "status": "PASS",
+      "detail": "feat/full-lexicon-ceiling"
+    },
+    {
+      "check": "HEAD is the Sprint-5 provenance-closure commit",
+      "status": "PASS",
+      "detail": "2edf9f3b54af202b554054f926d8fa9b457e6c3a"
+    },
+    {
+      "check": "origin equals HEAD",
+      "status": "PASS",
+      "detail": "origin=2edf9f3b54af202b554054f926d8fa9b457e6c3a"
+    },
+    {
+      "check": "tracked tree clean",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "archives/ only untracked path",
+      "status": "PASS",
+      "detail": "['archives/']"
+    },
+    {
+      "check": "canonical-table hash unchanged",
+      "status": "PASS",
+      "detail": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67"
+    },
+    {
+      "check": "canonical rows = 14,400",
+      "status": "PASS",
+      "detail": "14400"
+    },
+    {
+      "check": "seeds = 19,20,21,22",
+      "status": "PASS",
+      "detail": "[np.int64(19), np.int64(20), np.int64(21), np.int64(22)]"
+    },
+    {
+      "check": "routes = full, wm, ltm",
+      "status": "PASS",
+      "detail": "['full', 'ltm', 'wm']"
+    },
+    {
+      "check": "faithful set = 1,200",
+      "status": "PASS",
+      "detail": "1200"
+    },
+    {
+      "check": "clean set = 1,062",
+      "status": "PASS",
+      "detail": "1062"
+    },
+    {
+      "check": "clean composition = 671 + 391",
+      "status": "PASS",
+      "detail": "671+391"
+    },
+    {
+      "check": "production manifest verifies",
+      "status": "PASS",
+      "detail": "36/36"
+    },
+    {
+      "check": "production_logs manifest verifies",
+      "status": "PASS",
+      "detail": "5/5"
+    },
+    {
+      "check": "sprint1 manifest verifies",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "morphology manifest verifies",
+      "status": "PASS",
+      "detail": "33/33"
+    },
+    {
+      "check": "frequency manifest verifies",
+      "status": "PASS",
+      "detail": "37/37"
+    },
+    {
+      "check": "error_taxonomy manifest verifies",
+      "status": "PASS",
+      "detail": "57/57"
+    },
+    {
+      "check": "feature_importance manifest verifies",
+      "status": "PASS",
+      "detail": "42/42"
+    },
+    {
+      "check": "faithful A11 hashes unchanged",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "A09/A10/A11 source outputs present (10 files)",
+      "status": "PASS",
+      "detail": "10"
+    },
+    {
+      "check": "A09/A10/A11 are exactly NEEDS_FORMATTING_ONLY",
+      "status": "PASS",
+      "detail": "{'A09': 'NEEDS_FORMATTING_ONLY', 'A10': 'NEEDS_FORMATTING_ONLY', 'A11': 'NEEDS_FORMATTING_ONLY'}"
+    },
+    {
+      "check": "A19 is OPTIONAL or DEFERRED",
+      "status": "PASS",
+      "detail": "OPTIONAL"
+    },
+    {
+      "check": "no other row is NEEDS_COMPUTATION",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "matrix statuses internally consistent",
+      "status": "PASS",
+      "detail": "['ALREADY_VALIDATED', 'NEEDS_FORMATTING_ONLY', 'OPTIONAL', 'OUT_OF_SCOPE']"
+    },
+    {
+      "check": "A09/A10/A11 need formatting, not new computation \u2014 authoritative TSVs exist",
+      "status": "PASS",
+      "detail": "2A/2B/2C tables all present and validated"
+    },
+    {
+      "check": "no SSP output exists",
+      "status": "PASS",
+      "detail": "none"
+    }
+  ]
+}

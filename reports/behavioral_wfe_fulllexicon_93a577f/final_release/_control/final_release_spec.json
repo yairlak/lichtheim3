@@ -1,0 +1,308 @@
+{
+  "release": "final publication and closure",
+  "frozen_date": "2026-08-04",
+  "frozen_before_formatting": true,
+  "no_new_analysis_rule": {
+    "new_estimator": false,
+    "new_bootstrap": false,
+    "new_contrast": false,
+    "new_analysis_set": false,
+    "new_uncertainty_method": false,
+    "post_hoc_item_exclusion": false,
+    "post_hoc_seed_exclusion": false,
+    "checkpoint_inference": false,
+    "recomputation_when_authoritative_table_exists": false,
+    "causal_claim": false,
+    "architectural_recommendation": false,
+    "faithful_adapted_pooling": false,
+    "ssp": "OPTIONAL_DEFERRED, unstarted"
+  },
+  "a09_a10_a11_policy": {
+    "rendered_from": "stored authoritative tables",
+    "refitted": false,
+    "a11_frozen_parameters_preserved_by_construction": true,
+    "a11_reason": "no model is fitted, so Ridge alpha, split policy, permutation policy and the historical sign convention cannot drift"
+  },
+  "categories": [
+    "MAIN",
+    "SUPPLEMENTARY",
+    "VALIDATION_ONLY",
+    "MECHANISM_HANDOFF_ONLY",
+    "NOT_SELECTED_REDUNDANT"
+  ],
+  "main_narrative_order": [
+    "central route-specific length effect",
+    "trained-versus-novel distinction",
+    "serial-position profile",
+    "operation taxonomy and EOS limitation",
+    "frequency/familiarity result",
+    "adapted feature-importance summary"
+  ],
+  "main_figures": [
+    {
+      "number": "F1",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_by_route",
+      "analysis": "A04",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Central route-specific length effect: mean edit distance vs phoneme length, FULL/WM/LTM, split by lexicality.",
+      "main_finding": "For trained real words FULL and WM are at exact ceiling and LTM shows only a very weak slope; for novel pseudowords LTM develops a large length effect while WM stays far more robust and FULL stays near ceiling.",
+      "primary_limitation": "Lexicality and training exposure are perfectly confounded in the clean set."
+    },
+    {
+      "number": "F2",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_length_slopes",
+      "analysis": "A05",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Per-seed length slopes by route and the primary LTM-WM contrast.",
+      "main_finding": "LTM-WM pseudoword slope difference is positive in all four seeds (+0.183 to +0.246 edit operations per phoneme).",
+      "primary_limitation": "Trained real words are ceiling-limited under FULL and WM, so their zero slope is structural."
+    },
+    {
+      "number": "F3",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/figures/yair_clean_serial_position",
+      "analysis": "A06",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Serial-position error profile by route and lexicality.",
+      "main_finding": "LTM pseudowords show a strong late-position increase; FULL and WM increase much less.",
+      "primary_limitation": "Zip-mismatch positions, no Levenshtein alignment; pooled over seeds."
+    },
+    {
+      "number": "F4",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_by_route",
+      "analysis": "A17",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Levenshtein operation taxonomy by route, lexicality and Short/Long, on one common absolute y-scale.",
+      "main_finding": "Substitutions dominate, then deletions, then insertions; the burden is concentrated in long LTM pseudowords.",
+      "primary_limitation": "editops tie-breaking moves counts between operation types without changing total edit distance; the forced-length horizon makes terminal insertions unobservable."
+    },
+    {
+      "number": "F5",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/eos/figures/premature_eos_by_route",
+      "analysis": "A18",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Premature end-of-sequence rate, shortfall and length slope by route.",
+      "main_finding": "87 observed events, 82 in LTM, all on pseudowords; the rate rises with length in LTM in all four seeds.",
+      "primary_limitation": "ON_TIME_EOS and LATE_EOS are structurally unobservable; EOS_NOT_OBSERVED is ambiguous; premature EOS is on only a minority of erroneous items."
+    },
+    {
+      "number": "F6",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/primary/figures/trained_real_frequency_by_route",
+      "analysis": "A14",
+      "regime_kind": "adapted",
+      "dataset": "TRAINED_REAL_FREQUENCY_PRIMARY",
+      "purpose": "Continuous Zipf frequency slope of edit distance for trained real words, by route.",
+      "main_finding": "LTM Zipf slope is negative in all four seeds (mean -0.0130); higher-frequency trained words have slightly fewer errors.",
+      "primary_limitation": "Rests on sparse errors; FULL and WM are ALL_ZERO_OUTCOME by ceiling."
+    },
+    {
+      "number": "F7",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_joint/figures/clean_adapted_factor_importance",
+      "analysis": "A15",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Adapted grouped factor importance: held-out R2 drop and MAE increase per raw factor.",
+      "main_finding": "Route and lexicality/exposure lead jointly, length is a stable third, morphology is negligible.",
+      "primary_limitation": "The route vs lexicality/exposure ordering is not resolved by these data; importance is unsigned."
+    }
+  ],
+  "supplementary_figures": [
+    {
+      "number": "S1",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A09_faithful_figure2A",
+      "analysis": "A09",
+      "regime_kind": "faithful",
+      "dataset": "FAITHFUL_WFE_ALL",
+      "purpose": "Faithful Dager Figure 2A: mean edit distance by source lexicality, morphology and length, FULL route.",
+      "main_finding": "Errors appear only at length 9 in the source-pseudo condition (0.0947) and from length 7 in source-real (up to 0.0199).",
+      "primary_limitation": "Source Real/Pseudo labels are not training exposure: 122 source-real items were never trained."
+    },
+    {
+      "number": "S2",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A10_faithful_figure2C",
+      "analysis": "A10",
+      "regime_kind": "faithful",
+      "dataset": "FAITHFUL_WFE_ALL",
+      "purpose": "Faithful Dager Figure 2C: positional error rate by source lexicality and relative position.",
+      "main_finding": "Late-position rise in both source conditions, larger for source-pseudo (0.0417 at the final position of length 9).",
+      "primary_limitation": "Zip-mismatch positions with no alignment; pooled across seeds; distinct estimand from F3."
+    },
+    {
+      "number": "S3",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/A11_faithful_figure2B",
+      "analysis": "A11",
+      "regime_kind": "faithful",
+      "dataset": "FAITHFUL_WFE_ALL",
+      "purpose": "Faithful Dager Figure 2B: Ridge coefficients and permutation importance for length, lexicality and morphology.",
+      "main_finding": "Length leads in all four seeds; lexicality and morphology are near zero and change sign.",
+      "primary_limitation": "Historical signed convention; never pooled with the adapted A15 and never on a common axis."
+    },
+    {
+      "number": "S4",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/clean/figures/clean_error_taxonomy_full_wm_zoom",
+      "analysis": "A17",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "FULL/WM zoom companion to F4, created because the frozen >10x rule fired (ratio 22.95).",
+      "main_finding": "FULL and WM operation counts resolved on their own scale.",
+      "primary_limitation": "Companion only; it never replaces the common-scale F4."
+    },
+    {
+      "number": "S5",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/faithful/figures/faithful_figure8a_error_types",
+      "analysis": "A16",
+      "regime_kind": "faithful",
+      "dataset": "FAITHFUL_WFE_ALL",
+      "purpose": "Faithful Dager Figure 8A: error types across the twelve original WFE conditions, FULL route.",
+      "main_finding": "Only four of twelve conditions are non-zero, all of them long.",
+      "primary_limitation": "Source labels are not exposure; Figures 8B/8C concern ablated SWP models and are out of scope."
+    },
+    {
+      "number": "S6",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/clean_adapted/figures/clean_length_morphology_by_route",
+      "analysis": "A12",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Adapted morphology x phoneme length by route.",
+      "main_finding": "No robust morphology contrast; every interval spans zero.",
+      "primary_limitation": "Trained real words are at ceiling under FULL and WM."
+    },
+    {
+      "number": "S7",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/morphology/faithful_replication/figures/faithful_length_lexicality_morphology",
+      "analysis": "A13",
+      "regime_kind": "faithful",
+      "dataset": "FAITHFUL_WFE_ALL",
+      "purpose": "Faithful morphology x length x source lexicality, FULL route.",
+      "main_finding": "Stimulus-level replication; no robust morphology effect.",
+      "primary_limitation": "Source labels are not exposure."
+    },
+    {
+      "number": "S8",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/route_specific/figures/route_specific_factor_importance",
+      "analysis": "A15",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Adapted route-specific factor importance, one panel per route.",
+      "main_finding": "Only LTM is estimable: lexicality/exposure > length > morphology in all four seeds.",
+      "primary_limitation": "FULL and WM are ceiling and sparse-error limited and are labelled, never given an artificial zero."
+    },
+    {
+      "number": "S9",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/feature_importance/clean_interactions/figures/interaction_block_utility",
+      "analysis": "A15",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Held-out drop-block utility of the five predeclared interaction blocks.",
+      "main_finding": "route x lexicality is the clearest stable block; the two length blocks are classified conservatively.",
+      "primary_limitation": "R2 and MAE disagree for route x length and lexicality x length."
+    },
+    {
+      "number": "S10",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/frequency/gate_confidence/figures/frequency_confidence_gate",
+      "analysis": "A14",
+      "regime_kind": "adapted",
+      "dataset": "TRAINED_REAL_FREQUENCY_PRIMARY",
+      "purpose": "Frequency slopes for lexical confidence and the gate, trained real words.",
+      "main_finding": "Both slopes are positive across seeds.",
+      "primary_limitation": "The gate is a deterministic monotonic transform of confidence: these are linked outcomes, not independent evidence."
+    },
+    {
+      "number": "S11",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_clean_lexicality",
+      "analysis": "A07",
+      "regime_kind": "adapted",
+      "dataset": "LICHTHEIM_CLEAN",
+      "purpose": "Gate and lexical confidence by clean lexicality.",
+      "main_finding": "Confidence and gate are higher for trained real words than for novel pseudowords.",
+      "primary_limitation": "The gate is a FULL-route quantity only; it is not a probability that the stimulus is a word."
+    },
+    {
+      "number": "S12",
+      "source_stem": "reports/behavioral_wfe_fulllexicon_93a577f/figures/gate_by_exposure_status",
+      "analysis": "A08",
+      "regime_kind": "adapted",
+      "dataset": "ALL_WITH_EXPOSURE_STRATA",
+      "purpose": "Gate and lexical confidence across the six training-exposure categories.",
+      "main_finding": "Untrained real words pattern with novel pseudowords rather than with trained real words.",
+      "primary_limitation": "Three categories have n <= 7 and are descriptive only."
+    }
+  ],
+  "composite_figure_created": false,
+  "naming": {
+    "main": "F<n>_<source_stem>",
+    "supplementary": "S<n>_<source_stem>",
+    "captions": "<same stem>_caption.md",
+    "ordering": "MAIN before SUPPLEMENTARY, then figure number, then source path"
+  },
+  "copy_policy": {
+    "sources_moved_or_deleted": false,
+    "record_per_copy": [
+      "source_path",
+      "source_sha256",
+      "release_sha256",
+      "equality"
+    ],
+    "tables": "indexed by pointer where copying adds no value"
+  },
+  "formats": {
+    "png_dpi": 300,
+    "also": [
+      "pdf",
+      "svg"
+    ],
+    "caption": "standalone .md per figure"
+  },
+  "visual_conventions": {
+    "lexicality_colors": {
+      "real": "red",
+      "pseudo": "blue"
+    },
+    "red_blue_reserved": true,
+    "red_blue_never_encode": [
+      "route",
+      "operation type",
+      "factor importance"
+    ],
+    "neutral_palette_for": [
+      "route-only",
+      "operation type",
+      "feature importance",
+      "frequency"
+    ],
+    "morphology": "line style: complex solid, simple dashed",
+    "seed_level_values_visible": true,
+    "across_seed_summary_prominent": true,
+    "legends_inside_figures": true,
+    "science_in_plot_titles": false,
+    "science_in_captions": true
+  },
+  "terminology": {
+    "faithful": "original WFE/SWP labels and procedure; replication fidelity",
+    "adapted": "Lichtheim3 exposure-audited analysis",
+    "adapted_is_a_correction_of_faithful": false,
+    "source_lexicality_equals_exposure": false,
+    "clean_factor_name": "lexicality/exposure contrast",
+    "route_labels": [
+      "FULL",
+      "WM",
+      "LTM"
+    ],
+    "hierarchical_bootstrap_scope": "Sprints 1-4 only; items genuinely resampled",
+    "feature_importance_interval": "seed-resampling interval over four checkpoints"
+  },
+  "statuses": [
+    "ROBUST",
+    "CONSISTENT_BUT_SMALL",
+    "CEILING_LIMITED",
+    "SPARSE_ERROR_LIMITED",
+    "SPARSE_EOS_LIMITED",
+    "DESCRIPTIVE_ONLY",
+    "NON_ESTIMABLE",
+    "OPTIONAL_DEFERRED"
+  ]
+}

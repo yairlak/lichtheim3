@@ -1,0 +1,3 @@
+**Serial-position error profile (clean WFE set).** Relative-position profile of phoneme errors for each route, pooled over the four seeds. The LTM pseudoword curve shows a strong late-position increase, while FULL and WM show much smaller increases. Method: faithful zip-mismatch positions (Dager Error_Indices), relative position (index-1)/(length-1), PCHIP interpolation to 100 points, item-count weighted across lengths; no Levenshtein alignment is used.
+
+Real words were restricted to WFE words encountered during training with the same phonological form. Pseudowords were restricted to WFE pseudowords whose phonological form was absent from the training lexicon.

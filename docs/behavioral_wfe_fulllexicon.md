@@ -263,6 +263,30 @@ Sprints 1–4, where items are genuinely resampled.
 
 Results: `feature_importance/feature_importance_results.md`.
 
+## Final publication release
+
+`scripts/behavioral_analysis/final_release.py` and `plot_final_release.py`
+assemble the publication-facing tree at
+`reports/behavioral_wfe_fulllexicon_93a577f/final_release/`.
+
+```bash
+python -m scripts.behavioral_analysis.plot_final_release \
+    --out_root reports/behavioral_wfe_fulllexicon_93a577f/final_release
+```
+
+**Editorial only.** The release computes no statistic: it renders A09/A10/A11
+from their stored authoritative tables — no model is refitted, so A11's Ridge
+alpha, split policy, permutation policy and historical sign convention are
+preserved by construction — and copies every other selected figure
+byte-identically, recording source path, source hash, release hash and an
+equality verdict for each. **Source reports are never moved, overwritten or
+deleted.**
+
+Seven main figures (F1 length by route, F2 slopes and LTM-WM, F3 serial
+position, F4 error taxonomy, F5 premature EOS, F6 frequency, F7 adapted feature
+importance) and twelve supplementary. Start at `final_release/yair_brief.md`
+or `final_release/executive_summary.md`.
+
 ## Where future analyses go
 
 The deferred SSP analysis (A19) would be added as a further module inside

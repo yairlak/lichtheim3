@@ -1,0 +1,5 @@
+**Faithful Figure 2A (A09).** Mean raw Levenshtein edit distance against phoneme length for the FULL route, split by source lexicality (red = Real, blue = Pseudoword) and by morphology, with the frozen Dager line styles — complex solid, simple dashed. Thin dotted lines are the four individual seeds (19, 20, 21, 22); thick lines are the mean over seeds. Length 6 is absent from the WFE by construction. Errors appear only at the long lengths: at length 9 the source-pseudo mean is 0.0947 and the source-real mean 0.0199, while lengths 3, 4 and 5 are exactly zero in both conditions.
+
+This is a **faithful** stimulus-level replication on all 1,200 original WFE items with their **source** Real/Pseudo labels, FULL route only. **Source labels are not training exposure**: 122 of the 800 source-real words were never in the Lichtheim3 training lexicon and 9 source pseudowords collide with it, so these panels must not be read as trained-versus-novel effects. The exposure-audited analyses are the adapted clean-set figures.
+
+Rendered for this release directly from the stored, previously validated table; **no value was recomputed**.

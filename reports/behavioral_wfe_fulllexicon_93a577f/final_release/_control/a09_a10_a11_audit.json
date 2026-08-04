@@ -1,0 +1,258 @@
+{
+  "audited_date": "2026-08-04",
+  "audited_before_formatting": true,
+  "shared": {
+    "source_directory": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication",
+    "source_readme": "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/README_faithful_replication.md",
+    "source_labels_are_not_exposure": true,
+    "untrained_source_real_words": 122,
+    "colliding_source_pseudowords": 9,
+    "historical_outputs_modified": false
+  },
+  "rows": [
+    {
+      "matrix_id": "A09",
+      "exact_title": "Faithful Figure 2A",
+      "regime": "FAITHFUL_WFE_ALL",
+      "item_count": 1200,
+      "faithful_or_adapted": "faithful",
+      "route_scope": "full only; no route factor",
+      "metric": "raw_edit_distance",
+      "source_code_or_driver": "historical analysis-phase driver; NOT present in the tracked package (no tracked .py references figure2A/2B/2C)",
+      "source_tables": [
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A_table.tsv"
+      ],
+      "source_tables_sha256": {
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A_table.tsv": "0d6a55fd561b989bb7aeea079c2c84cd8207b593fae1e12a52c4976b55609ef6"
+      },
+      "source_figures": [
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.png",
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.pdf"
+      ],
+      "source_figures_sha256": {
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.png": "4b0689f72ea80f564eff052ea88cba5a5e7f16d2d60cb48b7cd6082f8999dd18",
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2A.pdf": "dc6ed55de287df14e28e6c50b94f90743a5d1b6be772f29e0cd525de85004c11"
+      },
+      "table_columns": [
+        "seed",
+        "lexicality",
+        "morphology",
+        "length",
+        "n_items",
+        "mean_edit_distance"
+      ],
+      "table_rows": 96,
+      "seed_policy": "per seed (4 seeds x 2 lexicality x 2 morphology x 6 lengths)",
+      "existing_numerical_estimates": {
+        "mean_edit_distance_over_seeds_and_morphology": {
+          "real": {
+            "3": 0.0,
+            "4": 0.0,
+            "5": 0.0,
+            "7": 0.002,
+            "8": 0.0078,
+            "9": 0.0199
+          },
+          "pseudo": {
+            "3": 0.0,
+            "4": 0.0,
+            "5": 0.0,
+            "7": 0.0,
+            "8": 0.0,
+            "9": 0.0947
+          }
+        },
+        "n_items_seed19": {
+          "real_complex": 400,
+          "real_simple": 400,
+          "pseudo_complex": 200,
+          "pseudo_simple": 200
+        }
+      },
+      "current_formatting_deficiencies": [
+        "no SVG",
+        "no standalone caption",
+        "no copy under reports/",
+        "not regenerable from the tracked package"
+      ],
+      "target_final_paths": {
+        "figures": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/a09_*",
+        "captions": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/captions/a09_*_caption.md",
+        "plotting_table": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/tables/faithful_figure2A_table.tsv"
+      },
+      "plotting_tsv_already_exists": true,
+      "code_promotion_needed": true,
+      "recomputation_from_predictions": false,
+      "numerical_non_regression_checks": [
+        "all 96 mean_edit_distance values identical to the source table",
+        "all 96 n_items values identical",
+        "figure driven only by the source table"
+      ],
+      "classification": "PROMOTE_AND_FORMAT_EXISTING_ANALYSIS"
+    },
+    {
+      "matrix_id": "A10",
+      "exact_title": "Faithful Figure 2C",
+      "regime": "FAITHFUL_WFE_ALL",
+      "item_count": 1200,
+      "faithful_or_adapted": "faithful",
+      "route_scope": "full only; no route factor",
+      "metric": "positional error rate (zip-mismatch, no Levenshtein alignment)",
+      "source_code_or_driver": "historical analysis-phase driver; NOT present in the tracked package (no tracked .py references figure2A/2B/2C)",
+      "source_tables": [
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C_table.tsv"
+      ],
+      "source_tables_sha256": {
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C_table.tsv": "038339be36c026f6a27c499d5b1aa57d092ae8b4b4e1eb693ed3156b3716a887"
+      },
+      "source_figures": [
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.png",
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.pdf"
+      ],
+      "source_figures_sha256": {
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.png": "a3054641ef445c58f761c1930c9b422e99251d57d04133232d4ae26cb0d42c85",
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2C.pdf": "27a23e2d34d79236caec29b2f7c088d25adcc75b2eed31714aea61205ee7aeb5"
+      },
+      "table_columns": [
+        "lexicality",
+        "length",
+        "position_1based",
+        "relative_position",
+        "n_items_x_seeds",
+        "error_rate_per_item"
+      ],
+      "table_rows": 72,
+      "seed_policy": "pooled across seeds by design (n_items_x_seeds)",
+      "existing_numerical_estimates": {
+        "mean_error_rate_per_item": {
+          "pseudo": 0.00295,
+          "real": 0.00129
+        },
+        "length9_late_positions": {
+          "pseudo": [
+            0.030303,
+            0.022727,
+            0.041667
+          ],
+          "real": [
+            0.011628,
+            0.014535,
+            0.008721
+          ]
+        }
+      },
+      "current_formatting_deficiencies": [
+        "no SVG",
+        "no standalone caption",
+        "no copy under reports/",
+        "not regenerable from the tracked package"
+      ],
+      "target_final_paths": {
+        "figures": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/a10_*",
+        "captions": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/captions/a10_*_caption.md",
+        "plotting_table": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/tables/faithful_figure2C_table.tsv"
+      },
+      "plotting_tsv_already_exists": true,
+      "code_promotion_needed": true,
+      "recomputation_from_predictions": false,
+      "numerical_non_regression_checks": [
+        "all 72 error_rate_per_item values identical to the source table",
+        "all 72 n_items_x_seeds values identical",
+        "distinct estimand from the Sprint-1 clean serial-position figure; never merged"
+      ],
+      "classification": "PROMOTE_AND_FORMAT_EXISTING_ANALYSIS"
+    },
+    {
+      "matrix_id": "A11",
+      "exact_title": "Faithful feature importance",
+      "regime": "FAITHFUL_WFE_ALL",
+      "item_count": 1200,
+      "faithful_or_adapted": "faithful",
+      "route_scope": "full only; no route factor",
+      "metric": "raw_edit_distance",
+      "source_code_or_driver": "historical analysis-phase driver; NOT present in the tracked package (no tracked .py references figure2A/2B/2C)",
+      "source_tables": [
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv"
+      ],
+      "source_tables_sha256": {
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B_feature_importance.tsv": "215ef9192552efce38a4e8adecea34273399f71a1fc8db1b0e7be0b59343d025"
+      },
+      "source_figures": [
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png",
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf"
+      ],
+      "source_figures_sha256": {
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.png": "27e056d1176d97dc89e0b7eebd5e804c752e20421cb251e816117a7eb1e5a779",
+        "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/faithful_replication/faithful_figure2B.pdf": "46fe4b912f824b14a3fa0045ba4e7b725065dafe8da1b3709caa18e943dc68d9"
+      },
+      "table_columns": [
+        "seed",
+        "feature_transformed",
+        "ridge_coefficient",
+        "permutation_importance_mean",
+        "signed_importance"
+      ],
+      "table_rows": 12,
+      "seed_policy": "per seed (4 seeds x 3 features)",
+      "existing_numerical_estimates": {
+        "permutation_importance_mean": {
+          "cont__Length": {
+            "19": 0.029933,
+            "20": 0.002663,
+            "21": 0.025477,
+            "22": 0.001664
+          },
+          "cat__Lexicality_real": {
+            "19": 0.003628,
+            "20": -0.000635,
+            "21": 0.019643,
+            "22": -0.001184
+          },
+          "cat__Morphology_simple": {
+            "19": 0.003019,
+            "20": 0.000383,
+            "21": -0.002734,
+            "22": 0.000458
+          }
+        },
+        "length_leads_in_all_four_seeds": true
+      },
+      "current_formatting_deficiencies": [
+        "no SVG",
+        "no standalone caption",
+        "no copy under reports/",
+        "not regenerable from the tracked package"
+      ],
+      "target_final_paths": {
+        "figures": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/figures/a11_*",
+        "captions": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/captions/a11_*_caption.md",
+        "plotting_table": "reports/behavioral_wfe_fulllexicon_93a577f/final_release/formatted_existing/tables/faithful_figure2B_feature_importance.tsv"
+      },
+      "plotting_tsv_already_exists": true,
+      "code_promotion_needed": true,
+      "recomputation_from_predictions": false,
+      "numerical_non_regression_checks": [
+        "all 12 ridge_coefficient values identical",
+        "all 12 permutation_importance_mean values identical",
+        "all 12 signed_importance values identical",
+        "no model refitted; Ridge alpha, split policy, permutation policy and historical sign convention preserved by construction",
+        "never pooled with adapted A15 and never on a common quantitative axis"
+      ],
+      "classification": "PROMOTE_AND_FORMAT_EXISTING_ANALYSIS"
+    }
+  ],
+  "frozen_parameters_preserved": {
+    "ridge_alpha": 1.0,
+    "split": "80/20 random_state=42",
+    "permutation": "n_repeats=100 random_state=42",
+    "interactions": false,
+    "p_values": false,
+    "morphology_line_styles": "complex solid, simple dashed",
+    "figure2C_method": "zip-mismatch positions, no alignment"
+  },
+  "verdict": {
+    "any_stop_requires_new_analysis": false,
+    "all_rows": "PROMOTE_AND_FORMAT_EXISTING_ANALYSIS",
+    "new_scientific_computation": false
+  }
+}

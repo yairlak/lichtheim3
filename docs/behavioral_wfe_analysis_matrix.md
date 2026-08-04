@@ -4,8 +4,9 @@ Planned and completed analyses for the full-lexicon cohort 93a577f, in sprint
 order. The machine-readable twin is
 `reports/behavioral_wfe_fulllexicon_93a577f/analysis_matrix.tsv`.
 
-Status values: `ALREADY_VALIDATED`, `NEEDS_FORMATTING_ONLY`,
-`NEEDS_COMPUTATION`, `OPTIONAL`, `OUT_OF_SCOPE`.
+Status values: `ALREADY_VALIDATED`, `ALREADY_VALIDATED_FORMATTED`,
+`NEEDS_FORMATTING_ONLY`, `NEEDS_COMPUTATION`, `OPTIONAL_DEFERRED`,
+`OUT_OF_SCOPE`.
 
 ## Sprint order
 
@@ -32,9 +33,9 @@ Nothing beyond priority 2 was computed in Sprint 1.
 | A06 | Clean serial position | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | positional error rate | faithful | **ALREADY_VALIDATED** | 2 | none |
 | A07 | Gate and confidence, clean set | LICHTHEIM_CLEAN | 1062 | full (gate is full-route only) | gate | adapted | **ALREADY_VALIDATED** | 2 | none |
 | A08 | Gate and confidence by exposure status | ALL_WITH_EXPOSURE_STRATA | 1200 | full | gate | adapted | **ALREADY_VALIDATED** | 2 | none |
-| A09 | Faithful Figure 2A | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **NEEDS_FORMATTING_ONLY** | 3 | promote plotting to tracked package |
-| A10 | Faithful Figure 2C | FAITHFUL_WFE_ALL | 1200 | full | positional error rate | faithful | **NEEDS_FORMATTING_ONLY** | 3 | promote plotting to tracked package |
-| A11 | Faithful feature importance | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **NEEDS_FORMATTING_ONLY** | 5 | promote to tracked package |
+| A09 | Faithful Figure 2A | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **ALREADY_VALIDATED_FORMATTED** | 3 | none |
+| A10 | Faithful Figure 2C | FAITHFUL_WFE_ALL | 1200 | full | positional error rate | faithful | **ALREADY_VALIDATED_FORMATTED** | 3 | none |
+| A11 | Faithful feature importance | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **ALREADY_VALIDATED_FORMATTED** | 5 | none |
 | A12 | Clean morphology x length | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 3 | none |
 | A13 | Faithful morphology x length | FAITHFUL_WFE_ALL | 1200 | full | raw_edit_distance | faithful | **ALREADY_VALIDATED** | 3 | none |
 | A14 | Trained-real frequency | TRAINED_REAL_FREQUENCY_PRIMARY | 671 | full;wm;ltm | raw_edit_distance | adapted | **ALREADY_VALIDATED** | 4 | none |
@@ -42,10 +43,11 @@ Nothing beyond priority 2 was computed in Sprint 1.
 | A16 | Faithful error taxonomy | FAITHFUL_WFE_ALL | 1200 | full | insertions;deletions;substitutions | faithful | **ALREADY_VALIDATED** | 6 | none |
 | A17 | Clean error taxonomy | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | insertions;deletions;substitutions | adapted | **ALREADY_VALIDATED** | 6 | none |
 | A18 | Premature EOS | LICHTHEIM_CLEAN | 1062 | full;wm;ltm | premature_eos rate | adapted | **ALREADY_VALIDATED** | 6 | none |
-| A19 | SSP / sonority | SSP dataset | 2859 | full;wm;ltm | raw_edit_distance | faithful | **OPTIONAL** | 8 | deferred |
+| A19 | SSP / sonority | SSP dataset | 2859 | full;wm;ltm | raw_edit_distance | faithful | **OPTIONAL_DEFERRED** | 8 | deferred, not started |
 | A20 | Neural representations | n/a | n/a | n/a | n/a | adapted | **OUT_OF_SCOPE** | 9 | separate project |
 | A21 | Route ablations | n/a | n/a | n/a | n/a | adapted | **OUT_OF_SCOPE** | 9 | separate project |
 | A22 | Causal length-effect mechanism | n/a | n/a | n/a | n/a | adapted | **OUT_OF_SCOPE** | 9 | separate project |
+| A23 | Final publication and closure release | n/a | n/a | n/a | n/a | both, kept separate | **ALREADY_VALIDATED** | 10 | none |
 
 ## Notes on scope
 
@@ -86,3 +88,19 @@ change an analysis set, the seed policy or the bootstrap.
   replaced or pooled. On the clean set lexicality and training exposure are
   perfectly confounded, so the factor is reported as a lexicality/exposure
   contrast; Zipf is excluded because it is undefined for pseudowords.
+- **Final release** (A23): editorial, formatting, integration and provenance
+  only. A09/A10/A11 rendered from their stored authoritative tables with no
+  value recomputed; 7 main and 12 supplementary figures selected; executive
+  summary, faithful-versus-adapted summary, Yair brief and robust-findings
+  table. `reports/behavioral_wfe_fulllexicon_93a577f/final_release/`.
+
+## Final project status
+
+**Core WFE behavioral analysis complete; SSP optional and deferred; mechanism
+analysis maintained as a separate project.**
+
+Every matrix row is now `ALREADY_VALIDATED`, `ALREADY_VALIDATED_FORMATTED`,
+`OPTIONAL_DEFERRED` or `OUT_OF_SCOPE`. No row requires further computation.
+A19 (SSP / sonority) has **not** been started. A20–A22 need new experiments and
+belong to a separate project; the factual, non-causal handoff for A22 is
+`reports/behavioral_wfe_fulllexicon_93a577f/error_taxonomy/length_effect_mechanism_handoff.md`.
