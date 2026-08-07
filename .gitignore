@@ -18,3 +18,5 @@ data/glove*.zip
 # Model checkpoints (binary, potentially large)
 checkpoints/*.pt
 checkpoints/*.pth
+archives/
+handoffs/
