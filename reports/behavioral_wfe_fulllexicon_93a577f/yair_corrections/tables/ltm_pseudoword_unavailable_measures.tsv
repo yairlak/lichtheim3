@@ -1,0 +1,4 @@
+requested_measure	status	search_scope	proxy_computed	evidence
+distance_to_training_lexicon	UNAVAILABLE_VALIDATED_MEASURE	scripts/, reports/, outputs/, docs/	False	no graded phonological distance to the training lexicon exists; audits/wfe_pseudo_phonology_in_training.tsv records exact membership collisions only, which is already encoded in lichtheim_exposure_status
+phonotacticity	UNAVAILABLE_VALIDATED_MEASURE	scripts/, reports/, outputs/, docs/	False	no phonotactic probability or legality score exists for WFE items in any validated table; the only mentions are mechanism captions stating that phonotactic influence was NOT tested
+suffix_or_phonemic_complexity	UNAVAILABLE_VALIDATED_MEASURE	scripts/, reports/, outputs/, docs/	False	the validated morphology field is a binary simple/complex stimulus label; no suffix inventory or graded phonemic-complexity score exists

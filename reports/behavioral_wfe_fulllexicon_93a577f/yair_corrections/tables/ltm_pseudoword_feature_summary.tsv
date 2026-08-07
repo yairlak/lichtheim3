@@ -1,0 +1,25 @@
+success_group	feature	n_items_with_value	mean	median	min	max	status	note
+ALWAYS_FAILED	mean_deletions_failed_seeds	17	0.7647058823529411	0.75	0.0	1.25	OK	already-validated
+ALWAYS_SUCCESSFUL	mean_deletions_failed_seeds	0					OK	already-validated
+MIXED_SUCCESS	mean_deletions_failed_seeds	173	0.5125240847784199	0.5	0.0	1.5	OK	already-validated
+ALWAYS_FAILED	mean_gate_auxiliary	17	0.40532897763392506	0.39867546409368515	0.3640982434153557	0.48199570924043655	OK	gate = sigmoid(2.0 * (lexical_confidence - 0.7)); auxiliary linked variable, not independent evidence
+ALWAYS_SUCCESSFUL	mean_gate_auxiliary	201	0.4318860208810265	0.42311283200979233	0.32977530360221863	0.5643268972635269	OK	gate = sigmoid(2.0 * (lexical_confidence - 0.7)); auxiliary linked variable, not independent evidence
+MIXED_SUCCESS	mean_gate_auxiliary	173	0.4212628538811827	0.41649068146944046	0.35812439024448395	0.5271166115999222	OK	gate = sigmoid(2.0 * (lexical_confidence - 0.7)); auxiliary linked variable, not independent evidence
+ALWAYS_FAILED	mean_insertions_failed_seeds	17	0.45588235294117646	0.5	0.0	1.25	OK	already-validated
+ALWAYS_SUCCESSFUL	mean_insertions_failed_seeds	0					OK	already-validated
+MIXED_SUCCESS	mean_insertions_failed_seeds	173	0.30828516377649323	0.0	0.0	1.5	OK	already-validated
+ALWAYS_FAILED	mean_lexical_confidence	17	0.5072547670672921	0.4940264895558357	0.4203832522034645	0.6637420058250427	OK	already-validated
+ALWAYS_SUCCESSFUL	mean_lexical_confidence	201	0.5615360402868161	0.5429401248693466	0.3450839444994926	0.8294442147016525	OK	already-validated
+MIXED_SUCCESS	mean_lexical_confidence	173	0.5400959821794763	0.5312163680791855	0.40802208334207535	0.7544554471969604	OK	already-validated
+ALWAYS_FAILED	mean_raw_edit_distance_failed_seeds	17	3.1029411764705883	3.0	1.5	5.25	OK	already-validated
+ALWAYS_SUCCESSFUL	mean_raw_edit_distance_failed_seeds	0					OK	already-validated
+MIXED_SUCCESS	mean_raw_edit_distance_failed_seeds	173	2.106936416184971	2.0	1.0	4.5	OK	already-validated
+ALWAYS_FAILED	mean_substitutions_failed_seeds	17	1.8823529411764706	1.75	0.25	4.0	OK	already-validated
+ALWAYS_SUCCESSFUL	mean_substitutions_failed_seeds	0					OK	already-validated
+MIXED_SUCCESS	mean_substitutions_failed_seeds	173	1.2861271676300579	1.0	0.0	4.0	OK	already-validated
+ALWAYS_FAILED	n_premature_eos_failed_seeds	17	1.1764705882352942	1.0	0.0	4.0	OK	already-validated
+ALWAYS_SUCCESSFUL	n_premature_eos_failed_seeds	201	0.0	0.0	0.0	0.0	OK	already-validated
+MIXED_SUCCESS	n_premature_eos_failed_seeds	173	0.3583815028901734	0.0	0.0	2.0	OK	already-validated
+ALWAYS_FAILED	target_length	17	8.529411764705882	9.0	7.0	9.0	OK	already-validated
+ALWAYS_SUCCESSFUL	target_length	201	5.099502487562189	5.0	3.0	9.0	OK	already-validated
+MIXED_SUCCESS	target_length	173	7.011560693641618	8.0	3.0	9.0	OK	already-validated

@@ -1,0 +1,5 @@
+seed	cohort_selected_epoch	cohort_selection_reason	cohort_selected_errors	audit_X2_selected_epoch	audit_X2_criterion_met	agrees_with_cohort_selection
+19	155	first_checkpoint_of_first_stable_zero_streak	0	155.0	True	True
+20	130	first_checkpoint_of_first_stable_zero_streak	0	130.0	True	True
+21	145	earliest_checkpoint_with_minimum_error_count	1		False	False
+22	140	first_checkpoint_of_first_stable_zero_streak	0	140.0	True	True

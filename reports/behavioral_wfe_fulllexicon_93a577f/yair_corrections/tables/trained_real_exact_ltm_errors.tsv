@@ -1,0 +1,13 @@
+item_id	word	zipf_frequency	frequency_class	phoneme_length	morphology	target	n_failing_seeds	failing_seeds	predictions_by_seed	substitutions	deletions	insertions	raw_edit_distance	total_substitutions	total_deletions	total_insertions
+wfe_0163	sculptural	2.9	low	9	complex	S K AH L P CH ER AH L	2	19,21	19: S K AH L P AH L AH N | 21: S K AH L P SH AH N TH	3,4	0,0	0,0	3,4	7	0	0
+wfe_0357	siegfried	3.03	low	7	simple	S IY G F R IY D	2	21,22	21: S IY G W IY L D | 22: S IY G F L IY D	3,1	0,0	0,0	3,1	4	0	0
+wfe_0385	porcupine	2.88	low	9	simple	P AO R K Y AH P AY N	1	19	19: P AO R K Y AO N IH SH	4	0	0	4	4	0	0
+wfe_0153	polynesian	2.9	low	9	complex	P AA L IH N IY ZH AH N	1	20	20: P AA L IH ZH IY N AH N	2	0	0	2	2	0	0
+wfe_0344	reprimand	2.9	low	9	simple	R EH P R AH M AE N D	1	20	20: R EH P AH M R AE N D	0	1	1	2	0	1	1
+wfe_0576	seashore	2.92	low	5	complex	S IY SH AO R	1	22	22: S AW TH AO R	2	0	0	2	2	0	0
+wfe_0186	parentheses	3.13	low	9	complex	P ER EH N TH AH S IY Z	1	19	19: P ER EH N W AH L IH S	4	0	0	4	4	0	0
+wfe_0574	rename	3.18	low	5	complex	R IY N EY M	1	22	22: R AY N EY M	1	0	0	1	1	0	0
+wfe_0317	placebo	3.48	low	7	simple	P L AH S IY B OW	1	20	20: P L AH S IY B IY	1	0	0	1	1	0	0
+wfe_0181	mindful	3.49	low	7	complex	M AY N D F AH L	1	21	21: M AY N F L AH K	3	0	0	3	3	0	0
+wfe_0140	locomotive	3.5	low	9	complex	L OW K AH M OW T IH V	1	22	22: L OW K AH M OW T AH V	1	0	0	1	1	0	0
+wfe_0211	lieutenant	4.44	high	8	simple	L UW T EH N AH N T	1	19	19: L EH T AH N T EH N	3	1	1	5	3	1	1

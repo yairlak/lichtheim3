@@ -1,0 +1,4 @@
+route	n_source_real_items	n_seed_x_item_rows	n_error_events_seed_x_item	n_unique_erroneous_items	event_error_rate	unique_item_error_rate
+full	800	3200	8	5	0.0025	0.00625
+ltm	800	3200	126	70	0.039375	0.0875
+wm	800	3200	7	5	0.0021875	0.00625

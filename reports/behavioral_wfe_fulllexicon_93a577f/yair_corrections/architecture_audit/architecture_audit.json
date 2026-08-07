@@ -1,0 +1,169 @@
+{
+  "code_facts": {
+    "dual_route_submodules": {
+      "phon_embed": "nn.Embedding(vocab.size, cfg.ltm.phon_embed_dim, padding_idx=vocab.pad_id)",
+      "wm": "WMRecurrent(cfg.wm, self.phon_embed, premotor_dim)",
+      "ltm": "LTMLexicon(cfg.ltm, self.phon_embed, cfg.data.semantic_dim, premotor_dim, vocab.pad_id)",
+      "gate": "build_gate(cfg.gating, premotor_dim)",
+      "motor": "MotorCortex(premotor_dim, vocab.size)"
+    },
+    "wm_submodules": {
+      "encoder": "nn.GRU(emb, cfg.hidden, batch_first=True)",
+      "decoder": "nn.GRU(emb, cfg.hidden, batch_first=True)",
+      "to_premotor": "nn.Linear(cfg.hidden, premotor_dim)"
+    },
+    "ltm_submodules": {
+      "to_semantic": "nn.Sequential(nn.Linear(enc_out_dim, cfg.enc_hidden), nn.GELU(), nn.Linear(cfg.enc_hidden, semantic_dim))",
+      "sem_to_h0": "nn.Linear(semantic_dim, cfg.dec_hidden)",
+      "decoder": "nn.GRU(emb_dim, cfg.dec_hidden, batch_first=True)",
+      "dec_to_premotor": "nn.Linear(cfg.dec_hidden, premotor_dim)",
+      "semantic_bank": "bank.to(next(self.parameters()).device)",
+      "encoder": "nn.GRU(emb_dim, cfg.enc_hidden, num_layers=cfg.enc_layers, batch_first=True, bidirectional=False)"
+    },
+    "motor_submodules": {
+      "proj": "nn.Linear(premotor_dim, vocab_size)"
+    },
+    "wm_premotor_projection_is_bare_linear": true,
+    "ltm_premotor_projection_is_bare_linear": true,
+    "motor_projection_is_bare_linear": true,
+    "activations_in_wm_module": [],
+    "activations_in_ltm_module": [
+      "GELU"
+    ]
+  },
+  "checkpoint_facts": {
+    "checkpoint": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_19_epoch_0155.pt",
+    "cfg_wm": {
+      "hidden": 128,
+      "interference_noise": 0.0
+    },
+    "cfg_ltm": {
+      "phon_embed_dim": 64,
+      "enc_hidden": 128,
+      "enc_layers": 1,
+      "dec_hidden": 128,
+      "bidirectional_encoder": false,
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "ventral_noise": 0.0
+    },
+    "cfg_gating": {
+      "alpha": 2.0,
+      "usage_prior": 0.5,
+      "gate_threshold": 0.7
+    },
+    "semantic_dim": 300,
+    "premotor_dim": 128,
+    "parameter_shapes": {
+      "phon_embed.weight": [
+        42,
+        64
+      ],
+      "wm.encoder.weight_ih_l0": [
+        384,
+        64
+      ],
+      "wm.encoder.weight_hh_l0": [
+        384,
+        128
+      ],
+      "wm.encoder.bias_ih_l0": [
+        384
+      ],
+      "wm.encoder.bias_hh_l0": [
+        384
+      ],
+      "wm.decoder.weight_ih_l0": [
+        384,
+        64
+      ],
+      "wm.decoder.weight_hh_l0": [
+        384,
+        128
+      ],
+      "wm.decoder.bias_ih_l0": [
+        384
+      ],
+      "wm.decoder.bias_hh_l0": [
+        384
+      ],
+      "wm.to_premotor.weight": [
+        128,
+        128
+      ],
+      "wm.to_premotor.bias": [
+        128
+      ],
+      "ltm.encoder.weight_ih_l0": [
+        384,
+        64
+      ],
+      "ltm.encoder.weight_hh_l0": [
+        384,
+        128
+      ],
+      "ltm.encoder.bias_ih_l0": [
+        384
+      ],
+      "ltm.encoder.bias_hh_l0": [
+        384
+      ],
+      "ltm.to_semantic.0.weight": [
+        128,
+        128
+      ],
+      "ltm.to_semantic.0.bias": [
+        128
+      ],
+      "ltm.to_semantic.2.weight": [
+        300,
+        128
+      ],
+      "ltm.to_semantic.2.bias": [
+        300
+      ],
+      "ltm.sem_to_h0.weight": [
+        128,
+        300
+      ],
+      "ltm.sem_to_h0.bias": [
+        128
+      ],
+      "ltm.decoder.weight_ih_l0": [
+        384,
+        64
+      ],
+      "ltm.decoder.weight_hh_l0": [
+        384,
+        128
+      ],
+      "ltm.decoder.bias_ih_l0": [
+        384
+      ],
+      "ltm.decoder.bias_hh_l0": [
+        384
+      ],
+      "ltm.dec_to_premotor.weight": [
+        128,
+        128
+      ],
+      "ltm.dec_to_premotor.bias": [
+        128
+      ],
+      "motor.proj.weight": [
+        42,
+        128
+      ],
+      "motor.proj.bias": [
+        42
+      ]
+    },
+    "has_reverse_gru_parameters": [],
+    "wm_to_premotor_has_bias": true,
+    "ltm_dec_to_premotor_has_bias": true,
+    "motor_proj_has_bias": true,
+    "model_constructed": false,
+    "forward_pass_run": false,
+    "tokens_generated": false,
+    "weights_modified": false
+  }
+}

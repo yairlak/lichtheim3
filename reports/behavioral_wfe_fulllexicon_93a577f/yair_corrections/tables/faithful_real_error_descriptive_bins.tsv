@@ -1,0 +1,25 @@
+route	binning	bin	n_seed_x_item_rows	n_items	event_error_rate	caveat
+full	frequency_class	high	1600	400	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	frequency_class	low	1600	400	0.005	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	phoneme_length	3	460	115	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	phoneme_length	4	440	110	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	phoneme_length	5	700	175	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	phoneme_length	7	808	202	0.0012376237623762376	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	phoneme_length	8	448	112	0.004464285714285714	descriptive only; not adjusted for the exposure confound inside the faithful real label
+full	phoneme_length	9	344	86	0.014534883720930232	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	frequency_class	high	1600	400	0.008125	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	frequency_class	low	1600	400	0.070625	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	phoneme_length	3	460	115	0.002173913043478261	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	phoneme_length	4	440	110	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	phoneme_length	5	700	175	0.025714285714285714	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	phoneme_length	7	808	202	0.03341584158415842	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	phoneme_length	8	448	112	0.09151785714285714	descriptive only; not adjusted for the exposure confound inside the faithful real label
+ltm	phoneme_length	9	344	86	0.11337209302325581	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	frequency_class	high	1600	400	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	frequency_class	low	1600	400	0.004375	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	phoneme_length	3	460	115	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	phoneme_length	4	440	110	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	phoneme_length	5	700	175	0.0	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	phoneme_length	7	808	202	0.0012376237623762376	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	phoneme_length	8	448	112	0.004464285714285714	descriptive only; not adjusted for the exposure confound inside the faithful real label
+wm	phoneme_length	9	344	86	0.011627906976744186	descriptive only; not adjusted for the exposure confound inside the faithful real label

@@ -1,0 +1,4 @@
+quantity	n_compared	max_abs_diff	mean_abs_diff	rows_only_in_frozen	rows_only_in_recomputed	reproduces_frozen_figure2C	estimand
+error_rate_per_item	72	8.803721640582296e-17	1.0004776713880126e-17	0	0	True	zip-mismatch positional error, prediction re-padded to target length, no Levenshtein alignment, seeds pooled
+n_items_x_seeds	72	0.0	0.0	0	0	True	zip-mismatch positional error, prediction re-padded to target length, no Levenshtein alignment, seeds pooled
+relative_position	72	5.551115123125783e-17	4.625929269271485e-18	0	0	True	zip-mismatch positional error, prediction re-padded to target length, no Levenshtein alignment, seeds pooled

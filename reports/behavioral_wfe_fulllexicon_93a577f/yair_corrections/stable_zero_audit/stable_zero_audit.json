@@ -1,0 +1,47 @@
+{
+  "source_table": "archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/aggregate_results/all_checkpoints.tsv",
+  "error_column": "n_errors_full",
+  "error_column_meaning": "FULL-route autoregressive error count over the 29,571-word training lexicon at that evaluated epoch",
+  "training_performed": false,
+  "inference_performed": false,
+  "checkpoint_loaded": false,
+  "missing_evaluations_inferred": false,
+  "criterion": "selected checkpoint = first checkpoint of a streak of X consecutive evaluated zero-error checkpoints; training can stop only when the Xth zero is observed",
+  "X_values_audited": [
+    2,
+    3,
+    5
+  ],
+  "verdict_by_X": {
+    "2": {
+      "seeds_meeting": [
+        19,
+        20,
+        22
+      ],
+      "seeds_failing": [
+        21
+      ]
+    },
+    "3": {
+      "seeds_meeting": [
+        19,
+        22
+      ],
+      "seeds_failing": [
+        20,
+        21
+      ]
+    },
+    "5": {
+      "seeds_meeting": [
+        19,
+        22
+      ],
+      "seeds_failing": [
+        20,
+        21
+      ]
+    }
+  }
+}

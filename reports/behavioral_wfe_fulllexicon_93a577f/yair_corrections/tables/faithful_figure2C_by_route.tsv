@@ -1,0 +1,217 @@
+route	source_lexicality	label	phoneme_length	position_index_1based	relative_position	n_items_x_seeds	error_count	error_rate_per_item
+full	pseudo	Pseudowords	3	1	0.0	216	0.0	0.0
+full	pseudo	Pseudowords	3	2	0.5	216	0.0	0.0
+full	pseudo	Pseudowords	3	3	1.0	216	0.0	0.0
+full	pseudo	Pseudowords	4	1	0.0	320	0.0	0.0
+full	pseudo	Pseudowords	4	2	0.3333333333333333	320	0.0	0.0
+full	pseudo	Pseudowords	4	3	0.6666666666666666	320	0.0	0.0
+full	pseudo	Pseudowords	4	4	1.0	320	0.0	0.0
+full	pseudo	Pseudowords	5	1	0.0	264	0.0	0.0
+full	pseudo	Pseudowords	5	2	0.25	264	0.0	0.0
+full	pseudo	Pseudowords	5	3	0.5	264	0.0	0.0
+full	pseudo	Pseudowords	5	4	0.75	264	0.0	0.0
+full	pseudo	Pseudowords	5	5	1.0	264	0.0	0.0
+full	pseudo	Pseudowords	7	1	0.0	264	0.0	0.0
+full	pseudo	Pseudowords	7	2	0.16666666666666666	264	0.0	0.0
+full	pseudo	Pseudowords	7	3	0.3333333333333333	264	0.0	0.0
+full	pseudo	Pseudowords	7	4	0.5	264	0.0	0.0
+full	pseudo	Pseudowords	7	5	0.6666666666666666	264	0.0	0.0
+full	pseudo	Pseudowords	7	6	0.8333333333333334	264	0.0	0.0
+full	pseudo	Pseudowords	7	7	1.0	264	0.0	0.0
+full	pseudo	Pseudowords	8	1	0.0	272	0.0	0.0
+full	pseudo	Pseudowords	8	2	0.14285714285714285	272	0.0	0.0
+full	pseudo	Pseudowords	8	3	0.2857142857142857	272	0.0	0.0
+full	pseudo	Pseudowords	8	4	0.42857142857142855	272	0.0	0.0
+full	pseudo	Pseudowords	8	5	0.5714285714285714	272	0.0	0.0
+full	pseudo	Pseudowords	8	6	0.7142857142857143	272	0.0	0.0
+full	pseudo	Pseudowords	8	7	0.8571428571428571	272	0.0	0.0
+full	pseudo	Pseudowords	8	8	1.0	272	0.0	0.0
+full	pseudo	Pseudowords	9	1	0.0	264	0.0	0.0
+full	pseudo	Pseudowords	9	2	0.125	264	0.0	0.0
+full	pseudo	Pseudowords	9	3	0.25	264	1.0	0.003787878787878788
+full	pseudo	Pseudowords	9	4	0.375	264	0.0	0.0
+full	pseudo	Pseudowords	9	5	0.5	264	1.0	0.003787878787878788
+full	pseudo	Pseudowords	9	6	0.625	264	1.0	0.003787878787878788
+full	pseudo	Pseudowords	9	7	0.75	264	8.0	0.030303030303030304
+full	pseudo	Pseudowords	9	8	0.875	264	6.0	0.022727272727272728
+full	pseudo	Pseudowords	9	9	1.0	264	11.0	0.041666666666666664
+full	real	Real words	3	1	0.0	460	0.0	0.0
+full	real	Real words	3	2	0.5	460	0.0	0.0
+full	real	Real words	3	3	1.0	460	0.0	0.0
+full	real	Real words	4	1	0.0	440	0.0	0.0
+full	real	Real words	4	2	0.3333333333333333	440	0.0	0.0
+full	real	Real words	4	3	0.6666666666666666	440	0.0	0.0
+full	real	Real words	4	4	1.0	440	0.0	0.0
+full	real	Real words	5	1	0.0	700	0.0	0.0
+full	real	Real words	5	2	0.25	700	0.0	0.0
+full	real	Real words	5	3	0.5	700	0.0	0.0
+full	real	Real words	5	4	0.75	700	0.0	0.0
+full	real	Real words	5	5	1.0	700	0.0	0.0
+full	real	Real words	7	1	0.0	808	1.0	0.0012376237623762376
+full	real	Real words	7	2	0.16666666666666666	808	0.0	0.0
+full	real	Real words	7	3	0.3333333333333333	808	1.0	0.0012376237623762376
+full	real	Real words	7	4	0.5	808	0.0	0.0
+full	real	Real words	7	5	0.6666666666666666	808	0.0	0.0
+full	real	Real words	7	6	0.8333333333333334	808	0.0	0.0
+full	real	Real words	7	7	1.0	808	0.0	0.0
+full	real	Real words	8	1	0.0	448	0.0	0.0
+full	real	Real words	8	2	0.14285714285714285	448	0.0	0.0
+full	real	Real words	8	3	0.2857142857142857	448	0.0	0.0
+full	real	Real words	8	4	0.42857142857142855	448	0.0	0.0
+full	real	Real words	8	5	0.5714285714285714	448	0.0	0.0
+full	real	Real words	8	6	0.7142857142857143	448	1.0	0.002232142857142857
+full	real	Real words	8	7	0.8571428571428571	448	2.0	0.004464285714285714
+full	real	Real words	8	8	1.0	448	1.0	0.002232142857142857
+full	real	Real words	9	1	0.0	344	0.0	0.0
+full	real	Real words	9	2	0.125	344	0.0	0.0
+full	real	Real words	9	3	0.25	344	0.0	0.0
+full	real	Real words	9	4	0.375	344	0.0	0.0
+full	real	Real words	9	5	0.5	344	0.0	0.0
+full	real	Real words	9	6	0.625	344	0.0	0.0
+full	real	Real words	9	7	0.75	344	4.0	0.011627906976744186
+full	real	Real words	9	8	0.875	344	5.0	0.014534883720930232
+full	real	Real words	9	9	1.0	344	3.0	0.00872093023255814
+ltm	pseudo	Pseudowords	3	1	0.0	216	3.0	0.013888888888888888
+ltm	pseudo	Pseudowords	3	2	0.5	216	5.0	0.023148148148148147
+ltm	pseudo	Pseudowords	3	3	1.0	216	13.0	0.06018518518518518
+ltm	pseudo	Pseudowords	4	1	0.0	320	4.0	0.0125
+ltm	pseudo	Pseudowords	4	2	0.3333333333333333	320	7.0	0.021875
+ltm	pseudo	Pseudowords	4	3	0.6666666666666666	320	9.0	0.028125
+ltm	pseudo	Pseudowords	4	4	1.0	320	12.0	0.0375
+ltm	pseudo	Pseudowords	5	1	0.0	264	5.0	0.01893939393939394
+ltm	pseudo	Pseudowords	5	2	0.25	264	8.0	0.030303030303030304
+ltm	pseudo	Pseudowords	5	3	0.5	264	14.0	0.05303030303030303
+ltm	pseudo	Pseudowords	5	4	0.75	264	19.0	0.07196969696969698
+ltm	pseudo	Pseudowords	5	5	1.0	264	16.0	0.06060606060606061
+ltm	pseudo	Pseudowords	7	1	0.0	264	3.0	0.011363636363636364
+ltm	pseudo	Pseudowords	7	2	0.16666666666666666	264	6.0	0.022727272727272728
+ltm	pseudo	Pseudowords	7	3	0.3333333333333333	264	14.0	0.05303030303030303
+ltm	pseudo	Pseudowords	7	4	0.5	264	24.0	0.09090909090909091
+ltm	pseudo	Pseudowords	7	5	0.6666666666666666	264	32.0	0.12121212121212122
+ltm	pseudo	Pseudowords	7	6	0.8333333333333334	264	32.0	0.12121212121212122
+ltm	pseudo	Pseudowords	7	7	1.0	264	40.0	0.15151515151515152
+ltm	pseudo	Pseudowords	8	1	0.0	272	6.0	0.022058823529411766
+ltm	pseudo	Pseudowords	8	2	0.14285714285714285	272	8.0	0.029411764705882353
+ltm	pseudo	Pseudowords	8	3	0.2857142857142857	272	16.0	0.058823529411764705
+ltm	pseudo	Pseudowords	8	4	0.42857142857142855	272	34.0	0.125
+ltm	pseudo	Pseudowords	8	5	0.5714285714285714	272	35.0	0.12867647058823528
+ltm	pseudo	Pseudowords	8	6	0.7142857142857143	272	52.0	0.19117647058823528
+ltm	pseudo	Pseudowords	8	7	0.8571428571428571	272	55.0	0.20220588235294118
+ltm	pseudo	Pseudowords	8	8	1.0	272	56.0	0.20588235294117646
+ltm	pseudo	Pseudowords	9	1	0.0	264	7.0	0.026515151515151516
+ltm	pseudo	Pseudowords	9	2	0.125	264	7.0	0.026515151515151516
+ltm	pseudo	Pseudowords	9	3	0.25	264	19.0	0.07196969696969698
+ltm	pseudo	Pseudowords	9	4	0.375	264	34.0	0.12878787878787878
+ltm	pseudo	Pseudowords	9	5	0.5	264	53.0	0.20075757575757575
+ltm	pseudo	Pseudowords	9	6	0.625	264	65.0	0.24621212121212122
+ltm	pseudo	Pseudowords	9	7	0.75	264	85.0	0.32196969696969696
+ltm	pseudo	Pseudowords	9	8	0.875	264	88.0	0.3333333333333333
+ltm	pseudo	Pseudowords	9	9	1.0	264	101.0	0.38257575757575757
+ltm	real	Real words	3	1	0.0	460	1.0	0.002173913043478261
+ltm	real	Real words	3	2	0.5	460	1.0	0.002173913043478261
+ltm	real	Real words	3	3	1.0	460	1.0	0.002173913043478261
+ltm	real	Real words	4	1	0.0	440	0.0	0.0
+ltm	real	Real words	4	2	0.3333333333333333	440	0.0	0.0
+ltm	real	Real words	4	3	0.6666666666666666	440	0.0	0.0
+ltm	real	Real words	4	4	1.0	440	0.0	0.0
+ltm	real	Real words	5	1	0.0	700	0.0	0.0
+ltm	real	Real words	5	2	0.25	700	5.0	0.007142857142857143
+ltm	real	Real words	5	3	0.5	700	6.0	0.008571428571428572
+ltm	real	Real words	5	4	0.75	700	7.0	0.01
+ltm	real	Real words	5	5	1.0	700	12.0	0.017142857142857144
+ltm	real	Real words	7	1	0.0	808	4.0	0.0049504950495049506
+ltm	real	Real words	7	2	0.16666666666666666	808	5.0	0.006188118811881188
+ltm	real	Real words	7	3	0.3333333333333333	808	6.0	0.007425742574257425
+ltm	real	Real words	7	4	0.5	808	12.0	0.01485148514851485
+ltm	real	Real words	7	5	0.6666666666666666	808	15.0	0.018564356435643563
+ltm	real	Real words	7	6	0.8333333333333334	808	9.0	0.011138613861386138
+ltm	real	Real words	7	7	1.0	808	16.0	0.019801980198019802
+ltm	real	Real words	8	1	0.0	448	6.0	0.013392857142857142
+ltm	real	Real words	8	2	0.14285714285714285	448	8.0	0.017857142857142856
+ltm	real	Real words	8	3	0.2857142857142857	448	9.0	0.020089285714285716
+ltm	real	Real words	8	4	0.42857142857142855	448	11.0	0.024553571428571428
+ltm	real	Real words	8	5	0.5714285714285714	448	12.0	0.026785714285714284
+ltm	real	Real words	8	6	0.7142857142857143	448	21.0	0.046875
+ltm	real	Real words	8	7	0.8571428571428571	448	23.0	0.05133928571428571
+ltm	real	Real words	8	8	1.0	448	26.0	0.05803571428571429
+ltm	real	Real words	9	1	0.0	344	3.0	0.00872093023255814
+ltm	real	Real words	9	2	0.125	344	3.0	0.00872093023255814
+ltm	real	Real words	9	3	0.25	344	8.0	0.023255813953488372
+ltm	real	Real words	9	4	0.375	344	7.0	0.020348837209302327
+ltm	real	Real words	9	5	0.5	344	14.0	0.040697674418604654
+ltm	real	Real words	9	6	0.625	344	14.0	0.040697674418604654
+ltm	real	Real words	9	7	0.75	344	20.0	0.05813953488372093
+ltm	real	Real words	9	8	0.875	344	18.0	0.05232558139534884
+ltm	real	Real words	9	9	1.0	344	24.0	0.06976744186046512
+wm	pseudo	Pseudowords	3	1	0.0	216	0.0	0.0
+wm	pseudo	Pseudowords	3	2	0.5	216	0.0	0.0
+wm	pseudo	Pseudowords	3	3	1.0	216	0.0	0.0
+wm	pseudo	Pseudowords	4	1	0.0	320	0.0	0.0
+wm	pseudo	Pseudowords	4	2	0.3333333333333333	320	0.0	0.0
+wm	pseudo	Pseudowords	4	3	0.6666666666666666	320	0.0	0.0
+wm	pseudo	Pseudowords	4	4	1.0	320	0.0	0.0
+wm	pseudo	Pseudowords	5	1	0.0	264	0.0	0.0
+wm	pseudo	Pseudowords	5	2	0.25	264	0.0	0.0
+wm	pseudo	Pseudowords	5	3	0.5	264	0.0	0.0
+wm	pseudo	Pseudowords	5	4	0.75	264	0.0	0.0
+wm	pseudo	Pseudowords	5	5	1.0	264	0.0	0.0
+wm	pseudo	Pseudowords	7	1	0.0	264	0.0	0.0
+wm	pseudo	Pseudowords	7	2	0.16666666666666666	264	0.0	0.0
+wm	pseudo	Pseudowords	7	3	0.3333333333333333	264	0.0	0.0
+wm	pseudo	Pseudowords	7	4	0.5	264	0.0	0.0
+wm	pseudo	Pseudowords	7	5	0.6666666666666666	264	0.0	0.0
+wm	pseudo	Pseudowords	7	6	0.8333333333333334	264	0.0	0.0
+wm	pseudo	Pseudowords	7	7	1.0	264	0.0	0.0
+wm	pseudo	Pseudowords	8	1	0.0	272	0.0	0.0
+wm	pseudo	Pseudowords	8	2	0.14285714285714285	272	0.0	0.0
+wm	pseudo	Pseudowords	8	3	0.2857142857142857	272	0.0	0.0
+wm	pseudo	Pseudowords	8	4	0.42857142857142855	272	0.0	0.0
+wm	pseudo	Pseudowords	8	5	0.5714285714285714	272	1.0	0.003676470588235294
+wm	pseudo	Pseudowords	8	6	0.7142857142857143	272	1.0	0.003676470588235294
+wm	pseudo	Pseudowords	8	7	0.8571428571428571	272	1.0	0.003676470588235294
+wm	pseudo	Pseudowords	8	8	1.0	272	0.0	0.0
+wm	pseudo	Pseudowords	9	1	0.0	264	0.0	0.0
+wm	pseudo	Pseudowords	9	2	0.125	264	0.0	0.0
+wm	pseudo	Pseudowords	9	3	0.25	264	0.0	0.0
+wm	pseudo	Pseudowords	9	4	0.375	264	1.0	0.003787878787878788
+wm	pseudo	Pseudowords	9	5	0.5	264	2.0	0.007575757575757576
+wm	pseudo	Pseudowords	9	6	0.625	264	6.0	0.022727272727272728
+wm	pseudo	Pseudowords	9	7	0.75	264	11.0	0.041666666666666664
+wm	pseudo	Pseudowords	9	8	0.875	264	9.0	0.03409090909090909
+wm	pseudo	Pseudowords	9	9	1.0	264	13.0	0.04924242424242424
+wm	real	Real words	3	1	0.0	460	0.0	0.0
+wm	real	Real words	3	2	0.5	460	0.0	0.0
+wm	real	Real words	3	3	1.0	460	0.0	0.0
+wm	real	Real words	4	1	0.0	440	0.0	0.0
+wm	real	Real words	4	2	0.3333333333333333	440	0.0	0.0
+wm	real	Real words	4	3	0.6666666666666666	440	0.0	0.0
+wm	real	Real words	4	4	1.0	440	0.0	0.0
+wm	real	Real words	5	1	0.0	700	0.0	0.0
+wm	real	Real words	5	2	0.25	700	0.0	0.0
+wm	real	Real words	5	3	0.5	700	0.0	0.0
+wm	real	Real words	5	4	0.75	700	0.0	0.0
+wm	real	Real words	5	5	1.0	700	0.0	0.0
+wm	real	Real words	7	1	0.0	808	1.0	0.0012376237623762376
+wm	real	Real words	7	2	0.16666666666666666	808	0.0	0.0
+wm	real	Real words	7	3	0.3333333333333333	808	0.0	0.0
+wm	real	Real words	7	4	0.5	808	0.0	0.0
+wm	real	Real words	7	5	0.6666666666666666	808	0.0	0.0
+wm	real	Real words	7	6	0.8333333333333334	808	0.0	0.0
+wm	real	Real words	7	7	1.0	808	0.0	0.0
+wm	real	Real words	8	1	0.0	448	0.0	0.0
+wm	real	Real words	8	2	0.14285714285714285	448	0.0	0.0
+wm	real	Real words	8	3	0.2857142857142857	448	0.0	0.0
+wm	real	Real words	8	4	0.42857142857142855	448	0.0	0.0
+wm	real	Real words	8	5	0.5714285714285714	448	1.0	0.002232142857142857
+wm	real	Real words	8	6	0.7142857142857143	448	2.0	0.004464285714285714
+wm	real	Real words	8	7	0.8571428571428571	448	1.0	0.002232142857142857
+wm	real	Real words	8	8	1.0	448	0.0	0.0
+wm	real	Real words	9	1	0.0	344	0.0	0.0
+wm	real	Real words	9	2	0.125	344	0.0	0.0
+wm	real	Real words	9	3	0.25	344	0.0	0.0
+wm	real	Real words	9	4	0.375	344	0.0	0.0
+wm	real	Real words	9	5	0.5	344	1.0	0.0029069767441860465
+wm	real	Real words	9	6	0.625	344	1.0	0.0029069767441860465
+wm	real	Real words	9	7	0.75	344	3.0	0.00872093023255814
+wm	real	Real words	9	8	0.875	344	2.0	0.005813953488372093
+wm	real	Real words	9	9	1.0	344	1.0	0.0029069767441860465
