@@ -1,0 +1,72 @@
+{
+  "phase": "Phase B - ventral/semantic frozen-checkpoint figures",
+  "cohort": [
+    {
+      "seed": 19,
+      "epoch": 155,
+      "rule": "X=5 stable zero, first checkpoint of the run"
+    },
+    {
+      "seed": 22,
+      "epoch": 140,
+      "rule": "X=5 stable zero, first checkpoint of the run"
+    }
+  ],
+  "n_words": 29571,
+  "semantic_dim": 300,
+  "glove_normalisation": "L2 (bank is normalised at set_semantic_bank)",
+  "s_hat_used": "RAW s_hat from to_semantic; L2-normalised only for cosine-space computation and for figure 1",
+  "identification_metric": "cosine(s_hat, own GloVe) vs max cosine to any OTHER GloVe vector; competition rank over all 29,571 entries. This is NOT c_LTM: c_LTM is max similarity to ANY bank item including the target.",
+  "annotation_selection_rule": "20 words at evenly spaced positions in the frequency-rank ordering of the 29,571-word training lexicon: index = round(linspace(0, 29570, 20)), 0-based, rank order as shipped in data/lexicon_en_glove_covered.tsv. Deterministic, no RNG, defined before any model output was inspected, and independent of alignment, error or retrieval performance.",
+  "pca": {
+    "pca_fit_population": "L2-normalised GloVe bank, 29,571 x 300",
+    "pca_fitted_jointly_with_s_hat": false,
+    "pca_fitted_per_seed": false,
+    "n_components": 2,
+    "explained_variance_ratio_pc1": 0.05694073066115379,
+    "explained_variance_ratio_pc2": 0.02560901828110218,
+    "explained_variance_ratio_sum": 0.08254975080490112,
+    "centering": "GloVe bank mean, reused for s_hat",
+    "s_hat_normalisation_for_this_figure": "L2 (cosine space)"
+  },
+  "results": {
+    "19": {
+      "top1_accuracy": 0.02654627844847993,
+      "top5_accuracy": 0.059754489195495586,
+      "median_target_cosine": 0.29799047112464905,
+      "median_margin": -0.22287604212760925,
+      "median_target_rank": 1504.0,
+      "n_words": 29571
+    },
+    "22": {
+      "top1_accuracy": 0.025430320246187143,
+      "top5_accuracy": 0.05688005140171114,
+      "median_target_cosine": 0.29440346360206604,
+      "median_margin": -0.22440606355667114,
+      "median_target_rank": 1581.0,
+      "n_words": 29571
+    }
+  },
+  "inputs": {
+    "glove_bank_normalised.npy": "3af769e20617b8db7d53b724c85a07dba177c6f651176e25946a4dac84c5b023",
+    "s_hat_lexicon_seed19.npy": "c3edbcc676da3d71b9c383024f095ace71923c3869f264efb97c80a0df285573",
+    "s_hat_lexicon_seed22.npy": "fcbe68df36b5235acfb41de43aa0644f874f7cd06f9f9004694ad825df6b05e2"
+  },
+  "model_loaded": false,
+  "inference_run": false,
+  "training_performed": false,
+  "figures": {
+    "figure1": {
+      "png": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig1_glove_s_hat_pca_alignment.png",
+      "pdf": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig1_glove_s_hat_pca_alignment.pdf",
+      "svg": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig1_glove_s_hat_pca_alignment.svg"
+    },
+    "figure2": {
+      "png": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig2_target_semantic_identification.png",
+      "pdf": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig2_target_semantic_identification.pdf",
+      "svg": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig2_target_semantic_identification.svg"
+    }
+  },
+  "repository_head": "c7eb55b200e1a9e80f724a9734a06b306aabca86",
+  "branch": "feat/ventral-semantic-probe"
+}

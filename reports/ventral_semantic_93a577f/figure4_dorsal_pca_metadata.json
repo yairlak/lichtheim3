@@ -1,0 +1,79 @@
+{
+  "figure_family": "fig4_wordmap_h_wm",
+  "phase": "C1 - dorsal PCA",
+  "representation": "h_WM, the word-level dorsal encoder state from WMRecurrent.encode (1,B,128) -> (B,128), deterministic pre-noise",
+  "normalisation": "L2 per row before PCA",
+  "pca_fits": {
+    "h_wm_seed19": "fitted on seed-19 h_WM only",
+    "h_wm_seed22": "fitted on seed-22 h_WM only"
+  },
+  "seeds_pooled_for_fitting": false,
+  "transform_shared_across_seeds": false,
+  "methodologically_matched_to_ventral": "fit_pca2, render_single, font, aspect and layout imported unchanged from figure3_independent_pca",
+  "points_drawn": false,
+  "arrows_or_leader_lines_drawn": false,
+  "collision_avoidance_applied": false,
+  "words_at_exact_pca_coordinates": true,
+  "subsampled": false,
+  "font_size_pt": 4.0,
+  "text_alpha": 0.95,
+  "long_side_inches": 22.0,
+  "png_dpi": 250,
+  "explained_variance_ratio": {
+    "h_wm_seed19": {
+      "pc1": 0.11499574035406113,
+      "pc2": 0.04820956289768219,
+      "pc1_plus_pc2": 0.16320529580116272
+    },
+    "h_wm_seed22": {
+      "pc1": 0.11220832914113998,
+      "pc2": 0.05083172023296356,
+      "pc1_plus_pc2": 0.16304004192352295
+    }
+  },
+  "n_words": 29571,
+  "renders": {
+    "h_wm_seed19": {
+      "paths": {
+        "pdf": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig4_wordmap_h_wm_seed19.pdf",
+        "png": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig4_wordmap_h_wm_seed19.png"
+      },
+      "figsize_inches": [
+        22.45,
+        23.7
+      ],
+      "aspect_data_dx_dy": [
+        1.2035,
+        1.2759
+      ],
+      "fontsize_pt": 4.0,
+      "n_words_drawn": 29571
+    },
+    "h_wm_seed22": {
+      "paths": {
+        "pdf": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig4_wordmap_h_wm_seed22.pdf",
+        "png": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig4_wordmap_h_wm_seed22.png"
+      },
+      "figsize_inches": [
+        23.3,
+        23.7
+      ],
+      "aspect_data_dx_dy": [
+        1.1387,
+        1.1597
+      ],
+      "fontsize_pt": 4.0,
+      "n_words_drawn": 29571
+    }
+  },
+  "all_word_coordinates_tsv": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/tables/dorsal_pca_all_word_coordinates.tsv",
+  "inputs": {
+    "h_wm_lexicon_seed19.npy": "7d0cc1aa40d43df26131ecfc772110cfb8fdd3a923fb0d94e31668b6af0394e4",
+    "h_wm_lexicon_seed22.npy": "1c546934b10215b4cbf46f5fba484f97ae7e46c44c5e66ab8ee72b2a076b22da"
+  },
+  "model_loaded": false,
+  "inference_run": false,
+  "training_performed": false,
+  "repository_head": "c7eb55b200e1a9e80f724a9734a06b306aabca86",
+  "branch": "feat/ventral-semantic-probe"
+}

@@ -1,0 +1,15 @@
+seed	epoch	route	reference	analysis	pearson_r	n_pairs
+19	155	LTM (ventral)	GloVe (semantic)	primary	0.39828162600972966	437207235
+19	155	LTM (ventral)	phon raw Levenshtein	primary	0.021011131192538193	437207235
+19	155	LTM (ventral)	phon normalised Levenshtein	sensitivity	0.0408505978684313	437207235
+19	155	WM (dorsal)	GloVe (semantic)	primary	0.05353248269959328	437207235
+19	155	WM (dorsal)	phon raw Levenshtein	primary	0.15453786040990056	437207235
+19	155	WM (dorsal)	phon normalised Levenshtein	sensitivity	0.4206824891939277	437207235
+22	140	LTM (ventral)	GloVe (semantic)	primary	0.3881268658849439	437207235
+22	140	LTM (ventral)	phon raw Levenshtein	primary	0.025658405146158057	437207235
+22	140	LTM (ventral)	phon normalised Levenshtein	sensitivity	0.0413421854418232	437207235
+22	140	WM (dorsal)	GloVe (semantic)	primary	0.05460168844415849	437207235
+22	140	WM (dorsal)	phon raw Levenshtein	primary	0.13045599800698718	437207235
+22	140	WM (dorsal)	phon normalised Levenshtein	sensitivity	0.4299340153215469	437207235
+-	-	reference vs reference	GloVe vs phon raw	primary	0.007928837491987662	437207235
+-	-	reference vs reference	GloVe vs phon normalised	sensitivity	0.019819105914012643	437207235
