@@ -549,6 +549,305 @@ def preflight(ckpt_path: str, taus: Sequence[float], n_batches: int,
     }
 
 
+# ==============================================  Phase 2B run driver  =====
+# Single-task acquisition experiments.  Every run starts INDEPENDENTLY from the
+# canonical checkpoint; a run is never continued from another run.
+
+EVAL_EVERY = 5                       # evaluation snapshot cadence (epochs)
+REPETITION_EPOCHS = (0, 5, 10, 20, 50, 100)   # canonical AR safeguard schedule
+
+
+def require_real_glove(ckpt: dict, expected_found: Optional[int] = None) -> dict:
+    """Fail fast unless the checkpoint certifies full real-GloVe coverage."""
+    status = {
+        "glove_present": bool(ckpt.get("glove_present", False)),
+        "n_glove_found": int(ckpt.get("n_glove_found", -1)),
+        "n_glove_fallback": int(ckpt.get("n_glove_fallback", -1)),
+    }
+    ok = (status["glove_present"] and status["n_glove_fallback"] == 0
+          and (expected_found is None or status["n_glove_found"] == expected_found))
+    if not ok:
+        raise SystemExit(
+            f"Real-GloVe coverage not certified by the checkpoint: {status} "
+            f"(expected glove_present=True, n_glove_fallback=0"
+            + (f", n_glove_found={expected_found}" if expected_found else "") + ").")
+    return status
+
+
+@torch.no_grad()
+def evaluate_comprehension(model: DualRouteModel, vocab: Vocab,
+                           entries: Sequence[LexEntry], bank_raw: torch.Tensor,
+                           strict_idx: Sequence[int], homo_idx: Sequence[int],
+                           device: str, batch_size: int = 512) -> dict:
+    """Canonical comprehension retrieval metrics, reusing the frozen probe.
+
+    Populations and metrics are exactly those of Phase 1A/1B: retrieval runs
+    against the FULL canonical bank, the primary population is the
+    unique-phonology words, and homophones are reported separately.
+    """
+    from scripts.naming_comprehension.frozen_probe import (
+        comprehension_metrics, encode_all)
+    from scripts.naming_comprehension.aggregate_cohort import (
+        FREQ_BANDS, BAND_LABELS)          # frozen Phase 1A band definitions
+
+    all_idx = list(strict_idx) + list(homo_idx)
+    forms = [entries[i].phonemes for i in all_idx]
+    was_training = model.training
+    model.eval()
+    s_hat = encode_all(model, vocab, forms, device, batch_size)
+    m = comprehension_metrics(s_hat.cpu(), bank_raw.cpu(), all_idx, batch_size)
+    model.train(was_training)
+
+    n_strict = len(strict_idx)
+    same_phon = [
+        int(tuple(entries[int(m["top1_idx"][k])].phonemes)
+            == tuple(entries[i].phonemes))
+        for k, i in enumerate(all_idx)]
+
+    def agg(sl: slice) -> dict:
+        import numpy as np
+        return {
+            "n": len(range(*sl.indices(len(all_idx)))),
+            "target_cos_mean": float(np.mean(m["target_cos"][sl])),
+            "target_rank_median": float(np.median(m["target_rank"][sl])),
+            "top1": float(np.mean(m["top1"][sl])),
+            "top5": float(np.mean(m["top5"][sl])),
+            "margin_mean": float(np.mean(m["margin"][sl])),
+            "c_ltm_mean_aux": float(np.mean(m["c_ltm"][sl])),
+        }
+
+    import numpy as np
+    out = {
+        "strict_unique_phonology": agg(slice(0, n_strict)),
+        "homophones_separate": {
+            **agg(slice(n_strict, len(all_idx))),
+            "class_aware_top1_aux": float(np.mean(same_phon[n_strict:])),
+        },
+        "frequency_bands_strict": {},
+    }
+    ranks = np.array([entries[i].rank for i in strict_idx])
+    for (lo, hi), lab in zip(FREQ_BANDS, BAND_LABELS):
+        sel = (ranks >= lo) & (ranks < hi)
+        out["frequency_bands_strict"][lab] = {
+            "n": int(sel.sum()),
+            "top1": float(m["top1"][:n_strict][sel].mean()) if sel.any() else None,
+        }
+    return out
+
+
+@torch.no_grad()
+def evaluate_naming(model: DualRouteModel, vocab: Vocab,
+                    entries: Sequence[LexEntry], bank_raw: torch.Tensor,
+                    indices: Sequence[int], device: str, max_steps: int,
+                    batch_size: int = 512,
+                    return_per_item: bool = False) -> dict:
+    """Naming from RAW target GloVe via the committed semantic greedy AR decoder.
+
+    Decoding is BOS -> greedy -> EOS or the global cap; the target word length
+    is never consulted.
+    """
+    from scripts.naming_comprehension.frozen_probe import semantic_greedy_decode
+    from scripts.external_eval import _edit_distance
+
+    was_training = model.training
+    model.eval()
+    exact = edit = eos = 0
+    rows: List[dict] = []
+    for lo in range(0, len(indices), batch_size):
+        idx = list(indices[lo:lo + batch_size])
+        sem = bank_raw[torch.tensor(idx)].to(device)      # RAW GloVe, by bank index
+        preds, eos_flags = semantic_greedy_decode(model, sem, vocab, max_steps)
+        for k, i in enumerate(idx):
+            gold = entries[i].phonemes
+            ok = int(preds[k] == gold)
+            ed = _edit_distance(preds[k], gold)
+            exact += ok
+            edit += ed
+            eos += int(eos_flags[k])
+            if return_per_item:
+                rows.append({
+                    "bank_index": i, "word": entries[i].word,
+                    "length": len(gold), "freq_rank": entries[i].rank,
+                    "pred": " ".join(vocab.itos[p] for p in preds[k]),
+                    "exact": ok, "edit": ed, "pred_len": len(preds[k]),
+                    "eos_emitted": int(eos_flags[k]),
+                })
+    model.train(was_training)
+    n = max(len(indices), 1)
+    out = {"n": len(indices), "exact_match": exact / n,
+           "whole_word_error_rate": 1.0 - exact / n,
+           "mean_edit": edit / n, "eos_emission_rate": eos / n}
+    if return_per_item:
+        out["_per_item"] = rows
+    return out
+
+
+def _write_tsv(path: str, rows: List[dict]) -> None:
+    if not rows:
+        return
+    cols = list(rows[0].keys())
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\t".join(cols) + "\n")
+        for r in rows:
+            f.write("\t".join(str(r[c]) for c in cols) + "\n")
+
+
+def run_task(ckpt_path: str, task: str, objective: str, out_dir: str,
+             lr: float = 1e-4, weight_decay: float = 1e-5,
+             batch_size: int = 64, epochs: int = 100,
+             tau: float = 0.10, lambda_ret: float = 0.087,
+             data_seed: int = 0, device: str = "cpu",
+             eval_every: int = EVAL_EVERY) -> dict:
+    """One single-task acquisition run, always from the canonical checkpoint.
+
+    No validation set exists in this diagnostic, so no checkpoint is ever
+    selected on held-out performance and none is called "best": the budget is
+    fixed and the final epoch is saved as-is.
+    """
+    t_start = time.time()
+    os.makedirs(out_dir, exist_ok=True)
+
+    model, vocab, entries, bank_raw, cfg, ckpt = load_frozen(ckpt_path, device)
+    glove_status = require_real_glove(ckpt, expected_found=len(entries))
+
+    strict_idx = unique_phonology_indices(entries)
+    homo_idx = homophone_indices(entries)
+    all_idx = list(range(len(entries)))
+    train_pop = strict_idx if task == "comprehension" else all_idx
+    verify_bank_mapping(entries, bank_raw, train_pop[::997] + homo_idx[::97])
+
+    trainable = set_trainable_scope(model, task)
+    optim = fresh_optimizer(model, lr=lr, weight_decay=weight_decay)
+    initial = parameter_fingerprint(model)          # for bit-identity audit
+    dorsal_ref = dorsal_fingerprint(model)
+    max_steps = cfg.data.max_phonemes + 1           # committed naming cap
+
+    def snapshot(epoch: int) -> dict:
+        s: Dict[str, object] = {"epoch": epoch}
+        if task == "comprehension":
+            s["comprehension"] = evaluate_comprehension(
+                model, vocab, entries, bank_raw, strict_idx, homo_idx, device)
+        else:
+            s["naming"] = evaluate_naming(
+                model, vocab, entries, bank_raw, all_idx, device, max_steps)
+        if epoch in REPETITION_EPOCHS:
+            s["repetition"] = repetition_snapshot(
+                model, vocab, entries, all_idx, bank_raw, device,
+                include_teacher_forced=True)
+        return s
+
+    trajectory: List[dict] = []
+    snapshots: List[dict] = [snapshot(0)]
+    print(f"[{task}/{objective}] epoch 0 snapshot done", flush=True)
+
+    for epoch in range(1, epochs + 1):
+        model.train()
+        acc_total = 0.0
+        acc_parts: Dict[str, float] = {}
+        nb = 0
+        for b in make_batches(entries, train_pop, bank_raw, vocab, batch_size,
+                              device, shuffle=True, seed=data_seed * 100000 + epoch):
+            if task == "comprehension":
+                o = comprehension_objective(model, b, objective, tau, lambda_ret)
+            else:
+                o = naming_objective(model, b, vocab.pad_id)
+            loss = o["total"]
+            optim.zero_grad(set_to_none=True)
+            loss.backward()
+            optim.step()
+            acc_total += float(loss.detach())
+            for k in ("c0", "retrieval"):
+                if k in o:
+                    acc_parts[k] = acc_parts.get(k, 0.0) + float(o[k].detach())
+            nb += 1
+        rec = {"epoch": epoch, "train_loss": acc_total / max(nb, 1), "n_batches": nb}
+        rec.update({f"train_{k}": v / max(nb, 1) for k, v in acc_parts.items()})
+        trajectory.append(rec)
+
+        # dorsal invariants are checked EVERY epoch: a violation is a bug and
+        # must stop the run immediately, not be discovered at the end.
+        assert_dorsal_untouched(model, dorsal_ref)
+
+        if epoch % eval_every == 0:
+            snapshots.append(snapshot(epoch))
+            print(f"[{task}/{objective}] epoch {epoch} loss={rec['train_loss']:.4f}",
+                  flush=True)
+
+    # ---- final scope audit: everything outside the scope is bit-identical ----
+    changed = changed_parameters(model, initial)
+    scope_ok = set(changed) <= set(trainable)
+    if not scope_ok:
+        raise RuntimeError(
+            "Parameters outside the approved trainable scope changed: "
+            f"{sorted(set(changed) - set(trainable))}")
+
+    # ---- final per-item outputs at the fixed budget (never 'best') ----
+    if task == "naming":
+        final_items = evaluate_naming(model, vocab, entries, bank_raw, all_idx,
+                                      device, max_steps, return_per_item=True)
+        _write_tsv(os.path.join(out_dir, "final_per_item.tsv"),
+                   final_items.pop("_per_item"))
+
+    ckpt_out = os.path.join(out_dir, f"final_epoch_{epochs}.pt")
+    torch.save({"model_state_dict": model.state_dict(),
+                "task": task, "objective": objective, "epochs": epochs,
+                "note": "fixed-budget final epoch; NOT a validation-selected checkpoint",
+                "source_checkpoint_sha256": sha256_file(ckpt_path)}, ckpt_out)
+
+    result = {
+        "phase": "2B_single_task_acquisition",
+        "task": task,
+        "objective": objective,
+        "budget": {"epochs": epochs, "batch_size": batch_size,
+                   "eval_every": eval_every, "early_stopping": False,
+                   "lr": lr, "weight_decay": weight_decay,
+                   "lr_schedule": "constant",
+                   "optimizer": "AdamW, fresh, task scope only; checkpoint "
+                                "optimizer state never restored"},
+        "objective_config": ({"tau": tau, "lambda_ret": lambda_ret}
+                             if objective == "c3" else {}),
+        "populations": {
+            "training_population": len(train_pop),
+            "training_population_kind": ("unique-phonology words"
+                                         if task == "comprehension"
+                                         else "all lexicon words"),
+            "sampler": "flat/uniform, without replacement, reshuffled per epoch",
+            "retrieval_bank_size": int(model.ltm.semantic_bank.shape[0]),
+            "strict_unique_phonology": len(strict_idx),
+            "homophones": len(homo_idx),
+        },
+        "trainable_parameters": trainable,
+        "always_frozen": list(ALWAYS_FROZEN),
+        "scope_audit": {
+            "changed_parameters": sorted(changed),
+            "all_changes_within_scope": scope_ok,
+            "dorsal_bit_identical": True,
+        },
+        "trajectory": trajectory,
+        "snapshots": snapshots,
+        "final_checkpoint": os.path.abspath(ckpt_out),
+        "provenance": {
+            "source_checkpoint_path": os.path.abspath(ckpt_path),
+            "source_checkpoint_sha256": sha256_file(ckpt_path),
+            "checkpoint_training_commit": ckpt.get("git_commit"),
+            "lexicon_file_sha256": ckpt.get("lexicon_file_sha256"),
+            "ordered_training_words_sha256": ckpt.get("ordered_training_words_sha256"),
+            "glove": glove_status,
+            "ltm_encoder_mode": cfg.ltm.ltm_encoder_mode,
+            "naming_decode_cap": max_steps,
+            "data_seed": data_seed,
+            "device": device,
+            "eval_git": git_state(ROOT),
+            "runtime_seconds": round(time.time() - t_start, 1),
+        },
+    }
+    with open(os.path.join(out_dir, "run_summary.json"), "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2)
+    _write_tsv(os.path.join(out_dir, "trajectory.tsv"), trajectory)
+    print(f"[{task}/{objective}] done -> {out_dir}", flush=True)
+    return result
+
+
 # ============================================================  main  =======
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -566,7 +865,31 @@ def main(argv: Optional[List[str]] = None) -> int:
                          "default is shuffled like the flat training sampler)")
     pf.add_argument("--sample-seed", type=int, default=0)
     pf.add_argument("--out", default=None, help="optional JSON output path")
+
+    rn = sub.add_parser("run", help="Phase 2B single-task acquisition run")
+    rn.add_argument("--ckpt", required=True, help="canonical source checkpoint")
+    rn.add_argument("--task", required=True, choices=["comprehension", "naming"])
+    rn.add_argument("--objective", default="c0", choices=["c0", "c3"],
+                    help="comprehension objective; ignored for naming")
+    rn.add_argument("--out-dir", required=True)
+    rn.add_argument("--lr", type=float, default=1e-4)
+    rn.add_argument("--weight-decay", type=float, default=1e-5)
+    rn.add_argument("--batch-size", type=int, default=64)
+    rn.add_argument("--epochs", type=int, default=100)
+    rn.add_argument("--tau", type=float, default=0.10)
+    rn.add_argument("--lambda-ret", type=float, default=0.087)
+    rn.add_argument("--data-seed", type=int, default=0)
+    rn.add_argument("--device", default="cpu")
     args = ap.parse_args(argv)
+
+    if args.cmd == "run":
+        res = run_task(args.ckpt, args.task, args.objective, args.out_dir,
+                       lr=args.lr, weight_decay=args.weight_decay,
+                       batch_size=args.batch_size, epochs=args.epochs,
+                       tau=args.tau, lambda_ret=args.lambda_ret,
+                       data_seed=args.data_seed, device=args.device)
+        print(json.dumps(res["snapshots"][-1], indent=2))
+        return 0
 
     res = preflight(args.ckpt, args.taus, args.n_batches, args.batch_size,
                     args.device, args.bench_batches,
