@@ -1,0 +1,5 @@
+seed	target_margin_stratified_difference	target_rank_stratified_difference	probe_acc_encoder_stratified_difference	probe_acc_s_hat_stratified_difference	note
+19	2.6220048624460413	-0.20531182372614598	0.09060635199407223	0.049751177039607006	stratified = n-weighted mean of within-exact-length success-minus-failure differences
+20	-0.08716143748250788	-0.036492374727668836	0.04114127360338551	0.06680921064071876	stratified = n-weighted mean of within-exact-length success-minus-failure differences
+21	2.929977253122867	-0.19266350018268177	0.056171034554892176	0.038678575365395276	stratified = n-weighted mean of within-exact-length success-minus-failure differences
+22	3.698928070064135	-0.4011716705200527	0.1079097837745567	0.05579638957759591	stratified = n-weighted mean of within-exact-length success-minus-failure differences

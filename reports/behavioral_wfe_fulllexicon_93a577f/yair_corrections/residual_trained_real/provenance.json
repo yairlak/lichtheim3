@@ -1,0 +1,9 @@
+{
+  "model_loaded": false,
+  "inference_run": false,
+  "regression_fitted": false,
+  "inputs": {
+    "canonical": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv",
+    "error_table": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/reports/behavioral_wfe_fulllexicon_93a577f/yair_corrections/tables/trained_real_exact_ltm_errors.tsv"
+  }
+}
