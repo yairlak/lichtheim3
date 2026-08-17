@@ -1229,7 +1229,8 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                     core_per_band: Optional[object] = None,
                     repetition_mode: str = "both",
                     full_lexicon: bool = False,
-                    representative_n: Optional[int] = None) -> dict:
+                    representative_n: Optional[int] = None,
+                    core_representative_n: Optional[object] = None) -> dict:
     """One Phase 2C subset capacity run, always from the canonical checkpoint.
 
     Never continued from a Phase 2B run or from the other Phase 2C run: each
@@ -1282,17 +1283,36 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     # strictly nested, and the largest core strictly inside this subset.
     cores: Dict[str, set] = {}
     core_info: Optional[dict] = None
+    chain: List[Tuple[str, List[int]]] = []
+    core_kind: Optional[str] = None
+    core_sizes: List[int] = []
+
+    def _as_sizes(v) -> List[int]:
+        return sorted({int(c) for c in (v if isinstance(v, (list, tuple)) else [v])})
+
+    if core_per_band and core_representative_n:
+        raise ValueError("core_per_band and core_representative_n are "
+                         "mutually exclusive: a core family must come from ONE "
+                         "deterministic construction.")
     if core_per_band:
-        sizes = sorted({int(c) for c in
-                        (core_per_band if isinstance(core_per_band, (list, tuple))
-                         else [core_per_band])})
-        if not full_lexicon and any(c > per_band for c in sizes):
+        core_sizes = _as_sizes(core_per_band)
+        if not (full_lexicon or representative_n) and any(c > per_band for c in core_sizes):
             raise ValueError(
-                f"core per-band sizes {sizes} exceed per_band={per_band}.")
-        chain: List[Tuple[str, List[int]]] = []
-        for c in sizes:
-            idx = select_nested_subset(entries, c, subset_seed)
-            chain.append((f"core{len(idx)}", idx))
+                f"core per-band sizes {core_sizes} exceed per_band={per_band}.")
+        for c in core_sizes:
+            chain.append(("", select_nested_subset(entries, c, subset_seed)))
+        core_kind = "band-stratified nested subsets"
+    elif core_representative_n:
+        # Prefixes of the SAME permutation used to build a representative
+        # population, so nesting is structural.  These are NOT the
+        # band-stratified subsets of the same nominal size.
+        core_sizes = _as_sizes(core_representative_n)
+        for c in core_sizes:
+            chain.append(("", select_representative_subset(entries, c, subset_seed)))
+        core_kind = "representative permutation prefixes"
+    chain = [(f"core{len(idx)}", idx) for _, idx in chain]
+
+    if chain:
         for (na, a), (nb, b) in zip(chain, chain[1:]):
             if not set(a) < set(b):
                 raise RuntimeError(
@@ -1305,7 +1325,8 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
         cores = {name: set(idx) for name, idx in chain}
         largest = chain[-1]
         core_info = {
-            "core_per_band_sizes": sizes,
+            "core_construction": core_kind,
+            "core_sizes_requested": core_sizes,
             "chain": [{"name": name, "n": len(idx),
                        "definition_sha256": subset_definition_hash(
                            subset_records(entries, idx, vocab))}
@@ -1657,6 +1678,10 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="'both' = canonical full-lexicon repetition before and "
                          "after training; 'end' = at the stopping epoch only; "
                          "'none' = defer entirely. The evaluator is never modified.")
+    sb.add_argument("--core-representative-n", type=int, nargs="+", default=None,
+                    help="track nested cores defined as REPRESENTATIVE "
+                         "permutation prefixes (e.g. 3288); mutually exclusive "
+                         "with --core-per-band")
     sb.add_argument("--representative-n", type=int, default=None,
                     help="composition control: take the first N items of a "
                          "deterministic uniform permutation of the lexicon "
@@ -1677,7 +1702,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                               core_per_band=args.core_per_band,
                               repetition_mode=args.repetition,
                               full_lexicon=args.full_lexicon,
-                              representative_n=args.representative_n)
+                              representative_n=args.representative_n,
+                              core_representative_n=args.core_representative_n)
         print(json.dumps({"subset": res["subset"], "outcome": res["outcome"],
                           "final": res["final_snapshot"]}, indent=2))
         return 0

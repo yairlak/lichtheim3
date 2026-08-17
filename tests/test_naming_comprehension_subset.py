@@ -274,6 +274,23 @@ def test_representative_selection_rejects_oversized_request():
         select_representative_subset(e, len(e) + 1, 0)
 
 
+def test_representative_cores_are_not_the_band_stratified_cores_of_same_size():
+    """Phase 2G depends on these two same-sized families being distinct."""
+    e = _synth_entries(n_per_band=200)
+    rep_core = set(select_representative_subset(e, 64, 0))
+    bal_core = set(select_nested_subset(e, per_band=16, subset_seed=0))
+    assert len(rep_core) == len(bal_core) == 64
+    assert rep_core != bal_core
+
+
+def test_representative_core_nests_inside_a_larger_representative_population():
+    e = _synth_entries(n_per_band=300)
+    core = set(select_representative_subset(e, 100, 0))
+    pop = set(select_representative_subset(e, 400, 0))
+    assert core < pop
+    assert len(pop - core) == 300
+
+
 def test_population_composition_reports_bands_lengths_and_homophones():
     e = _synth_entries()
     comp = population_composition(e, list(range(len(e))))
