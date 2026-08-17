@@ -62,7 +62,7 @@ def _synth_entries(n_per_band: int = N_PER_BAND,
             entries.append(LexEntry(
                 word=f"w{bi}_{j}", phonemes=_form(k),
                 semantic=rng.standard_normal(SEM_DIM).astype(np.float32),
-                freq=1.0, rank=lo + j * 7 + 1))
+                freq=1.0, rank=lo + j))
             k += 1
     for h in range(n_homophone_pairs):
         shared = _form(50_000 + h)
@@ -262,48 +262,96 @@ def _comp_rows(spec):
             for b, fr, t1, rk, cos, mg in spec]
 
 
+def _naming_rows(spec):
+    """spec: list of (bank_index, freq_rank, exact, edit, pred_len, length)."""
+    return [{"bank_index": b, "freq_rank": fr, "exact": ex, "edit": ed,
+             "eos_emitted": 1, "pred_len": pl, "length": ln}
+            for b, fr, ex, ed, pl, ln in spec]
+
+
 def test_nested_scale_metrics_partitions_core_and_added():
     rows = _comp_rows([(10, 5, 1, 1, 0.9, 0.2), (11, 5, 1, 1, 0.8, 0.1),
                        (12, 2000, 0, 7, 0.4, -0.1), (13, 20000, 0, 9, 0.3, -0.2)])
-    out = nested_scale_metrics(rows, core={10, 11}, task="comprehension")
+    out = nested_scale_metrics(rows, {"core2": {10, 11}}, task="comprehension")
     assert out["all"]["n"] == 4
-    assert out["core"]["n"] == 2
+    assert out["cores"]["core2"]["n"] == 2
     assert out["added"]["n"] == 2
-    assert out["core"]["n"] + out["added"]["n"] == out["all"]["n"]
-    assert out["core"]["top1"] == 1.0
+    assert out["cores"]["core2"]["n"] + out["added"]["n"] == out["all"]["n"]
+    assert out["cores"]["core2"]["top1"] == 1.0
     assert out["added"]["top1"] == 0.0
     assert out["all"]["top1"] == 0.5
+    assert out["added_relative_to"] == "core2"
+
+
+def test_nested_scale_metrics_tracks_several_nested_cores():
+    """The Phase 2C3 case: core64 and core512 followed inside one population."""
+    rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2), (2, 5, 1, 1, 0.9, 0.2),
+                       (3, 5, 1, 1, 0.9, 0.2), (4, 5, 0, 6, 0.4, -0.1)])
+    small, big = {1}, {1, 2, 3}
+    assert small < big                                # nested by construction
+    out = nested_scale_metrics(rows, {"coreA": small, "coreB": big},
+                               task="comprehension")
+    assert out["cores"]["coreA"]["n"] == 1
+    assert out["cores"]["coreB"]["n"] == 3
+    assert out["added"]["n"] == 1                     # relative to the largest
+    assert out["added_relative_to"] == "coreB"
+    assert list(out["cores"]) == ["coreA", "coreB"]   # ascending by size
 
 
 def test_nested_scale_metrics_assigns_frequency_bands():
     rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2), (2, 2000, 1, 1, 0.9, 0.2),
                        (3, 9000, 0, 4, 0.4, -0.1), (4, 20000, 0, 8, 0.3, -0.2)])
-    out = nested_scale_metrics(rows, core=set(), task="comprehension")
+    out = nested_scale_metrics(rows, {}, task="comprehension")
     bands = out["frequency_bands"]
     assert [bands[lab]["n"] for lab in BAND_LABELS] == [1, 1, 1, 1]
     assert bands["1-1k"]["top1"] == 1.0
     assert bands["15k-end"]["top1"] == 0.0
+    assert out["added"] is None and out["added_relative_to"] is None
 
 
 def test_nested_scale_metrics_naming_aggregation():
-    rows = [{"bank_index": 1, "freq_rank": 5, "exact": 1, "edit": 0},
-            {"bank_index": 2, "freq_rank": 5, "exact": 1, "edit": 0},
-            {"bank_index": 3, "freq_rank": 20000, "exact": 0, "edit": 3}]
-    out = nested_scale_metrics(rows, core={1, 2}, task="naming")
-    assert out["core"]["exact_match"] == 1.0
-    assert out["core"]["whole_word_error_rate"] == 0.0
+    rows = _naming_rows([(1, 5, 1, 0, 4, 4), (2, 5, 1, 0, 4, 4),
+                         (3, 20000, 0, 3, 5, 4)])
+    out = nested_scale_metrics(rows, {"core2": {1, 2}}, task="naming")
+    core = out["cores"]["core2"]
+    assert core["exact_match"] == 1.0
+    assert core["whole_word_error_rate"] == 0.0
     assert out["added"]["exact_match"] == 0.0
     assert out["added"]["mean_edit"] == 3.0
     assert out["all"]["exact_match"] == pytest.approx(2 / 3)
     assert out["all"]["whole_word_error_rate"] == pytest.approx(1 / 3)
+    assert out["all"]["eos_emission_rate"] == 1.0
+    assert out["all"]["mean_pred_length"] == pytest.approx(13 / 3)
+    assert out["all"]["mean_target_length"] == 4.0
 
 
 def test_nested_scale_metrics_handles_an_empty_group():
     rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2)])
-    out = nested_scale_metrics(rows, core=set(), task="comprehension")
-    assert out["core"] is None                       # no core items present
+    out = nested_scale_metrics(rows, {"coreX": {999}}, task="comprehension")
+    assert out["cores"]["coreX"] is None              # no core items present
     assert out["added"]["n"] == 1
     assert out["frequency_bands"]["15k-end"] is None
+
+
+def test_comprehension_aggregation_reports_mean_and_median_rank():
+    rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2), (2, 5, 0, 3, 0.5, -0.1),
+                       (3, 5, 0, 101, 0.4, -0.2)])
+    a = nested_scale_metrics(rows, {}, task="comprehension")["all"]
+    assert a["target_rank_median"] == 3.0
+    assert a["target_rank_mean"] == pytest.approx(35.0)
+
+
+def test_full_nested_chain_across_three_scales_on_one_seed():
+    """The chain Phase 2C3 depends on: core64 subset-of core512 subset-of the
+    largest scale.  Sizes are kept feasible for the narrowest band, which in
+    the real lexicon caps at the number of rank-1..999 unique-phonology words."""
+    entries = _synth_entries(n_per_band=900)
+    s64 = set(select_nested_subset(entries, per_band=16, subset_seed=0))
+    s512 = set(select_nested_subset(entries, per_band=128, subset_seed=0))
+    big = set(select_nested_subset(entries, per_band=800, subset_seed=0))
+    assert (len(s64), len(s512), len(big)) == (64, 512, 3200)
+    assert s64 < s512 < big
+    assert len(big - s512) == 2688
 
 
 def test_core64_is_a_strict_subset_of_subset512_on_the_same_seed():

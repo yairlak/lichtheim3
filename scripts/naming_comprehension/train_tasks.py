@@ -1047,6 +1047,7 @@ def _agg_comprehension_rows(rows: Sequence[dict]) -> Optional[dict]:
         "top1": float(np.mean([r["top1"] for r in rows])),
         "top5": float(np.mean([r["top5"] for r in rows])),
         "target_rank_median": float(np.median([r["target_rank"] for r in rows])),
+        "target_rank_mean": float(np.mean([r["target_rank"] for r in rows])),
         "target_cos_mean": float(np.mean([r["target_cos"] for r in rows])),
         "margin_mean": float(np.mean([r["margin"] for r in rows])),
     }
@@ -1062,29 +1063,44 @@ def _agg_naming_rows(rows: Sequence[dict]) -> Optional[dict]:
         "exact_match": exact,
         "whole_word_error_rate": 1.0 - exact,
         "mean_edit": float(np.mean([r["edit"] for r in rows])),
+        "eos_emission_rate": float(np.mean([r["eos_emitted"] for r in rows])),
+        "mean_pred_length": float(np.mean([r["pred_len"] for r in rows])),
+        "mean_target_length": float(np.mean([r["length"] for r in rows])),
     }
 
 
-def nested_scale_metrics(rows: Sequence[dict], core: set, task: str) -> dict:
-    """Split the current population into the nested core and the added items.
+def nested_scale_metrics(rows: Sequence[dict], cores: Dict[str, set],
+                         task: str) -> dict:
+    """Track every nested core separately inside the current population.
 
-    The scientific point of a NESTED subset design: because the smaller subset
-    is a strict subset of the larger one, the very same items can be tracked
-    across scales.  A drop on the core items at a larger scale is interference,
-    not sampling difference — the items are identical by construction.
+    The scientific point of a NESTED subset design: because each smaller
+    subset is a strict subset of the larger one, the very same items can be
+    followed across scales.  A drop on a core at a larger scale is
+    interference, not a sampling difference — the items are identical by
+    construction.
 
-    Also reports the four frozen Phase 1A frequency bands over all items.
+    `cores` maps a group name to its bank-index set.  "added" is defined
+    relative to the LARGEST core, i.e. the items this scale introduced over
+    the previous one.  Also reports the four frozen Phase 1A frequency bands.
     """
     from scripts.naming_comprehension.aggregate_cohort import (
         FREQ_BANDS, BAND_LABELS)
 
     agg = _agg_comprehension_rows if task == "comprehension" else _agg_naming_rows
-    out = {
-        "all": agg(rows),
-        "core": agg([r for r in rows if r["bank_index"] in core]),
-        "added": agg([r for r in rows if r["bank_index"] not in core]),
-        "frequency_bands": {},
-    }
+    out: Dict[str, object] = {"all": agg(rows), "cores": {}}
+    for name, idx in sorted(cores.items(), key=lambda kv: len(kv[1])):
+        out["cores"][name] = agg([r for r in rows if r["bank_index"] in idx])
+
+    if cores:
+        largest_name = max(cores, key=lambda k: len(cores[k]))
+        largest = cores[largest_name]
+        out["added"] = agg([r for r in rows if r["bank_index"] not in largest])
+        out["added_relative_to"] = largest_name
+    else:
+        out["added"] = None
+        out["added_relative_to"] = None
+
+    out["frequency_bands"] = {}
     for bi, lab in enumerate(BAND_LABELS):
         out["frequency_bands"][lab] = agg(
             [r for r in rows if band_of_rank(r["freq_rank"], FREQ_BANDS) == bi])
@@ -1105,21 +1121,38 @@ def naming_subset_success(nam: dict) -> bool:
 
 
 @torch.no_grad()
-def _subset_loss_components(model: DualRouteModel, batch: Dict[str, object],
+def _subset_loss_components(model: DualRouteModel, entries: Sequence[LexEntry],
+                            subset_idx: Sequence[int], bank_raw: torch.Tensor,
+                            vocab: Vocab, batch_size: int, device: str,
                             task: str, objective: str, tau: float,
-                            lambda_ret: float, pad_id: int) -> Dict[str, float]:
-    """Objective components on the whole subset, in eval mode, no gradient."""
+                            lambda_ret: float) -> Dict[str, float]:
+    """Objective components over the subset, in eval mode, no gradient.
+
+    Averaged over minibatches of the SAME size used in training rather than
+    one giant batch: the full-bank retrieval logits are (B, 29571), so a
+    single 4096-item batch would allocate hundreds of MB and would not match
+    the training regime.  Batch-mean losses over equal-sized batches average
+    correctly; the final batch may be smaller, so it is weighted by its size.
+    """
     was_training = model.training
     model.eval()
-    if task == "comprehension":
-        o = comprehension_objective(model, batch, objective, tau, lambda_ret)
-        out = {"c0": float(o["c0"]), "total": float(o["total"])}
-        if "retrieval" in o:
-            out["retrieval_ce"] = float(o["retrieval"])
-    else:
-        out = {"total": float(naming_objective(model, batch, pad_id)["total"])}
+    totals: Dict[str, float] = {}
+    n_seen = 0
+    for b in make_batches(entries, subset_idx, bank_raw, vocab, batch_size,
+                          device, shuffle=False):
+        bs = int(b["bank_idx"].shape[0])
+        if task == "comprehension":
+            o = comprehension_objective(model, b, objective, tau, lambda_ret)
+            parts = {"c0": float(o["c0"]), "total": float(o["total"])}
+            if "retrieval" in o:
+                parts["retrieval_ce"] = float(o["retrieval"])
+        else:
+            parts = {"total": float(naming_objective(model, b, vocab.pad_id)["total"])}
+        for k, v in parts.items():
+            totals[k] = totals.get(k, 0.0) + v * bs
+        n_seen += bs
     model.train(was_training)
-    return out
+    return {k: v / max(n_seen, 1) for k, v in totals.items()}
 
 
 def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
@@ -1129,7 +1162,7 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                     tau: float = 0.10, lambda_ret: float = 0.087,
                     data_seed: int = 0, device: str = "cpu",
                     eval_every: int = SUBSET_EVAL_EVERY,
-                    core_per_band: Optional[int] = None,
+                    core_per_band: Optional[object] = None,
                     run_repetition: bool = True) -> dict:
     """One Phase 2C subset capacity run, always from the canonical checkpoint.
 
@@ -1158,26 +1191,44 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
         raise RuntimeError("Subset contains a repeated phonological form.")
     verify_bank_mapping(entries, bank_raw, subset_idx)
 
-    # ---- nested core for the cross-scale split (verified, never assumed) ----
-    core_set: Optional[set] = None
+    # ---- nested cores for the cross-scale split (verified, never assumed) ----
+    # Each core is regenerated from the SAME deterministic per-band ordering,
+    # so membership derives from the existing nested definition rather than
+    # from any stored copy.  The whole ascending chain is checked to be
+    # strictly nested, and the largest core strictly inside this subset.
+    cores: Dict[str, set] = {}
     core_info: Optional[dict] = None
     if core_per_band:
-        if core_per_band > per_band:
+        sizes = sorted({int(c) for c in
+                        (core_per_band if isinstance(core_per_band, (list, tuple))
+                         else [core_per_band])})
+        if any(c > per_band for c in sizes):
             raise ValueError(
-                f"core_per_band={core_per_band} exceeds per_band={per_band}.")
-        core_idx = select_nested_subset(entries, core_per_band, subset_seed)
-        if not set(core_idx) < set(subset_idx):
+                f"core per-band sizes {sizes} exceed per_band={per_band}.")
+        chain: List[Tuple[str, List[int]]] = []
+        for c in sizes:
+            idx = select_nested_subset(entries, c, subset_seed)
+            chain.append((f"core{len(idx)}", idx))
+        for (na, a), (nb, b) in zip(chain, chain[1:]):
+            if not set(a) < set(b):
+                raise RuntimeError(
+                    f"Nesting violated: {na} is not a strict subset of {nb}. "
+                    "The nested design is broken.")
+        if not set(chain[-1][1]) < set(subset_idx):
             raise RuntimeError(
-                "Nesting violated: the core subset is not a strict subset of "
+                f"Nesting violated: {chain[-1][0]} is not a strict subset of "
                 "the current subset. The nested design is broken.")
-        core_set = set(core_idx)
+        cores = {name: set(idx) for name, idx in chain}
+        largest = chain[-1]
         core_info = {
-            "core_per_band": core_per_band,
-            "core_n": len(core_idx),
-            "added_n": len(subset_idx) - len(core_idx),
-            "core_definition_sha256": subset_definition_hash(
-                subset_records(entries, core_idx, vocab)),
-            "core_is_strict_subset_verified": True,
+            "core_per_band_sizes": sizes,
+            "chain": [{"name": name, "n": len(idx),
+                       "definition_sha256": subset_definition_hash(
+                           subset_records(entries, idx, vocab))}
+                      for name, idx in chain],
+            "added_relative_to": largest[0],
+            "added_n": len(subset_idx) - len(largest[1]),
+            "chain_strictly_nested_verified": True,
         }
 
     all_idx = list(range(len(entries)))
@@ -1186,10 +1237,6 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     initial = parameter_fingerprint(model)
     dorsal_ref = dorsal_fingerprint(model)
     max_steps = cfg.data.max_phonemes + 1           # committed naming cap
-
-    # Deterministic single-batch view of the subset, for loss reporting.
-    eval_batch = next(make_batches(entries, subset_idx, bank_raw, vocab,
-                                   len(subset_idx), device, shuffle=False))
 
     def evaluate(epoch: int, per_item: bool = False) -> dict:
         s: Dict[str, object] = {"epoch": epoch}
@@ -1208,14 +1255,15 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             m["mean_target_length"] = (sum(r["length"] for r in rows)
                                        / max(len(rows), 1))
             s["naming"] = m
-        if core_set is not None:
-            s["nested_scale"] = nested_scale_metrics(rows, core_set, task)
+        if cores:
+            s["nested_scale"] = nested_scale_metrics(rows, cores, task)
         s["loss_components"] = _subset_loss_components(
-            model, eval_batch, task, objective, tau, lambda_ret, vocab.pad_id)
+            model, entries, subset_idx, bank_raw, vocab, batch_size, device,
+            task, objective, tau, lambda_ret)
         if per_item:
             for r in rows:
-                r["in_core"] = int(core_set is not None
-                                   and r["bank_index"] in core_set)
+                for name, idx in cores.items():
+                    r[f"in_{name}"] = int(r["bank_index"] in idx)
             s["_per_item_rows"] = rows
         return s
 
@@ -1488,9 +1536,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     sb.add_argument("--lambda-ret", type=float, default=0.087)
     sb.add_argument("--data-seed", type=int, default=0)
     sb.add_argument("--device", default="cpu")
-    sb.add_argument("--core-per-band", type=int, default=None,
-                    help="per-band size of the nested CORE subset; enables the "
-                         "core-vs-added cross-scale split (e.g. 16 for core64)")
+    sb.add_argument("--core-per-band", type=int, nargs="+", default=None,
+                    help="per-band size(s) of the nested CORE subsets; enables "
+                         "the core-vs-added cross-scale split. Several may be "
+                         "given (e.g. 16 128 -> core64 and core512); 'added' is "
+                         "then relative to the largest core.")
     sb.add_argument("--no-repetition", action="store_true",
                     help="defer the expensive full-lexicon canonical repetition "
                          "passes (the evaluator itself is untouched)")
