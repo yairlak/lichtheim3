@@ -29,7 +29,8 @@ from scripts.naming_comprehension.aggregate_cohort import (             # noqa: 
 from scripts.naming_comprehension.train_tasks import (                  # noqa: E402
     C3_SUBSET_SUCCESS, NAMING_SUBSET_SUCCESS, band_of_rank,
     c3_subset_success, homophone_indices, naming_subset_success,
-    nested_band_ordering, select_nested_subset, subset_definition_hash,
+    nested_band_ordering, nested_scale_metrics, select_nested_subset,
+    subset_definition_hash,
     subset_records, unique_phonology_indices)
 
 SEM_DIM = 8
@@ -250,6 +251,69 @@ def test_naming_success_requires_both_conditions():
     assert naming_subset_success(ok)
     assert not naming_subset_success({**ok, "exact_match": 0.9375})
     assert not naming_subset_success({**ok, "whole_word_error_rate": 0.06})
+
+
+# --------------------------------------------- nested cross-scale split
+
+def _comp_rows(spec):
+    """spec: list of (bank_index, freq_rank, top1, rank, cos, margin)."""
+    return [{"bank_index": b, "freq_rank": fr, "top1": t1, "top5": t1,
+             "target_rank": rk, "target_cos": cos, "margin": mg}
+            for b, fr, t1, rk, cos, mg in spec]
+
+
+def test_nested_scale_metrics_partitions_core_and_added():
+    rows = _comp_rows([(10, 5, 1, 1, 0.9, 0.2), (11, 5, 1, 1, 0.8, 0.1),
+                       (12, 2000, 0, 7, 0.4, -0.1), (13, 20000, 0, 9, 0.3, -0.2)])
+    out = nested_scale_metrics(rows, core={10, 11}, task="comprehension")
+    assert out["all"]["n"] == 4
+    assert out["core"]["n"] == 2
+    assert out["added"]["n"] == 2
+    assert out["core"]["n"] + out["added"]["n"] == out["all"]["n"]
+    assert out["core"]["top1"] == 1.0
+    assert out["added"]["top1"] == 0.0
+    assert out["all"]["top1"] == 0.5
+
+
+def test_nested_scale_metrics_assigns_frequency_bands():
+    rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2), (2, 2000, 1, 1, 0.9, 0.2),
+                       (3, 9000, 0, 4, 0.4, -0.1), (4, 20000, 0, 8, 0.3, -0.2)])
+    out = nested_scale_metrics(rows, core=set(), task="comprehension")
+    bands = out["frequency_bands"]
+    assert [bands[lab]["n"] for lab in BAND_LABELS] == [1, 1, 1, 1]
+    assert bands["1-1k"]["top1"] == 1.0
+    assert bands["15k-end"]["top1"] == 0.0
+
+
+def test_nested_scale_metrics_naming_aggregation():
+    rows = [{"bank_index": 1, "freq_rank": 5, "exact": 1, "edit": 0},
+            {"bank_index": 2, "freq_rank": 5, "exact": 1, "edit": 0},
+            {"bank_index": 3, "freq_rank": 20000, "exact": 0, "edit": 3}]
+    out = nested_scale_metrics(rows, core={1, 2}, task="naming")
+    assert out["core"]["exact_match"] == 1.0
+    assert out["core"]["whole_word_error_rate"] == 0.0
+    assert out["added"]["exact_match"] == 0.0
+    assert out["added"]["mean_edit"] == 3.0
+    assert out["all"]["exact_match"] == pytest.approx(2 / 3)
+    assert out["all"]["whole_word_error_rate"] == pytest.approx(1 / 3)
+
+
+def test_nested_scale_metrics_handles_an_empty_group():
+    rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2)])
+    out = nested_scale_metrics(rows, core=set(), task="comprehension")
+    assert out["core"] is None                       # no core items present
+    assert out["added"]["n"] == 1
+    assert out["frequency_bands"]["15k-end"] is None
+
+
+def test_core64_is_a_strict_subset_of_subset512_on_the_same_seed():
+    """The exact nesting relation Phase 2C2 depends on."""
+    entries = _synth_entries(n_per_band=200)
+    core = select_nested_subset(entries, per_band=16, subset_seed=0)
+    big = select_nested_subset(entries, per_band=128, subset_seed=0)
+    assert len(core) == 64 and len(big) == 512
+    assert set(core) < set(big)
+    assert len(set(big) - set(core)) == 448
 
 
 def test_success_thresholds_are_the_predeclared_values():

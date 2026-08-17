@@ -1038,6 +1038,59 @@ def evaluate_comprehension_subset(model: DualRouteModel, vocab: Vocab,
     return out
 
 
+def _agg_comprehension_rows(rows: Sequence[dict]) -> Optional[dict]:
+    import numpy as np
+    if not rows:
+        return None
+    return {
+        "n": len(rows),
+        "top1": float(np.mean([r["top1"] for r in rows])),
+        "top5": float(np.mean([r["top5"] for r in rows])),
+        "target_rank_median": float(np.median([r["target_rank"] for r in rows])),
+        "target_cos_mean": float(np.mean([r["target_cos"] for r in rows])),
+        "margin_mean": float(np.mean([r["margin"] for r in rows])),
+    }
+
+
+def _agg_naming_rows(rows: Sequence[dict]) -> Optional[dict]:
+    import numpy as np
+    if not rows:
+        return None
+    exact = float(np.mean([r["exact"] for r in rows]))
+    return {
+        "n": len(rows),
+        "exact_match": exact,
+        "whole_word_error_rate": 1.0 - exact,
+        "mean_edit": float(np.mean([r["edit"] for r in rows])),
+    }
+
+
+def nested_scale_metrics(rows: Sequence[dict], core: set, task: str) -> dict:
+    """Split the current population into the nested core and the added items.
+
+    The scientific point of a NESTED subset design: because the smaller subset
+    is a strict subset of the larger one, the very same items can be tracked
+    across scales.  A drop on the core items at a larger scale is interference,
+    not sampling difference — the items are identical by construction.
+
+    Also reports the four frozen Phase 1A frequency bands over all items.
+    """
+    from scripts.naming_comprehension.aggregate_cohort import (
+        FREQ_BANDS, BAND_LABELS)
+
+    agg = _agg_comprehension_rows if task == "comprehension" else _agg_naming_rows
+    out = {
+        "all": agg(rows),
+        "core": agg([r for r in rows if r["bank_index"] in core]),
+        "added": agg([r for r in rows if r["bank_index"] not in core]),
+        "frequency_bands": {},
+    }
+    for bi, lab in enumerate(BAND_LABELS):
+        out["frequency_bands"][lab] = agg(
+            [r for r in rows if band_of_rank(r["freq_rank"], FREQ_BANDS) == bi])
+    return out
+
+
 def c3_subset_success(comp: dict) -> bool:
     """Predeclared C3-64 acquisition criterion; all three must hold."""
     return (comp["top1"] >= C3_SUBSET_SUCCESS["top1_min"]
@@ -1075,7 +1128,9 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                     batch_size: int = 64, epochs: int = SUBSET_MAX_EPOCHS,
                     tau: float = 0.10, lambda_ret: float = 0.087,
                     data_seed: int = 0, device: str = "cpu",
-                    eval_every: int = SUBSET_EVAL_EVERY) -> dict:
+                    eval_every: int = SUBSET_EVAL_EVERY,
+                    core_per_band: Optional[int] = None,
+                    run_repetition: bool = True) -> dict:
     """One Phase 2C subset capacity run, always from the canonical checkpoint.
 
     Never continued from a Phase 2B run or from the other Phase 2C run: each
@@ -1103,6 +1158,28 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
         raise RuntimeError("Subset contains a repeated phonological form.")
     verify_bank_mapping(entries, bank_raw, subset_idx)
 
+    # ---- nested core for the cross-scale split (verified, never assumed) ----
+    core_set: Optional[set] = None
+    core_info: Optional[dict] = None
+    if core_per_band:
+        if core_per_band > per_band:
+            raise ValueError(
+                f"core_per_band={core_per_band} exceeds per_band={per_band}.")
+        core_idx = select_nested_subset(entries, core_per_band, subset_seed)
+        if not set(core_idx) < set(subset_idx):
+            raise RuntimeError(
+                "Nesting violated: the core subset is not a strict subset of "
+                "the current subset. The nested design is broken.")
+        core_set = set(core_idx)
+        core_info = {
+            "core_per_band": core_per_band,
+            "core_n": len(core_idx),
+            "added_n": len(subset_idx) - len(core_idx),
+            "core_definition_sha256": subset_definition_hash(
+                subset_records(entries, core_idx, vocab)),
+            "core_is_strict_subset_verified": True,
+        }
+
     all_idx = list(range(len(entries)))
     trainable = set_trainable_scope(model, task)
     optim = fresh_optimizer(model, lr=lr, weight_decay=weight_decay)
@@ -1117,20 +1194,29 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     def evaluate(epoch: int, per_item: bool = False) -> dict:
         s: Dict[str, object] = {"epoch": epoch}
         if task == "comprehension":
-            s["comprehension"] = evaluate_comprehension_subset(
+            m = evaluate_comprehension_subset(
                 model, vocab, entries, bank_raw, subset_idx, device,
-                return_per_item=per_item)
+                return_per_item=True)
+            rows = m.pop("_per_item")
+            s["comprehension"] = m
         else:
-            nam = evaluate_naming(model, vocab, entries, bank_raw, subset_idx,
-                                  device, max_steps, return_per_item=True)
-            rows = nam["_per_item"] if per_item else nam.pop("_per_item")
-            nam["mean_pred_length"] = (sum(r["pred_len"] for r in rows)
+            m = evaluate_naming(model, vocab, entries, bank_raw, subset_idx,
+                                device, max_steps, return_per_item=True)
+            rows = m.pop("_per_item")
+            m["mean_pred_length"] = (sum(r["pred_len"] for r in rows)
+                                     / max(len(rows), 1))
+            m["mean_target_length"] = (sum(r["length"] for r in rows)
                                        / max(len(rows), 1))
-            nam["mean_target_length"] = (sum(r["length"] for r in rows)
-                                         / max(len(rows), 1))
-            s["naming"] = nam
+            s["naming"] = m
+        if core_set is not None:
+            s["nested_scale"] = nested_scale_metrics(rows, core_set, task)
         s["loss_components"] = _subset_loss_components(
             model, eval_batch, task, objective, tau, lambda_ret, vocab.pad_id)
+        if per_item:
+            for r in rows:
+                r["in_core"] = int(core_set is not None
+                                   and r["bank_index"] in core_set)
+            s["_per_item_rows"] = rows
         return s
 
     def criterion_met(snap: dict) -> bool:
@@ -1139,11 +1225,16 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                 else naming_subset_success(snap["naming"]))
 
     # ---- repetition BEFORE training (full lexicon, canonical AR) ----
-    repetition_before = repetition_snapshot(
-        model, vocab, entries, all_idx, bank_raw, device,
-        include_teacher_forced=True)
-    print(f"[2C {task}] repetition(before) "
-          f"{repetition_before['primary_readout']['exact_match']}", flush=True)
+    # Deferrable: Phase 2B and 2C1 already established the LTM repetition
+    # consequence, and this pass dominates wall time.  The canonical evaluator
+    # is untouched; only its invocation is skipped.
+    repetition_before = None
+    if run_repetition:
+        repetition_before = repetition_snapshot(
+            model, vocab, entries, all_idx, bank_raw, device,
+            include_teacher_forced=True)
+        print(f"[2C {task}] repetition(before) "
+              f"{repetition_before['primary_readout']['exact_match']}", flush=True)
 
     trajectory: List[dict] = []
     snapshots: List[dict] = [evaluate(0)]
@@ -1207,20 +1298,17 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
 
     # ---- final evaluation at the stopping epoch, with per-item detail ----
     final_snapshot = evaluate(stop_epoch, per_item=True)
+    per_item = final_snapshot.pop("_per_item_rows")
     if not snapshots or snapshots[-1]["epoch"] != stop_epoch:
-        snapshots.append({k: v for k, v in final_snapshot.items()
-                          if k != "_per_item"})
-
-    if task == "comprehension":
-        per_item = final_snapshot["comprehension"].pop("_per_item")
-    else:
-        per_item = final_snapshot["naming"].pop("_per_item")
+        snapshots.append(final_snapshot)
     _write_tsv(os.path.join(out_dir, "final_per_item.tsv"), per_item)
 
     # ---- repetition AFTER training (identical items and convention) ----
-    repetition_after = repetition_snapshot(
-        model, vocab, entries, all_idx, bank_raw, device,
-        include_teacher_forced=True)
+    repetition_after = None
+    if run_repetition:
+        repetition_after = repetition_snapshot(
+            model, vocab, entries, all_idx, bank_raw, device,
+            include_teacher_forced=True)
 
     # ---- scope audit ----
     changed = changed_parameters(model, initial)
@@ -1272,6 +1360,7 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                 "min": min(lengths), "max": max(lengths),
                 "mean": sum(lengths) / len(lengths),
             },
+            "nested_core": core_info,
         },
         "budget": {"max_epochs": epochs, "batch_size": batch_size,
                    "eval_every": eval_every,
@@ -1312,10 +1401,15 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             "dorsal_checked_every_epoch": True,
         },
         "repetition": {
+            "ran": run_repetition,
             "before": repetition_before,
             "after": repetition_after,
             "note": ("full-lexicon canonical AR, before training and once at "
-                     "the stopping epoch only"),
+                     "the stopping epoch only" if run_repetition else
+                     "DEFERRED: the LTM repetition consequence is already "
+                     "established by Phase 2B and 2C1; this pass dominates "
+                     "wall time and is not needed to decide subset capacity. "
+                     "The canonical evaluator is unmodified, only unused."),
         },
         "trajectory": trajectory,
         "snapshots": snapshots,
@@ -1394,6 +1488,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     sb.add_argument("--lambda-ret", type=float, default=0.087)
     sb.add_argument("--data-seed", type=int, default=0)
     sb.add_argument("--device", default="cpu")
+    sb.add_argument("--core-per-band", type=int, default=None,
+                    help="per-band size of the nested CORE subset; enables the "
+                         "core-vs-added cross-scale split (e.g. 16 for core64)")
+    sb.add_argument("--no-repetition", action="store_true",
+                    help="defer the expensive full-lexicon canonical repetition "
+                         "passes (the evaluator itself is untouched)")
     args = ap.parse_args(argv)
 
     if args.cmd == "subset":
@@ -1403,7 +1503,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                               batch_size=args.batch_size, epochs=args.epochs,
                               tau=args.tau, lambda_ret=args.lambda_ret,
                               data_seed=args.data_seed, device=args.device,
-                              eval_every=args.eval_every)
+                              eval_every=args.eval_every,
+                              core_per_band=args.core_per_band,
+                              run_repetition=not args.no_repetition)
         print(json.dumps({"subset": res["subset"], "outcome": res["outcome"],
                           "final": res["final_snapshot"]}, indent=2))
         return 0
