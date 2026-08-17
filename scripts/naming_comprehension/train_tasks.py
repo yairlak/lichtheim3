@@ -55,6 +55,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import hashlib
 import json
 import os
 import sys
@@ -848,6 +849,501 @@ def run_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     return result
 
 
+# ==========================  Phase 2C subset capacity / overfit diagnostic ==
+# Question: can the ALREADY VALIDATED C3 and N0 scopes MEMORISE a very small
+# set of semantic mappings once scale is removed as the main difficulty?
+#
+# This is explicitly an OVERFIT diagnostic on TRAINED items.  There is no
+# validation set, no held-out population and therefore no generalization
+# claim of any kind.  Performance-based stopping is legitimate here precisely
+# because nothing is being selected for generalization: the stopping rule is a
+# predeclared statement about training-set acquisition.
+#
+# Nothing about the validated configuration is altered: tau, lambda_ret, lr,
+# weight decay, the parameter scopes, the objectives and the decoding
+# conventions are all inherited unchanged from Phase 2B.  The ONLY changes are
+# the training population (64 items instead of 26,682 / 29,571), the budget,
+# and the evaluation cadence.
+#
+# CRITICAL: only the TRAINING population shrinks.  Retrieval remains a
+# full-bank 29,571-way problem, and every target is addressed by its explicit
+# canonical bank index.
+
+SUBSET_EVAL_EVERY = 50               # scheduled evaluation cadence (epochs)
+SUBSET_MAX_EPOCHS = 1000             # hard budget; 1 epoch == 1 optimizer step
+SUBSET_CONSECUTIVE_SUCCESSES = 2     # required before an early stop
+
+# Predeclared success criteria, fixed BEFORE the runs.  Not to be relaxed.
+C3_SUBSET_SUCCESS = {
+    "top1_min": 0.95,                # strict subset top-1 >= 95%
+    "median_target_rank_max": 1.0,   # median target rank == 1
+    "margin_min_exclusive": 0.0,     # mean target-vs-best-wrong margin > 0
+}
+NAMING_SUBSET_SUCCESS = {
+    "exact_min": 0.95,               # free-AR exact >= 95%
+    "wer_max": 0.05,                 # whole-word error rate <= 5%
+}
+
+
+def band_of_rank(rank: int, bands: Sequence[Tuple[int, int]]) -> Optional[int]:
+    """Index of the frequency band containing `rank`, or None."""
+    for i, (lo, hi) in enumerate(bands):
+        if lo <= rank < hi:
+            return i
+    return None
+
+
+def nested_band_ordering(entries: Sequence[LexEntry], subset_seed: int = 0
+                         ) -> Dict[str, List[int]]:
+    """Deterministic per-band ordering of the unique-phonology bank indices.
+
+    This ordering is the single source of truth for subset selection and is
+    deliberately INDEPENDENT of the requested subset size: a subset of k items
+    per band is always the first k of the same permutation.  Nesting
+    (subset64 subset-of subset512 subset-of ...) is therefore true by
+    construction rather than by convention.
+
+    The per-band permutation is seeded by (subset_seed, band index) so the
+    bands are permuted independently and reproducibly.  The pre-permutation
+    pool is sorted by bank index, which makes the whole construction a pure
+    function of the lexicon, never of dict/set iteration order.
+    """
+    from scripts.naming_comprehension.aggregate_cohort import (
+        FREQ_BANDS, BAND_LABELS)          # frozen Phase 1A band definitions
+
+    pools: Dict[str, List[int]] = {lab: [] for lab in BAND_LABELS}
+    for i in unique_phonology_indices(entries):
+        b = band_of_rank(entries[i].rank, FREQ_BANDS)
+        if b is not None:
+            pools[BAND_LABELS[b]].append(i)
+
+    ordering: Dict[str, List[int]] = {}
+    for bi, lab in enumerate(BAND_LABELS):
+        pool = sorted(pools[lab])
+        g = torch.Generator().manual_seed(subset_seed * 1000 + bi)
+        perm = torch.randperm(len(pool), generator=g).tolist()
+        ordering[lab] = [pool[k] for k in perm]
+    return ordering
+
+
+def select_nested_subset(entries: Sequence[LexEntry], per_band: int,
+                         subset_seed: int = 0) -> List[int]:
+    """Exactly `per_band` unique-phonology bank indices from each fixed band.
+
+    Selection is a seeded permutation, NOT the head of the frequency ranking:
+    taking the most frequent items of each band would confound "small" with
+    "easy".  Returned in band order, then in per-band permutation order.
+    """
+    from scripts.naming_comprehension.aggregate_cohort import BAND_LABELS
+
+    ordering = nested_band_ordering(entries, subset_seed)
+    out: List[int] = []
+    for lab in BAND_LABELS:
+        pool = ordering[lab]
+        if len(pool) < per_band:
+            raise RuntimeError(
+                f"Band {lab!r} has only {len(pool)} unique-phonology words; "
+                f"cannot select {per_band}.")
+        out.extend(pool[:per_band])
+    return out
+
+
+def subset_records(entries: Sequence[LexEntry], indices: Sequence[int],
+                   vocab: Vocab) -> List[dict]:
+    """Full human-readable definition of the selected subset, in order."""
+    from scripts.naming_comprehension.aggregate_cohort import (
+        FREQ_BANDS, BAND_LABELS)
+
+    rows: List[dict] = []
+    for pos, i in enumerate(indices):
+        e = entries[i]
+        b = band_of_rank(e.rank, FREQ_BANDS)
+        rows.append({
+            "position": pos,
+            "bank_index": int(i),
+            "word": e.word,                 # orthography (LexEntry.word)
+            "phonemes": " ".join(vocab.itos[p] for p in e.phonemes),
+            "phoneme_ids": " ".join(str(p) for p in e.phonemes),
+            "n_phonemes": len(e.phonemes),
+            "freq_rank": int(e.rank),
+            "band": BAND_LABELS[b] if b is not None else "OUT_OF_BANDS",
+        })
+    return rows
+
+
+def subset_definition_hash(records: Sequence[dict]) -> str:
+    """SHA256 of the ORDERED subset definition.
+
+    Order-sensitive by construction: the position field is part of the payload,
+    so a permutation of the same 64 words yields a different digest.
+    """
+    payload = "\n".join(
+        f"{r['position']}\t{r['bank_index']}\t{r['word']}\t"
+        f"{r['phoneme_ids']}\t{r['freq_rank']}" for r in records)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+@torch.no_grad()
+def evaluate_comprehension_subset(model: DualRouteModel, vocab: Vocab,
+                                  entries: Sequence[LexEntry],
+                                  bank_raw: torch.Tensor,
+                                  subset_idx: Sequence[int], device: str,
+                                  batch_size: int = 64,
+                                  return_per_item: bool = False) -> dict:
+    """Comprehension retrieval for the subset items against the FULL bank.
+
+    Reuses the canonical Phase 1A helpers verbatim (`encode_all` +
+    `comprehension_metrics`); only the probed population is restricted.  The
+    bank passed in is the full 29,571-row canonical bank, so top-1 remains a
+    29,571-way decision for every one of the 64 trained items.
+    """
+    from scripts.naming_comprehension.frozen_probe import (
+        comprehension_metrics, encode_all)
+    import numpy as np
+
+    was_training = model.training
+    model.eval()
+    forms = [entries[i].phonemes for i in subset_idx]
+    s_hat = encode_all(model, vocab, forms, device, batch_size)
+    m = comprehension_metrics(s_hat.cpu(), bank_raw.cpu(), list(subset_idx),
+                              batch_size)
+    model.train(was_training)
+
+    out = {
+        "n": len(subset_idx),
+        "retrieval_bank_size": int(bank_raw.shape[0]),
+        "top1": float(np.mean(m["top1"])),
+        "top5": float(np.mean(m["top5"])),
+        "target_cos_mean": float(np.mean(m["target_cos"])),
+        "target_rank_median": float(np.median(m["target_rank"])),
+        "target_rank_mean": float(np.mean(m["target_rank"])),
+        "target_rank_max": float(np.max(m["target_rank"])),
+        "margin_mean": float(np.mean(m["margin"])),
+        "c_ltm_mean_aux": float(np.mean(m["c_ltm"])),
+    }
+    if return_per_item:
+        out["_per_item"] = [{
+            "position": k,
+            "bank_index": int(i),
+            "word": entries[i].word,
+            "freq_rank": int(entries[i].rank),
+            "n_phonemes": len(entries[i].phonemes),
+            "target_rank": int(m["target_rank"][k]),
+            "target_cos": float(m["target_cos"][k]),
+            "top1": int(m["top1"][k]),
+            "top5": int(m["top5"][k]),
+            "margin": float(m["margin"][k]),
+            "top1_word": entries[int(m["top1_idx"][k])].word,
+        } for k, i in enumerate(subset_idx)]
+    return out
+
+
+def c3_subset_success(comp: dict) -> bool:
+    """Predeclared C3-64 acquisition criterion; all three must hold."""
+    return (comp["top1"] >= C3_SUBSET_SUCCESS["top1_min"]
+            and comp["target_rank_median"] <= C3_SUBSET_SUCCESS["median_target_rank_max"]
+            and comp["margin_mean"] > C3_SUBSET_SUCCESS["margin_min_exclusive"])
+
+
+def naming_subset_success(nam: dict) -> bool:
+    """Predeclared N0-64 acquisition criterion; both must hold."""
+    return (nam["exact_match"] >= NAMING_SUBSET_SUCCESS["exact_min"]
+            and nam["whole_word_error_rate"] <= NAMING_SUBSET_SUCCESS["wer_max"])
+
+
+@torch.no_grad()
+def _subset_loss_components(model: DualRouteModel, batch: Dict[str, object],
+                            task: str, objective: str, tau: float,
+                            lambda_ret: float, pad_id: int) -> Dict[str, float]:
+    """Objective components on the whole subset, in eval mode, no gradient."""
+    was_training = model.training
+    model.eval()
+    if task == "comprehension":
+        o = comprehension_objective(model, batch, objective, tau, lambda_ret)
+        out = {"c0": float(o["c0"]), "total": float(o["total"])}
+        if "retrieval" in o:
+            out["retrieval_ce"] = float(o["retrieval"])
+    else:
+        out = {"total": float(naming_objective(model, batch, pad_id)["total"])}
+    model.train(was_training)
+    return out
+
+
+def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
+                    per_band: int = 16, subset_seed: int = 0,
+                    lr: float = 1e-4, weight_decay: float = 1e-5,
+                    batch_size: int = 64, epochs: int = SUBSET_MAX_EPOCHS,
+                    tau: float = 0.10, lambda_ret: float = 0.087,
+                    data_seed: int = 0, device: str = "cpu",
+                    eval_every: int = SUBSET_EVAL_EVERY) -> dict:
+    """One Phase 2C subset capacity run, always from the canonical checkpoint.
+
+    Never continued from a Phase 2B run or from the other Phase 2C run: each
+    run independently reloads the frozen canonical checkpoint.
+
+    The saved checkpoint is a fixed-budget-or-predeclared-criterion endpoint.
+    It is NOT validation-selected and must never be described as "best".
+    """
+    t_start = time.time()
+    os.makedirs(out_dir, exist_ok=True)
+
+    model, vocab, entries, bank_raw, cfg, ckpt = load_frozen(ckpt_path, device)
+    glove_status = require_real_glove(ckpt, expected_found=len(entries))
+
+    # ---- deterministic nested subset (same 64 words for both tasks) ----
+    subset_idx = select_nested_subset(entries, per_band, subset_seed)
+    records = subset_records(entries, subset_idx, vocab)
+    sub_hash = subset_definition_hash(records)
+
+    strict_set = set(unique_phonology_indices(entries))
+    if not set(subset_idx) <= strict_set:
+        raise RuntimeError("Subset contains non-unique-phonology words.")
+    forms = [tuple(entries[i].phonemes) for i in subset_idx]
+    if len(set(forms)) != len(forms):
+        raise RuntimeError("Subset contains a repeated phonological form.")
+    verify_bank_mapping(entries, bank_raw, subset_idx)
+
+    all_idx = list(range(len(entries)))
+    trainable = set_trainable_scope(model, task)
+    optim = fresh_optimizer(model, lr=lr, weight_decay=weight_decay)
+    initial = parameter_fingerprint(model)
+    dorsal_ref = dorsal_fingerprint(model)
+    max_steps = cfg.data.max_phonemes + 1           # committed naming cap
+
+    # Deterministic single-batch view of the subset, for loss reporting.
+    eval_batch = next(make_batches(entries, subset_idx, bank_raw, vocab,
+                                   len(subset_idx), device, shuffle=False))
+
+    def evaluate(epoch: int, per_item: bool = False) -> dict:
+        s: Dict[str, object] = {"epoch": epoch}
+        if task == "comprehension":
+            s["comprehension"] = evaluate_comprehension_subset(
+                model, vocab, entries, bank_raw, subset_idx, device,
+                return_per_item=per_item)
+        else:
+            nam = evaluate_naming(model, vocab, entries, bank_raw, subset_idx,
+                                  device, max_steps, return_per_item=True)
+            rows = nam["_per_item"] if per_item else nam.pop("_per_item")
+            nam["mean_pred_length"] = (sum(r["pred_len"] for r in rows)
+                                       / max(len(rows), 1))
+            nam["mean_target_length"] = (sum(r["length"] for r in rows)
+                                         / max(len(rows), 1))
+            s["naming"] = nam
+        s["loss_components"] = _subset_loss_components(
+            model, eval_batch, task, objective, tau, lambda_ret, vocab.pad_id)
+        return s
+
+    def criterion_met(snap: dict) -> bool:
+        return (c3_subset_success(snap["comprehension"])
+                if task == "comprehension"
+                else naming_subset_success(snap["naming"]))
+
+    # ---- repetition BEFORE training (full lexicon, canonical AR) ----
+    repetition_before = repetition_snapshot(
+        model, vocab, entries, all_idx, bank_raw, device,
+        include_teacher_forced=True)
+    print(f"[2C {task}] repetition(before) "
+          f"{repetition_before['primary_readout']['exact_match']}", flush=True)
+
+    trajectory: List[dict] = []
+    snapshots: List[dict] = [evaluate(0)]
+    consecutive = 1 if criterion_met(snapshots[0]) else 0
+    first_success_epoch: Optional[int] = 0 if consecutive else None
+    stop_epoch = epochs
+    stop_reason = "fixed budget exhausted"
+
+    for epoch in range(1, epochs + 1):
+        model.train()
+        acc_total = 0.0
+        acc_parts: Dict[str, float] = {}
+        nb = 0
+        for b in make_batches(entries, subset_idx, bank_raw, vocab, batch_size,
+                              device, shuffle=True,
+                              seed=data_seed * 100000 + epoch):
+            if task == "comprehension":
+                o = comprehension_objective(model, b, objective, tau, lambda_ret)
+            else:
+                o = naming_objective(model, b, vocab.pad_id)
+            loss = o["total"]
+            optim.zero_grad(set_to_none=True)
+            loss.backward()
+            optim.step()
+            acc_total += float(loss.detach())
+            for k in ("c0", "retrieval"):
+                if k in o:
+                    acc_parts[k] = acc_parts.get(k, 0.0) + float(o[k].detach())
+            nb += 1
+        rec = {"epoch": epoch, "train_loss": acc_total / max(nb, 1),
+               "n_optimizer_steps": nb}
+        rec.update({f"train_{k}": v / max(nb, 1) for k, v in acc_parts.items()})
+        trajectory.append(rec)
+
+        # A violation is a BUG and must stop the run immediately.
+        assert_dorsal_untouched(model, dorsal_ref)
+
+        if epoch % eval_every == 0:
+            snap = evaluate(epoch)
+            snapshots.append(snap)
+            ok = criterion_met(snap)
+            if ok:
+                consecutive += 1
+                if first_success_epoch is None:
+                    first_success_epoch = epoch
+            else:
+                consecutive = 0
+                first_success_epoch = None
+            key = (f"top1={snap['comprehension']['top1']:.4f} "
+                   f"medrank={snap['comprehension']['target_rank_median']:.0f}"
+                   if task == "comprehension"
+                   else f"exact={snap['naming']['exact_match']:.4f}")
+            print(f"[2C {task}] epoch {epoch} loss={rec['train_loss']:.4f} "
+                  f"{key} criterion={ok} streak={consecutive}", flush=True)
+            if consecutive >= SUBSET_CONSECUTIVE_SUCCESSES:
+                stop_epoch = epoch
+                stop_reason = (f"predeclared training-set criterion met at "
+                               f"{SUBSET_CONSECUTIVE_SUCCESSES} consecutive "
+                               f"scheduled evaluations")
+                break
+
+    # ---- final evaluation at the stopping epoch, with per-item detail ----
+    final_snapshot = evaluate(stop_epoch, per_item=True)
+    if not snapshots or snapshots[-1]["epoch"] != stop_epoch:
+        snapshots.append({k: v for k, v in final_snapshot.items()
+                          if k != "_per_item"})
+
+    if task == "comprehension":
+        per_item = final_snapshot["comprehension"].pop("_per_item")
+    else:
+        per_item = final_snapshot["naming"].pop("_per_item")
+    _write_tsv(os.path.join(out_dir, "final_per_item.tsv"), per_item)
+
+    # ---- repetition AFTER training (identical items and convention) ----
+    repetition_after = repetition_snapshot(
+        model, vocab, entries, all_idx, bank_raw, device,
+        include_teacher_forced=True)
+
+    # ---- scope audit ----
+    changed = changed_parameters(model, initial)
+    scope_ok = set(changed) <= set(trainable)
+    if not scope_ok:
+        raise RuntimeError(
+            "Parameters outside the approved trainable scope changed: "
+            f"{sorted(set(changed) - set(trainable))}")
+
+    ckpt_out = os.path.join(out_dir, f"final_epoch_{stop_epoch}.pt")
+    torch.save({"model_state_dict": model.state_dict(),
+                "task": task, "objective": objective, "epochs": stop_epoch,
+                "subset_definition_sha256": sub_hash,
+                "note": "fixed-budget or predeclared training-set criterion "
+                        "endpoint; NOT a validation-selected checkpoint",
+                "source_checkpoint_sha256": sha256_file(ckpt_path)}, ckpt_out)
+
+    _write_tsv(os.path.join(out_dir, "subset_definition.tsv"), records)
+    with open(os.path.join(out_dir, "subset_definition.json"), "w",
+              encoding="utf-8") as f:
+        json.dump({"subset_definition_sha256": sub_hash,
+                   "n": len(subset_idx), "per_band": per_band,
+                   "subset_seed": subset_seed,
+                   "bank_indices_in_order": [int(i) for i in subset_idx],
+                   "items": records}, f, indent=2)
+
+    from scripts.naming_comprehension.aggregate_cohort import BAND_LABELS
+    band_counts = collections.Counter(r["band"] for r in records)
+    lengths = [r["n_phonemes"] for r in records]
+
+    result = {
+        "phase": "2C1_subset64_capacity_overfit_diagnostic",
+        "diagnostic_kind": ("training-set memorisation / capacity; NO held-out "
+                            "population, NO generalization claim"),
+        "task": task,
+        "objective": objective,
+        "subset": {
+            "n": len(subset_idx),
+            "per_band": per_band,
+            "subset_seed": subset_seed,
+            "selection": ("seeded permutation within each frozen Phase 1A "
+                          "frequency band, NOT the head of the ranking"),
+            "nested": ("per-band ordering is independent of subset size, so a "
+                       "larger subset is a strict superset by construction"),
+            "band_counts": {lab: band_counts[lab] for lab in BAND_LABELS},
+            "subset_definition_sha256": sub_hash,
+            "all_unique_phonology": True,
+            "phoneme_length": {
+                "min": min(lengths), "max": max(lengths),
+                "mean": sum(lengths) / len(lengths),
+            },
+        },
+        "budget": {"max_epochs": epochs, "batch_size": batch_size,
+                   "eval_every": eval_every,
+                   "optimizer_steps_per_epoch": 1,
+                   "lr": lr, "weight_decay": weight_decay,
+                   "lr_schedule": "constant",
+                   "optimizer": "AdamW, fresh, task scope only; checkpoint "
+                                "optimizer state never restored",
+                   "stopping": ("predeclared training-set acquisition "
+                                "criterion at N consecutive scheduled "
+                                "evaluations, or budget exhaustion"),
+                   "consecutive_successes_required": SUBSET_CONSECUTIVE_SUCCESSES},
+        "objective_config": ({"tau": tau, "lambda_ret": lambda_ret}
+                             if objective == "c3" else {}),
+        "success_criterion": (C3_SUBSET_SUCCESS if task == "comprehension"
+                              else NAMING_SUBSET_SUCCESS),
+        "outcome": {
+            "criterion_reached": first_success_epoch is not None
+                                 and consecutive >= SUBSET_CONSECUTIVE_SUCCESSES,
+            "first_epoch_criterion_met": first_success_epoch,
+            "stopped_at_epoch": stop_epoch,
+            "stop_reason": stop_reason,
+        },
+        "populations": {
+            "training_population": len(subset_idx),
+            "training_population_kind": "64-word nested unique-phonology subset",
+            "sampler": "uniform over the subset, one full pass per step",
+            "retrieval_bank_size": int(model.ltm.semantic_bank.shape[0]),
+            "retrieval_note": ("bank NOT shrunk to the subset: retrieval stays "
+                               "a full-lexicon-way decision"),
+        },
+        "trainable_parameters": trainable,
+        "always_frozen": list(ALWAYS_FROZEN),
+        "scope_audit": {
+            "changed_parameters": sorted(changed),
+            "all_changes_within_scope": scope_ok,
+            "dorsal_bit_identical": True,
+            "dorsal_checked_every_epoch": True,
+        },
+        "repetition": {
+            "before": repetition_before,
+            "after": repetition_after,
+            "note": ("full-lexicon canonical AR, before training and once at "
+                     "the stopping epoch only"),
+        },
+        "trajectory": trajectory,
+        "snapshots": snapshots,
+        "final_snapshot": final_snapshot,
+        "final_checkpoint": os.path.abspath(ckpt_out),
+        "provenance": {
+            "source_checkpoint_path": os.path.abspath(ckpt_path),
+            "source_checkpoint_sha256": sha256_file(ckpt_path),
+            "checkpoint_training_commit": ckpt.get("git_commit"),
+            "lexicon_file_sha256": ckpt.get("lexicon_file_sha256"),
+            "ordered_training_words_sha256": ckpt.get("ordered_training_words_sha256"),
+            "glove": glove_status,
+            "ltm_encoder_mode": cfg.ltm.ltm_encoder_mode,
+            "naming_decode_cap": max_steps,
+            "data_seed": data_seed,
+            "device": device,
+            "torch_version": torch.__version__,
+            "eval_git": git_state(ROOT),
+            "runtime_seconds": round(time.time() - t_start, 1),
+        },
+    }
+    with open(os.path.join(out_dir, "run_summary.json"), "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2)
+    _write_tsv(os.path.join(out_dir, "trajectory.tsv"), trajectory)
+    print(f"[2C {task}] done -> {out_dir}", flush=True)
+    return result
+
+
 # ============================================================  main  =======
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -880,7 +1376,37 @@ def main(argv: Optional[List[str]] = None) -> int:
     rn.add_argument("--lambda-ret", type=float, default=0.087)
     rn.add_argument("--data-seed", type=int, default=0)
     rn.add_argument("--device", default="cpu")
+
+    sb = sub.add_parser("subset", help="Phase 2C subset capacity/overfit run")
+    sb.add_argument("--ckpt", required=True, help="canonical source checkpoint")
+    sb.add_argument("--task", required=True, choices=["comprehension", "naming"])
+    sb.add_argument("--objective", default="c3", choices=["c0", "c3"],
+                    help="comprehension objective; ignored for naming")
+    sb.add_argument("--out-dir", required=True)
+    sb.add_argument("--per-band", type=int, default=16)
+    sb.add_argument("--subset-seed", type=int, default=0)
+    sb.add_argument("--lr", type=float, default=1e-4)
+    sb.add_argument("--weight-decay", type=float, default=1e-5)
+    sb.add_argument("--batch-size", type=int, default=64)
+    sb.add_argument("--epochs", type=int, default=SUBSET_MAX_EPOCHS)
+    sb.add_argument("--eval-every", type=int, default=SUBSET_EVAL_EVERY)
+    sb.add_argument("--tau", type=float, default=0.10)
+    sb.add_argument("--lambda-ret", type=float, default=0.087)
+    sb.add_argument("--data-seed", type=int, default=0)
+    sb.add_argument("--device", default="cpu")
     args = ap.parse_args(argv)
+
+    if args.cmd == "subset":
+        res = run_subset_task(args.ckpt, args.task, args.objective, args.out_dir,
+                              per_band=args.per_band, subset_seed=args.subset_seed,
+                              lr=args.lr, weight_decay=args.weight_decay,
+                              batch_size=args.batch_size, epochs=args.epochs,
+                              tau=args.tau, lambda_ret=args.lambda_ret,
+                              data_seed=args.data_seed, device=args.device,
+                              eval_every=args.eval_every)
+        print(json.dumps({"subset": res["subset"], "outcome": res["outcome"],
+                          "final": res["final_snapshot"]}, indent=2))
+        return 0
 
     if args.cmd == "run":
         res = run_task(args.ckpt, args.task, args.objective, args.out_dir,
