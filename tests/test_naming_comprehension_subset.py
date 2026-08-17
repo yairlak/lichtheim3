@@ -333,6 +333,28 @@ def test_nested_scale_metrics_handles_an_empty_group():
     assert out["frequency_bands"]["15k-end"] is None
 
 
+def test_nested_scale_metrics_groups_by_phoneme_length():
+    rows = [{"bank_index": 1, "freq_rank": 5, "exact": 1, "edit": 0,
+             "eos_emitted": 1, "pred_len": 3, "length": 3, "n_phonemes": 3},
+            {"bank_index": 2, "freq_rank": 5, "exact": 1, "edit": 0,
+             "eos_emitted": 1, "pred_len": 3, "length": 3, "n_phonemes": 3},
+            {"bank_index": 3, "freq_rank": 5, "exact": 0, "edit": 2,
+             "eos_emitted": 1, "pred_len": 7, "length": 7, "n_phonemes": 7}]
+    out = nested_scale_metrics(rows, {}, task="naming")
+    pl = out["phoneme_length"]
+    assert set(pl) == {"3", "7"}
+    assert pl["3"]["n"] == 2 and pl["3"]["exact_match"] == 1.0
+    assert pl["7"]["n"] == 1 and pl["7"]["exact_match"] == 0.0
+
+
+def test_phoneme_length_grouping_works_for_comprehension_rows_too():
+    rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2), (2, 5, 0, 4, 0.5, -0.1)])
+    rows[0]["n_phonemes"] = 4
+    rows[1]["n_phonemes"] = 6
+    pl = nested_scale_metrics(rows, {}, task="comprehension")["phoneme_length"]
+    assert pl["4"]["top1"] == 1.0 and pl["6"]["top1"] == 0.0
+
+
 def test_comprehension_aggregation_reports_mean_and_median_rank():
     rows = _comp_rows([(1, 5, 1, 1, 0.9, 0.2), (2, 5, 0, 3, 0.5, -0.1),
                        (3, 5, 0, 101, 0.4, -0.2)])

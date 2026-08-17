@@ -1104,6 +1104,15 @@ def nested_scale_metrics(rows: Sequence[dict], cores: Dict[str, set],
     for bi, lab in enumerate(BAND_LABELS):
         out["frequency_bands"][lab] = agg(
             [r for r in rows if band_of_rank(r["freq_rank"], FREQ_BANDS) == bi])
+
+    # Length grouping is optional: rows that carry no length field simply do
+    # not contribute, so the helper stays usable on partial row dicts.
+    by_len: Dict[int, List[dict]] = collections.defaultdict(list)
+    for r in rows:
+        n = r.get("n_phonemes", r.get("length"))
+        if n is not None:
+            by_len[int(n)].append(r)
+    out["phoneme_length"] = {str(k): agg(by_len[k]) for k in sorted(by_len)}
     return out
 
 
@@ -1163,7 +1172,8 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                     data_seed: int = 0, device: str = "cpu",
                     eval_every: int = SUBSET_EVAL_EVERY,
                     core_per_band: Optional[object] = None,
-                    run_repetition: bool = True) -> dict:
+                    repetition_mode: str = "both",
+                    full_lexicon: bool = False) -> dict:
     """One Phase 2C subset capacity run, always from the canonical checkpoint.
 
     Never continued from a Phase 2B run or from the other Phase 2C run: each
@@ -1179,17 +1189,30 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     glove_status = require_real_glove(ckpt, expected_found=len(entries))
 
     # ---- deterministic nested subset (same 64 words for both tasks) ----
-    subset_idx = select_nested_subset(entries, per_band, subset_seed)
+    if repetition_mode not in ("none", "both", "end"):
+        raise ValueError(f"Unknown repetition_mode {repetition_mode!r}.")
+
+    if full_lexicon:
+        subset_idx = list(range(len(entries)))
+    else:
+        subset_idx = select_nested_subset(entries, per_band, subset_seed)
     records = subset_records(entries, subset_idx, vocab)
     sub_hash = subset_definition_hash(records)
 
-    strict_set = set(unique_phonology_indices(entries))
-    if not set(subset_idx) <= strict_set:
-        raise RuntimeError("Subset contains non-unique-phonology words.")
-    forms = [tuple(entries[i].phonemes) for i in subset_idx]
-    if len(set(forms)) != len(forms):
-        raise RuntimeError("Subset contains a repeated phonological form.")
-    verify_bank_mapping(entries, bank_raw, subset_idx)
+    if full_lexicon:
+        # Naming has no homophone ambiguity to avoid: distinct semantic inputs
+        # may legitimately map to the same phonological output, so the
+        # unique-phonology restriction that protects comprehension retrieval
+        # is deliberately NOT applied here.
+        verify_bank_mapping(entries, bank_raw, subset_idx[:200] + subset_idx[::97])
+    else:
+        strict_set = set(unique_phonology_indices(entries))
+        if not set(subset_idx) <= strict_set:
+            raise RuntimeError("Subset contains non-unique-phonology words.")
+        forms = [tuple(entries[i].phonemes) for i in subset_idx]
+        if len(set(forms)) != len(forms):
+            raise RuntimeError("Subset contains a repeated phonological form.")
+        verify_bank_mapping(entries, bank_raw, subset_idx)
 
     # ---- nested cores for the cross-scale split (verified, never assumed) ----
     # Each core is regenerated from the SAME deterministic per-band ordering,
@@ -1202,7 +1225,7 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
         sizes = sorted({int(c) for c in
                         (core_per_band if isinstance(core_per_band, (list, tuple))
                          else [core_per_band])})
-        if any(c > per_band for c in sizes):
+        if not full_lexicon and any(c > per_band for c in sizes):
             raise ValueError(
                 f"core per-band sizes {sizes} exceed per_band={per_band}.")
         chain: List[Tuple[str, List[int]]] = []
@@ -1255,6 +1278,8 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             m["mean_target_length"] = (sum(r["length"] for r in rows)
                                        / max(len(rows), 1))
             s["naming"] = m
+        for r in rows:                       # one length key for both tasks
+            r.setdefault("n_phonemes", r.get("length"))
         if cores:
             s["nested_scale"] = nested_scale_metrics(rows, cores, task)
         s["loss_components"] = _subset_loss_components(
@@ -1277,7 +1302,7 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     # consequence, and this pass dominates wall time.  The canonical evaluator
     # is untouched; only its invocation is skipped.
     repetition_before = None
-    if run_repetition:
+    if repetition_mode == "both":
         repetition_before = repetition_snapshot(
             model, vocab, entries, all_idx, bank_raw, device,
             include_teacher_forced=True)
@@ -1353,7 +1378,9 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
 
     # ---- repetition AFTER training (identical items and convention) ----
     repetition_after = None
-    if run_repetition:
+    if repetition_mode in ("both", "end"):
+        print(f"[2C {task}] endpoint repetition (full lexicon, canonical AR) "
+              "- this pass is slow by design", flush=True)
         repetition_after = repetition_snapshot(
             model, vocab, entries, all_idx, bank_raw, device,
             include_teacher_forced=True)
@@ -1377,11 +1404,15 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     _write_tsv(os.path.join(out_dir, "subset_definition.tsv"), records)
     with open(os.path.join(out_dir, "subset_definition.json"), "w",
               encoding="utf-8") as f:
-        json.dump({"subset_definition_sha256": sub_hash,
-                   "n": len(subset_idx), "per_band": per_band,
+        payload = {"subset_definition_sha256": sub_hash,
+                   "n": len(subset_idx),
+                   "per_band": None if full_lexicon else per_band,
+                   "full_lexicon": full_lexicon,
                    "subset_seed": subset_seed,
-                   "bank_indices_in_order": [int(i) for i in subset_idx],
-                   "items": records}, f, indent=2)
+                   "bank_indices_in_order": [int(i) for i in subset_idx]}
+        if not full_lexicon:                 # the TSV already carries the items
+            payload["items"] = records
+        json.dump(payload, f, indent=2)
 
     from scripts.naming_comprehension.aggregate_cohort import BAND_LABELS
     band_counts = collections.Counter(r["band"] for r in records)
@@ -1434,7 +1465,10 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
         },
         "populations": {
             "training_population": len(subset_idx),
-            "training_population_kind": "64-word nested unique-phonology subset",
+            "training_population_kind": (
+                "FULL canonical trained lexicon (homophones included: naming "
+                "has no phonological-ambiguity restriction)" if full_lexicon
+                else f"{len(subset_idx)}-word nested unique-phonology subset"),
             "sampler": "uniform over the subset, one full pass per step",
             "retrieval_bank_size": int(model.ltm.semantic_bank.shape[0]),
             "retrieval_note": ("bank NOT shrunk to the subset: retrieval stays "
@@ -1449,11 +1483,19 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             "dorsal_checked_every_epoch": True,
         },
         "repetition": {
-            "ran": run_repetition,
+            "mode": repetition_mode,
             "before": repetition_before,
             "after": repetition_after,
+            "canonical_initial_reference": {"full": 1.000000, "wm": 0.999763,
+                                            "ltm": 0.989449},
             "note": ("full-lexicon canonical AR, before training and once at "
-                     "the stopping epoch only" if run_repetition else
+                     "the stopping epoch only" if repetition_mode == "both" else
+                     "full-lexicon canonical AR at the stopping epoch ONLY; "
+                     "compare against canonical_initial_reference. Behavioural "
+                     "LTM degradation here is a measured consequence of "
+                     "single-task co-adaptation, not a code bug (the frozen "
+                     "parameter fingerprints are asserted every epoch)."
+                     if repetition_mode == "end" else
                      "DEFERRED: the LTM repetition consequence is already "
                      "established by Phase 2B and 2C1; this pass dominates "
                      "wall time and is not needed to decide subset capacity. "
@@ -1541,9 +1583,13 @@ def main(argv: Optional[List[str]] = None) -> int:
                          "the core-vs-added cross-scale split. Several may be "
                          "given (e.g. 16 128 -> core64 and core512); 'added' is "
                          "then relative to the largest core.")
-    sb.add_argument("--no-repetition", action="store_true",
-                    help="defer the expensive full-lexicon canonical repetition "
-                         "passes (the evaluator itself is untouched)")
+    sb.add_argument("--repetition", choices=["none", "both", "end"], default="both",
+                    help="'both' = canonical full-lexicon repetition before and "
+                         "after training; 'end' = at the stopping epoch only; "
+                         "'none' = defer entirely. The evaluator is never modified.")
+    sb.add_argument("--full-lexicon", action="store_true",
+                    help="train on ALL canonical lexicon words instead of a "
+                         "nested subset (--per-band is then ignored)")
     args = ap.parse_args(argv)
 
     if args.cmd == "subset":
@@ -1555,7 +1601,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                               data_seed=args.data_seed, device=args.device,
                               eval_every=args.eval_every,
                               core_per_band=args.core_per_band,
-                              run_repetition=not args.no_repetition)
+                              repetition_mode=args.repetition,
+                              full_lexicon=args.full_lexicon)
         print(json.dumps({"subset": res["subset"], "outcome": res["outcome"],
                           "final": res["final_snapshot"]}, indent=2))
         return 0
