@@ -29,9 +29,9 @@ from scripts.naming_comprehension.aggregate_cohort import (             # noqa: 
 from scripts.naming_comprehension.train_tasks import (                  # noqa: E402
     C3_SUBSET_SUCCESS, NAMING_SUBSET_SUCCESS, band_of_rank,
     c3_subset_success, homophone_indices, naming_subset_success,
-    nested_band_ordering, nested_scale_metrics, select_nested_subset,
-    subset_definition_hash,
-    subset_records, unique_phonology_indices)
+    nested_band_ordering, nested_scale_metrics, population_composition,
+    select_nested_subset, select_representative_subset,
+    subset_definition_hash, subset_records, unique_phonology_indices)
 
 SEM_DIM = 8
 N_PER_BAND = 50
@@ -233,6 +233,65 @@ def test_subset_records_carry_the_required_definition_fields():
         assert r["freq_rank"] == entries[i].rank
         assert r["band"] in BAND_LABELS
         assert r["phonemes"] == " ".join(vocab.itos[p] for p in entries[i].phonemes)
+
+
+# ------------------------------------------- representative (composition)
+
+def test_representative_subset_is_exact_size_and_deterministic():
+    e = _synth_entries()
+    a = select_representative_subset(e, 100, subset_seed=0)
+    b = select_representative_subset(_synth_entries(), 100, subset_seed=0)
+    assert len(a) == 100 and len(set(a)) == 100
+    assert a == b
+
+
+def test_representative_subsets_are_nested_by_prefix():
+    e = _synth_entries()
+    small = select_representative_subset(e, 40, 0)
+    big = select_representative_subset(e, 120, 0)
+    assert big[:40] == small                  # prefix of one permutation
+    assert set(small) < set(big)
+
+
+def test_representative_subset_may_include_homophones():
+    """The key difference from the band-stratified selector."""
+    e = _synth_entries(n_per_band=10, n_homophone_pairs=20)
+    idx = select_representative_subset(e, len(e), 0)
+    assert set(idx) == set(range(len(e)))     # full permutation covers all
+    assert set(idx) & set(homophone_indices(e))
+
+
+def test_representative_subset_is_not_the_band_stratified_one():
+    e = _synth_entries()
+    rep = set(select_representative_subset(e, 64, 0))
+    bal = set(select_nested_subset(e, per_band=16, subset_seed=0))
+    assert rep != bal
+
+
+def test_representative_selection_rejects_oversized_request():
+    e = _synth_entries()
+    with pytest.raises(RuntimeError, match="Cannot select"):
+        select_representative_subset(e, len(e) + 1, 0)
+
+
+def test_population_composition_reports_bands_lengths_and_homophones():
+    e = _synth_entries()
+    comp = population_composition(e, list(range(len(e))))
+    assert comp["n"] == len(e)
+    assert sum(comp["band_counts"].values()) + 0 == len(e)
+    assert abs(sum(comp["band_proportions"].values()) - 1.0) < 1e-9
+    assert comp["homophone_items"] == len(homophone_indices(e))
+    assert 0.0 < comp["homophone_fraction"] < 1.0
+    assert comp["phoneme_length"]["min"] <= comp["phoneme_length"]["max"]
+
+
+def test_composition_distinguishes_balanced_from_representative():
+    """A balanced subset has equal bands; a representative one should not."""
+    e = _synth_entries(n_per_band=400)
+    bal = population_composition(e, select_nested_subset(e, 50, 0))
+    assert len(set(bal["band_counts"].values())) == 1        # all equal
+    rep = population_composition(e, select_representative_subset(e, 200, 0))
+    assert sum(rep["band_counts"].values()) == 200
 
 
 # -------------------------------------------------- predeclared criteria

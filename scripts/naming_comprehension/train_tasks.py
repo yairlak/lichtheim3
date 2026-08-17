@@ -948,12 +948,66 @@ def select_nested_subset(entries: Sequence[LexEntry], per_band: int,
     return out
 
 
+def select_representative_subset(entries: Sequence[LexEntry], n: int,
+                                 subset_seed: int = 0) -> List[int]:
+    """First `n` items of a deterministic uniform permutation of the lexicon.
+
+    The COMPOSITION CONTROL counterpart to `select_nested_subset`: it imposes
+    no equal-per-band constraint and applies no unique-phonology filter, so in
+    expectation it reproduces the full lexicon's frequency, length and
+    homophone composition.  Because it is a prefix of one permutation, samples
+    of different sizes are nested in each other exactly as the band-stratified
+    family is.
+
+    The generator lives in a separate seed namespace from
+    `nested_band_ordering` so the two constructions can never share a
+    permutation for the same `subset_seed`.
+    """
+    if n > len(entries):
+        raise RuntimeError(f"Cannot select {n} items from {len(entries)} entries.")
+    g = torch.Generator().manual_seed(1_000_000 + subset_seed)
+    perm = torch.randperm(len(entries), generator=g).tolist()
+    return perm[:n]
+
+
+def population_composition(entries: Sequence[LexEntry],
+                           indices: Sequence[int]) -> dict:
+    """Descriptive composition of an index set: bands, lengths, ranks, homophones."""
+    import numpy as np
+    from scripts.naming_comprehension.aggregate_cohort import (
+        FREQ_BANDS, BAND_LABELS)
+
+    homo = set(homophone_indices(entries))
+    n = max(len(indices), 1)
+    bands = collections.Counter()
+    for i in indices:
+        b = band_of_rank(entries[i].rank, FREQ_BANDS)
+        bands[BAND_LABELS[b] if b is not None else "OUT_OF_BANDS"] += 1
+    ranks = [entries[i].rank for i in indices]
+    lens = [len(entries[i].phonemes) for i in indices]
+    n_homo = sum(1 for i in indices if i in homo)
+    return {
+        "n": len(indices),
+        "band_counts": {lab: bands[lab] for lab in BAND_LABELS},
+        "band_proportions": {lab: bands[lab] / n for lab in BAND_LABELS},
+        "rank_mean": float(np.mean(ranks)), "rank_median": float(np.median(ranks)),
+        "phoneme_length": {
+            "mean": float(np.mean(lens)), "median": float(np.median(lens)),
+            "min": int(min(lens)), "max": int(max(lens)),
+            "distribution": {str(k): v for k, v in sorted(collections.Counter(lens).items())},
+        },
+        "homophone_items": n_homo,
+        "homophone_fraction": n_homo / n,
+    }
+
+
 def subset_records(entries: Sequence[LexEntry], indices: Sequence[int],
                    vocab: Vocab) -> List[dict]:
     """Full human-readable definition of the selected subset, in order."""
     from scripts.naming_comprehension.aggregate_cohort import (
         FREQ_BANDS, BAND_LABELS)
 
+    homo = set(homophone_indices(entries))
     rows: List[dict] = []
     for pos, i in enumerate(indices):
         e = entries[i]
@@ -961,7 +1015,8 @@ def subset_records(entries: Sequence[LexEntry], indices: Sequence[int],
         rows.append({
             "position": pos,
             "bank_index": int(i),
-            "word": e.word,                 # orthography (LexEntry.word)
+            "word": e.word,
+            "in_homophone_group": int(i in homo),                 # orthography (LexEntry.word)
             "phonemes": " ".join(vocab.itos[p] for p in e.phonemes),
             "phoneme_ids": " ".join(str(p) for p in e.phonemes),
             "n_phonemes": len(e.phonemes),
@@ -1173,7 +1228,8 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                     eval_every: int = SUBSET_EVAL_EVERY,
                     core_per_band: Optional[object] = None,
                     repetition_mode: str = "both",
-                    full_lexicon: bool = False) -> dict:
+                    full_lexicon: bool = False,
+                    representative_n: Optional[int] = None) -> dict:
     """One Phase 2C subset capacity run, always from the canonical checkpoint.
 
     Never continued from a Phase 2B run or from the other Phase 2C run: each
@@ -1192,14 +1248,19 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     if repetition_mode not in ("none", "both", "end"):
         raise ValueError(f"Unknown repetition_mode {repetition_mode!r}.")
 
+    if full_lexicon and representative_n:
+        raise ValueError("full_lexicon and representative_n are mutually exclusive.")
     if full_lexicon:
         subset_idx = list(range(len(entries)))
+    elif representative_n:
+        subset_idx = select_representative_subset(entries, representative_n,
+                                                  subset_seed)
     else:
         subset_idx = select_nested_subset(entries, per_band, subset_seed)
     records = subset_records(entries, subset_idx, vocab)
     sub_hash = subset_definition_hash(records)
 
-    if full_lexicon:
+    if full_lexicon or representative_n:
         # Naming has no homophone ambiguity to avoid: distinct semantic inputs
         # may legitimately map to the same phonological output, so the
         # unique-phonology restriction that protects comprehension retrieval
@@ -1280,8 +1341,9 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             s["naming"] = m
         for r in rows:                       # one length key for both tasks
             r.setdefault("n_phonemes", r.get("length"))
-        if cores:
-            s["nested_scale"] = nested_scale_metrics(rows, cores, task)
+        # Always produced: with no cores this still gives the frequency-band
+        # and phoneme-length breakdowns, which the composition control needs.
+        s["nested_scale"] = nested_scale_metrics(rows, cores, task)
         s["loss_components"] = _subset_loss_components(
             model, entries, subset_idx, bank_raw, vocab, batch_size, device,
             task, objective, tau, lambda_ret)
@@ -1440,6 +1502,14 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                 "mean": sum(lengths) / len(lengths),
             },
             "nested_core": core_info,
+            "selection_kind": ("full lexicon" if full_lexicon else
+                               "representative uniform sample (no band "
+                               "stratification, no phonology filter)"
+                               if representative_n else
+                               "band-stratified nested unique-phonology subset"),
+            "composition": population_composition(entries, subset_idx),
+            "composition_reference_full_lexicon": population_composition(
+                entries, list(range(len(entries)))),
         },
         "budget": {"max_epochs": epochs, "batch_size": batch_size,
                    "eval_every": eval_every,
@@ -1587,6 +1657,10 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="'both' = canonical full-lexicon repetition before and "
                          "after training; 'end' = at the stopping epoch only; "
                          "'none' = defer entirely. The evaluator is never modified.")
+    sb.add_argument("--representative-n", type=int, default=None,
+                    help="composition control: take the first N items of a "
+                         "deterministic uniform permutation of the lexicon "
+                         "instead of a band-stratified subset")
     sb.add_argument("--full-lexicon", action="store_true",
                     help="train on ALL canonical lexicon words instead of a "
                          "nested subset (--per-band is then ignored)")
@@ -1602,7 +1676,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                               eval_every=args.eval_every,
                               core_per_band=args.core_per_band,
                               repetition_mode=args.repetition,
-                              full_lexicon=args.full_lexicon)
+                              full_lexicon=args.full_lexicon,
+                              representative_n=args.representative_n)
         print(json.dumps({"subset": res["subset"], "outcome": res["outcome"],
                           "final": res["final_snapshot"]}, indent=2))
         return 0
