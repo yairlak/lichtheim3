@@ -30,10 +30,14 @@ from scripts.naming_comprehension.train_tasks import (                      # no
     ALWAYS_FROZEN, TRAINABLE_PREFIXES, changed_parameters, make_batches,
     parameter_fingerprint)
 from scripts.naming_comprehension.train_multitask import (                  # noqa: E402
-    COEXISTENCE, CONSECUTIVE_REQUIRED, DECODER_SIDE, ENCODER_SIDE,
+    CANONICAL_FULL_LEXICON_LTM, COEXISTENCE, CONSECUTIVE_REQUIRED,
+    CoexistenceController, DECODER_SIDE, ENCODER_SIDE, GLOBAL_PRESERVATION,
+    STRICT_PRESERVATION_MAX_DROP, global_preservation_met, preservation_report,
     MACRO_CYCLE_STEPS, PHASE2D3_SUBSET_SHA256, SCHEDULES, TASKS,
     EVAL_STEPS_EARLY, TASK_DATA_SEEDS, UNION_PREFIXES, coexistence_met,
-    batches_per_epoch, evaluation_steps, exposure_report, infinite_batches,
+    batches_per_epoch, build_task_populations, evaluation_steps,
+    exposure_report, full_lexicon_population, infinite_batches,
+    out_of_subset_probe,
     item_presentations, load_resumable, macro_cycle, population_passes,
     presentations_per_item, repetition_objective, sampler_state, save_resumable,
     schedule_counts, set_multitask_scope, should_evaluate, side_of,
@@ -382,7 +386,7 @@ def test_evaluation_does_not_consume_global_rng():
 
 def test_sampler_state_is_derivable_from_cumulative_counts():
     st = sampler_state({"repetition": 0, "naming": 55, "comprehension": 104},
-                       population=3288, batch_size=64)
+                       populations={t: 3288 for t in TASKS}, batch_size=64)
     assert st["naming"]["batches_per_epoch"] == 52
     assert (st["repetition"]["epoch"], st["repetition"]["position_in_epoch"]) == (0, 0)
     assert (st["naming"]["epoch"], st["naming"]["position_in_epoch"]) == (1, 3)
@@ -418,14 +422,15 @@ def test_resume_rejects_mismatched_configuration(tmp_path):
     save_resumable(p, model=model, optimizer=optim, step=6,
                    counts={t: 2 for t in TASKS}, schedule="m1_111",
                    ratio=SCHEDULES["m1_111"], schedule_seed=0,
-                   population=len(entries), batch_size=3, subset_sha256="abc",
+                   populations={t: len(entries) for t in TASKS}, batch_size=3,
+                   subset_sha256="abc",
                    source_checkpoint_sha256="src", snapshots=[], trajectory=[],
                    streak=0, first_met=None)
     ok = dict(schedule="m1_111", subset_sha256="abc",
-              population=len(entries), batch_size=3)
+              populations={t: len(entries) for t in TASKS}, batch_size=3)
     load_resumable(p, **ok)                                     # no raise
     for bad in ({"schedule": "m2_123"}, {"subset_sha256": "zzz"},
-                {"population": 999}, {"batch_size": 64}):
+                {"populations": {t: 999 for t in TASKS}}, {"batch_size": 64}):
         with pytest.raises(RuntimeError, match="mismatch"):
             load_resumable(p, **{**ok, **bad})
 
@@ -439,7 +444,8 @@ def test_resume_checkpoint_carries_every_required_field(tmp_path):
     save_resumable(p, model=model, optimizer=optim, step=13,
                    counts={"repetition": 4, "naming": 4, "comprehension": 5},
                    schedule="m2_123", ratio=SCHEDULES["m2_123"], schedule_seed=0,
-                   population=len(entries), batch_size=3, subset_sha256="h",
+                   populations={t: len(entries) for t in TASKS}, batch_size=3,
+                   subset_sha256="h",
                    source_checkpoint_sha256="src", snapshots=[{"step": 0}],
                    trajectory=[{"step": 13}], streak=1, first_met=13)
     st = torch.load(p, map_location="cpu", weights_only=False)
@@ -449,7 +455,7 @@ def test_resume_checkpoint_carries_every_required_field(tmp_path):
                 "task_sampler_state", "torch_rng_state",
                 "subset_definition_sha256", "source_checkpoint_sha256",
                 "snapshots", "trajectory", "coexistence_streak",
-                "first_step_criterion_met", "population", "batch_size"):
+                "first_step_criterion_met", "task_populations", "batch_size"):
         assert key in st, key
     assert (st["cycle_index"], st["position_in_cycle"]) == (2, 1)   # 13 = 2*6+1
     assert sum(st["task_steps"].values()) == st["step"]
@@ -492,13 +498,14 @@ def test_resume_is_bit_identical_to_continuous_training(tmp_path):
     p = str(tmp_path / "resume.pt")
     save_resumable(p, model=mb, optimizer=ob, step=CUT, counts=cb,
                    schedule="m2_123", ratio=ratio, schedule_seed=0,
-                   population=len(eb), batch_size=4, subset_sha256="h",
+                   populations={t: len(eb) for t in TASKS}, batch_size=4,
+                   subset_sha256="h",
                    source_checkpoint_sha256="src", snapshots=[], trajectory=[],
                    streak=0, first_met=None)
 
     mc, vc, ec, bc, oc = fresh()
     st = load_resumable(p, schedule="m2_123", subset_sha256="h",
-                        population=len(ec), batch_size=4)
+                        populations={t: len(ec) for t in TASKS}, batch_size=4)
     mc.load_state_dict(st["model_state_dict"])
     oc.load_state_dict(st["optimizer_state_dict"])
     torch.set_rng_state(st["torch_rng_state"])
@@ -511,6 +518,296 @@ def test_resume_is_bit_identical_to_continuous_training(tmp_path):
     for (na, pa), (nc, pc) in zip(ma.named_parameters(), mc.named_parameters()):
         assert na == nc
         assert torch.equal(pa, pc), f"weights diverged at {na}"
+
+
+# ------------------------------- Phase 3C: heterogeneous task populations
+
+def test_default_repetition_population_reproduces_phase3ab():
+    e = _tiny_entries(20)
+    sub = list(range(0, 20, 2))
+    pops = build_task_populations(e, sub)                 # default "subset"
+    assert pops["repetition"] == pops["naming"] == pops["comprehension"] == sub
+
+
+def test_full_lexicon_repetition_population_changes_only_repetition():
+    e = _tiny_entries(20)
+    sub = list(range(0, 20, 2))
+    pops = build_task_populations(e, sub, "full_lexicon")
+    assert pops["repetition"] == list(range(20)) and len(pops["repetition"]) == len(e)
+    assert pops["naming"] == sub and pops["comprehension"] == sub
+    assert set(sub) <= set(pops["repetition"])            # subset contained
+
+
+def test_unknown_repetition_population_rejected():
+    e = _tiny_entries(8)
+    with pytest.raises(ValueError, match="Unknown repetition_population"):
+        build_task_populations(e, [0, 1], "everything")
+
+
+def test_task_specific_batches_per_pass():
+    """463 for the full lexicon, 52 for subset3288 -- never one shared value."""
+    assert batches_per_epoch(29571, 64) == 463
+    assert batches_per_epoch(3288, 64) == 52
+    assert 463 * 64 == 29632 != 29571                     # short final batch: 27
+    assert 29571 - 462 * 64 == 3
+
+
+def test_exposure_accounting_differs_per_task_population():
+    rep = exposure_report(130_000, 29571, 64)
+    nam = exposure_report(260_000, 3288, 64)
+    assert rep["batches_per_pass"] == 463 and nam["batches_per_pass"] == 52
+    assert rep["population_passes"] == pytest.approx(130_000 / 463, abs=1e-6)
+    assert nam["population_passes"] == pytest.approx(5000.0, abs=1e-9)
+    # exact presentations honour each population's own short final batch
+    q, r = divmod(130_000, 463)
+    assert rep["item_presentations"] == q * 29571 + r * 64
+
+
+def test_sampler_state_handles_heterogeneous_populations():
+    st = sampler_state({"repetition": 500, "naming": 55, "comprehension": 104},
+                       populations={"repetition": 29571, "naming": 3288,
+                                    "comprehension": 3288}, batch_size=64)
+    assert st["repetition"]["batches_per_epoch"] == 463
+    assert st["naming"]["batches_per_epoch"] == 52
+    assert (st["repetition"]["epoch"], st["repetition"]["position_in_epoch"]) == (1, 37)
+    assert st["repetition"]["population"] == 29571
+
+
+def test_out_of_subset_probe_is_deterministic_and_disjoint():
+    e = _tiny_entries(40)
+    sub = list(range(0, 40, 2))
+    a = out_of_subset_probe(e, sub, n=10, probe_seed=0)
+    b = out_of_subset_probe(_tiny_entries(40), sub, n=10, probe_seed=0)
+    assert a == b                                          # deterministic, ordered
+    assert len(a) == len(set(a)) == 10
+    assert not (set(a) & set(sub)), "probe must not overlap subset3288"
+    assert set(a) <= set(range(40)) - set(sub)
+    assert out_of_subset_probe(e, sub, 10, probe_seed=1) != a
+
+
+def test_probe_rejects_oversized_request():
+    e = _tiny_entries(20)
+    sub = list(range(10))
+    with pytest.raises(RuntimeError, match="exceeds"):
+        out_of_subset_probe(e, sub, n=11)                  # complement is 10
+
+
+def test_full_lexicon_repetition_batch_keeps_exact_gradient_scope():
+    """A repetition batch from the full population still hits BOTH LTM sides."""
+    model, vocab, entries, bank, _ = _setup()
+    pops = build_task_populations(entries, [0, 1], "full_lexicon")
+    batch = next(make_batches(entries, pops["repetition"], bank, vocab,
+                              batch_size=len(entries), device="cpu"))
+    set_multitask_scope(model)
+    model.zero_grad(set_to_none=True)
+    task_objective(model, "repetition", batch, vocab.pad_id)["total"].backward()
+    touched = {side_of(n) for n, p in model.named_parameters()
+               if p.requires_grad and p.grad is not None and torch.any(p.grad != 0)}
+    assert touched == {"encoder_side", "decoder_side"}
+    moved_frozen = [n for n, p in model.named_parameters()
+                    if not p.requires_grad and p.grad is not None
+                    and torch.any(p.grad != 0) and n.startswith("wm.")]
+    assert not moved_frozen
+
+
+def test_scheduler_semantics_unchanged_by_population_choice():
+    """Task ordering must not depend on which population a task samples."""
+    for name, ratio in SCHEDULES.items():
+        assert list(task_schedule_stream(ratio, 30, 0)) == \
+            list(task_schedule_stream(ratio, 30, 0))
+        assert schedule_counts(ratio, 400_000) == schedule_counts(ratio, 400_000)
+
+
+def test_resume_bit_identical_with_heterogeneous_samplers(tmp_path):
+    """Same resume guarantee when repetition samples a larger population."""
+    N, CUT = 12, 6
+    ratio = SCHEDULES["m2_123"]
+
+    def fresh():
+        model, vocab, entries, bank, _ = _setup()
+        set_multitask_scope(model)
+        optim = torch.optim.AdamW(
+            [p for p in model.parameters() if p.requires_grad],
+            lr=1e-3, weight_decay=1e-5)
+        return model, vocab, entries, bank, optim
+
+    def pops_of(entries):
+        return build_task_populations(entries, list(range(0, len(entries), 2)),
+                                      "full_lexicon")
+
+    def train(model, vocab, entries, bank, optim, counts, lo, hi, losses):
+        pops = pops_of(entries)
+        streams = {t: infinite_batches(entries, pops[t], bank, vocab, 3, "cpu",
+                                       TASK_DATA_SEEDS[t], start_index=counts[t])
+                   for t in TASKS}
+        for task in task_schedule_stream(ratio, hi, 0, start_step=lo):
+            b = next(streams[task])
+            loss = task_objective(model, task, b, vocab.pad_id)["total"]
+            optim.zero_grad(set_to_none=True); loss.backward(); optim.step()
+            counts[task] += 1
+            losses.append(round(float(loss.detach()), 10))
+
+    ma, va, ea, ba, oa = fresh()
+    ca, la = {t: 0 for t in TASKS}, []
+    train(ma, va, ea, ba, oa, ca, 0, N, la)
+
+    mb, vb, eb, bb, ob = fresh()
+    cb, lb = {t: 0 for t in TASKS}, []
+    train(mb, vb, eb, bb, ob, cb, 0, CUT, lb)
+    sizes = {t: len(v) for t, v in pops_of(eb).items()}
+    assert sizes["repetition"] != sizes["naming"], "populations must differ here"
+    p = str(tmp_path / "het.pt")
+    save_resumable(p, model=mb, optimizer=ob, step=CUT, counts=cb,
+                   schedule="m2_123", ratio=ratio, schedule_seed=0,
+                   populations=sizes, batch_size=3, subset_sha256="h",
+                   source_checkpoint_sha256="src", snapshots=[], trajectory=[],
+                   streak=0, first_met=None)
+
+    mc, vc, ec, bc, oc = fresh()
+    st = load_resumable(p, schedule="m2_123", subset_sha256="h",
+                        populations=sizes, batch_size=3)
+    mc.load_state_dict(st["model_state_dict"])
+    oc.load_state_dict(st["optimizer_state_dict"])
+    torch.set_rng_state(st["torch_rng_state"])
+    cc = {t: int(st["task_steps"][t]) for t in TASKS}
+    lc = list(lb)
+    train(mc, vc, ec, bc, oc, cc, st["step"], N, lc)
+
+    assert cc == ca and lc == la
+    for (na, pa), (nc, pc) in zip(ma.named_parameters(), mc.named_parameters()):
+        assert torch.equal(pa, pc), f"weights diverged at {na}"
+    assert st["task_sampler_state"]["repetition"]["batches_per_epoch"] != \
+        st["task_sampler_state"]["naming"]["batches_per_epoch"]
+
+
+def test_v1_resume_checkpoints_remain_loadable(tmp_path):
+    """Phase 3A/3B checkpoints stored one shared population; keep them usable."""
+    p = str(tmp_path / "v1.pt")
+    torch.save({"format_version": 1, "population": 3288, "batch_size": 64,
+                "schedule": "m2_123", "subset_definition_sha256": "h",
+                "step": 6, "task_steps": {t: 2 for t in TASKS}}, p)
+    st = load_resumable(p, schedule="m2_123", subset_sha256="h",
+                        populations={t: 3288 for t in TASKS}, batch_size=64)
+    assert st["task_populations"] == {t: 3288 for t in TASKS}
+
+
+# ------------------- Phase 3C: combined local + global success logic
+
+def _rep(ltm, full=0.9, wm=0.999763):
+    return {"full": full, "wm": wm, "ltm": ltm}
+
+
+def test_global_preservation_thresholds_are_the_predeclared_values():
+    assert GLOBAL_PRESERVATION == {"full_lexicon_ltm_min": 0.95}
+    assert CANONICAL_FULL_LEXICON_LTM == 0.989449
+    assert STRICT_PRESERVATION_MAX_DROP == 0.02
+    assert global_preservation_met(0.95) and global_preservation_met(0.99)
+    assert not global_preservation_met(0.9499)
+
+
+def test_preservation_report_computes_drop_and_both_readings():
+    r = preservation_report(_rep(0.9700))
+    assert r["ltm"] == 0.97
+    assert r["absolute_ltm_drop_from_canonical"] == pytest.approx(0.019449)
+    assert r["primary_criterion_ltm_ge_095"] is True
+    assert r["secondary_strict_drop_le_002"] is True          # 0.0194 <= 0.02
+    r2 = preservation_report(_rep(0.9600))
+    assert r2["primary_criterion_ltm_ge_095"] is True
+    assert r2["secondary_strict_drop_le_002"] is False        # 0.0294 > 0.02
+
+
+def test_secondary_threshold_is_reported_but_never_controls_stopping():
+    """0.9600 fails the strict drop yet must still stop the run."""
+    ctl = CoexistenceController(require_global=True)
+    ctl.observe_local(100, True)
+    assert ctl.observe_local(200, True) == "check_global"
+    rpt = preservation_report(_rep(0.9600))
+    assert rpt["secondary_strict_drop_le_002"] is False
+    assert ctl.record_global(200, rpt) == "stop"
+    assert ctl.global_success is True
+
+
+def test_local_coexistence_alone_does_not_stop_phase3c():
+    ctl = CoexistenceController(require_global=True)
+    assert ctl.observe_local(100, True) == "continue"          # streak 1
+    assert ctl.observe_local(200, True) == "check_global"      # streak 2
+    assert ctl.global_success is False                         # not yet stopped
+
+
+def test_phase3ab_semantics_unchanged_when_global_not_required():
+    ctl = CoexistenceController(require_global=False)
+    assert ctl.observe_local(100, True) == "continue"
+    assert ctl.observe_local(200, True) == "stop"
+    assert ctl.local_confirmations == [200]
+    assert ctl.global_checks == []
+
+
+def test_failed_global_check_continues_training_and_resets_streak():
+    ctl = CoexistenceController(require_global=True)
+    ctl.observe_local(100, True)
+    assert ctl.observe_local(200, True) == "check_global"
+    assert ctl.record_global(200, preservation_report(_rep(0.1308))) == "continue"
+    assert ctl.global_success is False
+    assert ctl.streak == 0, "a failed check must require two fresh successes"
+    # a single later local success must NOT re-trigger the expensive check
+    assert ctl.observe_local(220, True) == "continue"
+
+
+def test_later_reconfirmation_can_trigger_a_second_global_check():
+    ctl = CoexistenceController(require_global=True)
+    ctl.observe_local(100, True); ctl.observe_local(200, True)
+    ctl.record_global(200, preservation_report(_rep(0.20)))    # fails
+    assert ctl.observe_local(300, True) == "continue"
+    assert ctl.observe_local(400, True) == "check_global"      # second check
+    assert ctl.record_global(400, preservation_report(_rep(0.97))) == "stop"
+    assert [c["step"] for c in ctl.global_checks] == [200, 400]
+    assert ctl.global_checks[0]["primary_criterion_ltm_ge_095"] is False
+    assert ctl.global_checks[1]["primary_criterion_ltm_ge_095"] is True
+
+
+def test_successful_global_check_records_success_and_stops():
+    ctl = CoexistenceController(require_global=True)
+    ctl.observe_local(100, True); ctl.observe_local(200, True)
+    assert ctl.record_global(200, preservation_report(_rep(0.9900))) == "stop"
+    assert ctl.global_success is True and len(ctl.global_checks) == 1
+
+
+def test_broken_local_streak_prevents_any_global_check():
+    ctl = CoexistenceController(require_global=True)
+    assert ctl.observe_local(100, True) == "continue"
+    assert ctl.observe_local(200, False) == "continue"          # streak reset
+    assert ctl.observe_local(300, True) == "continue"
+    assert ctl.global_checks == []
+    assert ctl.observe_local(400, True) == "check_global"
+
+
+def test_endpoint_always_gets_a_full_lexicon_evaluation_without_success():
+    """Invariant the run relies on: no global success -> endpoint must measure."""
+    ctl = CoexistenceController(require_global=True)
+    ctl.observe_local(100, True); ctl.observe_local(200, True)
+    ctl.record_global(200, preservation_report(_rep(0.13)))
+    assert ctl.global_success is False
+    # run_multitask forces endpoint_full_repetition when this holds
+    assert (ctl.require_global and not ctl.global_success) is True
+
+
+def test_global_check_is_training_state_and_rng_inert():
+    """The full-lexicon check must not consume RNG or leave train mode."""
+    model, vocab, entries, bank, batch = _setup()
+    model.train()
+    torch.manual_seed(999)
+    a = torch.randn(4)
+    torch.manual_seed(999)
+    with torch.no_grad():
+        was = model.training
+        model.eval()
+        for _ in range(3):
+            model.route_logits(batch["enc_in"], batch["enc_mask"],
+                               batch["dec_in"], route="ltm")
+        model.train(was)
+    b = torch.randn(4)
+    assert torch.equal(a, b)
+    assert model.training is True
 
 
 def test_phase2d3_subset_hash_constant_is_the_stored_one():

@@ -60,6 +60,7 @@ from models.dual_route import DualRouteModel                            # noqa: 
 from scripts.naming_comprehension.frozen_probe import load_frozen       # noqa: E402
 from scripts.naming_comprehension.train_tasks import (                  # noqa: E402
     ALWAYS_FROZEN, TRAINABLE_PREFIXES, _write_tsv, assert_dorsal_untouched,
+    population_composition,
     changed_parameters, comprehension_forward, comprehension_objective,
     dorsal_fingerprint, evaluate_comprehension_subset, evaluate_naming,
     make_batches, naming_forward, naming_objective, parameter_fingerprint,
@@ -113,8 +114,18 @@ DEFAULT_EVAL_EVERY = 20_000
 # the model is measured, never the training schedule between measurements.
 EVAL_STEPS_EARLY: Tuple[int, ...] = (2_000, 5_000, 10_000, 20_000)
 
-RESUME_FORMAT_VERSION = 1
+RESUME_FORMAT_VERSION = 2       # v2 stores PER-TASK population sizes
 RESUME_FILENAME = "resume_checkpoint.pt"
+
+# Phase 3C: the repetition task may rehearse the FULL historical lexicon while
+# naming and comprehension stay on subset3288.  "subset" reproduces Phase
+# 3A/3B exactly and remains the default, so no earlier semantics change.
+REPETITION_POPULATIONS = ("subset", "full_lexicon")
+
+# Seed namespace for the out-of-subset repetition probe, distinct from the
+# schedule and from every task sampler.
+PROBE_SEED_BASE = 2_000_000
+DEFAULT_PROBE_N = 3288
 BATCH_SIZE = 64
 SUBSET_PER_BAND = 822                     # -> the Phase 2D3 subset3288
 PHASE2D3_SUBSET_SHA256 = (
@@ -322,6 +333,65 @@ def load_phase3_population(entries: Sequence[LexEntry], vocab: Vocab
     return idx, digest
 
 
+def full_lexicon_population(entries: Sequence[LexEntry]) -> List[int]:
+    """Every canonical lexicon item, in the canonical bank order.
+
+    This is exactly the population the historical full-lexicon repetition
+    evaluator uses: no homophone filter, no frequency filter, no exclusion of
+    items outside subset3288.
+    """
+    return list(range(len(entries)))
+
+
+def out_of_subset_probe(entries: Sequence[LexEntry], subset_idx: Sequence[int],
+                        n: int = DEFAULT_PROBE_N,
+                        probe_seed: int = 0) -> List[int]:
+    """A fixed, deterministic repetition probe drawn from OUTSIDE subset3288.
+
+    Design note: the complement cannot support a band-balanced probe -- it
+    holds only 177 items of the 1-1k band against 13,880 of 15k-end -- so a
+    balanced design would cap at 708 items and would over-represent frequent
+    words about five-fold relative to the lexicon.  Since the probe exists to
+    track FULL-lexicon repetition, it is instead a uniform sample of the
+    complement, which reproduces the lexicon's composition in expectation and
+    includes homophones (all 2,889 of which lie outside subset3288).  Taking
+    exactly `n = len(subset3288)` also makes the trained and untrained
+    repetition numbers comparable at equal sample size.
+    """
+    complement = sorted(set(range(len(entries))) - set(subset_idx))
+    if n > len(complement):
+        raise RuntimeError(
+            f"probe of {n} exceeds the {len(complement)}-item complement.")
+    g = torch.Generator().manual_seed(PROBE_SEED_BASE + probe_seed)
+    order = torch.randperm(len(complement), generator=g).tolist()
+    probe = [complement[i] for i in order[:n]]
+    if set(probe) & set(subset_idx):
+        raise RuntimeError("probe overlaps subset3288; it must be disjoint.")
+    return probe
+
+
+def build_task_populations(entries: Sequence[LexEntry],
+                           subset_idx: Sequence[int],
+                           repetition_population: str = "subset"
+                           ) -> Dict[str, List[int]]:
+    """Per-task item populations. Only repetition may differ from subset3288."""
+    if repetition_population not in REPETITION_POPULATIONS:
+        raise ValueError(
+            f"Unknown repetition_population {repetition_population!r}; "
+            f"expected one of {REPETITION_POPULATIONS}.")
+    rep = (full_lexicon_population(entries)
+           if repetition_population == "full_lexicon" else list(subset_idx))
+    if repetition_population == "full_lexicon":
+        if not set(subset_idx) <= set(rep):
+            raise RuntimeError("subset3288 is not contained in the repetition "
+                               "population; the design is broken.")
+        if len(rep) != len(entries):
+            raise RuntimeError(f"full-lexicon repetition population is "
+                               f"{len(rep)}, expected {len(entries)}.")
+    return {"repetition": rep, "naming": list(subset_idx),
+            "comprehension": list(subset_idx)}
+
+
 def batches_per_epoch(population: int, batch_size: int = BATCH_SIZE) -> int:
     return -(-population // batch_size)
 
@@ -498,8 +568,15 @@ def gradient_scope_audit(model: DualRouteModel, batches: Dict[str, List[dict]],
 def evaluate_all_tasks(model: DualRouteModel, vocab: Vocab,
                        entries: Sequence[LexEntry], bank_raw: torch.Tensor,
                        subset_idx: Sequence[int], device: str,
-                       max_steps: int) -> dict:
-    """All three tasks on the SAME population, using the validated evaluators."""
+                       max_steps: int,
+                       probe_idx: Optional[Sequence[int]] = None) -> dict:
+    """All three tasks on subset3288, plus an optional out-of-subset probe.
+
+    Naming and comprehension are always measured on subset3288.  Repetition is
+    measured on subset3288 and, when a probe is supplied, on a fixed disjoint
+    sample of the complement -- a cheap standing diagnostic of whether the
+    historical mapping survives outside the rehearsed items.
+    """
     rep = repetition_snapshot(model, vocab, entries, subset_idx, bank_raw,
                               device, include_teacher_forced=False)
     comp = evaluate_comprehension_subset(model, vocab, entries, bank_raw,
@@ -509,9 +586,15 @@ def evaluate_all_tasks(model: DualRouteModel, vocab: Vocab,
     rows = nam.pop("_per_item")
     nam["mean_pred_length"] = sum(r["pred_len"] for r in rows) / max(len(rows), 1)
     nam["mean_target_length"] = sum(r["length"] for r in rows) / max(len(rows), 1)
-    return {"repetition": rep["primary_readout"]["exact_match"],
-            "repetition_convention": rep["primary_readout"]["convention"],
-            "comprehension": comp, "naming": nam}
+    out = {"repetition": rep["primary_readout"]["exact_match"],
+           "repetition_convention": rep["primary_readout"]["convention"],
+           "comprehension": comp, "naming": nam}
+    if probe_idx is not None:
+        pr = repetition_snapshot(model, vocab, entries, probe_idx, bank_raw,
+                                 device, include_teacher_forced=False)
+        out["repetition_probe"] = pr["primary_readout"]["exact_match"]
+        out["repetition_probe_n"] = len(probe_idx)
+    return out
 
 
 def should_evaluate(step: int, eval_every: int = DEFAULT_EVAL_EVERY) -> bool:
@@ -534,16 +617,21 @@ def evaluation_steps(total_steps: int,
 
 # ==========================================  exactly resumable state  =====
 
-def sampler_state(counts: Dict[str, int], population: int,
+def sampler_state(counts: Dict[str, int], populations: Dict[str, int],
                   batch_size: int) -> Dict[str, dict]:
-    """Per-task data-iterator state, derived from cumulative batch counts."""
-    per_epoch = batches_per_epoch(population, batch_size)
+    """Per-task data-iterator state, derived from cumulative batch counts.
+
+    Each task carries its OWN population size, so a task rehearsing the full
+    lexicon (463 batches per pass) and a task on subset3288 (52) resume
+    correctly side by side.
+    """
     out = {}
     for t in TASKS:
+        per_epoch = batches_per_epoch(populations[t], batch_size)
         epoch, pos = divmod(counts[t], per_epoch)
         out[t] = {"cumulative_batches": counts[t], "epoch": epoch,
                   "position_in_epoch": pos, "seed": TASK_DATA_SEEDS[t],
-                  "batches_per_epoch": per_epoch}
+                  "batches_per_epoch": per_epoch, "population": populations[t]}
     return out
 
 
@@ -551,7 +639,7 @@ def save_resumable(path: str, *, model: DualRouteModel,
                    optimizer: torch.optim.Optimizer, step: int,
                    counts: Dict[str, int], schedule: str,
                    ratio: Sequence[int], schedule_seed: int,
-                   population: int, batch_size: int, subset_sha256: str,
+                   populations: Dict[str, int], batch_size: int, subset_sha256: str,
                    source_checkpoint_sha256: str, snapshots: List[dict],
                    trajectory: List[dict], streak: int,
                    first_met: Optional[int]) -> str:
@@ -581,11 +669,11 @@ def save_resumable(path: str, *, model: DualRouteModel,
             "derivation": "cycle = step // 6, position = step % 6",
             "note": "macro_cycle() reseeds a dedicated generator per cycle",
         },
-        "task_sampler_state": sampler_state(counts, population, batch_size),
+        "task_sampler_state": sampler_state(counts, populations, batch_size),
         "torch_rng_state": torch.get_rng_state(),
         "torch_cuda_rng_state": (torch.cuda.get_rng_state_all()
                                  if torch.cuda.is_available() else None),
-        "population": population,
+        "task_populations": dict(populations),
         "batch_size": batch_size,
         "subset_definition_sha256": subset_sha256,
         "source_checkpoint_sha256": source_checkpoint_sha256,
@@ -600,23 +688,112 @@ def save_resumable(path: str, *, model: DualRouteModel,
 
 
 def load_resumable(path: str, *, schedule: str, subset_sha256: str,
-                   population: int, batch_size: int) -> dict:
-    """Load and validate a resume checkpoint against the current run config."""
+                   populations: Dict[str, int], batch_size: int) -> dict:
+    """Load and validate a resume checkpoint against the current run config.
+
+    Format v1 (Phase 3A/3B) stored a single `population` shared by all tasks;
+    it is accepted and widened to the per-task form so those runs stay
+    resumable.
+    """
     st = torch.load(path, map_location="cpu", weights_only=False)
-    if st.get("format_version") != RESUME_FORMAT_VERSION:
+    ver = st.get("format_version")
+    if ver == 1 and "population" in st:
+        st["task_populations"] = {t: int(st["population"]) for t in TASKS}
+    elif ver != RESUME_FORMAT_VERSION:
         raise RuntimeError(
-            f"resume format {st.get('format_version')!r} != "
-            f"{RESUME_FORMAT_VERSION}; refusing an ambiguous resume.")
+            f"resume format {ver!r} is neither 1 nor {RESUME_FORMAT_VERSION}; "
+            "refusing an ambiguous resume.")
     for key, want, got in (("schedule", schedule, st.get("schedule")),
                            ("subset hash", subset_sha256,
                             st.get("subset_definition_sha256")),
-                           ("population", population, st.get("population")),
+                           ("task populations", dict(populations),
+                            st.get("task_populations")),
                            ("batch size", batch_size, st.get("batch_size"))):
         if want != got:
             raise RuntimeError(
                 f"resume {key} mismatch: checkpoint has {got!r}, this run "
                 f"expects {want!r}. Refusing to resume into a different setup.")
     return st
+
+
+# ===============================  global preservation (Phase 3C)  =========
+
+# Canonical historical full-lexicon LTM repetition, the reference this phase
+# asks whether joint training can preserve.
+CANONICAL_FULL_LEXICON_LTM = 0.989449
+
+# PRIMARY, binary, predeclared before the run.
+GLOBAL_PRESERVATION = {"full_lexicon_ltm_min": 0.95}
+
+# SECONDARY, descriptive only: it is reported alongside but never controls
+# stopping, and must not be substituted for the primary criterion afterwards.
+STRICT_PRESERVATION_MAX_DROP = 0.02      # -> LTM >= 0.969449
+
+
+def global_preservation_met(full_lexicon_ltm: float) -> bool:
+    """The PRIMARY global criterion. Nothing else decides Phase 3C success."""
+    return full_lexicon_ltm >= GLOBAL_PRESERVATION["full_lexicon_ltm_min"]
+
+
+def preservation_report(rep_exact: Dict[str, float]) -> dict:
+    """Full-lexicon repetition plus both preservation readings."""
+    ltm = rep_exact["ltm"]
+    drop = CANONICAL_FULL_LEXICON_LTM - ltm
+    return {
+        "full": rep_exact["full"], "wm": rep_exact["wm"], "ltm": ltm,
+        "canonical_ltm": CANONICAL_FULL_LEXICON_LTM,
+        "absolute_ltm_drop_from_canonical": drop,
+        "primary_criterion_ltm_ge_095": global_preservation_met(ltm),
+        "secondary_strict_drop_le_002": drop <= STRICT_PRESERVATION_MAX_DROP,
+        "secondary_note": ("descriptive only; does not control stopping and "
+                           "must not replace the primary >=0.95 criterion"),
+    }
+
+
+class CoexistenceController:
+    """Stopping logic for local coexistence and optional global preservation.
+
+    With `require_global=False` this reproduces Phase 3A/3B exactly: two
+    consecutive local successes stop the run.
+
+    With `require_global=True` (Phase 3C) local confirmation only TRIGGERS a
+    full-lexicon preservation check.  A failed check resets the streak, so
+    training continues and the expensive evaluation is not repeated at every
+    ordinary snapshot -- it can only fire again after two fresh consecutive
+    local successes.
+    """
+
+    def __init__(self, require_global: bool = False) -> None:
+        self.require_global = require_global
+        self.streak = 0
+        self.first_local_step: Optional[int] = None
+        self.local_confirmations: List[int] = []
+        self.global_checks: List[dict] = []
+        self.global_success = False
+
+    def observe_local(self, step: int, local_ok: bool) -> str:
+        """Record a local snapshot. Returns 'continue', 'stop' or 'check_global'."""
+        if local_ok:
+            self.streak += 1
+            if self.first_local_step is None:
+                self.first_local_step = step
+        else:
+            self.streak = 0
+            self.first_local_step = None
+        if self.streak < CONSECUTIVE_REQUIRED:
+            return "continue"
+        self.local_confirmations.append(step)
+        return "check_global" if self.require_global else "stop"
+
+    def record_global(self, step: int, report: dict) -> str:
+        """Record a global check. Returns 'stop' on success, else 'continue'."""
+        self.global_checks.append({"step": step, **report})
+        if report["primary_criterion_ltm_ge_095"]:
+            self.global_success = True
+            return "stop"
+        self.streak = 0          # two fresh local successes needed to re-check
+        self.first_local_step = None
+        return "continue"
 
 
 def coexistence_met(snapshot: dict) -> bool:
@@ -639,7 +816,11 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
                   device: str = "cpu",
                   endpoint_full_repetition: bool = True,
                   resume_from: Optional[str] = None,
-                  save_resume: bool = True) -> dict:
+                  save_resume: bool = True,
+                  repetition_population: str = "subset",
+                  probe_n: int = DEFAULT_PROBE_N,
+                  probe_seed: int = 0,
+                  require_global_preservation: bool = False) -> dict:
     """One interleaved multitask run from the canonical checkpoint."""
     if schedule not in SCHEDULES:
         raise ValueError(f"Unknown schedule {schedule!r}; expected one of "
@@ -653,6 +834,16 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
     subset_idx, digest = load_phase3_population(entries, vocab)
     verify_bank_mapping(entries, bank_raw, subset_idx)
     max_steps = cfg.data.max_phonemes + 1
+
+    populations = build_task_populations(entries, subset_idx,
+                                        repetition_population)
+    pop_sizes = {t: len(populations[t]) for t in TASKS}
+    probe_idx = (out_of_subset_probe(entries, subset_idx, probe_n, probe_seed)
+                 if probe_n else None)
+    probe_hash = (subset_definition_hash(subset_records(entries, probe_idx, vocab))
+                  if probe_idx else None)
+    rep_pop_hash = subset_definition_hash(
+        subset_records(entries, populations["repetition"], vocab))
 
     trainable = set_multitask_scope(model)
     optim = torch.optim.AdamW(
@@ -670,7 +861,7 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
     streak_pre, first_met_pre = 0, None
     if resume_from:
         st = load_resumable(resume_from, schedule=schedule,
-                            subset_sha256=digest, population=len(subset_idx),
+                            subset_sha256=digest, populations=pop_sizes,
                             batch_size=batch_size)
         model.load_state_dict(st["model_state_dict"])
         optim.load_state_dict(st["optimizer_state_dict"])
@@ -689,7 +880,7 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
         print(f"[{schedule}] resumed at step {start_step} {counts}", flush=True)
 
     # Each task's stream is fast-forwarded by its own cumulative batch count.
-    streams = {t: infinite_batches(entries, subset_idx, bank_raw, vocab,
+    streams = {t: infinite_batches(entries, populations[t], bank_raw, vocab,
                                    batch_size, device, TASK_DATA_SEEDS[t],
                                    start_index=counts[t])
                for t in TASKS}
@@ -698,24 +889,41 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
 
     def snapshot(step: int) -> dict:
         s = evaluate_all_tasks(model, vocab, entries, bank_raw, subset_idx,
-                               device, max_steps)
+                               device, max_steps, probe_idx=probe_idx)
         s["step"] = step
         s["task_steps"] = dict(counts)
-        s["exposure"] = {t: exposure_report(counts[t], len(subset_idx), batch_size)
+        s["exposure"] = {t: exposure_report(counts[t], pop_sizes[t], batch_size)
                          for t in TASKS}
         s["coexistence_met"] = coexistence_met(s)
         return s
 
     if resumed_from:
         snapshots, trajectory = list(snapshots_pre), list(trajectory_pre)
-        streak, first_met = streak_pre, first_met_pre
+        ctl = CoexistenceController(require_global_preservation)
+        ctl.streak, ctl.first_local_step = streak_pre, first_met_pre
     else:
         snapshots = [snapshot(0)]
         trajectory = []
         print(f"[{schedule}] step 0: " + _fmt(snapshots[0]), flush=True)
-        streak = 1 if snapshots[0]["coexistence_met"] else 0
-        first_met = 0 if streak else None
+        ctl = CoexistenceController(require_global_preservation)
+        ctl.observe_local(0, snapshots[0]["coexistence_met"])
     stop_step, stop_reason = total_steps, "fixed budget exhausted"
+
+    def full_lexicon_check(step: int) -> dict:
+        """Canonical 29,571-word repetition evaluation. Evaluation only."""
+        print(f"[{schedule}] step {step}: local coexistence confirmed -> "
+              "running full-lexicon preservation check (slow by design)",
+              flush=True)
+        was_training = model.training
+        rep = repetition_snapshot(model, vocab, entries,
+                                  full_lexicon_population(entries), bank_raw,
+                                  device, include_teacher_forced=False)
+        model.train(was_training)
+        rpt = preservation_report(rep["primary_readout"]["exact_match"])
+        print(f"[{schedule}]   full-lexicon LTM={rpt['ltm']:.6f} "
+              f"drop={rpt['absolute_ltm_drop_from_canonical']:.6f} "
+              f"primary>=0.95={rpt['primary_criterion_ltm_ge_095']}", flush=True)
+        return rpt
 
     model.train()
     for step, task in enumerate(task_schedule_stream(ratio, total_steps,
@@ -744,28 +952,33 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
             snap = snapshot(step)
             snapshots.append(snap)
             ok = snap["coexistence_met"]
-            streak = streak + 1 if ok else 0
-            if ok and first_met is None:
-                first_met = step
-            if not ok:
-                first_met = None
+            decision = ctl.observe_local(step, ok)
             print(f"[{schedule}] step {step}: " + _fmt(snap)
-                  + f" coexist={ok} streak={streak}", flush=True)
+                  + f" coexist={ok} streak={ctl.streak}", flush=True)
             if save_resume:
                 save_resumable(os.path.join(out_dir, RESUME_FILENAME),
                                model=model, optimizer=optim, step=step,
                                counts=counts, schedule=schedule, ratio=ratio,
                                schedule_seed=schedule_seed,
-                               population=len(subset_idx), batch_size=batch_size,
+                               populations=pop_sizes, batch_size=batch_size,
                                subset_sha256=digest,
                                source_checkpoint_sha256=sha256_file(ckpt_path),
                                snapshots=snapshots, trajectory=trajectory,
-                               streak=streak, first_met=first_met)
-            if streak >= CONSECUTIVE_REQUIRED:
+                               streak=ctl.streak,
+                               first_met=ctl.first_local_step)
+            if decision == "stop":
                 stop_step = step
-                stop_reason = (f"predeclared coexistence criterion met at "
+                stop_reason = (f"predeclared local coexistence criterion met at "
                                f"{CONSECUTIVE_REQUIRED} consecutive evaluations")
                 break
+            if decision == "check_global":
+                snap["global_preservation_check"] = full_lexicon_check(step)
+                if ctl.record_global(step, snap["global_preservation_check"]) == "stop":
+                    stop_step = step
+                    stop_reason = ("local coexistence confirmed AND global "
+                                   "preservation criterion (full-lexicon LTM "
+                                   ">= 0.95) satisfied")
+                    break
             model.train()
 
     final = snapshot(stop_step)
@@ -778,6 +991,8 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
         raise RuntimeError(f"Parameters outside the union scope changed: {outside}")
 
     endpoint_rep = None
+    if require_global_preservation and not ctl.global_success:
+        endpoint_full_repetition = True     # the cap must always be measured
     if endpoint_full_repetition:
         print(f"[{schedule}] endpoint full-lexicon repetition (slow by design)",
               flush=True)
@@ -816,21 +1031,49 @@ def run_multitask(ckpt_path: str, schedule: str, out_dir: str,
                    "optimizer": "ONE shared AdamW over the union scope; fresh; "
                                 "checkpoint optimizer state never restored"},
         "task_steps": counts,
-        "exposure": {t: exposure_report(counts[t], len(subset_idx), batch_size)
+        "exposure": {t: exposure_report(counts[t], pop_sizes[t], batch_size)
                      for t in TASKS},
+        "task_populations": {
+            "repetition_population_kind": repetition_population,
+            "sizes": pop_sizes,
+            "batches_per_pass": {t: batches_per_epoch(pop_sizes[t], batch_size)
+                                 for t in TASKS},
+            "repetition_population_sha256": rep_pop_hash,
+            "subset_contained_in_repetition_population": True,
+        },
+        "out_of_subset_probe": ({"n": len(probe_idx), "sha256": probe_hash,
+                                 "probe_seed": probe_seed,
+                                 "disjoint_from_subset_verified": True,
+                                 "diagnostic_only": True}
+                                if probe_idx else None),
         "objectives": objective_definitions(),
         "trainable_parameters": trainable,
         "always_frozen": list(ALWAYS_FROZEN),
         "coexistence_criterion": COEXISTENCE,
-        "outcome": {"criterion_reached": streak >= CONSECUTIVE_REQUIRED,
-                    "first_step_criterion_met": first_met,
-                    "stopped_at_step": stop_step, "stop_reason": stop_reason},
+        "outcome": {
+            "local_coexistence_confirmed": bool(ctl.local_confirmations),
+            "local_confirmation_steps": ctl.local_confirmations,
+            "first_local_crossing_step": ctl.first_local_step,
+            "criterion_reached": (ctl.global_success if require_global_preservation
+                                  else bool(ctl.local_confirmations)),
+            "global_preservation_required": require_global_preservation,
+            "global_preservation_success": ctl.global_success,
+            "global_preservation_checks": ctl.global_checks,
+            "stopped_at_step": stop_step, "stop_reason": stop_reason},
+        "global_preservation_criterion": {
+            "primary": GLOBAL_PRESERVATION,
+            "canonical_full_lexicon_ltm": CANONICAL_FULL_LEXICON_LTM,
+            "secondary_strict_max_drop": STRICT_PRESERVATION_MAX_DROP,
+            "secondary_note": "descriptive only; never controls stopping"},
         "scope_audit": {"changed_parameters": sorted(changed),
                         "all_changes_within_union_scope": True,
                         "dorsal_bit_identical": True},
         "trajectory": trajectory,
         "snapshots": snapshots,
         "endpoint_full_lexicon_repetition": endpoint_rep,
+        "endpoint_preservation_report": (
+            preservation_report(endpoint_rep["primary_readout"]["exact_match"])
+            if endpoint_rep else None),
         "resumed_from": resumed_from,
         "resume_checkpoint": (os.path.abspath(os.path.join(out_dir, RESUME_FILENAME))
                               if save_resume else None),
@@ -894,7 +1137,10 @@ def objective_definitions() -> dict:
 # ==========================================================  preflight  ====
 
 def preflight(ckpt_path: str, device: str, n_diag_batches: int,
-              bench_steps: int, total_steps: int, out: Optional[str]) -> dict:
+              bench_steps: int, total_steps: int, out: Optional[str],
+              repetition_population: str = "subset",
+              probe_n: int = DEFAULT_PROBE_N, probe_seed: int = 0,
+              full_lexicon_step0: bool = False) -> dict:
     """Everything that must hold BEFORE the long runs. Performs no training."""
     model, vocab, entries, bank_raw, cfg, ckpt = load_frozen(ckpt_path, device)
     glove = require_real_glove(ckpt, expected_found=len(entries))
@@ -907,8 +1153,12 @@ def preflight(ckpt_path: str, device: str, n_diag_batches: int,
                   if n in set(trainable))
     n_total = sum(p.numel() for _, p in model.named_parameters())
 
-    batches = {t: list(_take(infinite_batches(entries, subset_idx, bank_raw, vocab,
-                                              BATCH_SIZE, device,
+    populations = build_task_populations(entries, subset_idx, repetition_population)
+    pop_sizes = {t: len(populations[t]) for t in TASKS}
+    probe_idx = (out_of_subset_probe(entries, subset_idx, probe_n, probe_seed)
+                 if probe_n else None)
+    batches = {t: list(_take(infinite_batches(entries, populations[t], bank_raw,
+                                              vocab, BATCH_SIZE, device,
                                               TASK_DATA_SEEDS[t]), n_diag_batches))
                for t in TASKS}
 
@@ -916,7 +1166,12 @@ def preflight(ckpt_path: str, device: str, n_diag_batches: int,
     scope = gradient_scope_audit(model, batches, vocab.pad_id, 1e-4, 1e-5)
     interaction = gradient_interaction(model, batches, vocab.pad_id)
     step0 = evaluate_all_tasks(model, vocab, entries, bank_raw, subset_idx,
-                               device, max_steps)
+                               device, max_steps, probe_idx=probe_idx)
+    step0_full = None
+    if full_lexicon_step0:
+        step0_full = repetition_snapshot(
+            model, vocab, entries, full_lexicon_population(entries), bank_raw,
+            device, include_teacher_forced=False)["primary_readout"]["exact_match"]
 
     # ---- runtime benchmark: real fwd+bwd+step, then weights restored ----
     bench = {}
@@ -924,7 +1179,7 @@ def preflight(ckpt_path: str, device: str, n_diag_batches: int,
     for task in TASKS:
         optim = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],
                                   lr=1e-4, weight_decay=1e-5)
-        stream = infinite_batches(entries, subset_idx, bank_raw, vocab,
+        stream = infinite_batches(entries, populations[task], bank_raw, vocab,
                                   BATCH_SIZE, device, TASK_DATA_SEEDS[task])
         for _ in range(2):                                   # warm-up
             loss = task_objective(model, task, next(stream), vocab.pad_id)["total"]
@@ -948,7 +1203,7 @@ def preflight(ckpt_path: str, device: str, n_diag_batches: int,
             "ratio_repetition_naming_comprehension": list(ratio),
             "task_steps_at_budget": counts,
             "task_fraction": {t: counts[t] / total_steps for t in TASKS},
-            "exposure": {t: exposure_report(counts[t], len(subset_idx))
+            "exposure": {t: exposure_report(counts[t], pop_sizes[t])
                          for t in TASKS},
             "first_four_macro_cycles": [macro_cycle(ratio, 0, c) for c in range(4)],
             "estimated_training_seconds": est,
@@ -974,6 +1229,23 @@ def preflight(ckpt_path: str, device: str, n_diag_batches: int,
         "gradient_scope_audit": scope,
         "gradient_interaction": interaction,
         "step0_behaviour": step0,
+        "step0_full_lexicon_repetition": step0_full,
+        "task_populations": {
+            "repetition_population_kind": repetition_population,
+            "sizes": pop_sizes,
+            "batches_per_pass": {t: batches_per_epoch(pop_sizes[t], BATCH_SIZE)
+                                 for t in TASKS},
+            "repetition_population_sha256": subset_definition_hash(
+                subset_records(entries, populations["repetition"], vocab)),
+            "subset_contained_in_repetition_population":
+                set(subset_idx) <= set(populations["repetition"]),
+        },
+        "out_of_subset_probe": ({
+            "n": len(probe_idx), "probe_seed": probe_seed,
+            "sha256": subset_definition_hash(subset_records(entries, probe_idx, vocab)),
+            "overlap_with_subset": len(set(probe_idx) & set(subset_idx)),
+            "band_counts": population_composition(entries, probe_idx)["band_counts"],
+            "diagnostic_only": True} if probe_idx else None),
         "benchmark": bench,
         "schedules_at_budget": {"total_optimizer_steps": total_steps, **schedules},
         "coexistence_criterion": COEXISTENCE,
@@ -1017,6 +1289,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     pf.add_argument("--bench-steps", type=int, default=40)
     pf.add_argument("--total-steps", type=int, default=DEFAULT_TOTAL_STEPS)
     pf.add_argument("--out", default=None)
+    pf.add_argument("--repetition-population", choices=list(REPETITION_POPULATIONS),
+                    default="subset")
+    pf.add_argument("--probe-n", type=int, default=DEFAULT_PROBE_N)
+    pf.add_argument("--probe-seed", type=int, default=0)
+    pf.add_argument("--full-lexicon-step0", action="store_true")
 
     rn = sub.add_parser("run", help="Phase 3A interleaved multitask run")
     rn.add_argument("--ckpt", required=True)
@@ -1034,6 +1311,16 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="path to a resume_checkpoint.pt written by a previous "
                          "run of the SAME schedule/population")
     rn.add_argument("--no-save-resume", action="store_true")
+    rn.add_argument("--repetition-population", choices=list(REPETITION_POPULATIONS),
+                    default="subset",
+                    help="'subset' reproduces Phase 3A/3B; 'full_lexicon' "
+                         "rehearses all 29,571 words for repetition only")
+    rn.add_argument("--probe-n", type=int, default=DEFAULT_PROBE_N)
+    rn.add_argument("--probe-seed", type=int, default=0)
+    rn.add_argument("--require-global-preservation", action="store_true",
+                    help="Phase 3C: local coexistence only TRIGGERS a "
+                         "full-lexicon check; success additionally requires "
+                         "full-lexicon LTM >= 0.95")
     args = ap.parse_args(argv)
 
     if args.cmd == "run":
@@ -1044,12 +1331,18 @@ def main(argv: Optional[List[str]] = None) -> int:
                             schedule_seed=args.schedule_seed, device=args.device,
                             endpoint_full_repetition=not args.no_endpoint_full_repetition,
                             resume_from=args.resume,
-                            save_resume=not args.no_save_resume)
+                            save_resume=not args.no_save_resume,
+                            repetition_population=args.repetition_population,
+                            probe_n=args.probe_n, probe_seed=args.probe_seed,
+                            require_global_preservation=args.require_global_preservation)
         print(json.dumps(res["outcome"], indent=2))
         return 0
 
     res = preflight(args.ckpt, args.device, args.n_diag_batches,
-                    args.bench_steps, args.total_steps, args.out)
+                    args.bench_steps, args.total_steps, args.out,
+                    repetition_population=args.repetition_population,
+                    probe_n=args.probe_n, probe_seed=args.probe_seed,
+                    full_lexicon_step0=args.full_lexicon_step0)
     print(json.dumps({k: res[k] for k in
                       ("population", "gradient_interaction", "schedules_at_budget")},
                      indent=2)[:4000])
