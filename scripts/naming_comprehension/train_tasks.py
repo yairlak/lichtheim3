@@ -824,6 +824,9 @@ def run_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             "all_changes_within_scope": scope_ok,
             "dorsal_bit_identical": True,
         },
+        "staged_init": init_info,
+        "retention_population": retention_info,
+        "forgetting": forgetting,
         "trajectory": trajectory,
         "snapshots": snapshots,
         "final_checkpoint": os.path.abspath(ckpt_out),
@@ -968,6 +971,24 @@ def select_representative_subset(entries: Sequence[LexEntry], n: int,
     g = torch.Generator().manual_seed(1_000_000 + subset_seed)
     perm = torch.randperm(len(entries), generator=g).tolist()
     return perm[:n]
+
+
+def select_representative_range(entries: Sequence[LexEntry], lo: int, hi: int,
+                                subset_seed: int = 0) -> List[int]:
+    """Positions [lo:hi) of the SAME permutation `select_representative_subset` uses.
+
+    Contiguous ranges of one permutation are disjoint by construction, so
+    blocks carved this way partition the lexicon exactly and each block is an
+    unbiased sample of it.  `select_representative_subset(n)` is the special
+    case `lo=0, hi=n`, so a block and the earlier prefix populations come from
+    one shared deterministic object rather than from independent shuffles.
+    """
+    if not 0 <= lo < hi <= len(entries):
+        raise RuntimeError(
+            f"Invalid range [{lo}:{hi}) for {len(entries)} entries.")
+    g = torch.Generator().manual_seed(1_000_000 + subset_seed)
+    perm = torch.randperm(len(entries), generator=g).tolist()
+    return perm[lo:hi]
 
 
 def population_composition(entries: Sequence[LexEntry],
@@ -1230,7 +1251,10 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                     repetition_mode: str = "both",
                     full_lexicon: bool = False,
                     representative_n: Optional[int] = None,
-                    core_representative_n: Optional[object] = None) -> dict:
+                    core_representative_n: Optional[object] = None,
+                    representative_range: Optional[Sequence[int]] = None,
+                    init_model_checkpoint: Optional[str] = None,
+                    retention_range: Optional[Sequence[int]] = None) -> dict:
     """One Phase 2C subset capacity run, always from the canonical checkpoint.
 
     Never continued from a Phase 2B run or from the other Phase 2C run: each
@@ -1249,10 +1273,35 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     if repetition_mode not in ("none", "both", "end"):
         raise ValueError(f"Unknown repetition_mode {repetition_mode!r}.")
 
-    if full_lexicon and representative_n:
-        raise ValueError("full_lexicon and representative_n are mutually exclusive.")
+    # ---- optional STAGED start from a previously trained endpoint ----
+    # Weights come from an earlier run, but a FRESH AdamW is built below.
+    # Deliberately NOT an exact continuation of that run's optimization:
+    # its optimizer moments and RNG state were never stored.
+    init_info: Optional[dict] = None
+    if init_model_checkpoint:
+        st = torch.load(init_model_checkpoint, map_location=device,
+                        weights_only=False)
+        model.load_state_dict(st["model_state_dict"])
+        model.to(device).eval()
+        init_info = {
+            "path": os.path.abspath(init_model_checkpoint),
+            "sha256": sha256_file(init_model_checkpoint),
+            "source_task": st.get("task"), "source_epochs": st.get("epochs"),
+            "optimizer_state_restored": False,
+            "note": ("STAGED start: model weights only. A fresh AdamW is built "
+                     "over the N0 scope, so this is NOT an exact continuation "
+                     "of the source run's optimization trajectory."),
+        }
+
+    if sum(bool(x) for x in (full_lexicon, representative_n,
+                             representative_range)) > 1:
+        raise ValueError("full_lexicon, representative_n and "
+                         "representative_range are mutually exclusive.")
     if full_lexicon:
         subset_idx = list(range(len(entries)))
+    elif representative_range:
+        lo, hi = int(representative_range[0]), int(representative_range[1])
+        subset_idx = select_representative_range(entries, lo, hi, subset_seed)
     elif representative_n:
         subset_idx = select_representative_subset(entries, representative_n,
                                                   subset_seed)
@@ -1261,7 +1310,7 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     records = subset_records(entries, subset_idx, vocab)
     sub_hash = subset_definition_hash(records)
 
-    if full_lexicon or representative_n:
+    if full_lexicon or representative_n or representative_range:
         # Naming has no homophone ambiguity to avoid: distinct semantic inputs
         # may legitimately map to the same phonological output, so the
         # unique-phonology restriction that protects comprehension retrieval
@@ -1336,6 +1385,25 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             "chain_strictly_nested_verified": True,
         }
 
+    # ---- retention population: EVALUATED ONLY, never trained ----
+    retention_idx: Optional[List[int]] = None
+    retention_info: Optional[dict] = None
+    if retention_range:
+        rlo, rhi = int(retention_range[0]), int(retention_range[1])
+        retention_idx = select_representative_range(entries, rlo, rhi, subset_seed)
+        overlap = set(retention_idx) & set(subset_idx)
+        if overlap:
+            raise RuntimeError(
+                f"Retention population overlaps the training population in "
+                f"{len(overlap)} items; retention must receive ZERO gradient.")
+        retention_info = {
+            "range": [rlo, rhi], "n": len(retention_idx),
+            "definition_sha256": subset_definition_hash(
+                subset_records(entries, retention_idx, vocab)),
+            "disjoint_from_training_verified": True,
+            "receives_gradient": False,
+        }
+
     all_idx = list(range(len(entries)))
     trainable = set_trainable_scope(model, task)
     optim = fresh_optimizer(model, lr=lr, weight_decay=weight_decay)
@@ -1365,6 +1433,27 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
         # Always produced: with no cores this still gives the frequency-band
         # and phoneme-length breakdowns, which the composition control needs.
         s["nested_scale"] = nested_scale_metrics(rows, cores, task)
+        if retention_idx is not None:
+            ret = evaluate_naming(model, vocab, entries, bank_raw, retention_idx,
+                                  device, max_steps, return_per_item=True)
+            rrows = ret.pop("_per_item")
+            ret["mean_pred_length"] = (sum(r["pred_len"] for r in rrows)
+                                       / max(len(rrows), 1))
+            ret["mean_target_length"] = (sum(r["length"] for r in rrows)
+                                         / max(len(rrows), 1))
+            s["retention"] = ret
+            # The two populations are disjoint (asserted at setup), so every
+            # union metric is an exact size-weighted mean of the two -- no
+            # second decoding pass is needed and none is approximated.
+            nA, nB = len(retention_idx), len(subset_idx)
+            s["union"] = {"n": nA + nB, "derivation": "exact size-weighted mean "
+                          "of two disjoint populations"}
+            for k in ("exact_match", "whole_word_error_rate", "mean_edit",
+                      "eos_emission_rate", "mean_pred_length",
+                      "mean_target_length"):
+                s["union"][k] = (ret[k] * nA + m[k] * nB) / (nA + nB)
+            if per_item:
+                s["_per_item_retention"] = rrows
         s["loss_components"] = _subset_loss_components(
             model, entries, subset_idx, bank_raw, vocab, batch_size, device,
             task, objective, tau, lambda_ret)
@@ -1455,9 +1544,44 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
     # ---- final evaluation at the stopping epoch, with per-item detail ----
     final_snapshot = evaluate(stop_epoch, per_item=True)
     per_item = final_snapshot.pop("_per_item_rows")
+    ret_items = final_snapshot.pop("_per_item_retention", None)
     if not snapshots or snapshots[-1]["epoch"] != stop_epoch:
         snapshots.append(final_snapshot)
     _write_tsv(os.path.join(out_dir, "final_per_item.tsv"), per_item)
+    if ret_items is not None:
+        _write_tsv(os.path.join(out_dir, "final_per_item_B.tsv"), per_item)
+        _write_tsv(os.path.join(out_dir, "final_per_item_A.tsv"), ret_items)
+
+    # ---- forgetting metrics vs the predeclared sequential-epoch-0 baseline --
+    forgetting: Optional[dict] = None
+    if retention_idx is not None:
+        s0 = snapshots[0]
+        base = s0["retention"]["exact_match"]
+        base_wer = s0["retention"]["whole_word_error_rate"]
+        series = [{"epoch": s["epoch"],
+                   "retention_exact": s["retention"]["exact_match"],
+                   "retention_wer": s["retention"]["whole_word_error_rate"],
+                   "absolute_drop": base - s["retention"]["exact_match"],
+                   "relative_retention": (s["retention"]["exact_match"] / base
+                                          if base > 0 else None),
+                   "wer_increase": s["retention"]["whole_word_error_rate"] - base_wer}
+                  for s in snapshots if "retention" in s]
+        vals = [x["retention_exact"] for x in series]
+        landmarks = {}
+        for thr in (0.90, 0.50, 0.10):
+            landmarks[f"first_epoch_below_{int(thr * 100)}pct_exact"] = next(
+                (x["epoch"] for x in series if x["retention_exact"] < thr), None)
+        forgetting = {
+            "baseline_sequential_epoch0_exact": base,
+            "max_observed_exact": max(vals), "min_observed_exact": min(vals),
+            "final_exact": vals[-1],
+            "absolute_forgetting_percentage_points": (base - vals[-1]) * 100.0,
+            "relative_retention_final": vals[-1] / base if base > 0 else None,
+            "landmarks_note": ("descriptive forgetting landmarks, NOT success "
+                               "criteria"),
+            "landmarks": landmarks,
+            "series": series,
+        }
 
     # ---- repetition AFTER training (identical items and convention) ----
     repetition_after = None
@@ -1524,6 +1648,9 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
             },
             "nested_core": core_info,
             "selection_kind": ("full lexicon" if full_lexicon else
+                               f"representative permutation block "
+                               f"[{representative_range[0]}:{representative_range[1]})"
+                               if representative_range else
                                "representative uniform sample (no band "
                                "stratification, no phonology filter)"
                                if representative_n else
@@ -1592,6 +1719,9 @@ def run_subset_task(ckpt_path: str, task: str, objective: str, out_dir: str,
                      "wall time and is not needed to decide subset capacity. "
                      "The canonical evaluator is unmodified, only unused."),
         },
+        "staged_init": init_info,
+        "retention_population": retention_info,
+        "forgetting": forgetting,
         "trajectory": trajectory,
         "snapshots": snapshots,
         "final_snapshot": final_snapshot,
@@ -1682,6 +1812,19 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="track nested cores defined as REPRESENTATIVE "
                          "permutation prefixes (e.g. 3288); mutually exclusive "
                          "with --core-per-band")
+    sb.add_argument("--init-checkpoint", default=None,
+                    help="STAGED start: load model weights from a previously "
+                         "trained endpoint (a fresh AdamW is still built; this "
+                         "is not an exact continuation of that run)")
+    sb.add_argument("--retention-range", type=int, nargs=2, default=None,
+                    metavar=("LO", "HI"),
+                    help="evaluate-only population from the representative "
+                         "permutation; receives ZERO gradient. Must be disjoint "
+                         "from the training population.")
+    sb.add_argument("--representative-range", type=int, nargs=2, default=None,
+                    metavar=("LO", "HI"),
+                    help="train on positions [LO:HI) of the SAME representative "
+                         "permutation; contiguous ranges are disjoint blocks")
     sb.add_argument("--representative-n", type=int, default=None,
                     help="composition control: take the first N items of a "
                          "deterministic uniform permutation of the lexicon "
@@ -1703,7 +1846,10 @@ def main(argv: Optional[List[str]] = None) -> int:
                               repetition_mode=args.repetition,
                               full_lexicon=args.full_lexicon,
                               representative_n=args.representative_n,
-                              core_representative_n=args.core_representative_n)
+                              core_representative_n=args.core_representative_n,
+                              representative_range=args.representative_range,
+                              init_model_checkpoint=args.init_checkpoint,
+                              retention_range=args.retention_range)
         print(json.dumps({"subset": res["subset"], "outcome": res["outcome"],
                           "final": res["final_snapshot"]}, indent=2))
         return 0

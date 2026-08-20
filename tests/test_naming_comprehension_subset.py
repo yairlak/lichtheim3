@@ -30,7 +30,8 @@ from scripts.naming_comprehension.train_tasks import (                  # noqa: 
     C3_SUBSET_SUCCESS, NAMING_SUBSET_SUCCESS, band_of_rank,
     c3_subset_success, homophone_indices, naming_subset_success,
     nested_band_ordering, nested_scale_metrics, population_composition,
-    select_nested_subset, select_representative_subset,
+    select_nested_subset, select_representative_range,
+    select_representative_subset,
     subset_definition_hash, subset_records, unique_phonology_indices)
 
 SEM_DIM = 8
@@ -289,6 +290,34 @@ def test_representative_core_nests_inside_a_larger_representative_population():
     pop = set(select_representative_subset(e, 400, 0))
     assert core < pop
     assert len(pop - core) == 300
+
+
+def test_representative_range_prefix_equals_the_prefix_selector():
+    e = _synth_entries()
+    assert (select_representative_range(e, 0, 50, 0)
+            == select_representative_subset(e, 50, 0))
+
+
+def test_representative_ranges_partition_the_lexicon_exactly():
+    """The Phase 2I design: contiguous blocks of one permutation."""
+    e = _synth_entries()
+    n = len(e)
+    a = select_representative_range(e, 0, 60, 0)
+    b = select_representative_range(e, 60, 120, 0)
+    c = select_representative_range(e, 120, n, 0)
+    assert len(a) == 60 and len(b) == 60 and len(c) == n - 120
+    assert not (set(a) & set(b)) and not (set(a) & set(c)) and not (set(b) & set(c))
+    assert set(a) | set(b) | set(c) == set(range(n))
+    assert len(a) + len(b) + len(c) == n
+
+
+def test_representative_range_is_deterministic_and_validated():
+    e = _synth_entries()
+    assert select_representative_range(e, 10, 40, 0) == \
+        select_representative_range(_synth_entries(), 10, 40, 0)
+    for lo, hi in ((-1, 10), (10, 10), (5, len(e) + 1), (20, 10)):
+        with pytest.raises(RuntimeError, match="Invalid range"):
+            select_representative_range(e, lo, hi, 0)
 
 
 def test_population_composition_reports_bands_lengths_and_homophones():
