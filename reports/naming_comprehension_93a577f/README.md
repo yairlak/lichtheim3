@@ -16,6 +16,7 @@ figures/           the current summary figures (PDF + PNG) and the two
                    FIGURE_SUMMARY documents written by the generating scripts
 CURATION_MANIFEST.tsv   one row per artifact, included and excluded
 CURATED_FILES.sha256    SHA-256 of every file in this report
+PROVENANCE_LIMITATIONS.md  what can and cannot be reconstructed exactly
 ```
 
 Retained runs were determined from the `RUNS` maps in
@@ -65,10 +66,18 @@ commit independently; the manifest reproduces them per run.
 | Single-task figure script | `5a79feee9383a631025e3a6ddfe2b0339119a3cb` |
 | Multitask figure script | `8370a00b72adadf8db4cab2bb1794da41f5137c0` |
 
-Several single-task runs recorded `eval_git.dirty = true` at run time, meaning
+Seven single-task runs recorded `eval_git.dirty = true` at run time, meaning
 the working tree carried uncommitted changes when they were produced. The runs
 recorded this themselves; it is reproduced per artifact in the manifest and is
-not corrected here.
+not corrected here. What that does and does not permit is set out in
+[PROVENANCE_LIMITATIONS.md](PROVENANCE_LIMITATIONS.md), together with a
+forensic bounding of the uncommitted delta from Git history. Phase 3B and
+Phase 3C, which carry the preservation-acquisition result, both recorded
+`dirty = false`.
+
+The historical training recipe of the source checkpoint is recorded separately
+in `configs/canonical_93a577f.yaml`, with its divergence from current
+`config.py` defaults in `configs/canonical_93a577f_vs_defaults.tsv`.
 
 ## What is deliberately not in Git
 

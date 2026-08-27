@@ -1,0 +1,337 @@
+# ============================================================================
+# Canonical Lichtheim3 full-lexicon repetition training recipe — cohort 93a577f
+#
+# THIS IS A PROVENANCE RECORD, NOT AN EXECUTABLE CONFIG FILE.
+#
+# No code in this repository reads this file. `config.py` does not load YAML,
+# and `scripts/train_checkpoint.py` is driven entirely by command-line flags.
+# The `training.reproduction_commands` block below carries the actual commands
+# that produced the cohort; those are executable, this file is not.
+#
+# Every value marked EXACTLY_RECOVERED was read from primary historical
+# evidence, in this priority order:
+#   1. configuration dictionaries embedded in the four archived checkpoints
+#   2. the archived bundle manifest and SLURM submission scripts
+#   3. the training code at commit 93a577f
+#   4. the Phase 4 frozen historical-configuration block (cross-check only)
+#
+# Source 4 was used only to confirm values already established by 1-3. It
+# introduced no value of its own.
+# ============================================================================
+
+metadata:
+  experiment_id: fulllexicon_cohort_93a577f_seeds19_22
+  training_commit: 93a577fd9822955fa272ee733fa7e2acf81f1333
+  training_branch: feat/full-lexicon-ceiling
+  bundle_schema_version: 1
+  manifest_frozen_at_utc: "2026-07-29T16:17:08.326343+00:00"
+  bundle_created_at_utc: "2026-07-29T19:40:22.158692+00:00"
+  record_created_by: Phase 1D reproducibility preparation
+  record_status: provenance_record_not_executable
+  evidence:
+    checkpoints_inspected:
+      - seed_19_epoch_0155.pt
+      - seed_20_epoch_0130.pt
+      - seed_21_epoch_0145.pt
+      - seed_22_epoch_0140.pt
+    bundle_control_files:
+      - control/experiment_manifest.json
+      - control/stage1_e001_e100.sbatch
+      - control/stage2_e101_e200.sbatch
+      - control/evaluate_80_checkpoints.sbatch
+      - control/submission.json
+
+data:
+  lexicon_path: data/lexicon_en_glove_covered.tsv          # EXACTLY_RECOVERED
+  lexicon_source: bundled-en                               # EXACTLY_RECOVERED
+  lexicon_file_sha256: ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66
+  ordered_training_words_sha256: 0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1
+  sorted_training_words_sha256: f9721c17f97d0f2a1afeb97ce917075db202f21ad471dcb8755a26226de7d63a
+  train_split_sha256: f9721c17f97d0f2a1afeb97ce917075db202f21ad471dcb8755a26226de7d63a
+  val_split_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855   # empty-string sha256; no validation split
+  glove_path: data/glove.6B.300d.txt                       # EXACTLY_RECOVERED
+  glove_present: true
+  n_glove_found: 29571
+  n_glove_fallback: 0
+  semantic_dim: 300                                        # EXACTLY_RECOVERED
+  max_words: 30000                                         # CLI value; not the resulting count
+  n_source_rows: 29571
+  n_entries_after_loading: 29571
+  n_train: 29571                                           # EXACTLY_RECOVERED
+  n_val: 0                                                 # EXACTLY_RECOVERED
+  min_phonemes: 2                                          # EXACTLY_RECOVERED
+  max_phonemes: 9                                          # EXACTLY_RECOVERED
+  n_filtered_length: 0
+  n_filtered_unknown_phoneme: 0
+  freq_temp: 1.0                                           # EXACTLY_RECOVERED
+  use_real: true
+  split_mode: full_lexicon                                 # EXACTLY_RECOVERED
+  train_all_words: true                                    # EXACTLY_RECOVERED
+  val_fraction: 0.0                                        # EXACTLY_RECOVERED
+  validation_enabled: false
+  split_seed_configured: 0
+  split_seed_effective: null                               # no split is drawn in full_lexicon mode
+  split_seed_used: false
+  sampler:
+    type: WeightedRandomSampler                            # EXACTLY_RECOVERED
+    replacement: true
+    num_samples: 29571
+    frequency_weighted: true
+    freq_temp: 1.0
+
+wm:
+  hidden: 128                                              # EXACTLY_RECOVERED
+  interference_noise: 0.0                                  # EXACTLY_RECOVERED
+
+ltm:
+  phon_embed_dim: 64                                       # EXACTLY_RECOVERED
+  enc_hidden: 128                                          # EXACTLY_RECOVERED
+  dec_hidden: 128                                          # EXACTLY_RECOVERED
+  enc_layers: 1                                            # EXACTLY_RECOVERED
+  ltm_encoder_mode: unigru_last_hidden                     # EXACTLY_RECOVERED
+  bidirectional_encoder: false                             # informational; derived from ltm_encoder_mode
+  ventral_noise: 0.0                                       # EXACTLY_RECOVERED
+
+gating:
+  alpha: 2.0                                               # EXACTLY_RECOVERED
+  gate_threshold: 0.7                                      # EXACTLY_RECOVERED
+  usage_prior: 0.5                                         # EXACTLY_RECOVERED
+
+loss:
+  rep: 1.0                                                 # EXACTLY_RECOVERED
+  align: 1.0                                               # EXACTLY_RECOVERED
+  dec: 0.5                                                 # EXACTLY_RECOVERED
+  wm: 0.5                                                  # EXACTLY_RECOVERED
+  gate: 0.05                                               # EXACTLY_RECOVERED
+  label_smoothing: 0.0                                     # EXACTLY_RECOVERED
+
+model:
+  premotor_dim: 128                                        # EXACTLY_RECOVERED (checkpoint top-level field)
+  dropout: not_implemented                                 # no dropout exists in any model module
+  dropout_claim: "not tested; no dropout result may be claimed"
+
+training:
+  optimizer: AdamW                                         # EXACTLY_RECOVERED (train.py:190, train_checkpoint.py:693, manifest)
+  optimizer_betas: [0.9, 0.999]                            # EXACTLY_RECOVERED (saved optimizer param_groups)
+  optimizer_eps: 1.0e-08                                   # EXACTLY_RECOVERED
+  amsgrad: false                                           # EXACTLY_RECOVERED
+  weight_decay: 1.0e-05                                    # EXACTLY_RECOVERED
+  grad_clip: 1.0                                           # EXACTLY_RECOVERED
+  batch_size: 64                                           # EXACTLY_RECOVERED
+  teacher_forcing_ratio: 1.0                               # EXACTLY_RECOVERED
+  dorsal_pool_size: 4000                                   # EXACTLY_RECOVERED
+  num_workers: 0                                           # EXACTLY_RECOVERED
+  log_every: 50                                            # EXACTLY_RECOVERED
+  total_epochs: 200                                        # EXACTLY_RECOVERED
+  device: cuda                                             # EXACTLY_RECOVERED (NVIDIA V100, Jean Zay)
+
+  # The learning-rate change is NOT a scheduler. It is a two-job boundary:
+  # stage 2 resumes the stage-1 checkpoint and constructs a fresh AdamW at the
+  # new learning rate, then loads the stage-1 optimizer state.
+  lr_schedule:
+    kind: two_stage_job_boundary                           # EXACTLY_RECOVERED
+    stage_1:
+      epochs: [1, 100]
+      lr: 1.0e-03
+      save_every_epochs: 0
+      output: seed_<seed>_e100.pt
+    stage_2:
+      epochs: [101, 200]
+      lr: 1.0e-04
+      resume_from_stage_1: true
+      save_every_epochs: 5
+      output: seed_<seed>.pt
+    transition_rule: >-
+      Stage 1 runs epochs 1-100 at lr 1e-3 and stops. Stage 2 is a separate
+      SLURM job that resumes seed_<seed>_e100.pt with --lr 1e-4 and trains to a
+      target total of 200 epochs. There is no in-run scheduler and no warmup or
+      decay between the two values.
+
+  seed_policy:
+    seeds: [19, 20, 21, 22]                                # EXACTLY_RECOVERED
+    cfg_train_seed: <seed>                                 # equals the cohort seed
+    cfg_data_seed: <seed>                                  # equals the cohort seed
+    split_seed_configured: 0
+    split_seed_effective: null
+    note: >-
+      cfg_data.seed and cfg_train.seed are both set to the cohort seed. The
+      split seed is configured but never used because full_lexicon mode draws
+      no split. RNG states for torch, numpy and cuda are stored in every
+      checkpoint under `rng_states`.
+
+  # These are the exact commands recorded in the archived SLURM scripts.
+  # Unlike this file, they are executable.
+  reproduction_commands:
+    stage_1: >-
+      python scripts/train_checkpoint.py
+      --lexicon_path data/lexicon_en_glove_covered.tsv
+      --max_words 30000 --train_all_words
+      --epochs 100 --seed <seed> --split_seed 0
+      --batch_size 64 --lr 1e-3 --num_workers 0 --save_every_epochs 0
+      --ltm_encoder_mode unigru_last_hidden --hidden_size 128
+      --teacher_forcing_ratio 1.0 --interference_noise 0.0 --ventral_noise 0.0
+      --gate_alpha 2.0 --gate_threshold 0.7
+      --ckpt <ckpt_root>/seed_<seed>_e100.pt --out_dir <run_dir>
+    stage_2: >-
+      python scripts/train_checkpoint.py
+      --resume_from <ckpt_root>/seed_<seed>_e100.pt
+      --epochs 200 --lr 1e-4 --num_workers 0 --save_every_epochs 5
+      --ckpt <ckpt_root>/seed_<seed>.pt --out_dir <run_dir>
+    note: >-
+      Stage 2 passes only the flags it overrides; every architectural setting is
+      restored from the stage-1 checkpoint, not from config.py defaults.
+
+  environment:
+    platform: IDRIS Jean Zay
+    scheduler: SLURM
+    partition: gpu_p13
+    gpu: NVIDIA V100
+    cpus_per_task: 10
+    module: pytorch-gpu/py3/2.6.0
+    omp_num_threads: 10
+    note: >-
+      The environment is recorded for provenance. It is not required: the recipe
+      is not documented as depending on any Jean Zay specific behaviour.
+
+evaluation:
+  script: scripts/evaluate_train_lexicon_ceiling.py         # EXACTLY_RECOVERED
+  command: >-
+    python scripts/evaluate_train_lexicon_ceiling.py
+    --ckpt <checkpoint> --decode autoregressive --device cuda --out_dir <out_dir>
+  decode: autoregressive                                    # EXACTLY_RECOVERED
+  primary_route: full                                       # EXACTLY_RECOVERED
+  wm_noise: false                                           # EXACTLY_RECOVERED
+  deterministic: true                                       # EXACTLY_RECOVERED
+  metric: exact whole-word repetition                       # EXACTLY_RECOVERED
+  primary_value: results.train.full.n_errors                # EXACTLY_RECOVERED
+  population: the full 29,571-word training lexicon
+  checkpoint_interval_epochs: 5                             # EXACTLY_RECOVERED
+  evaluated_epochs: [105, 110, 115, 120, 125, 130, 135, 140, 145, 150,
+                     155, 160, 165, 170, 175, 180, 185, 190, 195, 200]
+  n_evaluations: 80                                         # 20 epochs x 4 seeds
+
+selection:
+  # The current canonical policy and the policy under which the archived bundle
+  # was created are NOT the same. Both are recorded; neither is rewritten.
+  current_canonical_policy:
+    criterion: X=5
+    definition: >-
+      A seed qualifies when it shows at least 5 consecutive zero-whole-word-error
+      FULL evaluations on the 29,571-word training lexicon. The selected
+      checkpoint is the first checkpoint of the qualifying streak.
+    qualifying_seeds: [19, 22]
+  archived_bundle_policy:
+    criterion: X=2
+    definition: >-
+      A seed qualified when it showed at least 2 consecutive zero-error
+      evaluations. This is the criterion under which
+      control/experiment_manifest.json and bundle_manifest.json were written.
+    qualifying_seeds: [19, 20, 22]
+    note: >-
+      The archived bundle manifest is historical and is not rewritten. It
+      records 3 seeds as stable-zero under X=2 and lists all four selected
+      checkpoints with role "primary".
+  effect_of_raising_x: >-
+    Raising the criterion from X=2 to X=5 does not change any selected epoch.
+    Seeds 19 and 22 keep epochs 155 and 140 at every X; only cohort membership
+    changes. Observed zero streaks were: seed 19 = 6 (155-180), seed 20 = 2
+    (130-135), seed 21 = 0, seed 22 = 13 (140-200).
+  selection_rule_within_a_seed:
+    - earliest checkpoint beginning the first qualifying zero streak
+    - else earliest exact-zero checkpoint
+    - else earliest checkpoint with the minimum error count
+
+canonical_selection_policy: X=5
+
+canonical_checkpoints:
+  - seed: 19
+    epoch: 155
+    sha256: 7d05f9c2ad5a53e705f7d55ccde2581754918938d8ca888da35c0a859666478e
+    zero_streak_epochs: [155, 160, 165, 170, 175, 180]
+    zero_streak_length: 6
+    n_errors_full: 0
+    exact_match: 1.000000
+    selection_reason: first_checkpoint_of_first_stable_zero_streak
+  - seed: 22
+    epoch: 140
+    sha256: a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595
+    zero_streak_epochs: [140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200]
+    zero_streak_length: 13
+    n_errors_full: 0
+    exact_match: 1.000000
+    selection_reason: first_checkpoint_of_first_stable_zero_streak
+
+historical_noncanonical_checkpoints:
+  - seed: 20
+    epoch: 130
+    sha256: b44548b6916ea89c6f099402b78031063445e572932acee8dd7558a73dfc6cfb
+    zero_streak_epochs: [130, 135]
+    zero_streak_length: 2
+    n_errors_full: 0
+    exact_match: 1.000000
+    selection_reason: first_checkpoint_of_first_stable_zero_streak
+    canonical_under_x5: false
+    reason_not_canonical: zero streak of 2 is shorter than the current X=5 criterion
+  - seed: 21
+    epoch: 145
+    sha256: ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf
+    zero_streak_epochs: []
+    zero_streak_length: 0
+    n_errors_full: 1
+    exact_match: 0.999966
+    selection_reason: earliest_checkpoint_with_minimum_error_count
+    canonical_under_x5: false
+    reason_not_canonical: never reached zero errors; qualifies under no value of X
+
+checkpoint_storage:
+  location: >-
+    archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/
+    selected_checkpoints/
+  tracked_in_git: false
+  gitignored_by: "archives/"
+  note: >-
+    Checkpoints are not versioned in Git. They are hash-referenced here and in
+    reports/, and are intended for external release alongside the bundle
+    manifest.
+
+provenance:
+  training_commit: 93a577fd9822955fa272ee733fa7e2acf81f1333
+  evaluation_code_commit: e876b755d0475ed11e5fbc0419a0bd8860dfd325
+  bundle_git_commit_file: git_commit.txt
+  git_dirty_at_training: false
+  submission:
+    stage1_job_id: 411262
+    stage2_job_id: 411264
+    evaluation_job_id: 411266
+    stage2_dependency: afterok:411262
+    evaluation_dependency: afterok:411264
+  preflight:
+    job_id: 410436
+    status: PASSED
+    commit_verified: true
+    gpu_fresh_resume_verified: true
+    gpu_ar_determinism_verified: true
+  script_hashes:
+    experiment_manifest_sha256: a366f9773acfd1760eb78454bc6cb8d91e595ff6cfb758daa01348160012bb55
+    stage1_script_sha256: e14f75011741838151b9ed921b5053ec2902ef3085d640afdd993d1181dcb1c5
+    stage2_script_sha256: 2355a1483c9266872ef7d1d0d7950f1c8fccf2cc5e57bf79c8b23699650f2eaa
+    evaluation_script_sha256: 2eb89f9825a3a97778fa002075044f6f821b3b499f0478beb1b7a40f2644d878
+  in_job_contract_checks: >-
+    Both training stages asserted, inside the job, that HEAD equalled the
+    expected commit, that the branch was feat/full-lexicon-ceiling, and that
+    `git status --porcelain` was empty, before any training began. Every
+    produced checkpoint was then asserted against an explicit field contract
+    covering config, dataset counts, epoch bookkeeping and lr_at_save.
+
+not_recoverable:
+  - field: exact wall-clock start and end times of each training job
+    reason: not stored in the bundle or in any checkpoint
+  - field: per-epoch learning-rate trace
+    reason: >-
+      `history` records epoch, train_total, train_rep, train_wm, val_rep and
+      val_wm only. The learning rate is recoverable per stage from the SLURM
+      scripts and from lr_at_save, but not as a per-epoch series.
+  - field: exact CUDA/cuDNN library versions
+    reason: >-
+      the SLURM module (pytorch-gpu/py3/2.6.0) and the GPU model (V100) are
+      recorded; the resolved library versions are not.

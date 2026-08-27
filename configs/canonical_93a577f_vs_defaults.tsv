@@ -1,0 +1,47 @@
+FIELD	CANONICAL_93A577F	CURRENT_DEFAULT	MATCH	IMPACT	SOURCE
+data.lexicon_path	data/lexicon_en_glove_covered.tsv		no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+data.split_mode	full_lexicon	standard	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+data.val_fraction	0.0	0.15	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+data.max_words	30000	30000	yes	NO_EFFECT	archived checkpoints (cfg_* dicts)
+data.semantic_dim	300	300	yes	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+data.min_phonemes	2	2	yes	NO_EFFECT	archived checkpoints (cfg_* dicts)
+data.max_phonemes	9	9	yes	NO_EFFECT	archived checkpoints (cfg_* dicts)
+data.freq_temp	1.0	1.0	yes	NO_EFFECT	archived checkpoints (cfg_* dicts)
+data.seed	<cohort seed 19|20|21|22>	0	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+data.split_seed	0		no	NO_EFFECT	archived checkpoints (cfg_* dicts)
+wm.hidden	128	128	yes	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+wm.interference_noise	0.0	0.1	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+ltm.phon_embed_dim	64	64	yes	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+ltm.enc_hidden	128	256	no	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+ltm.dec_hidden	128	256	no	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+ltm.enc_layers	1	1	yes	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+ltm.ltm_encoder_mode	unigru_last_hidden	bigru_masked_mean	no	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+ltm.bidirectional_encoder	False	True	no	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+ltm.ventral_noise	0.0	0.0	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+gating.alpha	2.0	4.0	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+gating.gate_threshold	0.7	0.5	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+gating.usage_prior	0.5	0.5	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+loss.rep	1.0	1.0	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+loss.align	1.0	1.0	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+loss.dec	0.5	0.5	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+loss.wm	0.5	0.5	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+loss.gate	0.05	0.05	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+loss.label_smoothing	0.0	0.0	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.optimizer	AdamW	AdamW	yes	TRAINING_BEHAVIOR	training code at 93a577f
+training.batch_size	64	64	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.weight_decay	1e-05	1e-05	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.grad_clip	1.0	1.0	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.teacher_forcing_ratio	1.0	1.0	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.dorsal_pool_size	4000	4000	yes	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.num_workers	0	0	yes	NO_EFFECT	archived checkpoints (cfg_* dicts)
+training.log_every	50	50	yes	NO_EFFECT	archived checkpoints (cfg_* dicts)
+training.total_epochs	200	8	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+training.save_every_epochs	0 (stage 1) / 5 (stage 2)	0	no	NO_EFFECT	bundle control/stage{1,2}_*.sbatch
+training.device	cuda	cpu	no	NO_EFFECT	archived checkpoints (cfg_* dicts)
+training.lr	1e-3 (epochs 1-100) then 1e-4 (epochs 101-200)	0.001	no	TRAINING_BEHAVIOR	bundle control/stage{1,2}_*.sbatch
+training.lr_schedule.kind	two_stage_job_boundary	none (single constant TrainConfig.lr)	no	TRAINING_BEHAVIOR	bundle control/stage{1,2}_*.sbatch
+training.seed	<cohort seed 19|20|21|22>	0	no	TRAINING_BEHAVIOR	archived checkpoints (cfg_* dicts)
+model.premotor_dim	128	128	yes	ARCHITECTURE_INCOMPATIBLE	archived checkpoints (cfg_* dicts)
+model.dropout	not_implemented	not_implemented	yes	NO_EFFECT	bundle control/experiment_manifest.json
+evaluation.decode	autoregressive	teacher_forcing (evaluate_train_lexicon_ceiling.py --decode default)	no	EVALUATION_ONLY	bundle control/stage{1,2}_*.sbatch
+evaluation.wm_noise	False	False	yes	EVALUATION_ONLY	bundle control/experiment_manifest.json
