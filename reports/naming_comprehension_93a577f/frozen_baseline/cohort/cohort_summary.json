@@ -1,0 +1,400 @@
+{
+  "cohort": "fulllexicon_93a577f_seeds19_22",
+  "n_checkpoints": 4,
+  "statistics_note": "descriptive only (mean, sample SD, min, max); no inferential statistics with n=4",
+  "frequency_bands": {
+    "1-1k": [
+      1,
+      1000
+    ],
+    "1k-5k": [
+      1000,
+      5000
+    ],
+    "5k-15k": [
+      5000,
+      15000
+    ],
+    "15k-end": [
+      15000,
+      1000000000
+    ]
+  },
+  "frequency_bands_note": "frozen at Phase 1A definition; not redefined",
+  "cohort_provenance": {
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "ordered_bank_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+    "ltm_encoder_mode": "unigru_last_hidden",
+    "decoding_cap": 10,
+    "eval_git_commit": "3d0ce67d910020875bb994b13403049d4d223dda",
+    "ckpt_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+    "verified": true,
+    "n_seeds": 4
+  },
+  "by_seed": [
+    {
+      "seed": 19,
+      "epoch": 155,
+      "comp_n": 26682,
+      "comp_target_cos_mean": 0.30120533825138357,
+      "comp_target_rank_median": 1470.0,
+      "comp_top1": 0.027096919271418933,
+      "comp_top5": 0.06123978712240462,
+      "comp_margin_mean": -0.24794426923911617,
+      "comp_c_ltm_mean_aux": 0.5501337774914965,
+      "homo_n": 2889,
+      "homo_top1_strict": 0.021460713049498096,
+      "homo_top5": 0.04603669089650398,
+      "homo_class_aware_top1_aux": 0.04880581516095535,
+      "shift_cos_mean": 0.29736119508743286,
+      "shift_cos_median": 0.29799047112464905,
+      "shift_l2_mean": 6.587927341461182,
+      "shift_mse_mean": 0.14905090630054474,
+      "norm_shat_mean": 3.7315022945404053,
+      "norm_glove_mean": 6.530660629272461,
+      "ckpt_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_19_epoch_0155.pt",
+      "ckpt_sha256": "7d05f9c2ad5a53e705f7d55ccde2581754918938d8ca888da35c0a859666478e",
+      "ckpt_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+      "eval_git_commit": "3d0ce67d910020875bb994b13403049d4d223dda",
+      "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+      "ordered_bank_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+      "decoding_cap": 10,
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "ckpt_seed": 19,
+      "ckpt_total_epochs_trained": 155,
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0,
+      "naming_glove_exact": 0.0,
+      "naming_glove_wer": 1.0,
+      "naming_glove_edit_mean": 6.337830983057725,
+      "naming_glove_eos_rate": 0.9384532142977917,
+      "naming_shat_exact": 0.9849176558114369,
+      "naming_shat_wer": 0.015082344188563135,
+      "naming_shat_edit_mean": 0.03378309830577255,
+      "naming_shat_eos_rate": 0.9997294646782321,
+      "comp_top1_rank_1-1k": 0.28102189781021897,
+      "n_rank_1-1k": 822,
+      "comp_top1_rank_1k-5k": 0.09419063733784545,
+      "n_rank_1k-5k": 3546,
+      "comp_top1_rank_5k-15k": 0.015647703140717558,
+      "n_rank_5k-15k": 8947,
+      "comp_top1_rank_15k-end": 0.0013465998354155757,
+      "n_rank_15k-end": 13367
+    },
+    {
+      "seed": 20,
+      "epoch": 130,
+      "comp_n": 26682,
+      "comp_target_cos_mean": 0.2970719307647518,
+      "comp_target_rank_median": 1573.0,
+      "comp_top1": 0.02357394498163556,
+      "comp_top5": 0.054418709242185746,
+      "comp_margin_mean": -0.25239908820653856,
+      "comp_c_ltm_mean_aux": 0.550323270408166,
+      "homo_n": 2889,
+      "homo_top1_strict": 0.020768431983385256,
+      "homo_top5": 0.04395984769816545,
+      "homo_class_aware_top1_aux": 0.04776739356178609,
+      "shift_cos_mean": 0.2936294972896576,
+      "shift_cos_median": 0.29438620805740356,
+      "shift_l2_mean": 6.611663818359375,
+      "shift_mse_mean": 0.1501530408859253,
+      "norm_shat_mean": 3.787142038345337,
+      "norm_glove_mean": 6.530660629272461,
+      "ckpt_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_20_epoch_0130.pt",
+      "ckpt_sha256": "b44548b6916ea89c6f099402b78031063445e572932acee8dd7558a73dfc6cfb",
+      "ckpt_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+      "eval_git_commit": "3d0ce67d910020875bb994b13403049d4d223dda",
+      "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+      "ordered_bank_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+      "decoding_cap": 10,
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "ckpt_seed": 20,
+      "ckpt_total_epochs_trained": 130,
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0,
+      "naming_glove_exact": 0.0,
+      "naming_glove_wer": 1.0,
+      "naming_glove_edit_mean": 6.236718406546955,
+      "naming_glove_eos_rate": 0.9497480639816036,
+      "naming_shat_exact": 0.9883669811639783,
+      "naming_shat_wer": 0.011633018836021747,
+      "naming_shat_edit_mean": 0.025836123228839065,
+      "naming_shat_eos_rate": 0.999864732339116,
+      "comp_top1_rank_1-1k": 0.24330900243309003,
+      "n_rank_1-1k": 822,
+      "comp_top1_rank_1k-5k": 0.0823463056965595,
+      "n_rank_1k-5k": 3546,
+      "comp_top1_rank_5k-15k": 0.013300547669609926,
+      "n_rank_5k-15k": 8947,
+      "comp_top1_rank_15k-end": 0.0013465998354155757,
+      "n_rank_15k-end": 13367
+    },
+    {
+      "seed": 21,
+      "epoch": 145,
+      "comp_n": 26682,
+      "comp_target_cos_mean": 0.2981457408913769,
+      "comp_target_rank_median": 1518.5,
+      "comp_top1": 0.025635259725657746,
+      "comp_top5": 0.05917847237838243,
+      "comp_margin_mean": -0.251607263738735,
+      "comp_c_ltm_mean_aux": 0.5507098064870904,
+      "homo_n": 2889,
+      "homo_top1_strict": 0.020422291450328832,
+      "homo_top5": 0.04845967462789893,
+      "homo_class_aware_top1_aux": 0.04776739356178609,
+      "shift_cos_mean": 0.29438042640686035,
+      "shift_cos_median": 0.2942907214164734,
+      "shift_l2_mean": 6.611325263977051,
+      "shift_mse_mean": 0.15034347772598267,
+      "norm_shat_mean": 3.7379913330078125,
+      "norm_glove_mean": 6.530660629272461,
+      "ckpt_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_21_epoch_0145.pt",
+      "ckpt_sha256": "ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf",
+      "ckpt_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+      "eval_git_commit": "3d0ce67d910020875bb994b13403049d4d223dda",
+      "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+      "ordered_bank_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+      "decoding_cap": 10,
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "ckpt_seed": 21,
+      "ckpt_total_epochs_trained": 145,
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0,
+      "naming_glove_exact": 0.0,
+      "naming_glove_wer": 1.0,
+      "naming_glove_edit_mean": 6.309154238950323,
+      "naming_glove_eos_rate": 0.9499847823881505,
+      "naming_shat_exact": 0.9864394169963816,
+      "naming_shat_wer": 0.013560583003618398,
+      "naming_shat_edit_mean": 0.028609110276960534,
+      "naming_shat_eos_rate": 0.999830915423895,
+      "comp_top1_rank_1-1k": 0.2542579075425791,
+      "n_rank_1-1k": 822,
+      "comp_top1_rank_1k-5k": 0.08911449520586577,
+      "n_rank_1k-5k": 3546,
+      "comp_top1_rank_5k-15k": 0.015200625908125629,
+      "n_rank_5k-15k": 8947,
+      "comp_top1_rank_15k-end": 0.0017206553452532355,
+      "n_rank_15k-end": 13367
+    },
+    {
+      "seed": 22,
+      "epoch": 140,
+      "comp_n": 26682,
+      "comp_target_cos_mean": 0.2967288897575825,
+      "comp_target_rank_median": 1553.5,
+      "comp_top1": 0.02582265197511431,
+      "comp_top5": 0.057754291282512554,
+      "comp_margin_mean": -0.2513121061457632,
+      "comp_c_ltm_mean_aux": 0.5489444304038431,
+      "homo_n": 2889,
+      "homo_top1_strict": 0.021806853582554516,
+      "homo_top5": 0.04880581516095535,
+      "homo_class_aware_top1_aux": 0.05053651782623745,
+      "shift_cos_mean": 0.2932022213935852,
+      "shift_cos_median": 0.29440346360206604,
+      "shift_l2_mean": 6.624819278717041,
+      "shift_mse_mean": 0.15088607370853424,
+      "norm_shat_mean": 3.780674934387207,
+      "norm_glove_mean": 6.530660629272461,
+      "ckpt_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_22_epoch_0140.pt",
+      "ckpt_sha256": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595",
+      "ckpt_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+      "eval_git_commit": "3d0ce67d910020875bb994b13403049d4d223dda",
+      "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+      "ordered_bank_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+      "decoding_cap": 10,
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "ckpt_seed": 22,
+      "ckpt_total_epochs_trained": 140,
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0,
+      "naming_glove_exact": 0.0,
+      "naming_glove_wer": 1.0,
+      "naming_glove_edit_mean": 6.337323729329411,
+      "naming_glove_eos_rate": 0.947549964492239,
+      "naming_shat_exact": 0.98944912245105,
+      "naming_shat_wer": 0.01055087754895001,
+      "naming_shat_edit_mean": 0.022860234689391634,
+      "naming_shat_eos_rate": 0.999797098508674,
+      "comp_top1_rank_1-1k": 0.2542579075425791,
+      "n_rank_1-1k": 822,
+      "comp_top1_rank_1k-5k": 0.08939650310208686,
+      "n_rank_1k-5k": 3546,
+      "comp_top1_rank_5k-15k": 0.015088856599977647,
+      "n_rank_5k-15k": 8947,
+      "comp_top1_rank_15k-end": 0.0020947108550908953,
+      "n_rank_15k-end": 13367
+    }
+  ],
+  "cohort_stats": {
+    "comp_target_cos_mean": {
+      "mean": 0.2982879749162737,
+      "sd": 0.0020363979029472215,
+      "min": 0.2967288897575825,
+      "max": 0.30120533825138357
+    },
+    "comp_target_rank_median": {
+      "mean": 1528.75,
+      "sd": 45.19310419374472,
+      "min": 1470.0,
+      "max": 1573.0
+    },
+    "comp_top1": {
+      "mean": 0.025532193988456638,
+      "sd": 0.001458091534855889,
+      "min": 0.02357394498163556,
+      "max": 0.027096919271418933
+    },
+    "comp_top5": {
+      "mean": 0.05814781500637134,
+      "sd": 0.0028684279612434652,
+      "min": 0.054418709242185746,
+      "max": 0.06123978712240462
+    },
+    "comp_margin_mean": {
+      "mean": -0.2508156818325382,
+      "sd": 0.0019685210218051757,
+      "min": -0.25239908820653856,
+      "max": -0.24794426923911617
+    },
+    "comp_c_ltm_mean_aux": {
+      "mean": 0.550027821197649,
+      "sd": 0.0007609985806642254,
+      "min": 0.5489444304038431,
+      "max": 0.5507098064870904
+    },
+    "homo_top1_strict": {
+      "mean": 0.021114572516441676,
+      "sd": 0.0006319632600728811,
+      "min": 0.020422291450328832,
+      "max": 0.021806853582554516
+    },
+    "homo_top5": {
+      "mean": 0.04681550709588093,
+      "sd": 0.0022675947856275022,
+      "min": 0.04395984769816545,
+      "max": 0.04880581516095535
+    },
+    "homo_class_aware_top1_aux": {
+      "mean": 0.04871928002769124,
+      "sd": 0.001306651857956167,
+      "min": 0.04776739356178609,
+      "max": 0.05053651782623745
+    },
+    "naming_glove_exact": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "naming_glove_wer": {
+      "mean": 1.0,
+      "sd": 0.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "naming_glove_edit_mean": {
+      "mean": 6.305256839471103,
+      "sd": 0.04761675743540043,
+      "min": 6.236718406546955,
+      "max": 6.337830983057725
+    },
+    "naming_glove_eos_rate": {
+      "mean": 0.9464340062899462,
+      "sd": 0.005432292113356776,
+      "min": 0.9384532142977917,
+      "max": 0.9499847823881505
+    },
+    "naming_shat_exact": {
+      "mean": 0.9872932941057116,
+      "sd": 0.0020143785788439474,
+      "min": 0.9849176558114369,
+      "max": 0.98944912245105
+    },
+    "naming_shat_wer": {
+      "mean": 0.012706705894288323,
+      "sd": 0.0020143785788439474,
+      "min": 0.01055087754895001,
+      "max": 0.015082344188563135
+    },
+    "naming_shat_edit_mean": {
+      "mean": 0.027772141625240946,
+      "sd": 0.004644247829908877,
+      "min": 0.022860234689391634,
+      "max": 0.03378309830577255
+    },
+    "naming_shat_eos_rate": {
+      "mean": 0.9998055527374793,
+      "sd": 5.7753377554325756e-05,
+      "min": 0.9997294646782321,
+      "max": 0.999864732339116
+    },
+    "shift_cos_mean": {
+      "mean": 0.294643335044384,
+      "sd": 0.001876216024583649,
+      "min": 0.2932022213935852,
+      "max": 0.29736119508743286
+    },
+    "shift_cos_median": {
+      "mean": 0.295267716050148,
+      "sd": 0.0018158471251033385,
+      "min": 0.2942907214164734,
+      "max": 0.29799047112464905
+    },
+    "shift_l2_mean": {
+      "mean": 6.608933925628662,
+      "sd": 0.015349178420419161,
+      "min": 6.587927341461182,
+      "max": 6.624819278717041
+    },
+    "shift_mse_mean": {
+      "mean": 0.15010837465524673,
+      "sd": 0.0007703513624126167,
+      "min": 0.14905090630054474,
+      "max": 0.15088607370853424
+    },
+    "norm_shat_mean": {
+      "mean": 3.7593276500701904,
+      "sd": 0.02862886410005011,
+      "min": 3.7315022945404053,
+      "max": 3.787142038345337
+    },
+    "norm_glove_mean": {
+      "mean": 6.530660629272461,
+      "sd": 0.0,
+      "min": 6.530660629272461,
+      "max": 6.530660629272461
+    },
+    "comp_top1_rank_1-1k": {
+      "mean": 0.2582116788321168,
+      "sd": 0.01605885496647698,
+      "min": 0.24330900243309003,
+      "max": 0.28102189781021897
+    },
+    "comp_top1_rank_1k-5k": {
+      "mean": 0.08876198533558939,
+      "sd": 0.004870252690121417,
+      "min": 0.0823463056965595,
+      "max": 0.09419063733784545
+    },
+    "comp_top1_rank_5k-15k": {
+      "mean": 0.01480943332960769,
+      "sd": 0.001034495240632973,
+      "min": 0.013300547669609926,
+      "max": 0.015647703140717558
+    },
+    "comp_top1_rank_15k-end": {
+      "mean": 0.0016271414677938205,
+      "sd": 0.00035813088492419313,
+      "min": 0.0013465998354155757,
+      "max": 0.0020947108550908953
+    }
+  }
+}

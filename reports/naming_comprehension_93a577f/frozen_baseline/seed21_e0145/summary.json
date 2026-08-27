@@ -1,0 +1,95 @@
+{
+  "probe": "naming_comprehension_frozen_phase1a",
+  "n_lexicon": 29571,
+  "n_probe_items": 29571,
+  "n_unique_phonology_lexicon": 26682,
+  "n_homophone_words_lexicon": 2889,
+  "comprehension": {
+    "strict_unique_phonology": {
+      "n": 26682,
+      "comp_target_cos_mean": 0.2981457408913769,
+      "comp_target_rank_mean": 4227.247207855483,
+      "comp_top1_mean": 0.025635259725657746,
+      "comp_top5_mean": 0.05917847237838243,
+      "comp_margin_mean": -0.251607263738735,
+      "comp_c_ltm_mean": 0.5507098064870904,
+      "comp_top1_same_phonology_aux_mean": 0.025635259725657746
+    },
+    "homophones_separate": {
+      "n": 2889,
+      "comp_target_cos_mean": 0.25960533464305374,
+      "comp_target_rank_mean": 5183.702665282104,
+      "comp_top1_mean": 0.020422291450328832,
+      "comp_top5_mean": 0.04845967462789893,
+      "comp_margin_mean": -0.32209432949839106,
+      "comp_c_ltm_mean": 0.5823575761665643,
+      "comp_top1_same_phonology_aux_mean": 0.04776739356178609
+    },
+    "all_items": {
+      "n": 29571,
+      "comp_target_cos_mean": 0.2943804561985561,
+      "comp_target_rank_mean": 4320.690101788915,
+      "comp_top1_mean": 0.0251259680091982,
+      "comp_top5_mean": 0.0581312772648879,
+      "comp_margin_mean": -0.25849364340055386,
+      "comp_c_ltm_mean": 0.5538017007958389,
+      "comp_top1_same_phonology_aux_mean": 0.02779750431165669
+    },
+    "note": "strict population = unique-phonology words; homophone-class top-1 (comp_top1_same_phonology_aux) is auxiliary, NOT semantic comprehension accuracy"
+  },
+  "naming": {
+    "glove": {
+      "n": 29571,
+      "naming_glove_exact_mean": 0.0,
+      "naming_glove_edit_mean": 6.309154238950323,
+      "naming_glove_eos_emitted_mean": 0.9499847823881505,
+      "naming_glove_tf_exact_diag_mean": 0.0,
+      "whole_word_error_rate": 1.0
+    },
+    "shat": {
+      "n": 29571,
+      "naming_shat_exact_mean": 0.9864394169963816,
+      "naming_shat_edit_mean": 0.028609110276960534,
+      "naming_shat_eos_emitted_mean": 0.999830915423895,
+      "naming_shat_tf_exact_diag_mean": 0.9864394169963816,
+      "whole_word_error_rate": 0.013560583003618398
+    }
+  },
+  "naming_convention": {
+    "decoding": "greedy AR from BOS until EOS or global cap",
+    "global_cap_steps": 10,
+    "cap_derivation": "cfg.data.max_phonemes + 1 (longest supported word + EOS)",
+    "teacher_forced_is_diagnostic_only": true,
+    "forced_length_ar": "not run (existing implementation is phoneme-input based)"
+  },
+  "distribution_shift": {
+    "cos_shat_glove_mean": 0.29438042640686035,
+    "cos_shat_glove_median": 0.2942907214164734,
+    "l2_mean": 6.611325263977051,
+    "mse_mean": 0.15034347772598267,
+    "norm_shat_mean": 3.7379913330078125,
+    "norm_glove_mean": 6.530660629272461
+  },
+  "provenance": {
+    "checkpoint_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_21_epoch_0145.pt",
+    "checkpoint_sha256": "ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf",
+    "checkpoint_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+    "eval_git": {
+      "commit": "3d0ce67d910020875bb994b13403049d4d223dda",
+      "branch": "feat/naming-comprehension",
+      "dirty": true,
+      "tracked_dirty": false,
+      "untracked_present": true,
+      "untracked_paths": [
+        "scripts/naming_comprehension/aggregate_cohort.py"
+      ]
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "ordered_training_words_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+    "ltm_encoder_mode": "unigru_last_hidden",
+    "device": "cpu",
+    "limit": 0,
+    "include_words": "",
+    "runtime_seconds": 19.9
+  }
+}

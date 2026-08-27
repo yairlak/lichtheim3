@@ -1,0 +1,955 @@
+{
+  "phase": "2B_single_task_acquisition",
+  "task": "naming",
+  "objective": "c0",
+  "budget": {
+    "epochs": 100,
+    "batch_size": 64,
+    "eval_every": 5,
+    "early_stopping": false,
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "lr_schedule": "constant",
+    "optimizer": "AdamW, fresh, task scope only; checkpoint optimizer state never restored"
+  },
+  "objective_config": {},
+  "populations": {
+    "training_population": 29571,
+    "training_population_kind": "all lexicon words",
+    "sampler": "flat/uniform, without replacement, reshuffled per epoch",
+    "retrieval_bank_size": 29571,
+    "strict_unique_phonology": 26682,
+    "homophones": 2889
+  },
+  "trainable_parameters": [
+    "ltm.dec_to_premotor.bias",
+    "ltm.dec_to_premotor.weight",
+    "ltm.decoder.bias_hh_l0",
+    "ltm.decoder.bias_ih_l0",
+    "ltm.decoder.weight_hh_l0",
+    "ltm.decoder.weight_ih_l0",
+    "ltm.sem_to_h0.bias",
+    "ltm.sem_to_h0.weight"
+  ],
+  "always_frozen": [
+    "phon_embed.weight",
+    "motor.proj.weight",
+    "motor.proj.bias"
+  ],
+  "scope_audit": {
+    "changed_parameters": [
+      "ltm.dec_to_premotor.bias",
+      "ltm.dec_to_premotor.weight",
+      "ltm.decoder.bias_hh_l0",
+      "ltm.decoder.bias_ih_l0",
+      "ltm.decoder.weight_hh_l0",
+      "ltm.decoder.weight_ih_l0",
+      "ltm.sem_to_h0.bias",
+      "ltm.sem_to_h0.weight"
+    ],
+    "all_changes_within_scope": true,
+    "dorsal_bit_identical": true
+  },
+  "trajectory": [
+    {
+      "epoch": 1,
+      "train_loss": 25.070477508314227,
+      "n_batches": 463
+    },
+    {
+      "epoch": 2,
+      "train_loss": 16.985274057408905,
+      "n_batches": 463
+    },
+    {
+      "epoch": 3,
+      "train_loss": 11.53644048266483,
+      "n_batches": 463
+    },
+    {
+      "epoch": 4,
+      "train_loss": 7.919865761668327,
+      "n_batches": 463
+    },
+    {
+      "epoch": 5,
+      "train_loss": 5.856875886154999,
+      "n_batches": 463
+    },
+    {
+      "epoch": 6,
+      "train_loss": 4.651166977686707,
+      "n_batches": 463
+    },
+    {
+      "epoch": 7,
+      "train_loss": 3.9655976583839236,
+      "n_batches": 463
+    },
+    {
+      "epoch": 8,
+      "train_loss": 3.537860250370034,
+      "n_batches": 463
+    },
+    {
+      "epoch": 9,
+      "train_loss": 3.2464144178394623,
+      "n_batches": 463
+    },
+    {
+      "epoch": 10,
+      "train_loss": 3.037993936250328,
+      "n_batches": 463
+    },
+    {
+      "epoch": 11,
+      "train_loss": 2.8858879822634207,
+      "n_batches": 463
+    },
+    {
+      "epoch": 12,
+      "train_loss": 2.7689426094615435,
+      "n_batches": 463
+    },
+    {
+      "epoch": 13,
+      "train_loss": 2.6819845054371054,
+      "n_batches": 463
+    },
+    {
+      "epoch": 14,
+      "train_loss": 2.6162332427681907,
+      "n_batches": 463
+    },
+    {
+      "epoch": 15,
+      "train_loss": 2.5622192778288673,
+      "n_batches": 463
+    },
+    {
+      "epoch": 16,
+      "train_loss": 2.520314589432455,
+      "n_batches": 463
+    },
+    {
+      "epoch": 17,
+      "train_loss": 2.487089324975889,
+      "n_batches": 463
+    },
+    {
+      "epoch": 18,
+      "train_loss": 2.4599822818846735,
+      "n_batches": 463
+    },
+    {
+      "epoch": 19,
+      "train_loss": 2.436652070245269,
+      "n_batches": 463
+    },
+    {
+      "epoch": 20,
+      "train_loss": 2.4174734392639885,
+      "n_batches": 463
+    },
+    {
+      "epoch": 21,
+      "train_loss": 2.400115814373766,
+      "n_batches": 463
+    },
+    {
+      "epoch": 22,
+      "train_loss": 2.387063216442166,
+      "n_batches": 463
+    },
+    {
+      "epoch": 23,
+      "train_loss": 2.372449093194554,
+      "n_batches": 463
+    },
+    {
+      "epoch": 24,
+      "train_loss": 2.362475569253349,
+      "n_batches": 463
+    },
+    {
+      "epoch": 25,
+      "train_loss": 2.3510205601513,
+      "n_batches": 463
+    },
+    {
+      "epoch": 26,
+      "train_loss": 2.340328529123096,
+      "n_batches": 463
+    },
+    {
+      "epoch": 27,
+      "train_loss": 2.3319074376355493,
+      "n_batches": 463
+    },
+    {
+      "epoch": 28,
+      "train_loss": 2.323124509135796,
+      "n_batches": 463
+    },
+    {
+      "epoch": 29,
+      "train_loss": 2.3145150780420325,
+      "n_batches": 463
+    },
+    {
+      "epoch": 30,
+      "train_loss": 2.308371458918693,
+      "n_batches": 463
+    },
+    {
+      "epoch": 31,
+      "train_loss": 2.3007730732211282,
+      "n_batches": 463
+    },
+    {
+      "epoch": 32,
+      "train_loss": 2.2936972505845468,
+      "n_batches": 463
+    },
+    {
+      "epoch": 33,
+      "train_loss": 2.2873060481852128,
+      "n_batches": 463
+    },
+    {
+      "epoch": 34,
+      "train_loss": 2.280757378295997,
+      "n_batches": 463
+    },
+    {
+      "epoch": 35,
+      "train_loss": 2.27527422266439,
+      "n_batches": 463
+    },
+    {
+      "epoch": 36,
+      "train_loss": 2.2693829778461168,
+      "n_batches": 463
+    },
+    {
+      "epoch": 37,
+      "train_loss": 2.2629106987114858,
+      "n_batches": 463
+    },
+    {
+      "epoch": 38,
+      "train_loss": 2.257900408483221,
+      "n_batches": 463
+    },
+    {
+      "epoch": 39,
+      "train_loss": 2.252662676714409,
+      "n_batches": 463
+    },
+    {
+      "epoch": 40,
+      "train_loss": 2.2478738299713794,
+      "n_batches": 463
+    },
+    {
+      "epoch": 41,
+      "train_loss": 2.242694434542893,
+      "n_batches": 463
+    },
+    {
+      "epoch": 42,
+      "train_loss": 2.2372424834232865,
+      "n_batches": 463
+    },
+    {
+      "epoch": 43,
+      "train_loss": 2.234154694538652,
+      "n_batches": 463
+    },
+    {
+      "epoch": 44,
+      "train_loss": 2.2286349264643364,
+      "n_batches": 463
+    },
+    {
+      "epoch": 45,
+      "train_loss": 2.2257057621463585,
+      "n_batches": 463
+    },
+    {
+      "epoch": 46,
+      "train_loss": 2.2192885638828153,
+      "n_batches": 463
+    },
+    {
+      "epoch": 47,
+      "train_loss": 2.2152880412198557,
+      "n_batches": 463
+    },
+    {
+      "epoch": 48,
+      "train_loss": 2.2110267468199103,
+      "n_batches": 463
+    },
+    {
+      "epoch": 49,
+      "train_loss": 2.2077610909810077,
+      "n_batches": 463
+    },
+    {
+      "epoch": 50,
+      "train_loss": 2.2033388985413453,
+      "n_batches": 463
+    },
+    {
+      "epoch": 51,
+      "train_loss": 2.198224782171311,
+      "n_batches": 463
+    },
+    {
+      "epoch": 52,
+      "train_loss": 2.195384532277579,
+      "n_batches": 463
+    },
+    {
+      "epoch": 53,
+      "train_loss": 2.191671969308709,
+      "n_batches": 463
+    },
+    {
+      "epoch": 54,
+      "train_loss": 2.1872821307336796,
+      "n_batches": 463
+    },
+    {
+      "epoch": 55,
+      "train_loss": 2.1839106675100637,
+      "n_batches": 463
+    },
+    {
+      "epoch": 56,
+      "train_loss": 2.1806909587419314,
+      "n_batches": 463
+    },
+    {
+      "epoch": 57,
+      "train_loss": 2.1773512795985903,
+      "n_batches": 463
+    },
+    {
+      "epoch": 58,
+      "train_loss": 2.1736746956926187,
+      "n_batches": 463
+    },
+    {
+      "epoch": 59,
+      "train_loss": 2.169608221713204,
+      "n_batches": 463
+    },
+    {
+      "epoch": 60,
+      "train_loss": 2.1667391280633583,
+      "n_batches": 463
+    },
+    {
+      "epoch": 61,
+      "train_loss": 2.162499770232462,
+      "n_batches": 463
+    },
+    {
+      "epoch": 62,
+      "train_loss": 2.158832718950111,
+      "n_batches": 463
+    },
+    {
+      "epoch": 63,
+      "train_loss": 2.1560098120769724,
+      "n_batches": 463
+    },
+    {
+      "epoch": 64,
+      "train_loss": 2.1522961741647246,
+      "n_batches": 463
+    },
+    {
+      "epoch": 65,
+      "train_loss": 2.1492451202792173,
+      "n_batches": 463
+    },
+    {
+      "epoch": 66,
+      "train_loss": 2.1466725869003693,
+      "n_batches": 463
+    },
+    {
+      "epoch": 67,
+      "train_loss": 2.1432810375551425,
+      "n_batches": 463
+    },
+    {
+      "epoch": 68,
+      "train_loss": 2.1400832630388167,
+      "n_batches": 463
+    },
+    {
+      "epoch": 69,
+      "train_loss": 2.13736278114772,
+      "n_batches": 463
+    },
+    {
+      "epoch": 70,
+      "train_loss": 2.134129088331762,
+      "n_batches": 463
+    },
+    {
+      "epoch": 71,
+      "train_loss": 2.131805808961263,
+      "n_batches": 463
+    },
+    {
+      "epoch": 72,
+      "train_loss": 2.127523260806601,
+      "n_batches": 463
+    },
+    {
+      "epoch": 73,
+      "train_loss": 2.1251436206743475,
+      "n_batches": 463
+    },
+    {
+      "epoch": 74,
+      "train_loss": 2.1225151498168384,
+      "n_batches": 463
+    },
+    {
+      "epoch": 75,
+      "train_loss": 2.1190064370503436,
+      "n_batches": 463
+    },
+    {
+      "epoch": 76,
+      "train_loss": 2.1169198524874693,
+      "n_batches": 463
+    },
+    {
+      "epoch": 77,
+      "train_loss": 2.1139782414837995,
+      "n_batches": 463
+    },
+    {
+      "epoch": 78,
+      "train_loss": 2.1112584310782907,
+      "n_batches": 463
+    },
+    {
+      "epoch": 79,
+      "train_loss": 2.107734185058149,
+      "n_batches": 463
+    },
+    {
+      "epoch": 80,
+      "train_loss": 2.1065511842525804,
+      "n_batches": 463
+    },
+    {
+      "epoch": 81,
+      "train_loss": 2.1029719904740993,
+      "n_batches": 463
+    },
+    {
+      "epoch": 82,
+      "train_loss": 2.1014166130617937,
+      "n_batches": 463
+    },
+    {
+      "epoch": 83,
+      "train_loss": 2.0967869846146256,
+      "n_batches": 463
+    },
+    {
+      "epoch": 84,
+      "train_loss": 2.0955554779868404,
+      "n_batches": 463
+    },
+    {
+      "epoch": 85,
+      "train_loss": 2.092773624681757,
+      "n_batches": 463
+    },
+    {
+      "epoch": 86,
+      "train_loss": 2.090142635238351,
+      "n_batches": 463
+    },
+    {
+      "epoch": 87,
+      "train_loss": 2.0882427676965043,
+      "n_batches": 463
+    },
+    {
+      "epoch": 88,
+      "train_loss": 2.085503497082523,
+      "n_batches": 463
+    },
+    {
+      "epoch": 89,
+      "train_loss": 2.0831706238101932,
+      "n_batches": 463
+    },
+    {
+      "epoch": 90,
+      "train_loss": 2.0804234138060336,
+      "n_batches": 463
+    },
+    {
+      "epoch": 91,
+      "train_loss": 2.078242841858586,
+      "n_batches": 463
+    },
+    {
+      "epoch": 92,
+      "train_loss": 2.0762609910244048,
+      "n_batches": 463
+    },
+    {
+      "epoch": 93,
+      "train_loss": 2.073011179979625,
+      "n_batches": 463
+    },
+    {
+      "epoch": 94,
+      "train_loss": 2.069797988329284,
+      "n_batches": 463
+    },
+    {
+      "epoch": 95,
+      "train_loss": 2.0684178962048394,
+      "n_batches": 463
+    },
+    {
+      "epoch": 96,
+      "train_loss": 2.0655673204178946,
+      "n_batches": 463
+    },
+    {
+      "epoch": 97,
+      "train_loss": 2.0639065310970497,
+      "n_batches": 463
+    },
+    {
+      "epoch": 98,
+      "train_loss": 2.061682867437408,
+      "n_batches": 463
+    },
+    {
+      "epoch": 99,
+      "train_loss": 2.060551890029248,
+      "n_batches": 463
+    },
+    {
+      "epoch": 100,
+      "train_loss": 2.0573817185140326,
+      "n_batches": 463
+    }
+  ],
+  "snapshots": [
+    {
+      "epoch": 0,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0,
+        "whole_word_error_rate": 1.0,
+        "mean_edit": 6.337323729329411,
+        "eos_emission_rate": 0.947549964492239
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 1.0,
+            "wm": 0.9997632815934531,
+            "ltm": 0.98944912245105
+          },
+          "mean_edit_distance": {
+            "full": 0.0,
+            "wm": 0.0005072537283149031,
+            "ltm": 0.022860234689391634
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 1.0,
+            "wm": 0.9997632815934531,
+            "ltm": 0.98944912245105
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 5,
+      "naming": {
+        "n": 29571,
+        "exact_match": 6.763383044198708e-05,
+        "whole_word_error_rate": 0.999932366169558,
+        "mean_edit": 5.551553887254404,
+        "eos_emission_rate": 0.9968888437996686
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9981062527476243,
+            "wm": 0.9997632815934531,
+            "ltm": 0.001251225863176761
+          },
+          "mean_edit_distance": {
+            "full": 0.004193297487403199,
+            "wm": 0.0005072537283149031,
+            "ltm": 4.67596631835244
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9981062527476243,
+            "wm": 0.9997632815934531,
+            "ltm": 0.001251225863176761
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 10,
+      "naming": {
+        "n": 29571,
+        "exact_match": 6.763383044198708e-05,
+        "whole_word_error_rate": 0.999932366169558,
+        "mean_edit": 5.409150857258801,
+        "eos_emission_rate": 1.0
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9996280139325691,
+            "wm": 0.9997632815934531,
+            "ltm": 0.00013526766088397415
+          },
+          "mean_edit_distance": {
+            "full": 0.0006763383044198708,
+            "wm": 0.0005072537283149031,
+            "ltm": 5.069054140881269
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9996280139325691,
+            "wm": 0.9997632815934531,
+            "ltm": 0.00013526766088397415
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 15,
+      "naming": {
+        "n": 29571,
+        "exact_match": 6.763383044198708e-05,
+        "whole_word_error_rate": 0.999932366169558,
+        "mean_edit": 5.420276622366508,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 20,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.00013526766088397415,
+        "whole_word_error_rate": 0.999864732339116,
+        "mean_edit": 5.4112475060025025,
+        "eos_emission_rate": 1.0
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.99966183084779,
+            "wm": 0.9997632815934531,
+            "ltm": 0.00013526766088397415
+          },
+          "mean_edit_distance": {
+            "full": 0.0006087044739778837,
+            "wm": 0.0005072537283149031,
+            "ltm": 5.205505393797978
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.99966183084779,
+            "wm": 0.9997632815934531,
+            "ltm": 0.00013526766088397415
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 25,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0001690845761049677,
+        "whole_word_error_rate": 0.999830915423895,
+        "mean_edit": 5.448277028169491,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 30,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.00020290149132596124,
+        "whole_word_error_rate": 0.999797098508674,
+        "mean_edit": 5.426769470088939,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 35,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.00020290149132596124,
+        "whole_word_error_rate": 0.999797098508674,
+        "mean_edit": 5.4100639139697675,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 40,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0004058029826519225,
+        "whole_word_error_rate": 0.9995941970173481,
+        "mean_edit": 5.3775320415271715,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 45,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0006763383044198708,
+        "whole_word_error_rate": 0.9993236616955802,
+        "mean_edit": 5.3810490007101555,
+        "eos_emission_rate": 0.999932366169558
+      }
+    },
+    {
+      "epoch": 50,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0006087044739778837,
+        "whole_word_error_rate": 0.9993912955260221,
+        "mean_edit": 5.27740015555781,
+        "eos_emission_rate": 1.0
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9997294646782321,
+            "wm": 0.9997632815934531,
+            "ltm": 0.0007439721348618579
+          },
+          "mean_edit_distance": {
+            "full": 0.00047343681309390957,
+            "wm": 0.0005072537283149031,
+            "ltm": 5.068513070237733
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9997294646782321,
+            "wm": 0.9997632815934531,
+            "ltm": 0.0007439721348618579
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 55,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.000879239795745832,
+        "whole_word_error_rate": 0.9991207602042542,
+        "mean_edit": 5.287376145548003,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 60,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0010145074566298062,
+        "whole_word_error_rate": 0.9989854925433702,
+        "mean_edit": 5.3593047242230565,
+        "eos_emission_rate": 1.0
+      }
+    },
+    {
+      "epoch": 65,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.001115958202292787,
+        "whole_word_error_rate": 0.9988840417977072,
+        "mean_edit": 5.379730141016537,
+        "eos_emission_rate": 0.9993912955260221
+      }
+    },
+    {
+      "epoch": 70,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0015217611849447095,
+        "whole_word_error_rate": 0.9984782388150553,
+        "mean_edit": 5.247235467180683,
+        "eos_emission_rate": 0.9992222109499171
+      }
+    },
+    {
+      "epoch": 75,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0013864935240607353,
+        "whole_word_error_rate": 0.9986135064759393,
+        "mean_edit": 5.24507118460654,
+        "eos_emission_rate": 0.999695647763011
+      }
+    },
+    {
+      "epoch": 80,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0015217611849447095,
+        "whole_word_error_rate": 0.9984782388150553,
+        "mean_edit": 5.238307801562342,
+        "eos_emission_rate": 0.9996280139325691
+      }
+    },
+    {
+      "epoch": 85,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.0018937472523756383,
+        "whole_word_error_rate": 0.9981062527476243,
+        "mean_edit": 5.16235500997599,
+        "eos_emission_rate": 0.999898549254337
+      }
+    },
+    {
+      "epoch": 90,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.002062831828480606,
+        "whole_word_error_rate": 0.9979371681715193,
+        "mean_edit": 5.170741604950797,
+        "eos_emission_rate": 0.999830915423895
+      }
+    },
+    {
+      "epoch": 95,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.002231916404585574,
+        "whole_word_error_rate": 0.9977680835954145,
+        "mean_edit": 5.198572926177674,
+        "eos_emission_rate": 0.9993236616955802
+      }
+    },
+    {
+      "epoch": 100,
+      "naming": {
+        "n": 29571,
+        "exact_match": 0.002130465658922593,
+        "whole_word_error_rate": 0.9978695343410774,
+        "mean_edit": 5.142064860843393,
+        "eos_emission_rate": 0.999966183084779
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.999797098508674,
+            "wm": 0.9997632815934531,
+            "ltm": 0.0013864935240607353
+          },
+          "mean_edit_distance": {
+            "full": 0.0003381691522099354,
+            "wm": 0.0005072537283149031,
+            "ltm": 5.03709715599743
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.999797098508674,
+            "wm": 0.9997632815934531,
+            "ltm": 0.0013864935240607353
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    }
+  ],
+  "final_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-naming-comprehension/outputs/naming_comprehension_93a577f/phase2b_n0_naming_seed22/final_epoch_100.pt",
+  "provenance": {
+    "source_checkpoint_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_22_epoch_0140.pt",
+    "source_checkpoint_sha256": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595",
+    "checkpoint_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "ordered_training_words_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+    "glove": {
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0
+    },
+    "ltm_encoder_mode": "unigru_last_hidden",
+    "naming_decode_cap": 10,
+    "data_seed": 0,
+    "device": "cpu",
+    "eval_git": {
+      "commit": "d5f087b9aba37dc8fea4d1f7a9eca6fe5bef2388",
+      "branch": "feat/naming-comprehension",
+      "dirty": true,
+      "tracked_dirty": true,
+      "untracked_present": false,
+      "untracked_paths": []
+    },
+    "runtime_seconds": 1740.8
+  }
+}

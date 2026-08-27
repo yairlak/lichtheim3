@@ -1,0 +1,3585 @@
+{
+  "phase": "3A_joint_interleaved_multitask",
+  "schedule": {
+    "name": "m2_123",
+    "ratio_repetition_naming_comprehension": [
+      1,
+      2,
+      3
+    ],
+    "macro_cycle_steps": 6,
+    "schedule_seed": 0,
+    "interleaving": "per optimizer step (never per epoch)",
+    "example_first_cycles": [
+      [
+        "naming",
+        "comprehension",
+        "comprehension",
+        "repetition",
+        "naming",
+        "comprehension"
+      ],
+      [
+        "naming",
+        "comprehension",
+        "naming",
+        "repetition",
+        "comprehension",
+        "comprehension"
+      ],
+      [
+        "repetition",
+        "comprehension",
+        "naming",
+        "naming",
+        "comprehension",
+        "comprehension"
+      ],
+      [
+        "comprehension",
+        "repetition",
+        "comprehension",
+        "naming",
+        "naming",
+        "comprehension"
+      ]
+    ]
+  },
+  "population": {
+    "n": 3288,
+    "subset_definition_sha256": "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf",
+    "source": "exact Phase 2D3 subset3288 (822 per frozen band, unique phonology), identical for all three tasks",
+    "comprehension_retrieval_bank": 29571
+  },
+  "budget": {
+    "total_optimizer_steps": 800000,
+    "max_total_optimizer_steps": 800000,
+    "eval_every": 20000,
+    "batch_size": 64,
+    "evaluation_steps_planned": [
+      0,
+      2000,
+      5000,
+      10000,
+      20000,
+      40000,
+      60000,
+      80000,
+      100000,
+      120000,
+      140000,
+      160000,
+      180000,
+      200000,
+      220000,
+      240000,
+      260000,
+      280000,
+      300000,
+      320000,
+      340000,
+      360000,
+      380000,
+      400000,
+      420000,
+      440000,
+      460000,
+      480000,
+      500000,
+      520000,
+      540000,
+      560000,
+      580000,
+      600000,
+      620000,
+      640000,
+      660000,
+      680000,
+      700000,
+      720000,
+      740000,
+      760000,
+      780000,
+      800000
+    ],
+    "early_evaluation_steps": [
+      2000,
+      5000,
+      10000,
+      20000
+    ],
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "lr_schedule": "constant",
+    "optimizer": "ONE shared AdamW over the union scope; fresh; checkpoint optimizer state never restored"
+  },
+  "task_steps": {
+    "repetition": 133333,
+    "naming": 266668,
+    "comprehension": 399999
+  },
+  "exposure": {
+    "repetition": {
+      "task_steps": 133333,
+      "population_passes": 287.97624190064795,
+      "item_presentations": 8515805,
+      "presentations_per_item": 287.9782557235129,
+      "batches_per_pass": 463
+    },
+    "naming": {
+      "task_steps": 266668,
+      "population_passes": 5128.2307692307695,
+      "item_presentations": 16861632,
+      "presentations_per_item": 5128.233576642336,
+      "batches_per_pass": 52
+    },
+    "comprehension": {
+      "task_steps": 399999,
+      "population_passes": 7692.288461538462,
+      "item_presentations": 25292256,
+      "presentations_per_item": 7692.291970802919,
+      "batches_per_pass": 52
+    }
+  },
+  "task_populations": {
+    "repetition_population_kind": "full_lexicon",
+    "sizes": {
+      "repetition": 29571,
+      "naming": 3288,
+      "comprehension": 3288
+    },
+    "batches_per_pass": {
+      "repetition": 463,
+      "naming": 52,
+      "comprehension": 52
+    },
+    "repetition_population_sha256": "78e46871d86efaaf34e9ef41891eb22afa93cc58467e4262225b79e8caffd50f",
+    "subset_contained_in_repetition_population": true
+  },
+  "out_of_subset_probe": {
+    "n": 3288,
+    "sha256": "0bd286acb88322728e7877c522d3b746f2ece6960052cae02289932b5970ef87",
+    "probe_seed": 0,
+    "disjoint_from_subset_verified": true,
+    "diagnostic_only": true
+  },
+  "objectives": {
+    "comprehension": {
+      "formula": "C3 = C0 + 0.087 * retrieval_CE, tau = 0.10",
+      "C0": "losses.alignment_loss verbatim ((1-cos) + 0.1*MSE)",
+      "input": "phonology",
+      "output": "s_hat",
+      "target": "raw GloVe",
+      "retrieval_competitors": "all 29,571 canonical GloVe vectors",
+      "gradient_reaches": [
+        "ltm.encoder.",
+        "ltm.to_semantic."
+      ],
+      "helper": "train_tasks.comprehension_objective(objective='c3')"
+    },
+    "naming": {
+      "formula": "sequence CE (losses._seq_ce), teacher forcing 1.0",
+      "path": "raw GloVe -> sem_to_h0 -> decoder -> dec_to_premotor -> frozen motor.proj",
+      "gradient_reaches": [
+        "ltm.sem_to_h0.",
+        "ltm.decoder.",
+        "ltm.dec_to_premotor."
+      ],
+      "helper": "train_tasks.naming_objective"
+    },
+    "repetition": {
+      "formula": "sequence CE (losses._seq_ce), teacher forcing 1.0",
+      "path": "phonology -> ltm.encoder -> ltm.to_semantic = s_hat -> ltm.sem_to_h0 -> ltm.decoder -> ltm.dec_to_premotor -> frozen motor.proj",
+      "composition": "naming_forward(model, comprehension_forward(model, .), .) -- the two validated Phase 2 forwards composed",
+      "identical_to": "model.route_logits(..., route='ltm')['logits']",
+      "gradient_reaches": [
+        "ltm.encoder.",
+        "ltm.to_semantic.",
+        "ltm.sem_to_h0.",
+        "ltm.decoder.",
+        "ltm.dec_to_premotor."
+      ],
+      "not_used": "losses.total_loss (carries gate/WM/alignment terms that would confound this pilot); WM route; gate"
+    }
+  },
+  "trainable_parameters": [
+    "ltm.dec_to_premotor.bias",
+    "ltm.dec_to_premotor.weight",
+    "ltm.decoder.bias_hh_l0",
+    "ltm.decoder.bias_ih_l0",
+    "ltm.decoder.weight_hh_l0",
+    "ltm.decoder.weight_ih_l0",
+    "ltm.encoder.bias_hh_l0",
+    "ltm.encoder.bias_ih_l0",
+    "ltm.encoder.weight_hh_l0",
+    "ltm.encoder.weight_ih_l0",
+    "ltm.sem_to_h0.bias",
+    "ltm.sem_to_h0.weight",
+    "ltm.to_semantic.0.bias",
+    "ltm.to_semantic.0.weight",
+    "ltm.to_semantic.2.bias",
+    "ltm.to_semantic.2.weight"
+  ],
+  "always_frozen": [
+    "phon_embed.weight",
+    "motor.proj.weight",
+    "motor.proj.bias"
+  ],
+  "coexistence_criterion": {
+    "comprehension_top1_min": 0.95,
+    "naming_exact_min": 0.95,
+    "naming_wer_max": 0.05,
+    "ltm_repetition_exact_min": 0.95
+  },
+  "outcome": {
+    "local_coexistence_confirmed": false,
+    "local_confirmation_steps": [],
+    "first_local_crossing_step": null,
+    "criterion_reached": false,
+    "global_preservation_required": true,
+    "global_preservation_success": false,
+    "global_preservation_checks": [],
+    "stopped_at_step": 800000,
+    "stop_reason": "fixed budget exhausted"
+  },
+  "global_preservation_criterion": {
+    "primary": {
+      "full_lexicon_ltm_min": 0.95
+    },
+    "canonical_full_lexicon_ltm": 0.989449,
+    "secondary_strict_max_drop": 0.02,
+    "secondary_note": "descriptive only; never controls stopping"
+  },
+  "scope_audit": {
+    "changed_parameters": [
+      "ltm.dec_to_premotor.bias",
+      "ltm.dec_to_premotor.weight",
+      "ltm.decoder.bias_hh_l0",
+      "ltm.decoder.bias_ih_l0",
+      "ltm.decoder.weight_hh_l0",
+      "ltm.decoder.weight_ih_l0",
+      "ltm.encoder.bias_hh_l0",
+      "ltm.encoder.bias_ih_l0",
+      "ltm.encoder.weight_hh_l0",
+      "ltm.encoder.weight_ih_l0",
+      "ltm.sem_to_h0.bias",
+      "ltm.sem_to_h0.weight",
+      "ltm.to_semantic.0.bias",
+      "ltm.to_semantic.0.weight",
+      "ltm.to_semantic.2.bias",
+      "ltm.to_semantic.2.weight"
+    ],
+    "all_changes_within_union_scope": true,
+    "dorsal_bit_identical": true
+  },
+  "trajectory": [
+    {
+      "step": 2000,
+      "steps_repetition": 333,
+      "steps_naming": 667,
+      "steps_comprehension": 1000,
+      "loss_repetition": 0.052956531652845105,
+      "loss_naming": 19.833738954707066,
+      "loss_comprehension": 1.2475403898954391
+    },
+    {
+      "step": 5000,
+      "steps_repetition": 833,
+      "steps_naming": 1666,
+      "steps_comprehension": 2501,
+      "loss_repetition": 0.20416909102536737,
+      "loss_naming": 9.260917546632173,
+      "loss_comprehension": 1.2369826453912267
+    },
+    {
+      "step": 10000,
+      "steps_repetition": 1666,
+      "steps_naming": 3333,
+      "steps_comprehension": 5001,
+      "loss_repetition": 0.2670262397444692,
+      "loss_naming": 4.085208914704714,
+      "loss_comprehension": 1.233160558462143
+    },
+    {
+      "step": 20000,
+      "steps_repetition": 3333,
+      "steps_naming": 6666,
+      "steps_comprehension": 10001,
+      "loss_repetition": 0.17587940599579402,
+      "loss_naming": 2.184014914452833,
+      "loss_comprehension": 1.1893011477947235
+    },
+    {
+      "step": 40000,
+      "steps_repetition": 6667,
+      "steps_naming": 13333,
+      "steps_comprehension": 20000,
+      "loss_repetition": 0.11870894419285231,
+      "loss_naming": 1.1720743345609934,
+      "loss_comprehension": 1.1263192518554528
+    },
+    {
+      "step": 60000,
+      "steps_repetition": 10000,
+      "steps_naming": 20000,
+      "steps_comprehension": 30000,
+      "loss_repetition": 0.09030238732817408,
+      "loss_naming": 0.4300034209377354,
+      "loss_comprehension": 1.079681087511778
+    },
+    {
+      "step": 80000,
+      "steps_repetition": 13333,
+      "steps_naming": 26666,
+      "steps_comprehension": 40001,
+      "loss_repetition": 0.060814392219523644,
+      "loss_naming": 0.08153938470526238,
+      "loss_comprehension": 1.0502340952201719
+    },
+    {
+      "step": 100000,
+      "steps_repetition": 16667,
+      "steps_naming": 33333,
+      "steps_comprehension": 50000,
+      "loss_repetition": 0.03589847397184068,
+      "loss_naming": 0.01881074709073212,
+      "loss_comprehension": 1.023922923100282
+    },
+    {
+      "step": 120000,
+      "steps_repetition": 20000,
+      "steps_naming": 40000,
+      "steps_comprehension": 60000,
+      "loss_repetition": 0.026098442149564135,
+      "loss_naming": 0.00908464321483039,
+      "loss_comprehension": 1.0011932218968869
+    },
+    {
+      "step": 140000,
+      "steps_repetition": 23333,
+      "steps_naming": 46667,
+      "steps_comprehension": 70000,
+      "loss_repetition": 0.02280143851599372,
+      "loss_naming": 0.006124078085470302,
+      "loss_comprehension": 0.9823225446701049
+    },
+    {
+      "step": 160000,
+      "steps_repetition": 26666,
+      "steps_naming": 53334,
+      "steps_comprehension": 80000,
+      "loss_repetition": 0.020785497132651876,
+      "loss_naming": 0.004739068398813409,
+      "loss_comprehension": 0.9664434326052666
+    },
+    {
+      "step": 180000,
+      "steps_repetition": 30000,
+      "steps_naming": 60000,
+      "steps_comprehension": 90000,
+      "loss_repetition": 0.019889120117868184,
+      "loss_naming": 0.0039963084338355825,
+      "loss_comprehension": 0.9530534732818603
+    },
+    {
+      "step": 200000,
+      "steps_repetition": 33333,
+      "steps_naming": 66667,
+      "steps_comprehension": 100000,
+      "loss_repetition": 0.019851480153302792,
+      "loss_naming": 0.0035018115791584222,
+      "loss_comprehension": 0.9414246463954449
+    },
+    {
+      "step": 220000,
+      "steps_repetition": 36667,
+      "steps_naming": 73333,
+      "steps_comprehension": 110000,
+      "loss_repetition": 0.018275290760437914,
+      "loss_naming": 0.003124892506262239,
+      "loss_comprehension": 0.9309261883735657
+    },
+    {
+      "step": 240000,
+      "steps_repetition": 40000,
+      "steps_naming": 80000,
+      "steps_comprehension": 120000,
+      "loss_repetition": 0.018514348934408745,
+      "loss_naming": 0.0028987588453171817,
+      "loss_comprehension": 0.9218564500927925
+    },
+    {
+      "step": 260000,
+      "steps_repetition": 43333,
+      "steps_naming": 86666,
+      "steps_comprehension": 130001,
+      "loss_repetition": 0.018039326166941993,
+      "loss_naming": 0.0027882744892906344,
+      "loss_comprehension": 0.9135486369919221
+    },
+    {
+      "step": 280000,
+      "steps_repetition": 46667,
+      "steps_naming": 93333,
+      "steps_comprehension": 140000,
+      "loss_repetition": 0.017977636613705418,
+      "loss_naming": 0.0024676677383338856,
+      "loss_comprehension": 0.9061620965434595
+    },
+    {
+      "step": 300000,
+      "steps_repetition": 50000,
+      "steps_naming": 100000,
+      "steps_comprehension": 150000,
+      "loss_repetition": 0.01765680077862684,
+      "loss_naming": 0.0023886260024031775,
+      "loss_comprehension": 0.8993640388190747
+    },
+    {
+      "step": 320000,
+      "steps_repetition": 53334,
+      "steps_naming": 106667,
+      "steps_comprehension": 159999,
+      "loss_repetition": 0.016988935503444814,
+      "loss_naming": 0.002188953773766165,
+      "loss_comprehension": 0.8929662073072236
+    },
+    {
+      "step": 340000,
+      "steps_repetition": 56667,
+      "steps_naming": 113334,
+      "steps_comprehension": 169999,
+      "loss_repetition": 0.01701469566734025,
+      "loss_naming": 0.0021800118835439823,
+      "loss_comprehension": 0.8871165654659271
+    },
+    {
+      "step": 360000,
+      "steps_repetition": 60000,
+      "steps_naming": 120000,
+      "steps_comprehension": 180000,
+      "loss_repetition": 0.016877130132362802,
+      "loss_naming": 0.0021673663467419732,
+      "loss_comprehension": 0.8817696264774463
+    },
+    {
+      "step": 380000,
+      "steps_repetition": 63334,
+      "steps_naming": 126667,
+      "steps_comprehension": 189999,
+      "loss_repetition": 0.01718449805821283,
+      "loss_naming": 0.00198979582937885,
+      "loss_comprehension": 0.876818145790247
+    },
+    {
+      "step": 400000,
+      "steps_repetition": 66667,
+      "steps_naming": 133333,
+      "steps_comprehension": 200000,
+      "loss_repetition": 0.016903134426478915,
+      "loss_naming": 0.0019219504789670858,
+      "loss_comprehension": 0.8721596772832139
+    },
+    {
+      "step": 420000,
+      "steps_repetition": 70000,
+      "steps_naming": 140000,
+      "steps_comprehension": 210000,
+      "loss_repetition": 0.016422400541204755,
+      "loss_naming": 0.001835691184654091,
+      "loss_comprehension": 0.867734206444025
+    },
+    {
+      "step": 440000,
+      "steps_repetition": 73333,
+      "steps_naming": 146667,
+      "steps_comprehension": 220000,
+      "loss_repetition": 0.01625453256396196,
+      "loss_naming": 0.001812969768898724,
+      "loss_comprehension": 0.8635368763744831
+    },
+    {
+      "step": 460000,
+      "steps_repetition": 76667,
+      "steps_naming": 153333,
+      "steps_comprehension": 230000,
+      "loss_repetition": 0.016322867133272724,
+      "loss_naming": 0.0021748854725441693,
+      "loss_comprehension": 0.8596179981470108
+    },
+    {
+      "step": 480000,
+      "steps_repetition": 80000,
+      "steps_naming": 160000,
+      "steps_comprehension": 240000,
+      "loss_repetition": 0.016166975268158176,
+      "loss_naming": 0.0016824422659700532,
+      "loss_comprehension": 0.8558027088582516
+    },
+    {
+      "step": 500000,
+      "steps_repetition": 83333,
+      "steps_naming": 166667,
+      "steps_comprehension": 250000,
+      "loss_repetition": 0.016348514698823438,
+      "loss_naming": 0.0017446928468623799,
+      "loss_comprehension": 0.8524494968235493
+    },
+    {
+      "step": 520000,
+      "steps_repetition": 86667,
+      "steps_naming": 173333,
+      "steps_comprehension": 260000,
+      "loss_repetition": 0.016518427182514325,
+      "loss_naming": 0.001583671202342298,
+      "loss_comprehension": 0.8492830243289471
+    },
+    {
+      "step": 540000,
+      "steps_repetition": 90000,
+      "steps_naming": 180000,
+      "steps_comprehension": 270000,
+      "loss_repetition": 0.016284866632334347,
+      "loss_naming": 0.0015866830825404191,
+      "loss_comprehension": 0.8461306152999402
+    },
+    {
+      "step": 560000,
+      "steps_repetition": 93333,
+      "steps_naming": 186667,
+      "steps_comprehension": 280000,
+      "loss_repetition": 0.016057614393731295,
+      "loss_naming": 0.001736528871060468,
+      "loss_comprehension": 0.8431013728380203
+    },
+    {
+      "step": 580000,
+      "steps_repetition": 96667,
+      "steps_naming": 193333,
+      "steps_comprehension": 290000,
+      "loss_repetition": 0.016424736240647372,
+      "loss_naming": 0.0014638318123473058,
+      "loss_comprehension": 0.8403467447280883
+    },
+    {
+      "step": 600000,
+      "steps_repetition": 100000,
+      "steps_naming": 200000,
+      "steps_comprehension": 300000,
+      "loss_repetition": 0.016259464305626303,
+      "loss_naming": 0.0017713055475452224,
+      "loss_comprehension": 0.8376910485625267
+    },
+    {
+      "step": 620000,
+      "steps_repetition": 103333,
+      "steps_naming": 206667,
+      "steps_comprehension": 310000,
+      "loss_repetition": 0.016245164458560005,
+      "loss_naming": 0.0016296918566661544,
+      "loss_comprehension": 0.835142877703905
+    },
+    {
+      "step": 640000,
+      "steps_repetition": 106667,
+      "steps_naming": 213333,
+      "steps_comprehension": 320000,
+      "loss_repetition": 0.015745462729055488,
+      "loss_naming": 0.0014929923867073162,
+      "loss_comprehension": 0.8325876262784004
+    },
+    {
+      "step": 660000,
+      "steps_repetition": 110000,
+      "steps_naming": 220000,
+      "steps_comprehension": 330000,
+      "loss_repetition": 0.016015141335872545,
+      "loss_naming": 0.0015053023234591837,
+      "loss_comprehension": 0.8303064120411873
+    },
+    {
+      "step": 680000,
+      "steps_repetition": 113334,
+      "steps_naming": 226666,
+      "steps_comprehension": 340000,
+      "loss_repetition": 0.015831492687099942,
+      "loss_naming": 0.0015473285093517935,
+      "loss_comprehension": 0.8281168348371982
+    },
+    {
+      "step": 700000,
+      "steps_repetition": 116667,
+      "steps_naming": 233333,
+      "steps_comprehension": 350000,
+      "loss_repetition": 0.016349581209467678,
+      "loss_naming": 0.0013354215027801598,
+      "loss_comprehension": 0.8261927174508572
+    },
+    {
+      "step": 720000,
+      "steps_repetition": 120000,
+      "steps_naming": 240000,
+      "steps_comprehension": 360000,
+      "loss_repetition": 0.015514397116102472,
+      "loss_naming": 0.0014283291804008448,
+      "loss_comprehension": 0.8238489072322845
+    },
+    {
+      "step": 740000,
+      "steps_repetition": 123333,
+      "steps_naming": 246667,
+      "steps_comprehension": 370000,
+      "loss_repetition": 0.015453224749211257,
+      "loss_naming": 0.001421847359709094,
+      "loss_comprehension": 0.8218338287413121
+    },
+    {
+      "step": 760000,
+      "steps_repetition": 126667,
+      "steps_naming": 253333,
+      "steps_comprehension": 380000,
+      "loss_repetition": 0.015278273053924363,
+      "loss_naming": 0.0015076142277697393,
+      "loss_comprehension": 0.8199167253017425
+    },
+    {
+      "step": 780000,
+      "steps_repetition": 130000,
+      "steps_naming": 260000,
+      "steps_comprehension": 390000,
+      "loss_repetition": 0.016150997177574473,
+      "loss_naming": 0.0012207639963227517,
+      "loss_comprehension": 0.8182619464695453
+    },
+    {
+      "step": 800000,
+      "steps_repetition": 133333,
+      "steps_naming": 266668,
+      "steps_comprehension": 399999,
+      "loss_repetition": 0.01581530494668675,
+      "loss_naming": 0.0016852610539098147,
+      "loss_comprehension": 0.8164397294145308
+    }
+  ],
+  "snapshots": [
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9951338199513382
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.0885036496350365,
+        "top5": 0.16818734793187348,
+        "target_cos_mean": 0.41680676707056613,
+        "target_rank_median": 232.0,
+        "target_rank_mean": 2449.0608272506083,
+        "target_rank_max": 29568.0,
+        "margin_mean": -0.182730298543716,
+        "c_ltm_mean_aux": 0.6030817711657851
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.0,
+        "whole_word_error_rate": 1.0,
+        "mean_edit": 6.057785888077859,
+        "eos_emission_rate": 0.9562043795620438,
+        "mean_pred_length": 6.52889294403893,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9887469586374696
+      },
+      "repetition_probe_n": 3288,
+      "step": 0,
+      "task_steps": {
+        "repetition": 0,
+        "naming": 0,
+        "comprehension": 0
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 0,
+          "population_passes": 0.0,
+          "item_presentations": 0,
+          "presentations_per_item": 0.0,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 0,
+          "population_passes": 0.0,
+          "item_presentations": 0,
+          "presentations_per_item": 0.0,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 0,
+          "population_passes": 0.0,
+          "item_presentations": 0,
+          "presentations_per_item": 0.0,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8512773722627737
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.14902676399026765,
+        "top5": 0.25547445255474455,
+        "target_cos_mean": 0.4278386031559523,
+        "target_rank_median": 86.0,
+        "target_rank_mean": 1469.624391727494,
+        "target_rank_max": 29543.0,
+        "margin_mean": -0.12882268365807922,
+        "c_ltm_mean_aux": 0.5628755680962926
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.00030413625304136254,
+        "whole_word_error_rate": 0.9996958637469586,
+        "mean_edit": 5.199209245742092,
+        "eos_emission_rate": 0.9996958637469586,
+        "mean_pred_length": 4.836678832116788,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 0.9996958637469586,
+        "wm": 1.0,
+        "ltm": 0.8327250608272506
+      },
+      "repetition_probe_n": 3288,
+      "step": 2000,
+      "task_steps": {
+        "repetition": 333,
+        "naming": 667,
+        "comprehension": 1000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 333,
+          "population_passes": 0.7192224622030238,
+          "item_presentations": 21312,
+          "presentations_per_item": 0.7207060971898144,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 667,
+          "population_passes": 12.826923076923077,
+          "item_presentations": 42208,
+          "presentations_per_item": 12.83698296836983,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 1000,
+          "population_passes": 19.23076923076923,
+          "item_presentations": 63240,
+          "presentations_per_item": 19.233576642335766,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.6067518248175182
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.1590632603406326,
+        "top5": 0.2734184914841849,
+        "target_cos_mean": 0.42038469204997947,
+        "target_rank_median": 66.0,
+        "target_rank_mean": 1171.7183698296838,
+        "target_rank_max": 29091.0,
+        "margin_mean": -0.11327722318778653,
+        "c_ltm_mean_aux": 0.539983927061523
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.0006082725060827251,
+        "whole_word_error_rate": 0.9993917274939172,
+        "mean_edit": 5.286496350364963,
+        "eos_emission_rate": 0.9960462287104623,
+        "mean_pred_length": 4.799270072992701,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.6189172749391727
+      },
+      "repetition_probe_n": 3288,
+      "step": 5000,
+      "task_steps": {
+        "repetition": 833,
+        "naming": 1666,
+        "comprehension": 2501
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 833,
+          "population_passes": 1.7991360691144709,
+          "item_presentations": 53251,
+          "presentations_per_item": 1.800784552433127,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 1666,
+          "population_passes": 32.03846153846154,
+          "item_presentations": 105344,
+          "presentations_per_item": 32.038929440389296,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 2501,
+          "population_passes": 48.09615384615385,
+          "item_presentations": 158144,
+          "presentations_per_item": 48.09732360097323,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.6976885644768857
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.1687956204379562,
+        "top5": 0.2846715328467153,
+        "target_cos_mean": 0.43057617442591745,
+        "target_rank_median": 46.0,
+        "target_rank_mean": 868.698600973236,
+        "target_rank_max": 28764.0,
+        "margin_mean": -0.10097738415220359,
+        "c_ltm_mean_aux": 0.5381190899641699
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.0012165450121654502,
+        "whole_word_error_rate": 0.9987834549878345,
+        "mean_edit": 5.081812652068127,
+        "eos_emission_rate": 0.9993917274939172,
+        "mean_pred_length": 4.736922141119221,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.6973844282238443
+      },
+      "repetition_probe_n": 3288,
+      "step": 10000,
+      "task_steps": {
+        "repetition": 1666,
+        "naming": 3333,
+        "comprehension": 5001
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 1666,
+          "population_passes": 3.5982721382289418,
+          "item_presentations": 106441,
+          "presentations_per_item": 3.5995062730377736,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 3333,
+          "population_passes": 64.09615384615384,
+          "item_presentations": 210752,
+          "presentations_per_item": 64.09732360097324,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 5001,
+          "population_passes": 96.17307692307692,
+          "item_presentations": 316224,
+          "presentations_per_item": 96.17518248175182,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8327250608272506
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.2150243309002433,
+        "top5": 0.3658759124087591,
+        "target_cos_mean": 0.45956822087163435,
+        "target_rank_median": 18.0,
+        "target_rank_mean": 453.6888686131387,
+        "target_rank_max": 17240.0,
+        "margin_mean": -0.07359144400234205,
+        "c_ltm_mean_aux": 0.5421328562563353
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.024330900243309004,
+        "whole_word_error_rate": 0.975669099756691,
+        "mean_edit": 4.354622871046229,
+        "eos_emission_rate": 0.9996958637469586,
+        "mean_pred_length": 4.941301703163017,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8138686131386861
+      },
+      "repetition_probe_n": 3288,
+      "step": 20000,
+      "task_steps": {
+        "repetition": 3333,
+        "naming": 6666,
+        "comprehension": 10001
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 3333,
+          "population_passes": 7.198704103671706,
+          "item_presentations": 212885,
+          "presentations_per_item": 7.19911399682121,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 6666,
+          "population_passes": 128.19230769230768,
+          "item_presentations": 421504,
+          "presentations_per_item": 128.19464720194648,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 10001,
+          "population_passes": 192.32692307692307,
+          "item_presentations": 632384,
+          "presentations_per_item": 192.330900243309,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8743917274939172
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.3245133819951338,
+        "top5": 0.5167274939172749,
+        "target_cos_mean": 0.49051751105291563,
+        "target_rank_median": 5.0,
+        "target_rank_mean": 185.12469586374695,
+        "target_rank_max": 11666.0,
+        "margin_mean": -0.04100853813372534,
+        "c_ltm_mean_aux": 0.5458466898550227
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.3278588807785888,
+        "whole_word_error_rate": 0.6721411192214112,
+        "mean_edit": 2.0641727493917275,
+        "eos_emission_rate": 0.9969586374695864,
+        "mean_pred_length": 5.317822384428224,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8582725060827251
+      },
+      "repetition_probe_n": 3288,
+      "step": 40000,
+      "task_steps": {
+        "repetition": 6667,
+        "naming": 13333,
+        "comprehension": 20000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 6667,
+          "population_passes": 14.399568034557236,
+          "item_presentations": 425834,
+          "presentations_per_item": 14.400392276216564,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 13333,
+          "population_passes": 256.40384615384613,
+          "item_presentations": 843072,
+          "presentations_per_item": 256.40875912408757,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 20000,
+          "population_passes": 384.61538461538464,
+          "item_presentations": 1264640,
+          "presentations_per_item": 384.62287104622874,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8874695863746959
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.4005474452554745,
+        "top5": 0.61161800486618,
+        "target_cos_mean": 0.506828185148229,
+        "target_rank_median": 3.0,
+        "target_rank_mean": 104.13138686131387,
+        "target_rank_max": 8184.0,
+        "margin_mean": -0.023218976093542256,
+        "c_ltm_mean_aux": 0.5491274627528342
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.9318734793187348,
+        "whole_word_error_rate": 0.06812652068126523,
+        "mean_edit": 0.15815085158150852,
+        "eos_emission_rate": 0.9984793187347932,
+        "mean_pred_length": 5.693430656934306,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.8838199513381995
+      },
+      "repetition_probe_n": 3288,
+      "step": 60000,
+      "task_steps": {
+        "repetition": 10000,
+        "naming": 20000,
+        "comprehension": 30000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 10000,
+          "population_passes": 21.598272138228943,
+          "item_presentations": 638719,
+          "presentations_per_item": 21.599506273037772,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 20000,
+          "population_passes": 384.61538461538464,
+          "item_presentations": 1264640,
+          "presentations_per_item": 384.62287104622874,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 30000,
+          "population_passes": 576.9230769230769,
+          "item_presentations": 1896960,
+          "presentations_per_item": 576.9343065693431,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9318734793187348
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.4683698296836983,
+        "top5": 0.6748783454987834,
+        "target_cos_mean": 0.5201483383013384,
+        "target_rank_median": 2.0,
+        "target_rank_mean": 66.38594890510949,
+        "target_rank_max": 6984.0,
+        "margin_mean": -0.01095669114749217,
+        "c_ltm_mean_aux": 0.5544689759303909
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9361313868613139
+      },
+      "repetition_probe_n": 3288,
+      "step": 80000,
+      "task_steps": {
+        "repetition": 13333,
+        "naming": 26666,
+        "comprehension": 40001
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 13333,
+          "population_passes": 28.796976241900648,
+          "item_presentations": 851604,
+          "presentations_per_item": 28.798620269858983,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 26666,
+          "population_passes": 512.8076923076923,
+          "item_presentations": 1686144,
+          "presentations_per_item": 512.8175182481751,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 40001,
+          "population_passes": 769.25,
+          "item_presentations": 2529304,
+          "presentations_per_item": 769.2530413625304,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.958941605839416
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.5237226277372263,
+        "top5": 0.7259732360097324,
+        "target_cos_mean": 0.5322086663730896,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 43.124391727493915,
+        "target_rank_max": 5648.0,
+        "margin_mean": 0.00037114826142062816,
+        "c_ltm_mean_aux": 0.5601435684918488
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9659367396593674
+      },
+      "repetition_probe_n": 3288,
+      "step": 100000,
+      "task_steps": {
+        "repetition": 16667,
+        "naming": 33333,
+        "comprehension": 50000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 16667,
+          "population_passes": 35.99784017278618,
+          "item_presentations": 1064553,
+          "presentations_per_item": 35.99989854925434,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 33333,
+          "population_passes": 641.0192307692307,
+          "item_presentations": 2107672,
+          "presentations_per_item": 641.0194647201946,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 50000,
+          "population_passes": 961.5384615384615,
+          "item_presentations": 3161560,
+          "presentations_per_item": 961.5450121654501,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.972323600973236
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.5827250608272506,
+        "top5": 0.7767639902676399,
+        "target_cos_mean": 0.5426754644797739,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 29.833333333333332,
+        "target_rank_max": 5125.0,
+        "margin_mean": 0.010705270380724375,
+        "c_ltm_mean_aux": 0.5655408437905375
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9750608272506083
+      },
+      "repetition_probe_n": 3288,
+      "step": 120000,
+      "task_steps": {
+        "repetition": 20000,
+        "naming": 40000,
+        "comprehension": 60000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 20000,
+          "population_passes": 43.196544276457885,
+          "item_presentations": 1277377,
+          "presentations_per_item": 43.19694971424707,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 40000,
+          "population_passes": 769.2307692307693,
+          "item_presentations": 2529240,
+          "presentations_per_item": 769.2335766423357,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 60000,
+          "population_passes": 1153.8461538461538,
+          "item_presentations": 3793880,
+          "presentations_per_item": 1153.8564476885645,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9714111922141119
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.6240875912408759,
+        "top5": 0.8065693430656934,
+        "target_cos_mean": 0.5508120433719706,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 20.277980535279806,
+        "target_rank_max": 3230.0,
+        "margin_mean": 0.017957433437307675,
+        "c_ltm_mean_aux": 0.570380988437909
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9698905109489051
+      },
+      "repetition_probe_n": 3288,
+      "step": 140000,
+      "task_steps": {
+        "repetition": 23333,
+        "naming": 46667,
+        "comprehension": 70000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 23333,
+          "population_passes": 50.39524838012959,
+          "item_presentations": 1490262,
+          "presentations_per_item": 50.39606371106828,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 46667,
+          "population_passes": 897.4423076923077,
+          "item_presentations": 2950808,
+          "presentations_per_item": 897.4476885644768,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 70000,
+          "population_passes": 1346.1538461538462,
+          "item_presentations": 4426160,
+          "presentations_per_item": 1346.155717761557,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.968978102189781
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.6648418491484185,
+        "top5": 0.8366788321167883,
+        "target_cos_mean": 0.5581896865373328,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 14.933698296836983,
+        "target_rank_max": 2246.0,
+        "margin_mean": 0.02538618979717258,
+        "c_ltm_mean_aux": 0.5749413718236044
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9726277372262774
+      },
+      "repetition_probe_n": 3288,
+      "step": 160000,
+      "task_steps": {
+        "repetition": 26666,
+        "naming": 53334,
+        "comprehension": 80000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 26666,
+          "population_passes": 57.593952483801296,
+          "item_presentations": 1703147,
+          "presentations_per_item": 57.59517770788948,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 53334,
+          "population_passes": 1025.6538461538462,
+          "item_presentations": 3372376,
+          "presentations_per_item": 1025.661800486618,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 80000,
+          "population_passes": 1538.4615384615386,
+          "item_presentations": 5058480,
+          "presentations_per_item": 1538.4671532846714,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9811435523114356
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.6943430656934306,
+        "top5": 0.8591849148418491,
+        "target_cos_mean": 0.5641932642889501,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 11.43978102189781,
+        "target_rank_max": 1125.0,
+        "margin_mean": 0.031308699059334116,
+        "c_ltm_mean_aux": 0.5789327906249794
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9774939172749392
+      },
+      "repetition_probe_n": 3288,
+      "step": 180000,
+      "task_steps": {
+        "repetition": 30000,
+        "naming": 60000,
+        "comprehension": 90000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 30000,
+          "population_passes": 64.79481641468682,
+          "item_presentations": 1916096,
+          "presentations_per_item": 64.79645598728484,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 60000,
+          "population_passes": 1153.8461538461538,
+          "item_presentations": 3793880,
+          "presentations_per_item": 1153.8564476885645,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 90000,
+          "population_passes": 1730.7692307692307,
+          "item_presentations": 5690800,
+          "presentations_per_item": 1730.7785888077858,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9768856447688564
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.7281021897810219,
+        "top5": 0.8734793187347932,
+        "target_cos_mean": 0.568881961242851,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 8.902676399026763,
+        "target_rank_max": 844.0,
+        "margin_mean": 0.03670076163000724,
+        "c_ltm_mean_aux": 0.5819775985685288
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9793187347931873
+      },
+      "repetition_probe_n": 3288,
+      "step": 200000,
+      "task_steps": {
+        "repetition": 33333,
+        "naming": 66667,
+        "comprehension": 100000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 33333,
+          "population_passes": 71.99352051835854,
+          "item_presentations": 2128981,
+          "presentations_per_item": 71.99556998410606,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 66667,
+          "population_passes": 1282.0576923076924,
+          "item_presentations": 4215408,
+          "presentations_per_item": 1282.058394160584,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 100000,
+          "population_passes": 1923.076923076923,
+          "item_presentations": 6323080,
+          "presentations_per_item": 1923.0778588807786,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9835766423357665
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.7512165450121655,
+        "top5": 0.8877737226277372,
+        "target_cos_mean": 0.5743043070110672,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 7.3059610705596105,
+        "target_rank_max": 703.0,
+        "margin_mean": 0.04163020036190095,
+        "c_ltm_mean_aux": 0.5859805373814855
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9805352798053528
+      },
+      "repetition_probe_n": 3288,
+      "step": 220000,
+      "task_steps": {
+        "repetition": 36667,
+        "naming": 73333,
+        "comprehension": 110000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 36667,
+          "population_passes": 79.19438444924405,
+          "item_presentations": 2341869,
+          "presentations_per_item": 79.19478543167293,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 73333,
+          "population_passes": 1410.25,
+          "item_presentations": 4636912,
+          "presentations_per_item": 1410.2530413625304,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 110000,
+          "population_passes": 2115.3846153846152,
+          "item_presentations": 6955400,
+          "presentations_per_item": 2115.389294403893,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9790145985401459
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.7661192214111923,
+        "top5": 0.9008515815085159,
+        "target_cos_mean": 0.5785470477638454,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 6.167274939172749,
+        "target_rank_max": 671.0,
+        "margin_mean": 0.04493510027001374,
+        "c_ltm_mean_aux": 0.5892077257308357
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9805352798053528
+      },
+      "repetition_probe_n": 3288,
+      "step": 240000,
+      "task_steps": {
+        "repetition": 40000,
+        "naming": 80000,
+        "comprehension": 120000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 40000,
+          "population_passes": 86.39308855291577,
+          "item_presentations": 2554754,
+          "presentations_per_item": 86.39389942849414,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 80000,
+          "population_passes": 1538.4615384615386,
+          "item_presentations": 5058480,
+          "presentations_per_item": 1538.4671532846714,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 120000,
+          "population_passes": 2307.6923076923076,
+          "item_presentations": 7587720,
+          "presentations_per_item": 2307.700729927007,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.976581508515815
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.7788929440389294,
+        "top5": 0.9114963503649635,
+        "target_cos_mean": 0.581719679662781,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 5.365875912408759,
+        "target_rank_max": 649.0,
+        "margin_mean": 0.048585421557554076,
+        "c_ltm_mean_aux": 0.5914127104836369
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9704987834549879
+      },
+      "repetition_probe_n": 3288,
+      "step": 260000,
+      "task_steps": {
+        "repetition": 43333,
+        "naming": 86666,
+        "comprehension": 130001
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 43333,
+          "population_passes": 93.59179265658747,
+          "item_presentations": 2767639,
+          "presentations_per_item": 93.59301342531535,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 86666,
+          "population_passes": 1666.6538461538462,
+          "item_presentations": 5479984,
+          "presentations_per_item": 1666.661800486618,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 130001,
+          "population_passes": 2500.019230769231,
+          "item_presentations": 8220064,
+          "presentations_per_item": 2500.0194647201947,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9850973236009732
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.7956204379562044,
+        "top5": 0.9148418491484185,
+        "target_cos_mean": 0.5857810386322856,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 4.928832116788321,
+        "target_rank_max": 622.0,
+        "margin_mean": 0.052156783794472104,
+        "c_ltm_mean_aux": 0.594747690125901
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9820559610705596
+      },
+      "repetition_probe_n": 3288,
+      "step": 280000,
+      "task_steps": {
+        "repetition": 46667,
+        "naming": 93333,
+        "comprehension": 140000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 46667,
+          "population_passes": 100.792656587473,
+          "item_presentations": 2980588,
+          "presentations_per_item": 100.7942917047107,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 93333,
+          "population_passes": 1794.8653846153845,
+          "item_presentations": 5901552,
+          "presentations_per_item": 1794.8759124087592,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 140000,
+          "population_passes": 2692.3076923076924,
+          "item_presentations": 8852320,
+          "presentations_per_item": 2692.311435523114,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9729318734793188
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8059610705596107,
+        "top5": 0.9233576642335767,
+        "target_cos_mean": 0.5885362134398915,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 4.394464720194647,
+        "target_rank_max": 513.0,
+        "margin_mean": 0.0549390633701553,
+        "c_ltm_mean_aux": 0.5968366370438949
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9777980535279805
+      },
+      "repetition_probe_n": 3288,
+      "step": 300000,
+      "task_steps": {
+        "repetition": 50000,
+        "naming": 100000,
+        "comprehension": 150000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 50000,
+          "population_passes": 107.9913606911447,
+          "item_presentations": 3193473,
+          "presentations_per_item": 107.99340570153191,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 100000,
+          "population_passes": 1923.076923076923,
+          "item_presentations": 6323080,
+          "presentations_per_item": 1923.0778588807786,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 150000,
+          "population_passes": 2884.6153846153848,
+          "item_presentations": 9484640,
+          "presentations_per_item": 2884.6228710462287,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9774939172749392
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8150851581508516,
+        "top5": 0.9309610705596107,
+        "target_cos_mean": 0.5918581652887837,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 3.919403892944039,
+        "target_rank_max": 449.0,
+        "margin_mean": 0.05776019471441452,
+        "c_ltm_mean_aux": 0.599532059989779
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9744525547445255
+      },
+      "repetition_probe_n": 3288,
+      "step": 320000,
+      "task_steps": {
+        "repetition": 53334,
+        "naming": 106667,
+        "comprehension": 159999
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 53334,
+          "population_passes": 115.19222462203024,
+          "item_presentations": 3406361,
+          "presentations_per_item": 115.19262114909878,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 106667,
+          "population_passes": 2051.2884615384614,
+          "item_presentations": 6744648,
+          "presentations_per_item": 2051.29197080292,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 159999,
+          "population_passes": 3076.903846153846,
+          "item_presentations": 10116896,
+          "presentations_per_item": 3076.9148418491486,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9720194647201946
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8305961070559611,
+        "top5": 0.9352189781021898,
+        "target_cos_mean": 0.5940656280938146,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 3.6155717761557176,
+        "target_rank_max": 442.0,
+        "margin_mean": 0.060706674300333587,
+        "c_ltm_mean_aux": 0.6010741670763261
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9665450121654501
+      },
+      "repetition_probe_n": 3288,
+      "step": 340000,
+      "task_steps": {
+        "repetition": 56667,
+        "naming": 113334,
+        "comprehension": 169999
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 56667,
+          "population_passes": 122.39092872570194,
+          "item_presentations": 3619246,
+          "presentations_per_item": 122.39173514592,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 113334,
+          "population_passes": 2179.5,
+          "item_presentations": 7166216,
+          "presentations_per_item": 2179.506082725061,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 169999,
+          "population_passes": 3269.2115384615386,
+          "item_presentations": 10749176,
+          "presentations_per_item": 3269.214111922141,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.972323600973236
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8348540145985401,
+        "top5": 0.9422141119221411,
+        "target_cos_mean": 0.5971205140262335,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 3.287712895377129,
+        "target_rank_max": 464.0,
+        "margin_mean": 0.06248106560024032,
+        "c_ltm_mean_aux": 0.6038532713722718
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9714111922141119
+      },
+      "repetition_probe_n": 3288,
+      "step": 360000,
+      "task_steps": {
+        "repetition": 60000,
+        "naming": 120000,
+        "comprehension": 180000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 60000,
+          "population_passes": 129.58963282937364,
+          "item_presentations": 3832131,
+          "presentations_per_item": 129.5908491427412,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 120000,
+          "population_passes": 2307.6923076923076,
+          "item_presentations": 7587720,
+          "presentations_per_item": 2307.700729927007,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 180000,
+          "population_passes": 3461.5384615384614,
+          "item_presentations": 11381560,
+          "presentations_per_item": 3461.5450121654503,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9805352798053528
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.843978102189781,
+        "top5": 0.9467761557177615,
+        "target_cos_mean": 0.5991577022502748,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 3.086374695863747,
+        "target_rank_max": 375.0,
+        "margin_mean": 0.06513035714336265,
+        "c_ltm_mean_aux": 0.6054193322748453
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.976581508515815
+      },
+      "repetition_probe_n": 3288,
+      "step": 380000,
+      "task_steps": {
+        "repetition": 63334,
+        "naming": 126667,
+        "comprehension": 189999
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 63334,
+          "population_passes": 136.79049676025917,
+          "item_presentations": 4045080,
+          "presentations_per_item": 136.79212742213656,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 126667,
+          "population_passes": 2435.903846153846,
+          "item_presentations": 8009288,
+          "presentations_per_item": 2435.9148418491486,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 189999,
+          "population_passes": 3653.826923076923,
+          "item_presentations": 12013816,
+          "presentations_per_item": 3653.8369829683697,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9677615571776156
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8491484184914841,
+        "top5": 0.9510340632603407,
+        "target_cos_mean": 0.6011655812860985,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.9358272506082725,
+        "target_rank_max": 474.0,
+        "margin_mean": 0.06710821457225331,
+        "c_ltm_mean_aux": 0.607098661308741
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9708029197080292
+      },
+      "repetition_probe_n": 3288,
+      "step": 400000,
+      "task_steps": {
+        "repetition": 66667,
+        "naming": 133333,
+        "comprehension": 200000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 66667,
+          "population_passes": 143.98920086393088,
+          "item_presentations": 4257965,
+          "presentations_per_item": 143.99124141895777,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 133333,
+          "population_passes": 2564.096153846154,
+          "item_presentations": 8430752,
+          "presentations_per_item": 2564.097323600973,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 200000,
+          "population_passes": 3846.153846153846,
+          "item_presentations": 12646160,
+          "presentations_per_item": 3846.1557177615573,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9790145985401459
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8540145985401459,
+        "top5": 0.9519464720194647,
+        "target_cos_mean": 0.6036540555185355,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.7144160583941606,
+        "target_rank_max": 348.0,
+        "margin_mean": 0.06909277501296243,
+        "c_ltm_mean_aux": 0.6092456274205896
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9753649635036497
+      },
+      "repetition_probe_n": 3288,
+      "step": 420000,
+      "task_steps": {
+        "repetition": 70000,
+        "naming": 140000,
+        "comprehension": 210000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 70000,
+          "population_passes": 151.1879049676026,
+          "item_presentations": 4470789,
+          "presentations_per_item": 151.1882925839505,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 140000,
+          "population_passes": 2692.3076923076924,
+          "item_presentations": 8852320,
+          "presentations_per_item": 2692.311435523114,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 210000,
+          "population_passes": 4038.4615384615386,
+          "item_presentations": 13278480,
+          "presentations_per_item": 4038.4671532846714,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9799270072992701
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8582725060827251,
+        "top5": 0.9562043795620438,
+        "target_cos_mean": 0.6062549947423367,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.5860705596107056,
+        "target_rank_max": 382.0,
+        "margin_mean": 0.07088643085855056,
+        "c_ltm_mean_aux": 0.6115345726754978
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9796228710462287
+      },
+      "repetition_probe_n": 3288,
+      "step": 440000,
+      "task_steps": {
+        "repetition": 73333,
+        "naming": 146667,
+        "comprehension": 220000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 73333,
+          "population_passes": 158.3866090712743,
+          "item_presentations": 4683674,
+          "presentations_per_item": 158.3874065807717,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 146667,
+          "population_passes": 2820.519230769231,
+          "item_presentations": 9273888,
+          "presentations_per_item": 2820.5255474452556,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 220000,
+          "population_passes": 4230.7692307692305,
+          "item_presentations": 13910800,
+          "presentations_per_item": 4230.778588807786,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9814476885644768
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8661800486618005,
+        "top5": 0.9583333333333334,
+        "target_cos_mean": 0.608224527026615,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.4419099756690996,
+        "target_rank_max": 368.0,
+        "margin_mean": 0.07233767233190745,
+        "c_ltm_mean_aux": 0.6132411128068638
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9820559610705596
+      },
+      "repetition_probe_n": 3288,
+      "step": 460000,
+      "task_steps": {
+        "repetition": 76667,
+        "naming": 153333,
+        "comprehension": 230000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 76667,
+          "population_passes": 165.58747300215984,
+          "item_presentations": 4896623,
+          "presentations_per_item": 165.58868486016706,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 153333,
+          "population_passes": 2948.7115384615386,
+          "item_presentations": 9695392,
+          "presentations_per_item": 2948.720194647202,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 230000,
+          "population_passes": 4423.076923076923,
+          "item_presentations": 14543080,
+          "presentations_per_item": 4423.077858880779,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9817518248175182
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8728710462287105,
+        "top5": 0.9610705596107056,
+        "target_cos_mean": 0.6098712669943807,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.32147201946472,
+        "target_rank_max": 408.0,
+        "margin_mean": 0.07423061663579476,
+        "c_ltm_mean_aux": 0.6146317442874549
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9838807785888077
+      },
+      "repetition_probe_n": 3288,
+      "step": 480000,
+      "task_steps": {
+        "repetition": 80000,
+        "naming": 160000,
+        "comprehension": 240000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 80000,
+          "population_passes": 172.78617710583154,
+          "item_presentations": 5109508,
+          "presentations_per_item": 172.78779885698827,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 160000,
+          "population_passes": 3076.923076923077,
+          "item_presentations": 10116960,
+          "presentations_per_item": 3076.934306569343,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 240000,
+          "population_passes": 4615.384615384615,
+          "item_presentations": 15175400,
+          "presentations_per_item": 4615.389294403893,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9625912408759124
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.875,
+        "top5": 0.9635036496350365,
+        "target_cos_mean": 0.6106621577719412,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.2089416058394162,
+        "target_rank_max": 310.0,
+        "margin_mean": 0.07537709522783902,
+        "c_ltm_mean_aux": 0.6152215995927797
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.9996958637469586,
+        "whole_word_error_rate": 0.00030413625304137604,
+        "mean_edit": 0.0024330900243309003,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.732664233576642,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9604622871046229
+      },
+      "repetition_probe_n": 3288,
+      "step": 500000,
+      "task_steps": {
+        "repetition": 83333,
+        "naming": 166667,
+        "comprehension": 250000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 83333,
+          "population_passes": 179.98488120950324,
+          "item_presentations": 5322393,
+          "presentations_per_item": 179.98691285380949,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 166667,
+          "population_passes": 3205.1346153846152,
+          "item_presentations": 10538488,
+          "presentations_per_item": 3205.1362530413626,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 250000,
+          "population_passes": 4807.692307692308,
+          "item_presentations": 15807720,
+          "presentations_per_item": 4807.700729927007,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9814476885644768
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.878345498783455,
+        "top5": 0.962287104622871,
+        "target_cos_mean": 0.6128331159678834,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.1596715328467155,
+        "target_rank_max": 368.0,
+        "margin_mean": 0.07686574423545178,
+        "c_ltm_mean_aux": 0.6172415812991542
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9838807785888077
+      },
+      "repetition_probe_n": 3288,
+      "step": 520000,
+      "task_steps": {
+        "repetition": 86667,
+        "naming": 173333,
+        "comprehension": 260000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 86667,
+          "population_passes": 187.18574514038878,
+          "item_presentations": 5535281,
+          "presentations_per_item": 187.18612830137636,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 173333,
+          "population_passes": 3333.326923076923,
+          "item_presentations": 10959992,
+          "presentations_per_item": 3333.330900243309,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 260000,
+          "population_passes": 5000.0,
+          "item_presentations": 16440000,
+          "presentations_per_item": 5000.0,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9881386861313869
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8871654501216545,
+        "top5": 0.9668491484184915,
+        "target_cos_mean": 0.6146415579891843,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.1088807785888077,
+        "target_rank_max": 444.0,
+        "margin_mean": 0.07893776433166216,
+        "c_ltm_mean_aux": 0.6188340171482731
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9860097323600974
+      },
+      "repetition_probe_n": 3288,
+      "step": 540000,
+      "task_steps": {
+        "repetition": 90000,
+        "naming": 180000,
+        "comprehension": 270000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 90000,
+          "population_passes": 194.38444924406048,
+          "item_presentations": 5748166,
+          "presentations_per_item": 194.38524229819757,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 180000,
+          "population_passes": 3461.5384615384614,
+          "item_presentations": 11381560,
+          "presentations_per_item": 3461.5450121654503,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 270000,
+          "population_passes": 5192.307692307692,
+          "item_presentations": 17072320,
+          "presentations_per_item": 5192.311435523115,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9628953771289538
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8841240875912408,
+        "top5": 0.9677615571776156,
+        "target_cos_mean": 0.615273122378872,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 2.0349756690997567,
+        "target_rank_max": 358.0,
+        "margin_mean": 0.07933664947313114,
+        "c_ltm_mean_aux": 0.6194510234025853
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9656326034063261
+      },
+      "repetition_probe_n": 3288,
+      "step": 560000,
+      "task_steps": {
+        "repetition": 93333,
+        "naming": 186667,
+        "comprehension": 280000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 93333,
+          "population_passes": 201.58315334773218,
+          "item_presentations": 5961051,
+          "presentations_per_item": 201.58435629501878,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 186667,
+          "population_passes": 3589.75,
+          "item_presentations": 11803128,
+          "presentations_per_item": 3589.7591240875913,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 280000,
+          "population_passes": 5384.615384615385,
+          "item_presentations": 17704640,
+          "presentations_per_item": 5384.622871046228,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9750608272506083
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8899026763990268,
+        "top5": 0.9674574209245742,
+        "target_cos_mean": 0.616937214694464,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.9872262773722629,
+        "target_rank_max": 374.0,
+        "margin_mean": 0.08072799459607352,
+        "c_ltm_mean_aux": 0.6208335151329383
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9704987834549879
+      },
+      "repetition_probe_n": 3288,
+      "step": 580000,
+      "task_steps": {
+        "repetition": 96667,
+        "naming": 193333,
+        "comprehension": 290000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 96667,
+          "population_passes": 208.7840172786177,
+          "item_presentations": 6174000,
+          "presentations_per_item": 208.78563457441413,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 193333,
+          "population_passes": 3717.9423076923076,
+          "item_presentations": 12224632,
+          "presentations_per_item": 3717.9537712895376,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 290000,
+          "population_passes": 5576.923076923077,
+          "item_presentations": 18336960,
+          "presentations_per_item": 5576.934306569343,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9653284671532847
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8932481751824818,
+        "top5": 0.9695863746958637,
+        "target_cos_mean": 0.6178670949291284,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.947992700729927,
+        "target_rank_max": 405.0,
+        "margin_mean": 0.08157278426045919,
+        "c_ltm_mean_aux": 0.6216434065950468
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9650243309002433
+      },
+      "repetition_probe_n": 3288,
+      "step": 600000,
+      "task_steps": {
+        "repetition": 100000,
+        "naming": 200000,
+        "comprehension": 300000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 100000,
+          "population_passes": 215.9827213822894,
+          "item_presentations": 6386885,
+          "presentations_per_item": 215.98474857123534,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 200000,
+          "population_passes": 3846.153846153846,
+          "item_presentations": 12646160,
+          "presentations_per_item": 3846.1557177615573,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 300000,
+          "population_passes": 5769.2307692307695,
+          "item_presentations": 18969240,
+          "presentations_per_item": 5769.233576642336,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9598540145985401
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.8968978102189781,
+        "top5": 0.9720194647201946,
+        "target_cos_mean": 0.6187340713348557,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.8877737226277371,
+        "target_rank_max": 405.0,
+        "margin_mean": 0.0828816219620461,
+        "c_ltm_mean_aux": 0.6223353720440047
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9631995133819952
+      },
+      "repetition_probe_n": 3288,
+      "step": 620000,
+      "task_steps": {
+        "repetition": 103333,
+        "naming": 206667,
+        "comprehension": 310000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 103333,
+          "population_passes": 223.1814254859611,
+          "item_presentations": 6599709,
+          "presentations_per_item": 223.18179973622807,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 206667,
+          "population_passes": 3974.3653846153848,
+          "item_presentations": 13067728,
+          "presentations_per_item": 3974.3698296836983,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 310000,
+          "population_passes": 5961.538461538462,
+          "item_presentations": 19601560,
+          "presentations_per_item": 5961.54501216545,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9750608272506083
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9011557177615572,
+        "top5": 0.9714111922141119,
+        "target_cos_mean": 0.620772902285023,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.8312043795620438,
+        "target_rank_max": 366.0,
+        "margin_mean": 0.08435832182457557,
+        "c_ltm_mean_aux": 0.6242740129612369
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9735401459854015
+      },
+      "repetition_probe_n": 3288,
+      "step": 640000,
+      "task_steps": {
+        "repetition": 106667,
+        "naming": 213333,
+        "comprehension": 320000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 106667,
+          "population_passes": 230.38228941684665,
+          "item_presentations": 6812658,
+          "presentations_per_item": 230.38307801562343,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 213333,
+          "population_passes": 4102.557692307692,
+          "item_presentations": 13489232,
+          "presentations_per_item": 4102.564476885645,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 320000,
+          "population_passes": 6153.846153846154,
+          "item_presentations": 20233880,
+          "presentations_per_item": 6153.856447688565,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9592457420924574
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9041970802919708,
+        "top5": 0.9720194647201946,
+        "target_cos_mean": 0.6207289018298878,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.819647201946472,
+        "target_rank_max": 389.0,
+        "margin_mean": 0.08557367588590531,
+        "c_ltm_mean_aux": 0.6241074887958611
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 0.9969586374695864,
+        "whole_word_error_rate": 0.0030413625304136493,
+        "mean_edit": 0.00851581508515815,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.732968369829684,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9610705596107056
+      },
+      "repetition_probe_n": 3288,
+      "step": 660000,
+      "task_steps": {
+        "repetition": 110000,
+        "naming": 220000,
+        "comprehension": 330000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 110000,
+          "population_passes": 237.58099352051835,
+          "item_presentations": 7025543,
+          "presentations_per_item": 237.58219201244464,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 220000,
+          "population_passes": 4230.7692307692305,
+          "item_presentations": 13910800,
+          "presentations_per_item": 4230.778588807786,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 330000,
+          "population_passes": 6346.153846153846,
+          "item_presentations": 20866160,
+          "presentations_per_item": 6346.155717761557,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9686739659367397
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9048053527980535,
+        "top5": 0.9729318734793188,
+        "target_cos_mean": 0.6224896611777245,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.7819343065693432,
+        "target_rank_max": 295.0,
+        "margin_mean": 0.08611126904831315,
+        "c_ltm_mean_aux": 0.6258348942691248
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9668491484184915
+      },
+      "repetition_probe_n": 3288,
+      "step": 680000,
+      "task_steps": {
+        "repetition": 113334,
+        "naming": 226666,
+        "comprehension": 340000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 113334,
+          "population_passes": 244.78185745140388,
+          "item_presentations": 7238492,
+          "presentations_per_item": 244.78347029184,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 226666,
+          "population_passes": 4358.961538461538,
+          "item_presentations": 14332304,
+          "presentations_per_item": 4358.973236009732,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 340000,
+          "population_passes": 6538.461538461538,
+          "item_presentations": 21498480,
+          "presentations_per_item": 6538.467153284671,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.976581508515815
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9054136253041363,
+        "top5": 0.9741484184914841,
+        "target_cos_mean": 0.6237163940612273,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.760036496350365,
+        "target_rank_max": 361.0,
+        "margin_mean": 0.08713472882906596,
+        "c_ltm_mean_aux": 0.6269877465881425
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.968978102189781
+      },
+      "repetition_probe_n": 3288,
+      "step": 700000,
+      "task_steps": {
+        "repetition": 116667,
+        "naming": 233333,
+        "comprehension": 350000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 116667,
+          "population_passes": 251.98056155507558,
+          "item_presentations": 7451377,
+          "presentations_per_item": 251.9825842886612,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 233333,
+          "population_passes": 4487.173076923077,
+          "item_presentations": 14753832,
+          "presentations_per_item": 4487.175182481752,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 350000,
+          "population_passes": 6730.7692307692305,
+          "item_presentations": 22130800,
+          "presentations_per_item": 6730.778588807786,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9744525547445255
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9096715328467153,
+        "top5": 0.975669099756691,
+        "target_cos_mean": 0.6250976249122416,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.708941605839416,
+        "target_rank_max": 323.0,
+        "margin_mean": 0.08819032072513353,
+        "c_ltm_mean_aux": 0.6282285636793958
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9747566909975669
+      },
+      "repetition_probe_n": 3288,
+      "step": 720000,
+      "task_steps": {
+        "repetition": 120000,
+        "naming": 240000,
+        "comprehension": 360000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 120000,
+          "population_passes": 259.1792656587473,
+          "item_presentations": 7664201,
+          "presentations_per_item": 259.17963545365393,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 240000,
+          "population_passes": 4615.384615384615,
+          "item_presentations": 15175400,
+          "presentations_per_item": 4615.389294403893,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 360000,
+          "population_passes": 6923.076923076923,
+          "item_presentations": 22763080,
+          "presentations_per_item": 6923.077858880779,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.972323600973236
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9096715328467153,
+        "top5": 0.9753649635036497,
+        "target_cos_mean": 0.626053087141392,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.701338199513382,
+        "target_rank_max": 353.0,
+        "margin_mean": 0.08911073504246934,
+        "c_ltm_mean_aux": 0.6290804526684783
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9759732360097324
+      },
+      "repetition_probe_n": 3288,
+      "step": 740000,
+      "task_steps": {
+        "repetition": 123333,
+        "naming": 246667,
+        "comprehension": 370000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 123333,
+          "population_passes": 266.377969762419,
+          "item_presentations": 7877086,
+          "presentations_per_item": 266.37874945047514,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 246667,
+          "population_passes": 4743.596153846154,
+          "item_presentations": 15596968,
+          "presentations_per_item": 4743.603406326034,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 370000,
+          "population_passes": 7115.384615384615,
+          "item_presentations": 23395400,
+          "presentations_per_item": 7115.389294403893,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9787104622871047
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.912712895377129,
+        "top5": 0.9759732360097324,
+        "target_cos_mean": 0.6273653148571505,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.6742700729927007,
+        "target_rank_max": 312.0,
+        "margin_mean": 0.0898822660755067,
+        "c_ltm_mean_aux": 0.6303509823125935
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9805352798053528
+      },
+      "repetition_probe_n": 3288,
+      "step": 760000,
+      "task_steps": {
+        "repetition": 126667,
+        "naming": 253333,
+        "comprehension": 380000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 126667,
+          "population_passes": 273.57883369330455,
+          "item_presentations": 8090035,
+          "presentations_per_item": 273.5800277298705,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 253333,
+          "population_passes": 4871.788461538462,
+          "item_presentations": 16018472,
+          "presentations_per_item": 4871.79805352798,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 380000,
+          "population_passes": 7307.692307692308,
+          "item_presentations": 24027720,
+          "presentations_per_item": 7307.700729927007,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9717153284671532
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.916058394160584,
+        "top5": 0.9774939172749392,
+        "target_cos_mean": 0.6275013719760153,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.6295620437956204,
+        "target_rank_max": 312.0,
+        "margin_mean": 0.090705033146987,
+        "c_ltm_mean_aux": 0.6303652266081232
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9698905109489051
+      },
+      "repetition_probe_n": 3288,
+      "step": 780000,
+      "task_steps": {
+        "repetition": 130000,
+        "naming": 260000,
+        "comprehension": 390000
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 130000,
+          "population_passes": 280.7775377969762,
+          "item_presentations": 8302920,
+          "presentations_per_item": 280.7791417266917,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 260000,
+          "population_passes": 5000.0,
+          "item_presentations": 16440000,
+          "presentations_per_item": 5000.0,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 390000,
+          "population_passes": 7500.0,
+          "item_presentations": 24660000,
+          "presentations_per_item": 7500.0,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    },
+    {
+      "repetition": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9729318734793188
+      },
+      "repetition_convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "comprehension": {
+        "n": 3288,
+        "retrieval_bank_size": 29571,
+        "top1": 0.9154501216545012,
+        "top5": 0.9777980535279805,
+        "target_cos_mean": 0.6278691881873312,
+        "target_rank_median": 1.0,
+        "target_rank_mean": 1.5970194647201947,
+        "target_rank_max": 262.0,
+        "margin_mean": 0.09108355539848624,
+        "c_ltm_mean_aux": 0.6307252517509344
+      },
+      "naming": {
+        "n": 3288,
+        "exact_match": 1.0,
+        "whole_word_error_rate": 0.0,
+        "mean_edit": 0.0,
+        "eos_emission_rate": 1.0,
+        "mean_pred_length": 5.734793187347932,
+        "mean_target_length": 5.734793187347932
+      },
+      "repetition_probe": {
+        "full": 1.0,
+        "wm": 1.0,
+        "ltm": 0.9729318734793188
+      },
+      "repetition_probe_n": 3288,
+      "step": 800000,
+      "task_steps": {
+        "repetition": 133333,
+        "naming": 266668,
+        "comprehension": 399999
+      },
+      "exposure": {
+        "repetition": {
+          "task_steps": 133333,
+          "population_passes": 287.97624190064795,
+          "item_presentations": 8515805,
+          "presentations_per_item": 287.9782557235129,
+          "batches_per_pass": 463
+        },
+        "naming": {
+          "task_steps": 266668,
+          "population_passes": 5128.2307692307695,
+          "item_presentations": 16861632,
+          "presentations_per_item": 5128.233576642336,
+          "batches_per_pass": 52
+        },
+        "comprehension": {
+          "task_steps": 399999,
+          "population_passes": 7692.288461538462,
+          "item_presentations": 25292256,
+          "presentations_per_item": 7692.291970802919,
+          "batches_per_pass": 52
+        }
+      },
+      "coexistence_met": false
+    }
+  ],
+  "endpoint_full_lexicon_repetition": {
+    "n_items": 29571,
+    "primary_readout": {
+      "decode_mode": "autoregressive",
+      "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+      "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+      "wm_noise": false,
+      "exact_match": {
+        "full": 1.0,
+        "wm": 0.9997632815934531,
+        "ltm": 0.9714585235534815
+      },
+      "mean_edit_distance": {
+        "full": 0.0,
+        "wm": 0.0005072537283149031,
+        "ltm": 0.06205403943052315
+      }
+    }
+  },
+  "endpoint_preservation_report": {
+    "full": 1.0,
+    "wm": 0.9997632815934531,
+    "ltm": 0.9714585235534815,
+    "canonical_ltm": 0.989449,
+    "absolute_ltm_drop_from_canonical": 0.017990476446518522,
+    "primary_criterion_ltm_ge_095": true,
+    "secondary_strict_drop_le_002": true,
+    "secondary_note": "descriptive only; does not control stopping and must not replace the primary >=0.95 criterion"
+  },
+  "resumed_from": null,
+  "resume_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-naming-comprehension/outputs/naming_comprehension_93a577f/phase3c_multitask_123_replexfull_subset3288_seed22/resume_checkpoint.pt",
+  "final_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-naming-comprehension/outputs/naming_comprehension_93a577f/phase3c_multitask_123_replexfull_subset3288_seed22/final_step_800000.pt",
+  "provenance": {
+    "source_checkpoint_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_22_epoch_0140.pt",
+    "source_checkpoint_sha256": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595",
+    "checkpoint_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "glove": {
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0
+    },
+    "device": "cpu",
+    "torch_version": "2.12.1",
+    "task_data_seeds": {
+      "repetition": 11,
+      "naming": 22,
+      "comprehension": 33
+    },
+    "eval_git": {
+      "commit": "439316e09b3c79ad5740fbffaecafacfa4a3558f",
+      "branch": "feat/naming-comprehension",
+      "dirty": false,
+      "tracked_dirty": false,
+      "untracked_present": false,
+      "untracked_paths": []
+    },
+    "runtime_seconds": 71707.5
+  }
+}

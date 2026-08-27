@@ -1,0 +1,1830 @@
+{
+  "phase": "2B_single_task_acquisition",
+  "task": "comprehension",
+  "objective": "c3",
+  "budget": {
+    "epochs": 100,
+    "batch_size": 64,
+    "eval_every": 5,
+    "early_stopping": false,
+    "lr": 0.0001,
+    "weight_decay": 1e-05,
+    "lr_schedule": "constant",
+    "optimizer": "AdamW, fresh, task scope only; checkpoint optimizer state never restored"
+  },
+  "objective_config": {
+    "tau": 0.1,
+    "lambda_ret": 0.087
+  },
+  "populations": {
+    "training_population": 26682,
+    "training_population_kind": "unique-phonology words",
+    "sampler": "flat/uniform, without replacement, reshuffled per epoch",
+    "retrieval_bank_size": 29571,
+    "strict_unique_phonology": 26682,
+    "homophones": 2889
+  },
+  "trainable_parameters": [
+    "ltm.encoder.bias_hh_l0",
+    "ltm.encoder.bias_ih_l0",
+    "ltm.encoder.weight_hh_l0",
+    "ltm.encoder.weight_ih_l0",
+    "ltm.to_semantic.0.bias",
+    "ltm.to_semantic.0.weight",
+    "ltm.to_semantic.2.bias",
+    "ltm.to_semantic.2.weight"
+  ],
+  "always_frozen": [
+    "phon_embed.weight",
+    "motor.proj.weight",
+    "motor.proj.bias"
+  ],
+  "scope_audit": {
+    "changed_parameters": [
+      "ltm.encoder.bias_hh_l0",
+      "ltm.encoder.bias_ih_l0",
+      "ltm.encoder.weight_hh_l0",
+      "ltm.encoder.weight_ih_l0",
+      "ltm.to_semantic.0.bias",
+      "ltm.to_semantic.0.weight",
+      "ltm.to_semantic.2.bias",
+      "ltm.to_semantic.2.weight"
+    ],
+    "all_changes_within_scope": true,
+    "dorsal_bit_identical": true
+  },
+  "trajectory": [
+    {
+      "epoch": 1,
+      "train_loss": 1.4880794909932344,
+      "n_batches": 417,
+      "train_c0": 0.7177171285489766,
+      "train_retrieval": 8.85474000560294
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.4793807716964247,
+      "n_batches": 417,
+      "train_c0": 0.7157686312707494,
+      "train_retrieval": 8.77715135935685
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.4746720259138149,
+      "n_batches": 417,
+      "train_c0": 0.7141580161430853,
+      "train_retrieval": 8.741540579487094
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.4711065535350956,
+      "n_batches": 417,
+      "train_c0": 0.712945048185847,
+      "train_retrieval": 8.714500340340521
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.4682183577288255,
+      "n_batches": 417,
+      "train_c0": 0.7118514353136937,
+      "train_retrieval": 8.693872920614924
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.4657750704305634,
+      "n_batches": 417,
+      "train_c0": 0.7108977707169897,
+      "train_retrieval": 8.676750841758235
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.4635067603570953,
+      "n_batches": 417,
+      "train_c0": 0.7099534987831573,
+      "train_retrieval": 8.661531992667586
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.4614693249444024,
+      "n_batches": 417,
+      "train_c0": 0.7090899502630714,
+      "train_retrieval": 8.648039023081461
+    },
+    {
+      "epoch": 9,
+      "train_loss": 1.4596677701250256,
+      "n_batches": 417,
+      "train_c0": 0.7084337245646141,
+      "train_retrieval": 8.634874391898835
+    },
+    {
+      "epoch": 10,
+      "train_loss": 1.4578724324846153,
+      "n_batches": 417,
+      "train_c0": 0.7075888833267797,
+      "train_retrieval": 8.623949098930085
+    },
+    {
+      "epoch": 11,
+      "train_loss": 1.4562636385146948,
+      "n_batches": 417,
+      "train_c0": 0.7068974361431113,
+      "train_retrieval": 8.613404845734008
+    },
+    {
+      "epoch": 12,
+      "train_loss": 1.454718213858936,
+      "n_batches": 417,
+      "train_c0": 0.7062605429324601,
+      "train_retrieval": 8.602961974750034
+    },
+    {
+      "epoch": 13,
+      "train_loss": 1.4534072958879904,
+      "n_batches": 417,
+      "train_c0": 0.705613146154143,
+      "train_retrieval": 8.595335306309396
+    },
+    {
+      "epoch": 14,
+      "train_loss": 1.4518680049361086,
+      "n_batches": 417,
+      "train_c0": 0.7050091537068502,
+      "train_retrieval": 8.584584750717493
+    },
+    {
+      "epoch": 15,
+      "train_loss": 1.4506222612852102,
+      "n_batches": 417,
+      "train_c0": 0.7043371517881215,
+      "train_retrieval": 8.577989962461183
+    },
+    {
+      "epoch": 16,
+      "train_loss": 1.449354826117591,
+      "n_batches": 417,
+      "train_c0": 0.7038488130775287,
+      "train_retrieval": 8.569034876011544
+    },
+    {
+      "epoch": 17,
+      "train_loss": 1.4480644836128473,
+      "n_batches": 417,
+      "train_c0": 0.7031716155491287,
+      "train_retrieval": 8.561987218239324
+    },
+    {
+      "epoch": 18,
+      "train_loss": 1.446855410111608,
+      "n_batches": 417,
+      "train_c0": 0.7026451878982196,
+      "train_retrieval": 8.554140730155744
+    },
+    {
+      "epoch": 19,
+      "train_loss": 1.4457197420888668,
+      "n_batches": 417,
+      "train_c0": 0.702127475103886,
+      "train_retrieval": 8.547037835887297
+    },
+    {
+      "epoch": 20,
+      "train_loss": 1.444646493708201,
+      "n_batches": 417,
+      "train_c0": 0.7016334273546434,
+      "train_retrieval": 8.54038033611197
+    },
+    {
+      "epoch": 21,
+      "train_loss": 1.443585107938277,
+      "n_batches": 417,
+      "train_c0": 0.701089112449893,
+      "train_retrieval": 8.53443693485763
+    },
+    {
+      "epoch": 22,
+      "train_loss": 1.4425743486669709,
+      "n_batches": 417,
+      "train_c0": 0.7006465566815804,
+      "train_retrieval": 8.527905913565656
+    },
+    {
+      "epoch": 23,
+      "train_loss": 1.44151123250417,
+      "n_batches": 417,
+      "train_c0": 0.700138500125574,
+      "train_retrieval": 8.521525904429044
+    },
+    {
+      "epoch": 24,
+      "train_loss": 1.4404026129834657,
+      "n_batches": 417,
+      "train_c0": 0.6995866311539849,
+      "train_retrieval": 8.51512646846634
+    },
+    {
+      "epoch": 25,
+      "train_loss": 1.4395195111382209,
+      "n_batches": 417,
+      "train_c0": 0.6992135047912598,
+      "train_retrieval": 8.509264665827763
+    },
+    {
+      "epoch": 26,
+      "train_loss": 1.4385756991750045,
+      "n_batches": 417,
+      "train_c0": 0.6986487953782939,
+      "train_retrieval": 8.504907182652316
+    },
+    {
+      "epoch": 27,
+      "train_loss": 1.4376302119925153,
+      "n_batches": 417,
+      "train_c0": 0.6982931716264866,
+      "train_retrieval": 8.498127141444803
+    },
+    {
+      "epoch": 28,
+      "train_loss": 1.4367256959279378,
+      "n_batches": 417,
+      "train_c0": 0.6978239361330759,
+      "train_retrieval": 8.49312391669916
+    },
+    {
+      "epoch": 29,
+      "train_loss": 1.43580304347068,
+      "n_batches": 417,
+      "train_c0": 0.6973658031125148,
+      "train_retrieval": 8.487784601801591
+    },
+    {
+      "epoch": 30,
+      "train_loss": 1.4349509083109795,
+      "n_batches": 417,
+      "train_c0": 0.6970006281809269,
+      "train_retrieval": 8.482187394615558
+    },
+    {
+      "epoch": 31,
+      "train_loss": 1.4340132048947634,
+      "n_batches": 417,
+      "train_c0": 0.6964661143094801,
+      "train_retrieval": 8.47755299826606
+    },
+    {
+      "epoch": 32,
+      "train_loss": 1.4331602718618561,
+      "n_batches": 417,
+      "train_c0": 0.6960668412329768,
+      "train_retrieval": 8.472338493493535
+    },
+    {
+      "epoch": 33,
+      "train_loss": 1.432403205681762,
+      "n_batches": 417,
+      "train_c0": 0.6956963760675572,
+      "train_retrieval": 8.467894810280926
+    },
+    {
+      "epoch": 34,
+      "train_loss": 1.4315695911288546,
+      "n_batches": 417,
+      "train_c0": 0.69533470580332,
+      "train_retrieval": 8.462470180410847
+    },
+    {
+      "epoch": 35,
+      "train_loss": 1.4307437454767935,
+      "n_batches": 417,
+      "train_c0": 0.694889943090846,
+      "train_retrieval": 8.45808990396184
+    },
+    {
+      "epoch": 36,
+      "train_loss": 1.4300272038800539,
+      "n_batches": 417,
+      "train_c0": 0.6945681241776446,
+      "train_retrieval": 8.453552846428302
+    },
+    {
+      "epoch": 37,
+      "train_loss": 1.4291302005735804,
+      "n_batches": 417,
+      "train_c0": 0.6940755013653415,
+      "train_retrieval": 8.44890480247333
+    },
+    {
+      "epoch": 38,
+      "train_loss": 1.4283303671317706,
+      "n_batches": 417,
+      "train_c0": 0.6936545807966511,
+      "train_retrieval": 8.444549482789256
+    },
+    {
+      "epoch": 39,
+      "train_loss": 1.4276560001807819,
+      "n_batches": 417,
+      "train_c0": 0.6933940137318856,
+      "train_retrieval": 8.439793200229856
+    },
+    {
+      "epoch": 40,
+      "train_loss": 1.4269463915904934,
+      "n_batches": 417,
+      "train_c0": 0.6929977436145719,
+      "train_retrieval": 8.436191561124879
+    },
+    {
+      "epoch": 41,
+      "train_loss": 1.4261029455587446,
+      "n_batches": 417,
+      "train_c0": 0.6925614063116572,
+      "train_retrieval": 8.431512179706308
+    },
+    {
+      "epoch": 42,
+      "train_loss": 1.4254342369038424,
+      "n_batches": 417,
+      "train_c0": 0.6922716073852648,
+      "train_retrieval": 8.427156903475023
+    },
+    {
+      "epoch": 43,
+      "train_loss": 1.4247105530411792,
+      "n_batches": 417,
+      "train_c0": 0.691888428849282,
+      "train_retrieval": 8.42324302636748
+    },
+    {
+      "epoch": 44,
+      "train_loss": 1.42391274444205,
+      "n_batches": 417,
+      "train_c0": 0.6914536780018886,
+      "train_retrieval": 8.41906997282728
+    },
+    {
+      "epoch": 45,
+      "train_loss": 1.4232313612953935,
+      "n_batches": 417,
+      "train_c0": 0.6911564286378362,
+      "train_retrieval": 8.414654649418893
+    },
+    {
+      "epoch": 46,
+      "train_loss": 1.4226067046181474,
+      "n_batches": 417,
+      "train_c0": 0.690831827031051,
+      "train_retrieval": 8.411205776589666
+    },
+    {
+      "epoch": 47,
+      "train_loss": 1.4218989421995423,
+      "n_batches": 417,
+      "train_c0": 0.6904394027712248,
+      "train_retrieval": 8.407581148673591
+    },
+    {
+      "epoch": 48,
+      "train_loss": 1.4211779106721032,
+      "n_batches": 417,
+      "train_c0": 0.6901960888926646,
+      "train_retrieval": 8.40209016754187
+    },
+    {
+      "epoch": 49,
+      "train_loss": 1.4205217058424184,
+      "n_batches": 417,
+      "train_c0": 0.6897656144283945,
+      "train_retrieval": 8.399495552483794
+    },
+    {
+      "epoch": 50,
+      "train_loss": 1.419806705390235,
+      "n_batches": 417,
+      "train_c0": 0.6893416866124105,
+      "train_retrieval": 8.396149864013818
+    },
+    {
+      "epoch": 51,
+      "train_loss": 1.4191930662813803,
+      "n_batches": 417,
+      "train_c0": 0.6891241459537754,
+      "train_retrieval": 8.391597022827295
+    },
+    {
+      "epoch": 52,
+      "train_loss": 1.418525921069175,
+      "n_batches": 417,
+      "train_c0": 0.6887904973052961,
+      "train_retrieval": 8.387763723195029
+    },
+    {
+      "epoch": 53,
+      "train_loss": 1.4178513368542531,
+      "n_batches": 417,
+      "train_c0": 0.6884548241000096,
+      "train_retrieval": 8.383868244912128
+    },
+    {
+      "epoch": 54,
+      "train_loss": 1.4172697793379676,
+      "n_batches": 417,
+      "train_c0": 0.6881136176683348,
+      "train_retrieval": 8.381105560192958
+    },
+    {
+      "epoch": 55,
+      "train_loss": 1.4166459897153383,
+      "n_batches": 417,
+      "train_c0": 0.6878574839312968,
+      "train_retrieval": 8.376879625754963
+    },
+    {
+      "epoch": 56,
+      "train_loss": 1.415995986627446,
+      "n_batches": 417,
+      "train_c0": 0.687477305924578,
+      "train_retrieval": 8.373778170533031
+    },
+    {
+      "epoch": 57,
+      "train_loss": 1.4153588521394798,
+      "n_batches": 417,
+      "train_c0": 0.6871613192615463,
+      "train_retrieval": 8.370086841446033
+    },
+    {
+      "epoch": 58,
+      "train_loss": 1.4147756654295705,
+      "n_batches": 417,
+      "train_c0": 0.6868778907423683,
+      "train_retrieval": 8.366641359077654
+    },
+    {
+      "epoch": 59,
+      "train_loss": 1.4141797696372016,
+      "n_batches": 417,
+      "train_c0": 0.6865463715663059,
+      "train_retrieval": 8.363602510173259
+    },
+    {
+      "epoch": 60,
+      "train_loss": 1.4135432137573938,
+      "n_batches": 417,
+      "train_c0": 0.6862335648182198,
+      "train_retrieval": 8.359881270703651
+    },
+    {
+      "epoch": 61,
+      "train_loss": 1.4129773810041322,
+      "n_batches": 417,
+      "train_c0": 0.6860083853312248,
+      "train_retrieval": 8.355965671493568
+    },
+    {
+      "epoch": 62,
+      "train_loss": 1.412404762755195,
+      "n_batches": 417,
+      "train_c0": 0.6856778199724156,
+      "train_retrieval": 8.353183508491059
+    },
+    {
+      "epoch": 63,
+      "train_loss": 1.411788269770231,
+      "n_batches": 417,
+      "train_c0": 0.6853917990085319,
+      "train_retrieval": 8.34938496308361
+    },
+    {
+      "epoch": 64,
+      "train_loss": 1.4112149193990144,
+      "n_batches": 417,
+      "train_c0": 0.6850474601169284,
+      "train_retrieval": 8.346752650446172
+    },
+    {
+      "epoch": 65,
+      "train_loss": 1.4106491306702869,
+      "n_batches": 417,
+      "train_c0": 0.6847467085154508,
+      "train_retrieval": 8.343706257909322
+    },
+    {
+      "epoch": 66,
+      "train_loss": 1.4100422104485602,
+      "n_batches": 417,
+      "train_c0": 0.6844123394655095,
+      "train_retrieval": 8.340573533833457
+    },
+    {
+      "epoch": 67,
+      "train_loss": 1.4094789451260648,
+      "n_batches": 417,
+      "train_c0": 0.6842123591642586,
+      "train_retrieval": 8.336397765637587
+    },
+    {
+      "epoch": 68,
+      "train_loss": 1.4088776357454076,
+      "n_batches": 417,
+      "train_c0": 0.6839149026847857,
+      "train_retrieval": 8.332905201031435
+    },
+    {
+      "epoch": 69,
+      "train_loss": 1.4083530737055863,
+      "n_batches": 417,
+      "train_c0": 0.6835461110233975,
+      "train_retrieval": 8.331114736964091
+    },
+    {
+      "epoch": 70,
+      "train_loss": 1.4077886308697487,
+      "n_batches": 417,
+      "train_c0": 0.6833542010766996,
+      "train_retrieval": 8.326832751861865
+    },
+    {
+      "epoch": 71,
+      "train_loss": 1.4072157481877352,
+      "n_batches": 417,
+      "train_c0": 0.6829693531818527,
+      "train_retrieval": 8.324671421691383
+    },
+    {
+      "epoch": 72,
+      "train_loss": 1.4067291615964126,
+      "n_batches": 417,
+      "train_c0": 0.6827631292583274,
+      "train_retrieval": 8.321448868127177
+    },
+    {
+      "epoch": 73,
+      "train_loss": 1.4061651747289607,
+      "n_batches": 417,
+      "train_c0": 0.6824811296783191,
+      "train_retrieval": 8.318207640156185
+    },
+    {
+      "epoch": 74,
+      "train_loss": 1.4055987479303667,
+      "n_batches": 417,
+      "train_c0": 0.6822069055742497,
+      "train_retrieval": 8.314849027912679
+    },
+    {
+      "epoch": 75,
+      "train_loss": 1.40505655549413,
+      "n_batches": 417,
+      "train_c0": 0.6818828935817562,
+      "train_retrieval": 8.312341178921487
+    },
+    {
+      "epoch": 76,
+      "train_loss": 1.404566061296623,
+      "n_batches": 417,
+      "train_c0": 0.6816397675221486,
+      "train_retrieval": 8.3094978847092
+    },
+    {
+      "epoch": 77,
+      "train_loss": 1.4040109290779352,
+      "n_batches": 417,
+      "train_c0": 0.6813637011056896,
+      "train_retrieval": 8.30629026175117
+    },
+    {
+      "epoch": 78,
+      "train_loss": 1.4035630449116658,
+      "n_batches": 417,
+      "train_c0": 0.6811395973610364,
+      "train_retrieval": 8.303717973420946
+    },
+    {
+      "epoch": 79,
+      "train_loss": 1.4029978576609843,
+      "n_batches": 417,
+      "train_c0": 0.6808148851211694,
+      "train_retrieval": 8.300953930230449
+    },
+    {
+      "epoch": 80,
+      "train_loss": 1.4025020639387538,
+      "n_batches": 417,
+      "train_c0": 0.6806416381463158,
+      "train_retrieval": 8.297246504173005
+    },
+    {
+      "epoch": 81,
+      "train_loss": 1.4020285629254166,
+      "n_batches": 417,
+      "train_c0": 0.6803159540791591,
+      "train_retrieval": 8.295547480777586
+    },
+    {
+      "epoch": 82,
+      "train_loss": 1.4014714278763147,
+      "n_batches": 417,
+      "train_c0": 0.6800510297290427,
+      "train_retrieval": 8.292188733601742
+    },
+    {
+      "epoch": 83,
+      "train_loss": 1.4009348105469481,
+      "n_batches": 417,
+      "train_c0": 0.6798027652344829,
+      "train_retrieval": 8.288874336855589
+    },
+    {
+      "epoch": 84,
+      "train_loss": 1.4004380651515165,
+      "n_batches": 417,
+      "train_c0": 0.6795781787922628,
+      "train_retrieval": 8.285746006085146
+    },
+    {
+      "epoch": 85,
+      "train_loss": 1.3999678265276572,
+      "n_batches": 417,
+      "train_c0": 0.6791939999845674,
+      "train_retrieval": 8.284756866290415
+    },
+    {
+      "epoch": 86,
+      "train_loss": 1.3994991742163825,
+      "n_batches": 417,
+      "train_c0": 0.67910643461511,
+      "train_retrieval": 8.280376528092711
+    },
+    {
+      "epoch": 87,
+      "train_loss": 1.3989642132386315,
+      "n_batches": 417,
+      "train_c0": 0.6787651782984928,
+      "train_retrieval": 8.278150090782477
+    },
+    {
+      "epoch": 88,
+      "train_loss": 1.3984376915353094,
+      "n_batches": 417,
+      "train_c0": 0.6784543109168824,
+      "train_retrieval": 8.275671237378383
+    },
+    {
+      "epoch": 89,
+      "train_loss": 1.3980951354943878,
+      "n_batches": 417,
+      "train_c0": 0.6783666890873897,
+      "train_retrieval": 8.272740994140113
+    },
+    {
+      "epoch": 90,
+      "train_loss": 1.397625992052275,
+      "n_batches": 417,
+      "train_c0": 0.6780561012901563,
+      "train_retrieval": 8.27091848592964
+    },
+    {
+      "epoch": 91,
+      "train_loss": 1.3970203482561545,
+      "n_batches": 417,
+      "train_c0": 0.6777658219531857,
+      "train_retrieval": 8.267293607588295
+    },
+    {
+      "epoch": 92,
+      "train_loss": 1.3966186166667252,
+      "n_batches": 417,
+      "train_c0": 0.6775254238423684,
+      "train_retrieval": 8.265439209606436
+    },
+    {
+      "epoch": 93,
+      "train_loss": 1.396127962665878,
+      "n_batches": 417,
+      "train_c0": 0.677313825066427,
+      "train_retrieval": 8.262231692993383
+    },
+    {
+      "epoch": 94,
+      "train_loss": 1.3956544450718722,
+      "n_batches": 417,
+      "train_c0": 0.677031694413375,
+      "train_retrieval": 8.260031867084457
+    },
+    {
+      "epoch": 95,
+      "train_loss": 1.3952171433743814,
+      "n_batches": 417,
+      "train_c0": 0.6768513733534505,
+      "train_retrieval": 8.257078048422468
+    },
+    {
+      "epoch": 96,
+      "train_loss": 1.3947463830312092,
+      "n_batches": 417,
+      "train_c0": 0.676532547250926,
+      "train_retrieval": 8.255331640906757
+    },
+    {
+      "epoch": 97,
+      "train_loss": 1.394285805791402,
+      "n_batches": 417,
+      "train_c0": 0.6763651076552394,
+      "train_retrieval": 8.251962312977376
+    },
+    {
+      "epoch": 98,
+      "train_loss": 1.3938807998058036,
+      "n_batches": 417,
+      "train_c0": 0.6761875968757007,
+      "train_retrieval": 8.249347363158668
+    },
+    {
+      "epoch": 99,
+      "train_loss": 1.3933631130259672,
+      "n_batches": 417,
+      "train_c0": 0.6758078558267735,
+      "train_retrieval": 8.247761766401698
+    },
+    {
+      "epoch": 100,
+      "train_loss": 1.3929810824154092,
+      "n_batches": 417,
+      "train_c0": 0.6756952496455442,
+      "train_retrieval": 8.244665016659159
+    }
+  ],
+  "snapshots": [
+    {
+      "epoch": 0,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.2967288897836387,
+          "target_rank_median": 1553.5,
+          "top1": 0.02582265197511431,
+          "top5": 0.057754291282512554,
+          "margin_mean": -0.25131210616363436,
+          "c_ltm_mean_aux": 0.5489444304496378
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.26063076386469536,
+          "target_rank_median": 1815.0,
+          "top1": 0.021806853582554516,
+          "top5": 0.04880581516095535,
+          "margin_mean": -0.3209787467362436,
+          "c_ltm_mean_aux": 0.582286530452519,
+          "class_aware_top1_aux": 0.05053651782623745
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.2542579075425791
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.08939650310208686
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.015088856599977647
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.0020947108550908953
+          }
+        }
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 1.0,
+            "wm": 0.9997632815934531,
+            "ltm": 0.98944912245105
+          },
+          "mean_edit_distance": {
+            "full": 0.0,
+            "wm": 0.0005072537283149031,
+            "ltm": 0.022860234689391634
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 1.0,
+            "wm": 0.9997632815934531,
+            "ltm": 0.98944912245105
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 5,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.30538892868991235,
+          "target_rank_median": 934.5,
+          "top1": 0.04103890263098718,
+          "top5": 0.08515103815306199,
+          "margin_mean": -0.2062239737132841,
+          "c_ltm_mean_aux": 0.5131345204587336
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.25855764102053636,
+          "target_rank_median": 1456.0,
+          "top1": 0.025268258913118725,
+          "top5": 0.06195915541709934,
+          "margin_mean": -0.27294934772318646,
+          "c_ltm_mean_aux": 0.5323633967839793,
+          "class_aware_top1_aux": 0.057459328487365874
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.33698296836982966
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14805414551607446
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.027159941879959765
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.003740555098376599
+          }
+        }
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.999830915423895,
+            "wm": 0.9997632815934531,
+            "ltm": 0.7844171654661661
+          },
+          "mean_edit_distance": {
+            "full": 0.00037198606743092894,
+            "wm": 0.0005072537283149031,
+            "ltm": 0.4790166041053735
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.999830915423895,
+            "wm": 0.9997632815934531,
+            "ltm": 0.7844171654661661
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 10,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.30937434900479527,
+          "target_rank_median": 816.5,
+          "top1": 0.041488644029682935,
+          "top5": 0.08713739599730155,
+          "margin_mean": -0.19882965532769759,
+          "c_ltm_mean_aux": 0.5097123812165059
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2551573881698197,
+          "target_rank_median": 1470.0,
+          "top1": 0.021114572516441676,
+          "top5": 0.05365178262374524,
+          "margin_mean": -0.26965456231835394,
+          "c_ltm_mean_aux": 0.5255990860040479,
+          "class_aware_top1_aux": 0.04776739356178609
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.3309002433090024
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14720812182741116
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.027830557728847658
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.004787910525922047
+          }
+        }
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9993912955260221,
+            "wm": 0.9997632815934531,
+            "ltm": 0.5219640864360353
+          },
+          "mean_edit_distance": {
+            "full": 0.001183592032734774,
+            "wm": 0.0005072537283149031,
+            "ltm": 1.1348956748165433
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9993912955260221,
+            "wm": 0.9997632815934531,
+            "ltm": 0.5219640864360353
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 15,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3124693555396506,
+          "target_rank_median": 740.5,
+          "top1": 0.04013941983359568,
+          "top5": 0.08646278389925793,
+          "margin_mean": -0.1971845312707071,
+          "c_ltm_mean_aux": 0.5110841730095602
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2515855477301899,
+          "target_rank_median": 1534.0,
+          "top1": 0.020422291450328832,
+          "top5": 0.04915195569401177,
+          "margin_mean": -0.2756321189435719,
+          "c_ltm_mean_aux": 0.5278993848390173,
+          "class_aware_top1_aux": 0.0463828314295604
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.3150851581508516
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13987591652566272
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.026824633955515816
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.005685643749532431
+          }
+        }
+      }
+    },
+    {
+      "epoch": 20,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3149793495102698,
+          "target_rank_median": 681.5,
+          "top1": 0.040926467281313245,
+          "top5": 0.08796192189491042,
+          "margin_mean": -0.19233246320088884,
+          "c_ltm_mean_aux": 0.5087548377651762
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.24906595461253872,
+          "target_rank_median": 1564.0,
+          "top1": 0.01938386985115957,
+          "top5": 0.04603669089650398,
+          "margin_mean": -0.2751634577724421,
+          "c_ltm_mean_aux": 0.5248285029412306,
+          "class_aware_top1_aux": 0.04361370716510903
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.3077858880778589
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14184997179921038
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.02838940426958757
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.006134510361337622
+          }
+        }
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9974299144432045,
+            "wm": 0.9997632815934531,
+            "ltm": 0.24253491596496568
+          },
+          "mean_edit_distance": {
+            "full": 0.0048696357918230695,
+            "wm": 0.0005072537283149031,
+            "ltm": 2.098204321801765
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9974299144432045,
+            "wm": 0.9997632815934531,
+            "ltm": 0.24253491596496568
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 25,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3171204921145189,
+          "target_rank_median": 626.0,
+          "top1": 0.04152612247957425,
+          "top5": 0.08957349524023686,
+          "margin_mean": -0.18810441295216532,
+          "c_ltm_mean_aux": 0.5066790426041481
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2446987783469746,
+          "target_rank_median": 1619.0,
+          "top1": 0.018691588785046728,
+          "top5": 0.0446521287642783,
+          "margin_mean": -0.2744687463934754,
+          "c_ltm_mean_aux": 0.519738747055203,
+          "class_aware_top1_aux": 0.04188300449982693
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.30413625304136255
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14213197969543148
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.029842405275511345
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.006508565871175282
+          }
+        }
+      }
+    },
+    {
+      "epoch": 30,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3193778447761368,
+          "target_rank_median": 594.0,
+          "top1": 0.03976463533468256,
+          "top5": 0.08867401244284537,
+          "margin_mean": -0.18712718869305991,
+          "c_ltm_mean_aux": 0.5078725640654126
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2419256941602867,
+          "target_rank_median": 1669.0,
+          "top1": 0.017653167185877467,
+          "top5": 0.04119072343371409,
+          "margin_mean": -0.275870120145739,
+          "c_ltm_mean_aux": 0.5183200528152099,
+          "class_aware_top1_aux": 0.03911388023537556
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.2895377128953771
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13451776649746192
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.02872471219403152
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.0066581880751103465
+          }
+        }
+      }
+    },
+    {
+      "epoch": 35,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3214714370245352,
+          "target_rank_median": 563.0,
+          "top1": 0.04081403193163931,
+          "top5": 0.09021062888838918,
+          "margin_mean": -0.1842975869443086,
+          "c_ltm_mean_aux": 0.5071744744021374
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.239913392501875,
+          "target_rank_median": 1706.0,
+          "top1": 0.017653167185877467,
+          "top5": 0.03911388023537556,
+          "margin_mean": -0.27646966826837344,
+          "c_ltm_mean_aux": 0.5168395824356449,
+          "class_aware_top1_aux": 0.03842159916926272
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.29075425790754256
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13846587704455723
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.029283558734771432
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.007256676890850603
+          }
+        }
+      }
+    },
+    {
+      "epoch": 40,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.32360941336541565,
+          "target_rank_median": 532.0,
+          "top1": 0.04118881643055243,
+          "top5": 0.09159733153436773,
+          "margin_mean": -0.1820421843919991,
+          "c_ltm_mean_aux": 0.5070633094811688
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.23724269277627633,
+          "target_rank_median": 1794.0,
+          "top1": 0.01523018345448252,
+          "top5": 0.036690896503980615,
+          "margin_mean": -0.28114435085997774,
+          "c_ltm_mean_aux": 0.5187987486934035,
+          "class_aware_top1_aux": 0.033575631706472826
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.28588807785888076
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13931190073322053
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.02973063596736336
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.007780354604623326
+          }
+        }
+      }
+    },
+    {
+      "epoch": 45,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3249293055022533,
+          "target_rank_median": 509.0,
+          "top1": 0.04055168278240012,
+          "top5": 0.09208455138295481,
+          "margin_mean": -0.1807521005161037,
+          "c_ltm_mean_aux": 0.5070445987159778
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.23552307371445041,
+          "target_rank_median": 1785.0,
+          "top1": 0.013499480789200415,
+          "top5": 0.033575631706472826,
+          "margin_mean": -0.2815398969847094,
+          "c_ltm_mean_aux": 0.5174507614381175,
+          "class_aware_top1_aux": 0.029768085842852197
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.27007299270072993
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13790186125211507
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.029954174583659326
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.007705543502655794
+          }
+        }
+      }
+    },
+    {
+      "epoch": 50,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.32639257868373034,
+          "target_rank_median": 477.0,
+          "top1": 0.04175099317892212,
+          "top5": 0.09422082302675962,
+          "margin_mean": -0.1775201371241327,
+          "c_ltm_mean_aux": 0.5053088652286543
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.23218571242493025,
+          "target_rank_median": 1897.0,
+          "top1": 0.012461059190031152,
+          "top5": 0.035306334371754934,
+          "margin_mean": -0.28083591451484796,
+          "c_ltm_mean_aux": 0.5133793316897574,
+          "class_aware_top1_aux": 0.028037383177570093
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.2688564476885645
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.1404399323181049
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.030848329048843187
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.008902521134136306
+          }
+        }
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9859659801832876,
+            "wm": 0.9997632815934531,
+            "ltm": 0.05326164147306483
+          },
+          "mean_edit_distance": {
+            "full": 0.02844002570085557,
+            "wm": 0.0005072537283149031,
+            "ltm": 3.3163910588076155
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9859659801832876,
+            "wm": 0.9997632815934531,
+            "ltm": 0.05326164147306483
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    },
+    {
+      "epoch": 55,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3284158702835313,
+          "target_rank_median": 460.0,
+          "top1": 0.04283786822577018,
+          "top5": 0.09703170676860805,
+          "margin_mean": -0.17534018093526707,
+          "c_ltm_mean_aux": 0.5051937332915345
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.23132483218592048,
+          "target_rank_median": 1925.0,
+          "top1": 0.013499480789200415,
+          "top5": 0.033921772239529246,
+          "margin_mean": -0.2825649055272248,
+          "c_ltm_mean_aux": 0.5142482190901286,
+          "class_aware_top1_aux": 0.029768085842852197
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.2712895377128954
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14297800338409475
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03286017659550687
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.008902521134136306
+          }
+        }
+      }
+    },
+    {
+      "epoch": 60,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.32940954802995515,
+          "target_rank_median": 445.0,
+          "top1": 0.04096394573120456,
+          "top5": 0.09287159883067236,
+          "margin_mean": -0.17575394170711034,
+          "c_ltm_mean_aux": 0.5065112480075988
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2291519390112674,
+          "target_rank_median": 1990.0,
+          "top1": 0.01176877812391831,
+          "top5": 0.032537210107303566,
+          "margin_mean": -0.2870194502677749,
+          "c_ltm_mean_aux": 0.516513884975325,
+          "class_aware_top1_aux": 0.02561439944617515
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.25790754257907544
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.1350817822899041
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03107186766513915
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.009276576643973966
+          }
+        }
+      }
+    },
+    {
+      "epoch": 65,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.33098494676690055,
+          "target_rank_median": 429.0,
+          "top1": 0.041376208680009,
+          "top5": 0.09530769807360767,
+          "margin_mean": -0.17419860274611576,
+          "c_ltm_mean_aux": 0.506511368014387
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.22776686667627863,
+          "target_rank_median": 2008.0,
+          "top1": 0.010384215991692628,
+          "top5": 0.03115264797507788,
+          "margin_mean": -0.2877084450424233,
+          "c_ltm_mean_aux": 0.515798720058251,
+          "class_aware_top1_aux": 0.02284527518172378
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.25547445255474455
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13451776649746192
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03196602213032301
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.00980025435774669
+          }
+        }
+      }
+    },
+    {
+      "epoch": 70,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3329171356618233,
+          "target_rank_median": 414.0,
+          "top1": 0.04231316992729181,
+          "top5": 0.0977812757664343,
+          "margin_mean": -0.17234587737171111,
+          "c_ltm_mean_aux": 0.506659479901562
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.22675078011954986,
+          "target_rank_median": 2051.0,
+          "top1": 0.010384215991692628,
+          "top5": 0.03080650744202146,
+          "margin_mean": -0.2885280343932485,
+          "c_ltm_mean_aux": 0.5155845279716711,
+          "class_aware_top1_aux": 0.02353755624783662
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.25790754257907544
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13790186125211507
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.032077791438471
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.010548365377422009
+          }
+        }
+      }
+    },
+    {
+      "epoch": 75,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3333599555835343,
+          "target_rank_median": 399.0,
+          "top1": 0.041488644029682935,
+          "top5": 0.09620718087099918,
+          "margin_mean": -0.1720306501468255,
+          "c_ltm_mean_aux": 0.5067200817044336
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.223164252495437,
+          "target_rank_median": 2169.0,
+          "top1": 0.010038075458636206,
+          "top5": 0.029768085842852197,
+          "margin_mean": -0.29204679190514204,
+          "c_ltm_mean_aux": 0.5155282203467836,
+          "class_aware_top1_aux": 0.02284527518172378
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.24209245742092458
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.1356457980823463
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03163071420587907
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.010772798683324605
+          }
+        }
+      }
+    },
+    {
+      "epoch": 80,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.33567229129428,
+          "target_rank_median": 386.0,
+          "top1": 0.044112135522074804,
+          "top5": 0.10100442245708717,
+          "margin_mean": -0.16932488695824668,
+          "c_ltm_mean_aux": 0.5064199273475561
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2230509555154419,
+          "target_rank_median": 2189.0,
+          "top1": 0.010038075458636206,
+          "top5": 0.027345102111457253,
+          "margin_mean": -0.2900543769788643,
+          "c_ltm_mean_aux": 0.5133664700740677,
+          "class_aware_top1_aux": 0.024229837313949464
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.24939172749391728
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14184997179921038
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03453671621772661
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.011969776314805117
+          }
+        }
+      }
+    },
+    {
+      "epoch": 85,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3357815045974405,
+          "target_rank_median": 364.5,
+          "top1": 0.045573795067835994,
+          "top5": 0.10404017689828349,
+          "margin_mean": -0.1667513760234961,
+          "c_ltm_mean_aux": 0.504014277492146
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.22261207939195954,
+          "target_rank_median": 2149.0,
+          "top1": 0.009345794392523364,
+          "top5": 0.028037383177570093,
+          "margin_mean": -0.2889188353569295,
+          "c_ltm_mean_aux": 0.5118033284751466,
+          "class_aware_top1_aux": 0.021460713049498096
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.25547445255474455
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.14354201917653694
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03598971722365039
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.013091942844318097
+          }
+        }
+      }
+    },
+    {
+      "epoch": 90,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.33748016706382755,
+          "target_rank_median": 364.0,
+          "top1": 0.04283786822577018,
+          "top5": 0.09943032756165204,
+          "margin_mean": -0.16861818137454196,
+          "c_ltm_mean_aux": 0.5074731367385045
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.2202262353512606,
+          "target_rank_median": 2248.0,
+          "top1": 0.010038075458636206,
+          "top5": 0.028383523710626513,
+          "margin_mean": -0.29513538648674503,
+          "c_ltm_mean_aux": 0.5156391298700758,
+          "class_aware_top1_aux": 0.02284527518172378
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.25304136253041365
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13395375070501975
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.033419023136246784
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.012044587416772648
+          }
+        }
+      }
+    },
+    {
+      "epoch": 95,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3392293773166097,
+          "target_rank_median": 349.0,
+          "top1": 0.04399970017240087,
+          "top5": 0.10272843115208755,
+          "margin_mean": -0.1665901689096357,
+          "c_ltm_mean_aux": 0.5072515271763226
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.21852446849205848,
+          "target_rank_median": 2301.0,
+          "top1": 0.009691934925579786,
+          "top5": 0.025268258913118725,
+          "margin_mean": -0.2959577046069112,
+          "c_ltm_mean_aux": 0.5147510722109339,
+          "class_aware_top1_aux": 0.021460713049498096
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.24209245742092458
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.13818386914833616
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.0339778696769867
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.01354080945612329
+          }
+        }
+      }
+    },
+    {
+      "epoch": 100,
+      "comprehension": {
+        "strict_unique_phonology": {
+          "n": 26682,
+          "target_cos_mean": 0.3400199964670047,
+          "target_rank_median": 332.0,
+          "top1": 0.04534892436848812,
+          "top5": 0.10565175024360993,
+          "margin_mean": -0.16442217110032736,
+          "c_ltm_mean_aux": 0.505928360379785
+        },
+        "homophones_separate": {
+          "n": 2889,
+          "target_cos_mean": 0.21648890473260976,
+          "target_rank_median": 2318.0,
+          "top1": 0.008653513326410523,
+          "top5": 0.024922118380062305,
+          "margin_mean": -0.29478646356801996,
+          "c_ltm_mean_aux": 0.5115029555718021,
+          "class_aware_top1_aux": 0.01938386985115957
+        },
+        "frequency_bands_strict": {
+          "1-1k": {
+            "n": 822,
+            "top1": 0.24452554744525548
+          },
+          "1k-5k": {
+            "n": 3546,
+            "top1": 0.1412859560067682
+          },
+          "5k-15k": {
+            "n": 8947,
+            "top1": 0.03610148653179837
+          },
+          "15k-end": {
+            "n": 13367,
+            "top1": 0.013840053863993416
+          }
+        }
+      },
+      "repetition": {
+        "n_items": 29571,
+        "primary_readout": {
+          "decode_mode": "autoregressive",
+          "convention": "canonical forced-length AR (scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar)",
+          "note": "Autoregressive decoding: model's own previous output fed at each step.  Reflects free-generation accuracy; errors can propagate.",
+          "wm_noise": false,
+          "exact_match": {
+            "full": 0.9650671265767137,
+            "wm": 0.9997632815934531,
+            "ltm": 0.014067836731933313
+          },
+          "mean_edit_distance": {
+            "full": 0.06986574684657265,
+            "wm": 0.0005072537283149031,
+            "ltm": 4.023638023739474
+          }
+        },
+        "auxiliary_teacher_forced": {
+          "exact_match": {
+            "full": 0.9650671265767137,
+            "wm": 0.9997632815934531,
+            "ltm": 0.014067836731933313
+          },
+          "note": "diagnostic only; not the canonical repetition metric"
+        }
+      }
+    }
+  ],
+  "final_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-naming-comprehension/outputs/naming_comprehension_93a577f/phase2b_c3_flat_seed22/final_epoch_100.pt",
+  "provenance": {
+    "source_checkpoint_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/selected_checkpoints/seed_22_epoch_0140.pt",
+    "source_checkpoint_sha256": "a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595",
+    "checkpoint_training_commit": "93a577fd9822955fa272ee733fa7e2acf81f1333",
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "ordered_training_words_sha256": "0cb1c6172a7c2aea8a503549ffdf32543da820e1c505e0885f3999d6e50f7fa1",
+    "glove": {
+      "glove_present": true,
+      "n_glove_found": 29571,
+      "n_glove_fallback": 0
+    },
+    "ltm_encoder_mode": "unigru_last_hidden",
+    "naming_decode_cap": 10,
+    "data_seed": 0,
+    "device": "cpu",
+    "eval_git": {
+      "commit": "d5f087b9aba37dc8fea4d1f7a9eca6fe5bef2388",
+      "branch": "feat/naming-comprehension",
+      "dirty": true,
+      "tracked_dirty": true,
+      "untracked_present": false,
+      "untracked_paths": []
+    },
+    "runtime_seconds": 4978.3
+  }
+}

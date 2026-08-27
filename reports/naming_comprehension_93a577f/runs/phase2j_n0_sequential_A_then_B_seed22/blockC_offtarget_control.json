@@ -1,0 +1,16 @@
+{
+  "seq_epoch0 (=2G A-endpoint)": {
+    "n": 9571,
+    "exact_match": 0.00020896458050360465,
+    "whole_word_error_rate": 0.9997910354194964,
+    "mean_edit": 6.052659074286908,
+    "eos_emission_rate": 0.9568488141260056
+  },
+  "seq_endpoint (2J final)": {
+    "n": 9571,
+    "exact_match": 0.0,
+    "whole_word_error_rate": 1.0,
+    "mean_edit": 5.94723644342284,
+    "eos_emission_rate": 0.9799394002716539
+  }
+}
