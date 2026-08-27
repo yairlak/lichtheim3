@@ -1,0 +1,990 @@
+#!/usr/bin/env python3
+"""Phase 4 — joint multitask development from random initialization (H0 / J0).
+
+Scientific question
+-------------------
+Can repetition, explicit lexical-semantic retrieval and true-GloVe naming
+co-develop compatible representations *from initialization*, rather than being
+grafted onto an already mature repetition system as in Phases 2 and 3?
+
+The experiment is a paired comparison at a fixed experimental seed S:
+
+    H0   the verified historical Lichtheim3 developmental recipe, from scratch
+    J0   the same recipe, the same repetition trajectory, plus two additional
+         developmental objectives:
+
+             + LAMBDA_C * retrieval_CE      (explicit comprehension)
+             + LAMBDA_N * naming_CE         (true-GloVe naming)
+
+Everything else is held identical, including the repetition and dorsal-pool
+batch sequences, so the only causal difference between the two arms is the
+presence of the two extra gradients.
+
+Relationship to the historical cohort
+-------------------------------------
+seed19/e155 and seed22/e140 remain the canonical historical *maturity*
+references.  They are NOT the paired control for J0: a fresh H0 at the same
+seed is.  Historical checkpoints were produced by a two-job SLURM pipeline
+whose stage boundary is reproduced here scientifically, not bit-exactly (see
+below).
+
+Provenance nuance — deliberate deviation from the historical execution
+----------------------------------------------------------------------
+Phase 4A0c established that the original epoch-100 -> epoch-101 resume
+preserved model weights, the AdamW step counter and both moment buffers, and
+changed only the learning rate (classification R3).  It also established that
+the historical two-job resume carried an implementation defect: the dorsal
+pseudoword pool's `itertools.cycle` cursor was never checkpointed, so on resume
+the pool restarted from position 0 and drew a fresh shuffle permutation,
+perturbing the global RNG stream from epoch 102 onward.
+
+This driver reproduces the *scientific* recipe and does NOT reproduce that
+defect.  The learning-rate boundary is applied in-process, and every sampling
+stream is exactly resumable.  H0 is therefore described as a
+
+    paired developmental control using the verified historical scientific recipe
+
+and never as a bit-exact replay of the original historical execution.  The
+distinction is recorded in `provenance.json` under `historical_fidelity`.
+
+Determinism design
+------------------
+Every batch stream is *counter-addressed*: the k-th batch of a stream is a pure
+function of (stream seed, k).  The epoch is `k // per_epoch`, the offset within
+it is the remainder, and the epoch's item order is drawn from a private
+`torch.Generator` seeded by (stream seed, epoch).  Three consequences:
+
+  * no stream ever reads the global RNG, so evaluation, model forwards and the
+    other tasks' sampling cannot perturb it;
+  * exact resume needs only four integers (the cursors), not a serialized
+    sampler state or a materialized index sequence;
+  * mid-epoch resume is exact by construction, because the epoch order is
+    recomputed rather than replayed.
+
+With the canonical noises at 0.0 the training forward draws nothing from the
+global RNG either (both noise sites in `models/` are guarded by `> 0`), so the
+whole trajectory is a pure function of the seed and the step counter.
+"""
+from __future__ import annotations
+
+import argparse
+import contextlib
+import json
+import os
+import random
+import sys
+import time
+from typing import Dict, List, Optional, Sequence
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from config import Config, default_config, validate_split_config          # noqa: E402
+from data.lexicon import LexEntry, build_lexicon, logfreq_weights         # noqa: E402
+from data.phonemes import Vocab, build_vocab                              # noqa: E402
+from losses import total_loss                                             # noqa: E402
+from models.dual_route import DualRouteModel                              # noqa: E402
+from utils.provenance import git_state, sha256_file                       # noqa: E402
+from utils.seed import set_seed                                           # noqa: E402
+
+from scripts.naming_comprehension.train_tasks import (                    # noqa: E402
+    comprehension_forward, evaluate_comprehension_subset, evaluate_naming,
+    make_batches, naming_objective, repetition_snapshot, retrieval_loss,
+    select_nested_subset, select_representative_subset, subset_definition_hash,
+    subset_records, verify_bank_mapping,
+)
+from scripts.naming_comprehension.train_multitask import (                # noqa: E402
+    out_of_subset_probe,
+)
+
+
+# ===========================================================================
+#  FROZEN PHASE 4 SCIENTIFIC CONFIGURATION
+#  Nothing critical is inherited silently from config.py: several config.py
+#  defaults differ from the canonical historical values (enc/dec hidden 256 vs
+#  128, bigru vs unigru, gate alpha 4.0 vs 2.0, gate threshold 0.5 vs 0.7,
+#  interference noise 0.1 vs 0.0).  Every scientific parameter is named here.
+# ===========================================================================
+
+REGIMES = ("h0", "j0")
+
+# ---- repetition population and lexicon ----
+CANONICAL_LEXICON_PATH = "data/lexicon_en_glove_covered.tsv"
+CANONICAL_MAX_WORDS = 30000
+CANONICAL_N_WORDS = 29571          # entries actually surviving the filters
+CANONICAL_BATCH_SIZE = 64
+CANONICAL_FREQ_TEMP = 1.0
+CANONICAL_DORSAL_POOL_SIZE = 4000
+
+# ---- architecture ----
+CANONICAL_HIDDEN = 128             # wm.hidden == ltm.enc_hidden == ltm.dec_hidden
+CANONICAL_LTM_ENCODER_MODE = "unigru_last_hidden"
+CANONICAL_INTERFERENCE_NOISE = 0.0
+CANONICAL_VENTRAL_NOISE = 0.0
+CANONICAL_GATE_ALPHA = 2.0
+CANONICAL_GATE_THRESHOLD = 0.7
+CANONICAL_USAGE_PRIOR = 0.5
+
+# ---- optimization ----
+CANONICAL_TEACHER_FORCING = 1.0
+CANONICAL_WEIGHT_DECAY = 1e-5
+CANONICAL_GRAD_CLIP = 1.0
+CANONICAL_LOSS_WEIGHTS = {"rep": 1.0, "align": 1.0, "dec": 0.5,
+                          "wm": 0.5, "gate": 0.05, "label_smoothing": 0.0}
+
+# ---- historical two-stage learning rate ----
+LR_STAGE1 = 1e-3
+LR_STAGE2 = 1e-4
+# 100 historical epochs x ceil(29571/64) = 100 x 463 optimizer steps.
+# Verified against all four archived checkpoints in Phase 4A0c.
+LR_BOUNDARY_STEPS = 46_300
+
+# ---- J0 additional objectives ----
+TAU = 0.10                          # retrieval temperature (Phase 2 validated)
+LAMBDA_C = 0.087                    # weight on retrieval CE
+LAMBDA_N = 1.0                      # weight on naming CE
+NAMING_MAX_STEPS = 10               # free-AR decode cap, never target length
+
+# ---- C / N population: the frozen Phase 2C subset3288 ----
+SUBSET_PER_BAND = 822
+SUBSET_SEED = 0
+EXPECTED_SUBSET_HASH = (
+    "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf")
+
+# ---- default scientific run length (the Phase 4A2 knob) ----
+# 160 R epochs spans the whole canonical stable-zero window (e140 seed22,
+# e155 seed19) with margin.  Recorded explicitly rather than assumed.
+DEFAULT_EPOCHS = 160
+
+# ---- RNG ownership.  Task seeds are derived from the experimental seed S by a
+# documented rule, never by magic literals scattered through the code. ----
+STREAM_NAMES = ("repetition", "pool", "comprehension", "naming")
+STREAM_SEED_OFFSET = {"repetition": 0, "pool": 1, "comprehension": 2, "naming": 3}
+STREAM_SEED_STRIDE = 1_000_003      # prime; keeps distinct S far apart
+EPOCH_SEED_STRIDE = 7_919           # prime; keeps distinct epochs far apart
+
+
+def derive_stream_seeds(seed: int) -> Dict[str, int]:
+    """Deterministic per-stream seeds from the single experimental seed S.
+
+    `S * STREAM_SEED_STRIDE + offset` with offsets 0..3 cannot collide across
+    seeds, and the mapping is reversible by inspection, which is what makes the
+    saved provenance auditable.
+    """
+    return {name: int(seed) * STREAM_SEED_STRIDE + STREAM_SEED_OFFSET[name]
+            for name in STREAM_NAMES}
+
+
+# ===========================================================================
+#  Counter-addressed batch streams
+# ===========================================================================
+
+class CounterStream:
+    """Endless batch stream whose k-th batch is a pure function of (seed, k).
+
+    `population` is a list of indices into the owning entry list (bank indices
+    for the lexical streams, pool positions for the dorsal pool).  One "epoch"
+    is one pass of `len(population)` draws, i.e. `ceil(n / batch_size)` batches,
+    matching the historical `len(train_loader) = 463` for the full lexicon.
+
+    With `weights=None` an epoch is a permutation (sampling without
+    replacement); with weights it is `torch.multinomial(..., replacement=True)`,
+    which reproduces `WeightedRandomSampler(weights, num_samples=n,
+    replacement=True)`.  In both cases the draw uses a private generator seeded
+    from (stream seed, epoch), never the global RNG.
+    """
+
+    def __init__(self, name: str, population: Sequence[int], batch_size: int,
+                 seed: int, weights: Optional[np.ndarray] = None) -> None:
+        if len(population) == 0:
+            raise ValueError(f"stream {name!r} has an empty population")
+        if batch_size <= 0:
+            raise ValueError(f"stream {name!r}: batch_size must be > 0")
+        self.name = name
+        self.population = [int(i) for i in population]
+        self.batch_size = int(batch_size)
+        self.seed = int(seed)
+        self.n = len(self.population)
+        self.per_epoch = -(-self.n // self.batch_size)
+        self.weights = (None if weights is None
+                        else torch.as_tensor(weights, dtype=torch.double))
+        if self.weights is not None and len(self.weights) != self.n:
+            raise ValueError(f"stream {name!r}: weights/population length mismatch")
+        self._cache_epoch: Optional[int] = None
+        self._cache_order: Optional[List[int]] = None
+
+    def epoch_seed(self, epoch: int) -> int:
+        return self.seed * EPOCH_SEED_STRIDE + int(epoch)
+
+    def epoch_order(self, epoch: int) -> List[int]:
+        """Item order for one pass. Recomputed, never replayed — this is what
+        makes mid-epoch resume exact without persisting an index sequence."""
+        if self._cache_epoch == epoch and self._cache_order is not None:
+            return self._cache_order
+        g = torch.Generator().manual_seed(self.epoch_seed(epoch))
+        if self.weights is None:
+            pos = torch.randperm(self.n, generator=g)
+        else:
+            pos = torch.multinomial(self.weights, self.n,
+                                    replacement=True, generator=g)
+        order = [self.population[p] for p in pos.tolist()]
+        self._cache_epoch, self._cache_order = int(epoch), order
+        return order
+
+    def indices(self, cursor: int) -> List[int]:
+        """Indices of the `cursor`-th batch of the endless stream."""
+        if cursor < 0:
+            raise ValueError(f"stream {self.name!r}: negative cursor {cursor}")
+        epoch, off = divmod(int(cursor), self.per_epoch)
+        order = self.epoch_order(epoch)
+        return order[off * self.batch_size:(off + 1) * self.batch_size]
+
+    def location(self, cursor: int) -> dict:
+        epoch, off = divmod(int(cursor), self.per_epoch)
+        return {"stream": self.name, "cursor": int(cursor), "seed": self.seed,
+                "epoch": epoch, "batch_in_epoch": off,
+                "batches_per_epoch": self.per_epoch, "population": self.n}
+
+
+def build_batch(entries: Sequence[LexEntry], bank_raw: torch.Tensor,
+                vocab: Vocab, indices: Sequence[int], device: str) -> dict:
+    """One batch, built by the validated Phase 2 collation (`make_batches`).
+
+    Called with `batch_size = len(indices)` and `shuffle=False`, so the ordering
+    decision belongs entirely to the stream and this function stays a pure
+    collator.
+    """
+    if not indices:
+        raise ValueError("cannot build a batch from an empty index list")
+    return next(iter(make_batches(entries, list(indices), bank_raw, vocab,
+                                  len(indices), device, shuffle=False)))
+
+
+# ===========================================================================
+#  Canonical configuration
+# ===========================================================================
+
+def canonical_config(seed: int, device: str, *, max_words: int,
+                     lexicon_path: str, dorsal_pool_size: int,
+                     batch_size: int,
+                     glove_path: Optional[str] = "data/glove.6B.300d.txt") -> Config:
+    """A Config with every scientifically relevant field set explicitly."""
+    cfg = default_config()
+
+    cfg.data.use_real = True
+    cfg.data.lexicon_path = lexicon_path
+    cfg.data.glove_path = glove_path
+    cfg.data.max_words = int(max_words)
+    cfg.data.freq_temp = CANONICAL_FREQ_TEMP
+    cfg.data.split_mode = "full_lexicon"
+    cfg.data.val_fraction = 0.0
+    cfg.data.split_seed = 0
+    cfg.data.seed = 0
+
+    cfg.wm.hidden = CANONICAL_HIDDEN
+    cfg.wm.interference_noise = CANONICAL_INTERFERENCE_NOISE
+
+    cfg.ltm.enc_hidden = CANONICAL_HIDDEN
+    cfg.ltm.dec_hidden = CANONICAL_HIDDEN
+    cfg.ltm.ltm_encoder_mode = CANONICAL_LTM_ENCODER_MODE
+    cfg.ltm.ventral_noise = CANONICAL_VENTRAL_NOISE
+    cfg.ltm.__post_init__()          # re-normalise bidirectional_encoder
+
+    cfg.gating.alpha = CANONICAL_GATE_ALPHA
+    cfg.gating.gate_threshold = CANONICAL_GATE_THRESHOLD
+    cfg.gating.usage_prior = CANONICAL_USAGE_PRIOR
+
+    for k, v in CANONICAL_LOSS_WEIGHTS.items():
+        setattr(cfg.loss, k, v)
+
+    cfg.train.seed = int(seed)
+    cfg.train.device = device
+    cfg.train.batch_size = int(batch_size)
+    cfg.train.lr = LR_STAGE1
+    cfg.train.weight_decay = CANONICAL_WEIGHT_DECAY
+    cfg.train.grad_clip = CANONICAL_GRAD_CLIP
+    cfg.train.teacher_forcing_ratio = CANONICAL_TEACHER_FORCING
+    cfg.train.dorsal_pool_size = int(dorsal_pool_size)
+    cfg.train.num_workers = 0
+
+    validate_split_config(cfg.data)
+    return cfg
+
+
+def lr_for_step(global_step: int, boundary: int) -> float:
+    """Historical two-stage LR as a pure function of completed steps.
+
+    `global_step` counts COMPLETED optimizer updates, so the update numbered
+    boundary (the 46,300th) still runs at stage-1 and the next one is the first
+    at stage-2 — exactly the historical e100/e101 split.
+    """
+    return LR_STAGE1 if int(global_step) < int(boundary) else LR_STAGE2
+
+
+def lr_phase(global_step: int, boundary: int) -> str:
+    return "stage1_lr1e-3" if int(global_step) < int(boundary) else "stage2_lr1e-4"
+
+
+@contextlib.contextmanager
+def preserved_rng():
+    """Restore every global RNG on exit.
+
+    The training streams do not read the global RNG, so this is belt and
+    braces; it makes evaluation neutrality hold even if a future evaluator
+    starts drawing.  Tested by `test_evaluation_rng_neutrality`.
+    """
+    t_state = torch.get_rng_state()
+    np_state = np.random.get_state()
+    py_state = random.getstate()
+    cuda_state = (torch.cuda.get_rng_state_all()
+                  if torch.cuda.is_available() else None)
+    try:
+        yield
+    finally:
+        torch.set_rng_state(t_state)
+        np.random.set_state(np_state)
+        random.setstate(py_state)
+        if cuda_state is not None:
+            torch.cuda.set_rng_state_all(cuda_state)
+
+
+# ===========================================================================
+#  Dorsal pseudoword pool
+# ===========================================================================
+
+def build_pool_entries(vocab: Vocab, n: int, semantic_dim: int, seed: int,
+                       min_len: int = 2, max_len: int = 9) -> List[LexEntry]:
+    """The historical pseudoword pool, generated by the same rule as
+    `data.dataset.build_pool_loader` (a `random.Random(seed)` walk over
+    (C)V(C) templates), but returned as a plain entry list so this driver can
+    own the sampling order and make it resumable."""
+    rng = random.Random(seed)
+    cons = [vocab.stoi[s] for s in vocab.itos[3:] if vocab.sonority[vocab.stoi[s]] < 0.9]
+    vow = [vocab.stoi[s] for s in vocab.itos[3:] if vocab.sonority[vocab.stoi[s]] >= 0.95]
+    entries: List[LexEntry] = []
+    seen = set()
+    while len(entries) < n:
+        f: List[int] = []
+        for _ in range(rng.randint(1, 3)):
+            if rng.random() < 0.85:
+                f.append(rng.choice(cons))
+            f.append(rng.choice(vow))
+            if rng.random() < 0.4:
+                f.append(rng.choice(cons))
+        if not (min_len <= len(f) <= max_len) or tuple(f) in seen:
+            continue
+        seen.add(tuple(f))
+        entries.append(LexEntry(word="", phonemes=f,
+                                semantic=np.zeros(semantic_dim, np.float32),
+                                freq=1.0, rank=1))
+    return entries
+
+
+# ===========================================================================
+#  Trainer
+# ===========================================================================
+
+class JointScratchTrainer:
+    """Owns the model, the optimizer, the four streams and the run state."""
+
+    def __init__(self, *, regime: str, seed: int, device: str,
+                 max_words: int, lexicon_path: str, dorsal_pool_size: int,
+                 batch_size: int, subset_mode: str, subset_per_band: int,
+                 subset_size: int, lr_boundary_steps: int,
+                 allow_glove_fallback: bool, require_subset_hash: bool,
+                 glove_path: Optional[str] = "data/glove.6B.300d.txt") -> None:
+        if regime not in REGIMES:
+            raise ValueError(f"regime must be one of {REGIMES}, got {regime!r}")
+        self.regime = regime
+        self.seed = int(seed)
+        self.device = device
+        self.lr_boundary_steps = int(lr_boundary_steps)
+
+        self.cfg = canonical_config(
+            seed, device, max_words=max_words, lexicon_path=lexicon_path,
+            dorsal_pool_size=dorsal_pool_size, batch_size=batch_size,
+            glove_path=glove_path)
+
+        # ---- lexicon and bank, built BEFORE the model so that model
+        # initialization consumes a freshly seeded RNG and is therefore
+        # identical between H0 and J0 at the same seed. ----
+        self.vocab = build_vocab()
+        self.lexicon = build_lexicon(self.cfg.data, self.vocab)
+        self.entries: List[LexEntry] = list(self.lexicon.entries)
+        stats = self.lexicon.load_stats
+        self.glove_found = int(getattr(stats, "n_glove_found", 0))
+        self.glove_fallback = int(getattr(stats, "n_glove_fallback", 0))
+        if self.glove_fallback and not allow_glove_fallback:
+            raise RuntimeError(
+                f"{self.glove_fallback} of {len(self.entries)} entries fall back to "
+                f"pseudo-vectors instead of real GloVe. A scientific Phase 4 run "
+                f"requires real GloVe for every word; pass --allow-glove-fallback "
+                f"only for mechanical smoke tests.")
+        self.bank_raw = torch.stack(
+            [torch.tensor(e.semantic) for e in self.entries]).float()
+
+        # ---- model + optimizer ----
+        set_seed(self.seed)
+        self.model = DualRouteModel(self.cfg, self.vocab).to(device)
+        self.model.set_semantic_bank(self.bank_raw.to(device))
+        self.optim = torch.optim.AdamW(
+            self.model.parameters(), lr=LR_STAGE1,
+            weight_decay=self.cfg.train.weight_decay)
+
+        # ---- C / N population ----
+        self.subset_mode = subset_mode
+        if subset_mode == "nested":
+            self.subset_idx = select_nested_subset(
+                self.entries, subset_per_band, subset_seed=SUBSET_SEED)
+        elif subset_mode == "representative":
+            self.subset_idx = select_representative_subset(
+                self.entries, subset_size, subset_seed=SUBSET_SEED)
+        else:
+            raise ValueError(f"unknown subset_mode {subset_mode!r}")
+        self.subset_hash = subset_definition_hash(
+            subset_records(self.entries, self.subset_idx, self.vocab))
+        if require_subset_hash and self.subset_hash != EXPECTED_SUBSET_HASH:
+            raise RuntimeError(
+                f"subset definition hash mismatch:\n"
+                f"  expected {EXPECTED_SUBSET_HASH}\n"
+                f"  got      {self.subset_hash}\n"
+                f"The C/N population is not the frozen Phase 2C subset3288.")
+        verify_bank_mapping(self.entries, self.bank_raw, self.subset_idx)
+        self.probe_idx = out_of_subset_probe(self.entries, self.subset_idx,
+                                             n=len(self.subset_idx))
+
+        # ---- dorsal pool ----
+        self.pool_entries = build_pool_entries(
+            self.vocab, self.cfg.train.dorsal_pool_size,
+            self.cfg.data.semantic_dim, seed=self.seed)
+        self.pool_bank = torch.zeros(len(self.pool_entries),
+                                     self.cfg.data.semantic_dim)
+
+        # ---- streams ----
+        self.stream_seeds = derive_stream_seeds(self.seed)
+        rep_pop = list(range(len(self.entries)))
+        w = logfreq_weights([self.entries[i].rank for i in rep_pop]) ** float(
+            self.cfg.data.freq_temp)
+        w = np.clip(w, 1e-6, None)
+        w = w / w.sum()
+        self.streams: Dict[str, CounterStream] = {
+            "repetition": CounterStream("repetition", rep_pop, batch_size,
+                                        self.stream_seeds["repetition"], weights=w),
+            "pool": CounterStream("pool", list(range(len(self.pool_entries))),
+                                  batch_size, self.stream_seeds["pool"]),
+            "comprehension": CounterStream("comprehension", self.subset_idx,
+                                           batch_size,
+                                           self.stream_seeds["comprehension"]),
+            "naming": CounterStream("naming", self.subset_idx, batch_size,
+                                    self.stream_seeds["naming"]),
+        }
+        self.cursors: Dict[str, int] = {k: 0 for k in STREAM_NAMES}
+        self.global_step = 0
+        self.resume_provenance: List[dict] = []
+
+    # -------------------------------------------------------------- batches
+    def batch(self, stream: str) -> dict:
+        idx = self.streams[stream].indices(self.cursors[stream])
+        if stream == "pool":
+            return build_batch(self.pool_entries, self.pool_bank, self.vocab,
+                               idx, self.device)
+        return build_batch(self.entries, self.bank_raw, self.vocab, idx,
+                           self.device)
+
+    def peek_indices(self, stream: str, k: int = 1) -> List[List[int]]:
+        """The next `k` index lists of a stream without advancing it."""
+        c = self.cursors[stream]
+        return [self.streams[stream].indices(c + j) for j in range(k)]
+
+    @property
+    def rep_epoch(self) -> int:
+        return self.cursors["repetition"] // self.streams["repetition"].per_epoch
+
+    # ----------------------------------------------------------- train step
+    def train_step(self) -> dict:
+        """One joint optimizer update: one summed loss, one backward, one clip,
+        one `optimizer.step()`.  No task-alternating updates, no 1:2:3
+        interleaving — those belong to Phase 3, not Phase 4."""
+        cfg = self.cfg
+        pad_id = self.model.vocab.pad_id
+        self.model.train(True)
+
+        lr = lr_for_step(self.global_step, self.lr_boundary_steps)
+        for g in self.optim.param_groups:
+            g["lr"] = lr
+
+        # --- repetition (historical objective, verbatim total_loss) ---
+        r = self.batch("repetition")
+        out = self.model(r["enc_in"], r["enc_mask"], r["dec_in"])
+        parts = total_loss(out, r, cfg.loss, pad_id,
+                           usage_prior=cfg.gating.usage_prior)
+        loss = parts["total"]
+        rec = {k: float(v.detach()) for k, v in parts.items()}
+
+        # --- dorsal pseudoword pool (historical auxiliary CE, weight cfg.loss.wm) ---
+        p = self.batch("pool")
+        pout = self.model(p["enc_in"], p["enc_mask"], p["dec_in"])
+        V = pout["wm_logits"].shape[-1]
+        pool_ce = F.cross_entropy(pout["wm_logits"].reshape(-1, V),
+                                  p["dec_tgt"].reshape(-1), ignore_index=pad_id)
+        loss = loss + cfg.loss.wm * pool_ce
+        rec["pool_ce"] = float(pool_ce.detach())
+
+        # --- J0 only: explicit comprehension + naming ---
+        rec["retrieval_ce"] = float("nan")
+        rec["naming_ce"] = float("nan")
+        if self.regime == "j0":
+            c = self.batch("comprehension")
+            s_hat = comprehension_forward(self.model, c["enc_in"], c["enc_mask"])
+            ret = retrieval_loss(s_hat, self.model.ltm.semantic_bank,
+                                 c["bank_idx"], TAU)
+            loss = loss + LAMBDA_C * ret
+            rec["retrieval_ce"] = float(ret.detach())
+
+            n = self.batch("naming")
+            nam = naming_objective(self.model, n, pad_id)["total"]
+            loss = loss + LAMBDA_N * nam
+            rec["naming_ce"] = float(nam.detach())
+
+        self.optim.zero_grad(set_to_none=True)
+        loss.backward()
+        gnorm = torch.nn.utils.clip_grad_norm_(self.model.parameters(),
+                                               cfg.train.grad_clip)
+        self.optim.step()
+
+        for name in STREAM_NAMES:
+            if self.regime == "j0" or name in ("repetition", "pool"):
+                self.cursors[name] += 1
+        self.global_step += 1
+
+        rec.update({"step": self.global_step, "lr": lr,
+                    "lr_phase": lr_phase(self.global_step, self.lr_boundary_steps),
+                    "joint_total": float(loss.detach()),
+                    "grad_norm": float(gnorm)})
+        return rec
+
+    # ------------------------------------------------------------ evaluation
+    def evaluate(self, *, with_probe: bool = False,
+                 with_full_lexicon: bool = False) -> dict:
+        """Developmental evaluation. Wrapped in `preserved_rng` so evaluation
+        cadence can never become a hidden experimental factor."""
+        with preserved_rng(), torch.no_grad():
+            rep = repetition_snapshot(self.model, self.vocab, self.entries,
+                                      self.subset_idx, self.bank_raw,
+                                      self.device, include_teacher_forced=False)
+            comp = evaluate_comprehension_subset(
+                self.model, self.vocab, self.entries, self.bank_raw,
+                self.subset_idx, self.device)
+            nam = evaluate_naming(self.model, self.vocab, self.entries,
+                                  self.bank_raw, self.subset_idx, self.device,
+                                  NAMING_MAX_STEPS, return_per_item=True)
+            per_item = nam.pop("_per_item", [])
+            out = {
+                "step": self.global_step,
+                "rep_epoch": self.rep_epoch,
+                "lr": lr_for_step(self.global_step, self.lr_boundary_steps),
+                "rep_full": rep["primary_readout"]["exact_match"]["full"],
+                "rep_wm": rep["primary_readout"]["exact_match"]["wm"],
+                "rep_ltm": rep["primary_readout"]["exact_match"]["ltm"],
+                "comp_top1": comp["top1"], "comp_top5": comp["top5"],
+                "comp_rank_median": comp["target_rank_median"],
+                "comp_rank_mean": comp["target_rank_mean"],
+                "comp_cos_mean": comp["target_cos_mean"],
+                "comp_margin_mean": comp["margin_mean"],
+                "naming_exact": nam["exact_match"],
+                "naming_wer": nam["whole_word_error_rate"],
+                "naming_mean_edit": nam["mean_edit"],
+                "naming_eos_rate": nam["eos_emission_rate"],
+                "naming_pred_len_mean": (
+                    float(np.mean([r["pred_len"] for r in per_item]))
+                    if per_item else float("nan")),
+                "naming_target_len_mean": (
+                    float(np.mean([r["length"] for r in per_item]))
+                    if per_item else float("nan")),
+                "probe_rep_ltm": float("nan"),
+                "probe_rep_full": float("nan"),
+                "full_rep_ltm": float("nan"),
+                "full_rep_full": float("nan"),
+                "full_rep_wm": float("nan"),
+            }
+            if with_probe:
+                pr = repetition_snapshot(self.model, self.vocab, self.entries,
+                                         self.probe_idx, self.bank_raw,
+                                         self.device,
+                                         include_teacher_forced=False)
+                out["probe_rep_ltm"] = pr["primary_readout"]["exact_match"]["ltm"]
+                out["probe_rep_full"] = pr["primary_readout"]["exact_match"]["full"]
+            if with_full_lexicon:
+                fr = repetition_snapshot(self.model, self.vocab, self.entries,
+                                         list(range(len(self.entries))),
+                                         self.bank_raw, self.device,
+                                         include_teacher_forced=False)
+                out["full_rep_ltm"] = fr["primary_readout"]["exact_match"]["ltm"]
+                out["full_rep_full"] = fr["primary_readout"]["exact_match"]["full"]
+                out["full_rep_wm"] = fr["primary_readout"]["exact_match"]["wm"]
+        return out
+
+    # ---------------------------------------------------------- checkpoints
+    def resolved_settings(self) -> dict:
+        """Every scientific value actually in force, for printing and saving."""
+        cfg = self.cfg
+        return {
+            "regime": self.regime,
+            "seed": self.seed,
+            "device": self.device,
+            "repetition_population": len(self.entries),
+            "repetition_sampler": "log-frequency weighted, with replacement, "
+                                  f"freq_temp={cfg.data.freq_temp}",
+            "comprehension_population": len(self.subset_idx),
+            "naming_population": len(self.subset_idx),
+            "subset_mode": self.subset_mode,
+            "subset_definition_sha256": self.subset_hash,
+            "out_of_subset_probe_n": len(self.probe_idx),
+            "batch_size": cfg.train.batch_size,
+            "batches_per_rep_epoch": self.streams["repetition"].per_epoch,
+            "dorsal_pool_size": len(self.pool_entries),
+            "hidden_size": cfg.wm.hidden,
+            "ltm_enc_hidden": cfg.ltm.enc_hidden,
+            "ltm_dec_hidden": cfg.ltm.dec_hidden,
+            "ltm_encoder_mode": cfg.ltm.ltm_encoder_mode,
+            "teacher_forcing_ratio": cfg.train.teacher_forcing_ratio,
+            "interference_noise": cfg.wm.interference_noise,
+            "ventral_noise": cfg.ltm.ventral_noise,
+            "gate_alpha": cfg.gating.alpha,
+            "gate_threshold": cfg.gating.gate_threshold,
+            "usage_prior": cfg.gating.usage_prior,
+            "loss_weights": dict(CANONICAL_LOSS_WEIGHTS),
+            "dorsal_pool_loss_weight": cfg.loss.wm,
+            "lambda_C": LAMBDA_C if self.regime == "j0" else 0.0,
+            "lambda_N": LAMBDA_N if self.regime == "j0" else 0.0,
+            "tau": TAU if self.regime == "j0" else None,
+            "retrieval_bank_size": int(self.bank_raw.shape[0]),
+            "optimizer": "AdamW",
+            "weight_decay": cfg.train.weight_decay,
+            "grad_clip": cfg.train.grad_clip,
+            "lr_stage1": LR_STAGE1,
+            "lr_stage2": LR_STAGE2,
+            "lr_boundary_steps": self.lr_boundary_steps,
+            "current_lr": lr_for_step(self.global_step, self.lr_boundary_steps),
+            "stream_seeds": dict(self.stream_seeds),
+            "glove_found": self.glove_found,
+            "glove_fallback": self.glove_fallback,
+        }
+
+    def state_dict(self) -> dict:
+        return {
+            "format": "lichtheim3.joint_scratch.v1",
+            "regime": self.regime,
+            "seed": self.seed,
+            "config": {"data": vars(self.cfg.data), "wm": vars(self.cfg.wm),
+                       "ltm": vars(self.cfg.ltm), "gating": vars(self.cfg.gating),
+                       "loss": vars(self.cfg.loss), "train": vars(self.cfg.train)},
+            "resolved_settings": self.resolved_settings(),
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optim.state_dict(),
+            "global_step": self.global_step,
+            "rep_epoch": self.rep_epoch,
+            "batch_in_rep_epoch": (self.cursors["repetition"]
+                                   % self.streams["repetition"].per_epoch),
+            "cursors": dict(self.cursors),
+            "stream_seeds": dict(self.stream_seeds),
+            "lr": lr_for_step(self.global_step, self.lr_boundary_steps),
+            "lr_phase": lr_phase(self.global_step, self.lr_boundary_steps),
+            "lr_boundary_steps": self.lr_boundary_steps,
+            "subset_definition_sha256": self.subset_hash,
+            "subset_mode": self.subset_mode,
+            "subset_indices": list(self.subset_idx),
+            "probe_indices": list(self.probe_idx),
+            "lexicon_path": self.cfg.data.lexicon_path,
+            "lexicon_file_sha256": sha256_file(
+                os.path.join(ROOT, self.cfg.data.lexicon_path or "")),
+            "glove_found": self.glove_found,
+            "glove_fallback": self.glove_fallback,
+            "rng_states": {
+                "torch": torch.get_rng_state(),
+                "numpy": np.random.get_state(),
+                "python": random.getstate(),
+                "cuda": (torch.cuda.get_rng_state_all()
+                         if torch.cuda.is_available() else None),
+            },
+            "git": git_state(ROOT),
+            "resume_provenance": list(self.resume_provenance),
+            "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
+        }
+
+    def load_state_dict(self, ckpt: dict, *, source: str = "") -> None:
+        if ckpt.get("format") != "lichtheim3.joint_scratch.v1":
+            raise RuntimeError(f"unexpected checkpoint format {ckpt.get('format')!r}")
+        if ckpt["regime"] != self.regime:
+            raise RuntimeError(f"checkpoint regime {ckpt['regime']!r} != {self.regime!r}")
+        if int(ckpt["seed"]) != self.seed:
+            raise RuntimeError(f"checkpoint seed {ckpt['seed']} != {self.seed}")
+        if ckpt["subset_definition_sha256"] != self.subset_hash:
+            raise RuntimeError("checkpoint subset hash differs from the rebuilt subset")
+        if dict(ckpt["stream_seeds"]) != dict(self.stream_seeds):
+            raise RuntimeError("checkpoint stream seeds differ from the derived ones")
+
+        self.model.load_state_dict(ckpt["model_state_dict"])
+        self.optim.load_state_dict(ckpt["optimizer_state_dict"])
+        for st in self.optim.state.values():
+            for k, v in st.items():
+                if isinstance(v, torch.Tensor):
+                    st[k] = v.to(self.device)
+        self.global_step = int(ckpt["global_step"])
+        self.cursors = {k: int(v) for k, v in ckpt["cursors"].items()}
+        self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
+        # LR is a pure function of the step counter, so it is re-derived rather
+        # than trusted from the file; the optimizer is never reconstructed.
+        lr = lr_for_step(self.global_step, self.lr_boundary_steps)
+        for g in self.optim.param_groups:
+            g["lr"] = lr
+
+        rs = ckpt.get("rng_states") or {}
+        if "torch" in rs and rs["torch"] is not None:
+            torch.set_rng_state(rs["torch"].cpu().to(torch.uint8)
+                                if torch.is_tensor(rs["torch"]) else rs["torch"])
+        if "numpy" in rs and rs["numpy"] is not None:
+            np.random.set_state(rs["numpy"])
+        if "python" in rs and rs["python"] is not None:
+            random.setstate(rs["python"])
+        if rs.get("cuda") is not None and torch.cuda.is_available():
+            torch.cuda.set_rng_state_all(rs["cuda"])
+
+        self.resume_provenance = list(ckpt.get("resume_provenance", []))
+        self.resume_provenance.append({
+            "resumed_from": source,
+            "at_global_step": self.global_step,
+            "at_rep_epoch": self.rep_epoch,
+            "batch_in_rep_epoch": (self.cursors["repetition"]
+                                   % self.streams["repetition"].per_epoch),
+            "wall_clock": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        })
+
+
+HISTORICAL_FIDELITY_NOTE = (
+    "Paired developmental control using the VERIFIED HISTORICAL SCIENTIFIC "
+    "RECIPE. This is deliberately NOT a bit-exact replay of the original "
+    "two-job SLURM execution: the historical e100->e101 resume did not "
+    "checkpoint the dorsal pool's itertools.cycle cursor, so the pool restarted "
+    "and perturbed the global RNG stream from e102 onward (Phase 4A0c). Here "
+    "the learning-rate boundary is applied in-process with the AdamW moments "
+    "and step counter untouched, and every sampling stream is counter-addressed "
+    "and exactly resumable."
+)
+
+
+# ===========================================================================
+#  Run directory / metrics
+# ===========================================================================
+
+METRIC_COLUMNS = [
+    "step", "rep_epoch", "lr", "rep_full", "rep_wm", "rep_ltm",
+    "comp_top1", "comp_top5", "comp_rank_median", "comp_rank_mean",
+    "comp_cos_mean", "comp_margin_mean",
+    "naming_exact", "naming_wer", "naming_mean_edit", "naming_eos_rate",
+    "naming_pred_len_mean", "naming_target_len_mean",
+    "probe_rep_ltm", "probe_rep_full",
+    "full_rep_ltm", "full_rep_full", "full_rep_wm",
+]
+
+
+def append_metrics(path: str, row: dict) -> None:
+    new = not os.path.exists(path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a", encoding="utf-8") as fh:
+        if new:
+            fh.write("\t".join(METRIC_COLUMNS) + "\n")
+        fh.write("\t".join(str(row.get(c, "")) for c in METRIC_COLUMNS) + "\n")
+
+
+def append_losses(path: str, row: dict) -> None:
+    cols = ["step", "lr", "lr_phase", "joint_total", "total", "rep", "align",
+            "dec", "wm", "gate", "pool_ce", "retrieval_ce", "naming_ce",
+            "grad_norm"]
+    new = not os.path.exists(path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a", encoding="utf-8") as fh:
+        if new:
+            fh.write("\t".join(cols) + "\n")
+        fh.write("\t".join(str(row.get(c, "")) for c in cols) + "\n")
+
+
+def ckpt_path(run_dir: str, step: int) -> str:
+    return os.path.join(run_dir, "checkpoints", f"step_{step:08d}.pt")
+
+
+def portable_path(path: str) -> str:
+    """Repo-relative when the file lives inside the tree, basename otherwise.
+
+    Keeps machine-specific absolute paths out of saved run metadata without
+    inventing a fake location for files (smoke checkpoints, scratch dirs) that
+    genuinely sit outside the repository.
+    """
+    ap = os.path.abspath(path)
+    root = os.path.abspath(ROOT) + os.sep
+    return os.path.relpath(ap, ROOT) if ap.startswith(root) else os.path.basename(ap)
+
+
+# ===========================================================================
+#  CLI
+# ===========================================================================
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        description="Phase 4 joint multitask development from scratch (H0/J0).")
+    p.add_argument("--regime", required=True, choices=REGIMES)
+    p.add_argument("--seed", type=int, default=22,
+                   help="experimental seed S; task stream seeds are derived from it")
+    p.add_argument("--epochs", type=int, default=DEFAULT_EPOCHS,
+                   help="repetition epochs (1 epoch = ceil(N/batch) optimizer steps)")
+    p.add_argument("--max-steps", type=int, default=None,
+                   help="override the step budget directly (smoke tests)")
+    p.add_argument("--device", default="cpu")
+    # outputs/ is already gitignored and is where Phases 2 and 3 wrote; runs/ is
+    # not ignored, so defaulting there would dirty the tree on every run.
+    p.add_argument("--out-dir", default=os.path.join(ROOT, "outputs", "joint_scratch"))
+    p.add_argument("--run-id", default=None)
+    p.add_argument("--resume", default=None, help="checkpoint to resume from")
+
+    p.add_argument("--eval-every", type=int, default=4630,
+                   help="developmental evaluation cadence in optimizer steps")
+    p.add_argument("--probe-every", type=int, default=23150,
+                   help="out-of-subset repetition probe cadence in steps")
+    p.add_argument("--save-every", type=int, default=4630)
+    p.add_argument("--log-every", type=int, default=100)
+    p.add_argument("--endpoint-eval", action="store_true",
+                   help="run the full 29,571-word repetition evaluation at the end")
+    p.add_argument("--eval-at-start", action="store_true")
+
+    # deliberately few knobs; these exist for smoke tests only
+    p.add_argument("--lexicon-path", default=CANONICAL_LEXICON_PATH)
+    p.add_argument("--glove-path", default="data/glove.6B.300d.txt",
+                   help="SMOKE ONLY: point elsewhere to skip the 1GB GloVe parse")
+    p.add_argument("--max-words", type=int, default=CANONICAL_MAX_WORDS)
+    p.add_argument("--batch-size", type=int, default=CANONICAL_BATCH_SIZE)
+    p.add_argument("--dorsal-pool-size", type=int, default=CANONICAL_DORSAL_POOL_SIZE)
+    p.add_argument("--subset-mode", choices=("nested", "representative"),
+                   default="nested")
+    p.add_argument("--subset-per-band", type=int, default=SUBSET_PER_BAND)
+    p.add_argument("--subset-size", type=int, default=64,
+                   help="only used with --subset-mode representative (smoke)")
+    p.add_argument("--lr-boundary-steps", type=int, default=LR_BOUNDARY_STEPS)
+    p.add_argument("--allow-glove-fallback", action="store_true",
+                   help="SMOKE ONLY: permit pseudo-vectors instead of real GloVe")
+    p.add_argument("--no-subset-hash-check", action="store_true",
+                   help="SMOKE ONLY: skip the frozen subset3288 hash assertion")
+    return p
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    args = build_parser().parse_args(argv)
+
+    require_hash = (not args.no_subset_hash_check
+                    and args.subset_mode == "nested"
+                    and args.subset_per_band == SUBSET_PER_BAND
+                    and args.max_words == CANONICAL_MAX_WORDS)
+
+    t0 = time.time()
+    trainer = JointScratchTrainer(
+        regime=args.regime, seed=args.seed, device=args.device,
+        max_words=args.max_words, lexicon_path=args.lexicon_path,
+        dorsal_pool_size=args.dorsal_pool_size, batch_size=args.batch_size,
+        subset_mode=args.subset_mode, subset_per_band=args.subset_per_band,
+        subset_size=args.subset_size,
+        lr_boundary_steps=args.lr_boundary_steps,
+        allow_glove_fallback=args.allow_glove_fallback,
+        require_subset_hash=require_hash, glove_path=args.glove_path)
+
+    run_id = args.run_id or f"{args.regime}_seed{args.seed}"
+    run_dir = os.path.join(args.out_dir, run_id)
+    os.makedirs(os.path.join(run_dir, "checkpoints"), exist_ok=True)
+    os.makedirs(os.path.join(run_dir, "logs"), exist_ok=True)
+
+    if args.resume:
+        ck = torch.load(args.resume, map_location=args.device, weights_only=False)
+        trainer.load_state_dict(ck, source=portable_path(args.resume))
+        print(f"[resume] from {args.resume}")
+        print(f"[resume] step={trainer.global_step} rep_epoch={trainer.rep_epoch} "
+              f"cursors={trainer.cursors}")
+
+    per_epoch = trainer.streams["repetition"].per_epoch
+    total_steps = (args.max_steps if args.max_steps is not None
+                   else args.epochs * per_epoch)
+
+    settings = trainer.resolved_settings()
+    settings["total_steps"] = total_steps
+    settings["epochs"] = args.epochs
+    settings["eval_every"] = args.eval_every
+    settings["probe_every"] = args.probe_every
+    settings["save_every"] = args.save_every
+    print(f"\n[joint_scratch] RESOLVED SCIENTIFIC CONFIGURATION ({run_id})")
+    for k, v in settings.items():
+        print(f"  {k:28s} : {v}")
+    print(f"  {'historical_fidelity':28s} : {HISTORICAL_FIDELITY_NOTE}\n")
+
+    with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as fh:
+        json.dump(settings, fh, indent=2, default=str)
+    with open(os.path.join(run_dir, "provenance.json"), "w", encoding="utf-8") as fh:
+        json.dump({
+            "run_id": run_id, "regime": args.regime, "seed": args.seed,
+            "command": " ".join(sys.argv),
+            "git": git_state(ROOT),
+            "lexicon_path": args.lexicon_path,
+            "lexicon_file_sha256": sha256_file(
+                os.path.join(ROOT, args.lexicon_path)),
+            "subset_definition_sha256": trainer.subset_hash,
+            "stream_seeds": trainer.stream_seeds,
+            "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
+            "started": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }, fh, indent=2, default=str)
+
+    metrics = os.path.join(run_dir, "metrics.tsv")
+    losses_tsv = os.path.join(run_dir, "logs", "losses.tsv")
+
+    last_eval: tuple = (None, None)          # (step, probe_included)
+    if args.eval_at_start:
+        append_metrics(metrics, trainer.evaluate())
+        last_eval = (trainer.global_step, False)
+
+    while trainer.global_step < total_steps:
+        rec = trainer.train_step()
+        if args.log_every and trainer.global_step % args.log_every == 0:
+            append_losses(losses_tsv, rec)
+            print(f"[step {trainer.global_step:>7d}/{total_steps}] "
+                  f"lr={rec['lr']:.0e} joint={rec['joint_total']:.4f} "
+                  f"rep={rec['rep']:.4f} align={rec['align']:.4f} "
+                  f"pool={rec['pool_ce']:.4f} "
+                  f"ret={rec['retrieval_ce']:.4f} nam={rec['naming_ce']:.4f} "
+                  f"| {time.time() - t0:6.1f}s", flush=True)
+        if args.eval_every and trainer.global_step % args.eval_every == 0:
+            probed = bool(args.probe_every
+                          and trainer.global_step % args.probe_every == 0)
+            row = trainer.evaluate(with_probe=probed)
+            append_metrics(metrics, row)
+            last_eval = (trainer.global_step, probed)
+            print(f"  [eval @ {row['step']}] rep_ltm={row['rep_ltm']:.4f} "
+                  f"comp_top1={row['comp_top1']:.4f} "
+                  f"naming_exact={row['naming_exact']:.4f}", flush=True)
+        if args.save_every and trainer.global_step % args.save_every == 0:
+            torch.save(trainer.state_dict(), ckpt_path(run_dir, trainer.global_step))
+
+    # The endpoint row is skipped when the cadence already produced an
+    # equivalent one at this exact step, so metrics.tsv never carries a
+    # duplicated final evaluation.
+    if last_eval != (trainer.global_step, True) or args.endpoint_eval:
+        final = trainer.evaluate(with_probe=True,
+                                 with_full_lexicon=args.endpoint_eval)
+        append_metrics(metrics, final)
+    torch.save(trainer.state_dict(), ckpt_path(run_dir, trainer.global_step))
+    print(f"\n[joint_scratch] done: {trainer.global_step} steps, "
+          f"{time.time() - t0:.1f}s -> {run_dir}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
