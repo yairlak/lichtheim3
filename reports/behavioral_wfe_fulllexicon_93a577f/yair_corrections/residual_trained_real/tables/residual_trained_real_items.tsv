@@ -1,0 +1,13 @@
+item_id	word	phoneme_length	zipf_frequency	n_correct_peers_same_length	median_zipf_of_peers	zipf_percentile_within_length	below_peer_median	n_failing_seeds	morphology	total_substitutions	total_deletions	total_insertions
+wfe_0576	seashore	5	2.92	141	4.0	0.06382978723404255	True	1	complex	2	0	0
+wfe_0574	rename	5	3.18	141	4.0	0.19148936170212766	True	1	complex	1	0	0
+wfe_0357	siegfried	7	3.03	173	4.32	0.15028901734104047	True	2	simple	4	0	0
+wfe_0317	placebo	7	3.48	173	4.32	0.2947976878612717	True	1	simple	1	0	0
+wfe_0181	mindful	7	3.49	173	4.32	0.3236994219653179	True	1	complex	3	0	0
+wfe_0211	lieutenant	8	4.44	87	4.23	0.6666666666666666	False	1	simple	3	1	1
+wfe_0385	porcupine	9	2.88	60	4.23	0.0	True	1	simple	4	0	0
+wfe_0153	polynesian	9	2.9	60	4.23	0.016666666666666666	True	1	complex	2	0	0
+wfe_0163	sculptural	9	2.9	60	4.23	0.016666666666666666	True	2	complex	7	0	0
+wfe_0344	reprimand	9	2.9	60	4.23	0.016666666666666666	True	1	simple	0	1	1
+wfe_0186	parentheses	9	3.13	60	4.23	0.16666666666666666	True	1	complex	4	0	0
+wfe_0140	locomotive	9	3.5	60	4.23	0.35	True	1	complex	1	0	0

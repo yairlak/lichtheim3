@@ -1,0 +1,19 @@
+{
+  "stage": "length-controlled reaggregation (no model loaded)",
+  "inputs": {
+    "m3_lexical_attraction_items": "70ba4c2475abc7f060091860776b230f5443fea9acf1c6c421000336300dd51b",
+    "m2_word_level_ar_vs_gold": "40f45f8b9df3d84cf4ed8a0ca933027aae49fec4f94060ee92d56a57e3f2c51c"
+  },
+  "population": "NOVEL_PSEUDOWORD",
+  "n_items": 391,
+  "seeds": [
+    19,
+    20,
+    21,
+    22
+  ],
+  "seeds_treated_as_independent_items": false,
+  "new_features_created": [],
+  "model_loaded": false,
+  "inference_run": false
+}

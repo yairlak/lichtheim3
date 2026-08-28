@@ -1,0 +1,2 @@
+n_error_items	n_error_events_seed_x_item	n_trained_real_items	mean_length_error_items	mean_length_correct_items	mean_zipf_error_items	mean_zipf_correct_items	mean_within_length_zipf_percentile	n_below_peer_median	permutation_B	permutation_seed	permutation_p_one_sided_lower	permutation_null_mean	control
+12	14	671	7.75	5.833080424886191	3.2291666666666665	4.128983308042488	0.1881198841197611	11	20000	20260809	0.00015	0.46667110158086617	length-matched: permutation preserves the observed length composition (2 at L=5, 3 at L=7, 1 at L=8, 6 at L=9)

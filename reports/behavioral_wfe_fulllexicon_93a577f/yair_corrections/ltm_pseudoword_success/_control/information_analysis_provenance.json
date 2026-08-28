@@ -1,0 +1,24 @@
+{
+  "stage": "success-vs-failure reaggregation (no model loaded)",
+  "classification": {
+    "gold_prefix_target_margin_rank": "B - reaggregation only",
+    "m4_ordered_probe_item_accuracy": "B - reaggregation only",
+    "genuinely_missing": []
+  },
+  "circularity_guard_excluded_measures": [
+    "overall gold-prefix target rank",
+    "minimum target margin over positions",
+    "number of positions with rank > 1",
+    "first-error position",
+    "gold-prefix exact match"
+  ],
+  "why": "under deterministic greedy decoding AR-exact-match and gold-prefix-exact-match are the same event, so any statistic that is a function of whether the argmax was the target separates the groups by construction",
+  "measures_used": [
+    "position-0 gold-prefix target margin and rank (identical conditioning for both groups: prefix is BOS for everyone)",
+    "M4 out-of-fold ordered-probe accuracy from ltm_encoder_hidden and raw s_hat (independent linear readouts, not the model's decision)"
+  ],
+  "length_control": "exact phoneme length stratification",
+  "seeds_pooled_as_items": false,
+  "model_loaded": false,
+  "inference_run": false
+}

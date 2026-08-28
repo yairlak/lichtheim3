@@ -1,0 +1,5 @@
+seed	stratified_difference	marginal_difference_high_minus_low	mean_length_high_confidence	mean_length_low_confidence	note
+19	0.045604914933837455	0.0345107273678702	6.0717948717948715	6.11734693877551	stratified = n-weighted mean of within-exact-length differences; marginal = same split ignoring length
+20	0.02513992364431597	0.055128205128205154	6.02051282051282	6.168367346938775	stratified = n-weighted mean of within-exact-length differences; marginal = same split ignoring length
+21	0.035476667037325306	0.0346153846153846	5.897435897435898	6.290816326530612	stratified = n-weighted mean of within-exact-length differences; marginal = same split ignoring length
+22	-0.010559138589273138	-0.011381475667189944	5.851282051282051	6.336734693877551	stratified = n-weighted mean of within-exact-length differences; marginal = same split ignoring length

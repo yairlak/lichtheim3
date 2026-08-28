@@ -1,0 +1,19 @@
+{
+  "purpose": "presentation figures for the Yair meeting",
+  "model_loaded": false,
+  "inference_run": false,
+  "scientific_values_recomputed": false,
+  "annotations_asserted_against_source_tables": true,
+  "sources": {
+    "mf1": [
+      "residual_trained_real/tables/residual_trained_real_items.tsv",
+      "residual_trained_real/tables/residual_trained_real_summary.tsv",
+      "behavioral_analysis/tables/canonical_behavioral_item_table.tsv"
+    ],
+    "mf2": [
+      "stable_zero_audit/stable_zero_trajectory.tsv",
+      "stable_zero_audit/stable_zero_streaks.tsv",
+      "stable_zero_audit/stable_zero_verdicts.tsv"
+    ]
+  }
+}
