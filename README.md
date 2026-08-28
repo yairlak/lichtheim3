@@ -359,12 +359,28 @@ self-contained.**
 | Result family | Tracked evidence | Needs checkpoint | Needs GloVe | Current status |
 |---|---|---|---|---|
 | Full-lexicon selection | streak audits, `selected_checkpoints.tsv`, mf2 figure | no | no | **inspectable now** |
-| Behavioral analysis (F1–F7, S1–S12) | figures, captions, all pointer tables, provenance JSON, output SHA-256 manifest | no (release loaded none) | no | **figures + numbers inspectable now**; regenerating *predictions* needs checkpoints |
+| Behavioral analysis (F1–F7, S1–S12) | figures, captions, all pointer tables, provenance JSON, output SHA-256 manifest, and the validated aggregate reference tables under `reports/.../repro_inputs/` | no (release loaded none) | no | **PARTIAL** — figures and numbers inspectable now, and the validated-reference cross-checks run from a clone; tests needing the untracked per-item table skip (see below) |
 | RSA / ventral semantic | figures, correlation and partial-regression tables, metadata | to regenerate | yes | **results inspectable now**; recomputation blocked |
 | Frozen naming/comprehension | cohort + per-seed summaries, figure | to regenerate | yes | **results inspectable now**; recomputation blocked |
 | Single-task acquisition | 9 run summaries + trajectories + 6 figures | to regenerate | yes | **results inspectable now**; recomputation blocked |
 | Warm-start multitask | 3 run summaries + trajectories + 4 figures | to regenerate | yes | **results inspectable now**; recomputation blocked |
 | Phase 4 | driver + tests only | n/a (random init) | yes | **ACTIVE / NOT RELEASE-CANONICAL** |
+
+**Behavioral fresh-clone status (PARTIAL).** The behavioral analysis code loads
+no checkpoint, and the five validated aggregate reference tables it is checked
+against are now tracked under
+`reports/behavioral_wfe_fulllexicon_93a577f/repro_inputs/` (byte-identical
+copies, provenance in `REPRO_INPUTS.tsv`). From a fresh clone the behavioral
+safe-test set runs with **167 passed, 113 skipped, 0 failed**.
+
+What remains blocked: the upstream per-item table
+`canonical_behavioral_item_table.tsv` (14,400 rows, 3.25 MB) is **not tracked**.
+It carries `target`/`prediction` ARPABET strings and the WFE design metadata for
+every item, i.e. it reproduces NWR/SWP stimulus content, whose redistribution
+status is unresolved. Sixteen tests that need it **skip** with an explicit
+reason rather than fail. Regenerating the behavioral analysis end to end from
+raw predictions therefore still requires that table, and by extension the
+checkpoints; only the validated-reference comparisons are self-contained.
 
 Provenance caveat: seven of the twelve retained naming/comprehension runs were
 executed from a dirty working tree. What that does and does not permit is set
