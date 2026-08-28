@@ -7,18 +7,23 @@ Can repetition, explicit lexical-semantic retrieval and true-GloVe naming
 co-develop compatible representations *from initialization*, rather than being
 grafted onto an already mature repetition system as in Phases 2 and 3?
 
-The experiment is a paired comparison at a fixed experimental seed S:
+The experiment is a 2x2 objective factorial at a fixed experimental seed S,
+over the verified historical Lichtheim3 developmental recipe from scratch:
 
-    H0   the verified historical Lichtheim3 developmental recipe, from scratch
-    J0   the same recipe, the same repetition trajectory, plus two additional
-         developmental objectives:
+    regime   | retrieval_CE | naming_CE | loss added to the historical base
+    ---------+--------------+-----------+----------------------------------
+    h0       |     OFF      |    OFF    | (nothing)
+    c_only   |     ON       |    OFF    | + LAMBDA_C * retrieval_CE
+    n_only   |     OFF      |    ON     | + LAMBDA_N * naming_CE
+    j0       |     ON       |    ON     | + both
 
-             + LAMBDA_C * retrieval_CE      (explicit comprehension)
-             + LAMBDA_N * naming_CE         (true-GloVe naming)
+Everything else is held identical across all four cells, including the
+repetition and dorsal-pool batch sequences, so the only causal difference
+between any two arms is which extra gradients are present. h0 and j0 keep
+exactly the semantics under which their scientific runs were produced.
 
-Everything else is held identical, including the repetition and dorsal-pool
-batch sequences, so the only causal difference between the two arms is the
-presence of the two extra gradients.
+The design supports the retrieval main effect (c_only - h0), the naming main
+effect (n_only - h0), and the interaction (j0 - c_only - n_only + h0).
 
 Relationship to the historical cohort
 -------------------------------------
@@ -111,7 +116,31 @@ from scripts.naming_comprehension.train_multitask import (                # noqa
 #  interference noise 0.1 vs 0.0).  Every scientific parameter is named here.
 # ===========================================================================
 
-REGIMES = ("h0", "j0")
+# The 2x2 objective factorial. Each regime is defined ONLY by which of the two
+# additional developmental objectives is present; everything else -- the
+# historical base loss, the populations, the streams, the optimizer, the LR
+# schedule -- is identical across all four cells.
+#
+#     regime   | retrieval | naming
+#     ---------+-----------+--------
+#     h0       |    OFF    |  OFF
+#     c_only   |    ON     |  OFF
+#     n_only   |    OFF    |  ON
+#     j0       |    ON     |  ON
+#
+# h0 and j0 keep exactly the semantics under which their scientific runs were
+# produced (Phases 4A2a-4A2c); c_only and n_only are the two missing cells.
+REGIMES = ("h0", "c_only", "n_only", "j0")
+RETRIEVAL_REGIMES = ("c_only", "j0")
+NAMING_REGIMES = ("n_only", "j0")
+
+
+def objective_presence(regime: str) -> Dict[str, bool]:
+    """Which additional objectives the factorial cell switches on."""
+    if regime not in REGIMES:
+        raise ValueError(f"regime must be one of {REGIMES}, got {regime!r}")
+    return {"retrieval_enabled": regime in RETRIEVAL_REGIMES,
+            "naming_enabled": regime in NAMING_REGIMES}
 
 # ---- repetition population and lexicon ----
 CANONICAL_LEXICON_PATH = "data/lexicon_en_glove_covered.tsv"
@@ -398,9 +427,16 @@ class JointScratchTrainer:
                  subset_size: int, lr_boundary_steps: int,
                  allow_glove_fallback: bool, require_subset_hash: bool,
                  glove_path: Optional[str] = "data/glove.6B.300d.txt") -> None:
-        if regime not in REGIMES:
-            raise ValueError(f"regime must be one of {REGIMES}, got {regime!r}")
+        presence = objective_presence(regime)          # validates the regime
         self.regime = regime
+        self.retrieval_enabled = presence["retrieval_enabled"]
+        self.naming_enabled = presence["naming_enabled"]
+        # Which counter-addressed streams this cell actually consumes.
+        self.stream_active = {
+            "repetition": True, "pool": True,
+            "comprehension": self.retrieval_enabled,
+            "naming": self.naming_enabled,
+        }
         self.seed = int(seed)
         self.device = device
         self.lr_boundary_steps = int(lr_boundary_steps)
@@ -535,10 +571,13 @@ class JointScratchTrainer:
         loss = loss + cfg.loss.wm * pool_ce
         rec["pool_ce"] = float(pool_ce.detach())
 
-        # --- J0 only: explicit comprehension + naming ---
+        # --- factorial objectives: retrieval and/or naming, per regime ---
+        # The two terms are added independently and in this fixed order, so
+        # j0 (both on) is numerically identical to the pre-factorial code and
+        # h0 (both off) adds nothing at all.
         rec["retrieval_ce"] = float("nan")
         rec["naming_ce"] = float("nan")
-        if self.regime == "j0":
+        if self.retrieval_enabled:
             c = self.batch("comprehension")
             s_hat = comprehension_forward(self.model, c["enc_in"], c["enc_mask"])
             ret = retrieval_loss(s_hat, self.model.ltm.semantic_bank,
@@ -546,6 +585,7 @@ class JointScratchTrainer:
             loss = loss + LAMBDA_C * ret
             rec["retrieval_ce"] = float(ret.detach())
 
+        if self.naming_enabled:
             n = self.batch("naming")
             nam = naming_objective(self.model, n, pad_id)["total"]
             loss = loss + LAMBDA_N * nam
@@ -557,8 +597,12 @@ class JointScratchTrainer:
                                                cfg.train.grad_clip)
         self.optim.step()
 
+        # R and pool advance in every cell, which is what makes the four
+        # conditions share one repetition trajectory. A semantic cursor moves
+        # only where its objective is actually trained, so an inactive stream
+        # stays at 0 and cannot silently consume batches.
         for name in STREAM_NAMES:
-            if self.regime == "j0" or name in ("repetition", "pool"):
+            if self.stream_active[name]:
                 self.cursors[name] += 1
         self.global_step += 1
 
@@ -635,6 +679,13 @@ class JointScratchTrainer:
         cfg = self.cfg
         return {
             "regime": self.regime,
+            # Objective presence is recorded as explicit booleans rather than
+            # inferred from a zero weight or a missing field, so every saved
+            # config states which factorial cell produced it.
+            "retrieval_enabled": self.retrieval_enabled,
+            "naming_enabled": self.naming_enabled,
+            "active_training_streams": sorted(
+                k for k, v in self.stream_active.items() if v),
             "seed": self.seed,
             "device": self.device,
             "repetition_population": len(self.entries),
@@ -660,9 +711,14 @@ class JointScratchTrainer:
             "usage_prior": cfg.gating.usage_prior,
             "loss_weights": dict(CANONICAL_LOSS_WEIGHTS),
             "dorsal_pool_loss_weight": cfg.loss.wm,
-            "lambda_C": LAMBDA_C if self.regime == "j0" else 0.0,
-            "lambda_N": LAMBDA_N if self.regime == "j0" else 0.0,
-            "tau": TAU if self.regime == "j0" else None,
+            # Effective weights (0.0 where the objective is switched off) plus
+            # the canonical constants, which are never rewritten by a regime.
+            "lambda_C": LAMBDA_C if self.retrieval_enabled else 0.0,
+            "lambda_N": LAMBDA_N if self.naming_enabled else 0.0,
+            "tau": TAU if self.retrieval_enabled else None,
+            "lambda_C_canonical": LAMBDA_C,
+            "lambda_N_canonical": LAMBDA_N,
+            "tau_canonical": TAU,
             "retrieval_bank_size": int(self.bank_raw.shape[0]),
             "optimizer": "AdamW",
             "weight_decay": cfg.train.weight_decay,
@@ -837,7 +893,9 @@ def portable_path(path: str) -> str:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Phase 4 joint multitask development from scratch (H0/J0).")
-    p.add_argument("--regime", required=True, choices=REGIMES)
+    p.add_argument("--regime", required=True, choices=REGIMES,
+                   help="factorial cell: h0 (neither), c_only (retrieval), "
+                        "n_only (naming), j0 (both)")
     p.add_argument("--seed", type=int, default=22,
                    help="experimental seed S; task stream seeds are derived from it")
     p.add_argument("--epochs", type=int, default=DEFAULT_EPOCHS,
@@ -932,6 +990,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     with open(os.path.join(run_dir, "provenance.json"), "w", encoding="utf-8") as fh:
         json.dump({
             "run_id": run_id, "regime": args.regime, "seed": args.seed,
+            "retrieval_enabled": trainer.retrieval_enabled,
+            "naming_enabled": trainer.naming_enabled,
             "command": " ".join(sys.argv),
             "git": git_state(ROOT),
             "lexicon_path": args.lexicon_path,
