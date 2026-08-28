@@ -20,6 +20,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from scripts.behavioral_analysis.common import SEEDS                 # noqa: E402
+from scripts.behavioral_analysis import common                       # noqa: E402
 
 YC = os.path.join(ROOT, "reports/behavioral_wfe_fulllexicon_93a577f/"
                         "yair_corrections")
@@ -72,6 +73,11 @@ def test_mf1_labels_every_one_of_the_12_words():
     assert items["word"].notna().all() and items["word"].nunique() == 12
 
 
+# Needs the untracked canonical per-item table (NWR/SWP stimulus content,
+# redistribution unresolved); skip rather than fail when it is absent.
+@pytest.mark.skipif(
+    not os.path.exists(common.CANONICAL_TABLE),
+    reason="canonical per-item table not present (untracked)")
 def test_mf1_population_is_the_671_trained_real_items():
     canon = pd.read_csv(os.path.join(
         ROOT, "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/"

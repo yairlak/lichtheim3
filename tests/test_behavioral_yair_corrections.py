@@ -24,6 +24,7 @@ from scripts.behavioral_analysis.common import (EXPECTED_CLEAN_COUNTS,  # noqa: 
                                                 LENGTHS, REPORT_ROOT, ROUTES,
                                                 SEEDS)
 from scripts.behavioral_analysis.io import load_canonical             # noqa: E402
+from scripts.behavioral_analysis import common                       # noqa: E402
 
 TAB = os.path.join(YC.CORRECTIONS_ROOT, "tables")
 FIGS = os.path.join(YC.CORRECTIONS_ROOT, "figures")
@@ -34,8 +35,19 @@ pytestmark = pytest.mark.skipif(
     reason="yair corrections pass has not been run")
 
 
+# The canonical per-item table is NOT tracked: it reproduces NWR/SWP stimulus
+# content per item and its redistribution status is unresolved.  Tests that
+# need it skip rather than fail when it is absent (e.g. in a fresh clone).
+requires_canonical = pytest.mark.skipif(
+    not os.path.exists(common.CANONICAL_TABLE),
+    reason="canonical per-item table not present (untracked; see "
+           "reports/behavioral_wfe_fulllexicon_93a577f/REPRO_INPUTS.tsv)")
+
+
 @pytest.fixture(scope="module")
 def canon():
+    if not os.path.exists(common.CANONICAL_TABLE):
+        pytest.skip("canonical per-item table not present (untracked)")
     return load_canonical()
 
 
@@ -318,9 +330,12 @@ def test_figure2C_reproduction_gate_passed():
 
 
 def test_figure2C_full_rows_equal_the_frozen_table():
+    # Byte-identical tracked copy of the frozen faithful table; see
+    # reports/.../final_release/tables/final_table_index.tsv (S-T2).
     frozen = pd.read_csv(os.path.join(
-        ROOT, "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/"
-              "faithful_replication/faithful_figure2C_table.tsv"), sep="\t")
+        ROOT, "reports/behavioral_wfe_fulllexicon_93a577f/final_release/"
+              "formatted_existing/tables/faithful_figure2C_table.tsv"),
+        sep="\t")
     mine = tab("faithful_figure2C_by_route.tsv")
     mine = mine[mine["route"] == "full"]
     m = frozen.merge(
@@ -358,8 +373,8 @@ def test_figure2C_denominator_is_items_x_seeds(canon):
 def test_existing_faithful_figure2C_files_are_not_overwritten():
     """The new files must live under yc4_ and leave the originals alone."""
     orig = os.path.join(
-        ROOT, "outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/"
-              "faithful_replication")
+        ROOT, "reports/behavioral_wfe_fulllexicon_93a577f/final_release/"
+              "formatted_existing/tables")
     assert os.path.exists(os.path.join(orig, "faithful_figure2C_table.tsv"))
     for ext in ("png", "pdf", "svg"):
         assert os.path.exists(os.path.join(FIGS,
@@ -437,6 +452,7 @@ def test_modules_never_load_a_model_or_import_torch():
         assert not (calls | names) & forbidden, mod
 
 
+@requires_canonical
 def test_every_table_derives_only_from_frozen_sources():
     """Row counts must be reachable from the canonical table alone."""
     canon = load_canonical()

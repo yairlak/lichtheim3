@@ -1,0 +1,13 @@
+label	source_lexicality	target_length	n_items
+Pseudowords	pseudo	3	47
+Pseudowords	pseudo	4	78
+Pseudowords	pseudo	5	66
+Pseudowords	pseudo	7	66
+Pseudowords	pseudo	8	68
+Pseudowords	pseudo	9	66
+Real words	real	3	100
+Real words	real	4	98
+Real words	real	5	143
+Real words	real	7	176
+Real words	real	8	88
+Real words	real	9	66

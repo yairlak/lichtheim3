@@ -27,9 +27,19 @@ from scripts.behavioral_analysis.io import clean_subset, load_canonical
 PKG_DIR = os.path.join(ROOT, "scripts", "behavioral_analysis")
 FIG_DIR = os.path.join(ROOT, "reports", "behavioral_wfe_fulllexicon_93a577f",
                        "figures")
-REFERENCE_DIR = os.path.join(
+# Validated analysis reference tables.  Prefer the tracked copies under
+# reports/.../repro_inputs/ so the cross-checks run from a fresh clone; fall
+# back to the original (gitignored) outputs/ tree when it is present, so an
+# existing working copy behaves exactly as before.  The files are
+# byte-identical in both locations - see REPRO_INPUTS.tsv.
+_TRACKED_REFERENCE_DIR = os.path.join(
+    ROOT, "reports", "behavioral_wfe_fulllexicon_93a577f", "repro_inputs")
+_OUTPUTS_REFERENCE_DIR = os.path.join(
     ROOT, "outputs", "behavioral_wfe_fulllexicon_93a577f",
     "behavioral_analysis")
+REFERENCE_DIR = (_TRACKED_REFERENCE_DIR
+                 if os.path.isdir(_TRACKED_REFERENCE_DIR)
+                 else _OUTPUTS_REFERENCE_DIR)
 
 requires_canonical = pytest.mark.skipif(
     not os.path.exists(common.CANONICAL_TABLE),
