@@ -1,3 +1,5 @@
+# ---------------------------------------------------------------- runtime core
+# Needed to import the model, train, and run any evaluation.
 torch>=2.0
 numpy>=1.23
 matplotlib>=3.6
@@ -13,6 +15,41 @@ matplotlib>=3.6
 # error-type analyses, and any separately labelled aligned-error extension.
 # Verified installed in the lichtheim3 environment: 0.27.3 (rapidfuzz 3.14.5).
 Levenshtein>=0.26.1
+
+# -------------------------------------------------------------------- analysis
+# Required by the behavioral WFE pipeline, the length-effect analyses, the
+# ventral-semantic / RSA analyses and the naming/comprehension drivers.  These
+# were previously undeclared: a clean install could import and train the model
+# but could not run any of the published analyses.
+#
+# pandas    scripts/behavioral_analysis/*, scripts/length_effect_analysis/*,
+#           scripts/ventral_semantic/*, scripts/naming_comprehension/*
+# scipy     scripts/behavioral_analysis/compute.py (bootstrap / statistics)
+# sklearn   scripts/behavioral_analysis/feature_importance.py
+#           (Ridge, permutation importance)
+# rapidfuzz scripts/ventral_semantic/rsa_full_lexicon.py
+#           (rapidfuzz.process.cdist over all 437,207,235 lexicon pairs;
+#           also the backend of the `Levenshtein` distribution above)
+pandas>=1.5
+scipy>=1.9
+scikit-learn>=1.1
+rapidfuzz>=3.0
+
+# ------------------------------------------------------------ test/development
+pytest>=7.0
+
+# Version notes.  Only two versions are historically recorded and they are
+# stated as facts in environment.yml: Levenshtein 0.27.3 with rapidfuzz 3.14.5
+# (comment above), and torch 2.12.1 recorded by the Phase 2/3 naming and
+# comprehension run summaries.  The canonical full-lexicon cohort 93a577f was
+# trained on Jean-Zay under the module `pytorch-gpu/py3/2.6.0`.  The lower
+# bounds above for numpy, matplotlib, pandas, scipy, scikit-learn and pytest are
+# conservative reproducibility recommendations, not recorded historical
+# versions; no historical pin exists for them.
+#
+# This file does not attempt to reproduce a GPU/CUDA stack.  Install the torch
+# build appropriate to your platform first if you need GPU support.
+
 # The realistic 30k English lexicon (data/lexicon_en.tsv) is bundled, so no
 # downloads are required. Optional:
 #   - real GloVe semantic targets:  bash data/get_glove.sh  (-> data/glove.6B.300d.txt)

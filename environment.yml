@@ -1,0 +1,99 @@
+# ============================================================================
+# Lichtheim3 — practical reproducibility environment
+#
+# SCOPE. This environment is intended to let someone import the model, load a
+# canonical checkpoint, run the evaluations, and reproduce the tracked
+# analyses and figures. It is NOT a reconstruction of the historical training
+# environment, and it does NOT provide bit-exact reproduction of the canonical
+# full-lexicon training run. See "historical_provenance" below for what is and
+# is not recorded.
+#
+# Kept consistent with requirements.txt: the same nine packages, the same
+# constraints. If you edit one, edit the other.
+# ============================================================================
+
+name: lichtheim3
+
+channels:
+  - conda-forge
+
+dependencies:
+  # ---- interpreter -------------------------------------------------------
+  # No historical Python version is recorded anywhere in the provenance
+  # metadata. This is a conservative modern choice, not a historical fact.
+  - python>=3.10,<3.13
+
+  # ---- runtime core ------------------------------------------------------
+  - pytorch>=2.0          # conda-forge name for the `torch` import
+  - numpy>=1.23
+  - matplotlib>=3.6
+
+  # ---- analysis ----------------------------------------------------------
+  - pandas>=1.5
+  - scipy>=1.9
+  - scikit-learn>=1.1
+  - rapidfuzz>=3.0
+
+  # ---- test / development ------------------------------------------------
+  - pytest>=7.0
+
+  # ---- pip-only ----------------------------------------------------------
+  # `Levenshtein` (the rapidfuzz-backed distribution) is installed from PyPI to
+  # match the exact distribution used by Dager et al.; see requirements.txt for
+  # why the legacy `python-Levenshtein` wrapper must not be substituted.
+  - pip
+  - pip:
+      - Levenshtein>=0.26.1
+
+# ============================================================================
+# historical_provenance
+#
+# Recorded as FACT (read from provenance metadata in this repository):
+#
+#   canonical_training_platform: IDRIS Jean-Zay, SLURM, partition gpu_p13,
+#       NVIDIA V100, 10 CPUs per task, OMP_NUM_THREADS=10.
+#       Source: the archived job scripts
+#       archives/fulllexicon_93a577f/extracted/
+#       fulllexicon_final_bundle_93a577f/control/stage1_e001_e100.sbatch
+#       and control/stage2_e101_e200.sbatch.
+#
+#   canonical_training_module: pytorch-gpu/py3/2.6.0
+#       The PyTorch module loaded by both archived training job scripts, and by
+#       the archived evaluation job script.
+#
+#   naming_comprehension_phase2_3_torch: 2.12.1
+#       Recorded as provenance.torch_version by ten of the twelve retained
+#       Phase 2/3 run summaries in
+#       reports/naming_comprehension_93a577f/runs/. The two phase2b runs do not
+#       record a torch version.
+#
+#   levenshtein: 0.27.3   (rapidfuzz backend 3.14.5)
+#       Recorded in the requirements.txt comment block as verified installed in
+#       the analysis environment.
+#
+# NOT RECOVERABLE:
+#
+#   The resolved CUDA and cuDNN versions behind the Jean-Zay
+#   pytorch-gpu/py3/2.6.0 module are not recorded anywhere in the bundle, the
+#   checkpoints, or the job scripts. Neither is the Python interpreter version
+#   used for training, nor the versions of numpy, matplotlib, pandas, scipy,
+#   scikit-learn or pytest at any point in the project.
+#
+# CONSEQUENCE:
+#
+#   Bit-exact reproduction of the canonical full-lexicon training run is NOT
+#   claimed and is not achievable from this file. Two distinct environments are
+#   involved and neither is fully pinned: training (PyTorch 2.6.0 on V100) and
+#   the later adaptation/analysis work (torch 2.12.1 on CPU).
+#
+#   What this environment does support is loading the archived canonical
+#   checkpoints — which are self-describing, storing their own cfg_data, cfg_wm,
+#   cfg_ltm, cfg_gating, cfg_loss and cfg_train dictionaries — and rerunning
+#   evaluation and analysis against them. See configs/canonical_93a577f.yaml
+#   for the historical training recipe and
+#   configs/canonical_93a577f_vs_defaults.tsv for the fields where current
+#   config.py defaults would build a different model.
+#
+#   GPU support is deliberately not pinned here. Install the torch build
+#   appropriate to your platform if you need it.
+# ============================================================================

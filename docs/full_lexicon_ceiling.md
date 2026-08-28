@@ -1,5 +1,23 @@
 # Full-Lexicon Ceiling
 
+> **Status note (added later; the rest of this document is unchanged).**
+> This document is the **historical record of cohort `93a577f` as it was created
+> and archived**, under the selection criterion in force at the time:
+> **X = 2** consecutive zero-error checkpoints. Everything below — the summary,
+> the per-seed table, the selected-checkpoint table and the archive contents —
+> is preserved exactly as written and is still accurate *for that criterion*.
+>
+> The **current canonical policy is X = 5**, under which only **seed 19 / epoch
+> 155** and **seed 22 / epoch 140** qualify. Seed 20 (streak of 2) and seed 21
+> (never reached zero) are historical, non-canonical checkpoints.
+>
+> Raising the criterion did **not** change any selected epoch: seeds 19 and 22
+> select 155 and 140 at every value of X. Only cohort membership changes.
+>
+> For which result family uses which cohort, see
+> [`canonical_selection_X5.md`](canonical_selection_X5.md). For the recovered
+> training recipe see `configs/canonical_93a577f.yaml`.
+
 ## Summary
 
 The full-lexicon ceiling experiment trains the Lichtheim3 dual-route model on the entire 29,571-word GloVe-covered lexicon used in this project (no validation set) and measures whether the model achieves near-perfect
@@ -52,6 +70,8 @@ the evaluator confirms `null == null` as a passing mandatory check, not a skippe
 | All 4 seeds with ≤1 error | **PASS** |
 
 Stable zero = at least two consecutive scheduled checkpoints with zero training errors.
+(This is the **historical X = 2** criterion under which this cohort was selected and
+archived. The current canonical criterion is X = 5; see the status note above.)
 
 ### Per-seed results
 
