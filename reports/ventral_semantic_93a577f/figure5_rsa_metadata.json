@@ -1,0 +1,22 @@
+{
+  "figure": "fig5_rsa_ventral_semantic_dorsal_phonological",
+  "n_unique_pairs": 437207235,
+  "primary_phonological_reference": "raw Levenshtein",
+  "sensitivity_phonological_reference": "Levenshtein / max(len_i, len_j)",
+  "reference_collinearity": {
+    "glove_vs_phon_raw": 0.0079288374919876,
+    "glove_vs_phon_normalised": 0.0198191059140126
+  },
+  "p_values_reported": false,
+  "sources": {
+    "correlations": "tables/rsa_full_lexicon_correlations.tsv",
+    "partial_regression": "tables/rsa_full_lexicon_partial_regression.tsv"
+  },
+  "outputs": {
+    "png": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig5_rsa_ventral_semantic_dorsal_phonological.png",
+    "pdf": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig5_rsa_ventral_semantic_dorsal_phonological.pdf",
+    "svg": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3-ventral-semantic/reports/ventral_semantic_93a577f/figures/fig5_rsa_ventral_semantic_dorsal_phonological.svg"
+  },
+  "model_loaded": false,
+  "inference_run": false
+}
