@@ -1,266 +1,490 @@
-# Dual-Route Connectionist Model of Word Repetition
+# Lichtheim3
 
-A small, modular, **interpretable** PyTorch codebase that implements a dual-stream
-sequence-to-sequence model of spoken word repetition, grounded in the
-**Dual-Stream Model of Speech Processing** (Hickok & Poeppel) and
-**Complementary Learning Systems** (CLS) theory (McClelland, McNaughton & O'Reilly).
+A modern dual-route neurocomputational model of spoken **word repetition**,
+trained to exact zero whole-word error on a 29,571-word English lexicon, and
+analysed for a behavioural and representational division of labour between a
+dorsal working-memory route and a ventral long-term-memory route.
 
-The model takes a sequence of one-hot phonemes and re-articulates it through a
-single shared output layer (the *Motor Cortex bottleneck*). Two functionally
-distinct routes feed that bottleneck:
+Lichtheim3 is **inspired by** the Lichtheim / Ueno et al. (2011) dual
+dorsal–ventral framework. It is **not** a literal implementation or replication
+of Lichtheim2: the architecture, the training objective and the evaluation
+protocol are all modern redesigns. Claims of correspondence with Ueno et al.
+should be checked against that paper and its supplement rather than assumed.
 
-| Route | Stream | Memory type | Implemented in |
-|-------|--------|-------------|----------------|
-| **WM serial-recall net** | Dorsal | Parametric recurrent encoder→decoder, capacity-limited | `models/wm_route.py` |
-| **LTM Lexicon** | Ventral | Parametric, weight-based, semantic | `models/ltm_route.py` |
-
-The point of this repo is **not** state-of-the-art accuracy. It is to show that
-two architecturally honest routes, when made to compete through a gate, reproduce
-four classic **human** behavioral signatures *for free*:
-
-1. **Primacy & recency** (U-shaped serial-position curve) in the WM route.
-2. **Lexical neighborhood density effects** in the gate / error rate.
-3. **Sonority-graded errors** (confusions track phonetic distance).
-4. A **double dissociation**: the ventral route is frequency-sensitive but
-   length-invariant; the dorsal route is frequency-invariant but length-sensitive.
+> **Status.** This branch is a *pre-release integration* tree. It gathers the
+> established scientific families, their evidence and the reproducibility
+> metadata in one place. It is not yet the repository default branch, no LICENSE
+> has been agreed, and canonical checkpoints are not yet distributed. See
+> [Reproducibility status](#reproducibility-status) and
+> [Known blockers](#known-blockers).
 
 ---
 
-## Summary: architecture & principles
+## Scientific motivation
 
-**Architecture — phonemes in, two routes, one shared output:**
+Repetition of a heard word can proceed by two routes. A **dorsal** route holds
+the phonological form in a bounded working-memory state and re-articulates it —
+sub-lexical, generalising to novel forms, but capacity- and length-limited. A
+**ventral** route maps the form onto a lexical-semantic representation and
+regenerates the form from it — robust for known words, but with nothing to look
+up for a nonword. Human repetition behaviour, and the dissociable deficits that
+follow focal damage, motivate having both.
 
-- **Dorsal WM route** (`models/wm_route.py`): a *parametric* recurrent
-  serial-recall network (encoder→decoder, after Botvinick & Plaut 2006). It reads
-  the sequence into a bounded recurrent state and re-articulates it, learning the
-  auditory→motor map and phonotactics. Sub-lexical and generalizing — it repeats
-  novel words and nonwords — but capacity/length-limited and noisy.
-- **Ventral LTM lexicon** (`models/ltm_route.py`): a *parametric*
-  encoder → semantic vector → decoder associative memory that maps a word-form to
-  meaning and regenerates the form. Lexical and weight-based — robust on known
-  words, useless on meaningless ones.
-- A **familiarity gate** (`models/gating.py`) routes each item — known word →
-  lexicon, novel form → buffer — and both speak through one shared **Motor Cortex**
-  layer (`models/motor.py`).
+Lichtheim3 implements both routes explicitly and lets them compete through a
+gate, so that the division of labour is something the model can be *measured
+for* rather than something built in by fiat.
 
-**Why dual-route processing matters.** Neither route alone is enough. A purely
-lexical system repeats familiar words but *cannot repeat novel words or nonwords*
-(there is no meaning to look up); a purely buffer-based system can echo anything
-but is fragile, capacity- and length-limited, and never benefits from experience.
-Human repetition needs both, working in parallel and competing — these are the
-**dorsal and ventral language pathways** (Hickok & Poeppel) and the
-fast-buffer / slow-lexicon division of **Complementary Learning Systems** theory.
-Crucially, having two routes predicts how the system *breaks*: focal damage
-produces dissociable deficits that a single pathway cannot explain.
-
-**Phenomena it aims to explain.**
-
-- **Lexicality / generalization:** known words ride the lexicon; nonwords and
-  novel forms fall back on the buffer.
-- **Frequency × length double dissociation:** the lexicon is frequency-sensitive
-  but length-invariant; the buffer is frequency-invariant but length-sensitive.
-- **Working-memory signatures:** U-shaped primacy & recency, neighborhood-density
-  effects, and sonority-graded (phonetically similar) errors.
-- **Aphasia by lesion (Ueno et al. 2011):** damaging the dorsal pathway impairs
-  nonword repetition while sparing words (conduction aphasia); damaging the
-  ventral pathway does the reverse.
-
-Training uses a realistic, bundled **30k-word** English lexicon (real ARPABET
-pronunciations, frequency-ranked) with **log-frequency** weighting; see
-[Lexicon & frequency](#lexicon--frequency).
+**Historical context.** A separate earlier effort reimplemented Lichtheim2
+faithfully — a tick-by-tick Elman network with copy-back connections — in the
+repository `Neuro-Cog-AI/dual_route_single_word_processing`. That work is
+independent of this one: the two repositories share no Git ancestry and no
+source code. It is mentioned only so the two are not confused.
 
 ---
 
-## Why each route is built the way it is
-
-**Dorsal / WM is a parametric recurrent serial-recall network** (Botvinick &
-Plaut, 2006). A recurrent **encoder** reads the phoneme sequence into a single,
-bounded recurrent state; a recurrent **decoder** re-articulates it. Because it is
-trained on the repetition task (and additionally on a frequency-flat stream of
-pronounceable pseudowords — `config.TrainConfig.dorsal_pool_size`), it learns the
-auditory→motor map
-and the language's phonotactics, and acquires the *general* serial-recall
-computation — so it generalizes to novel words and nonwords. Its frailties are
-emergent, not hand-wired: packing the whole sequence into a fixed-size state plus
-interference noise gives **capacity / length limits** and the **serial-position
-curve**. It is **lexical-frequency-invariant** because a generalizing route gains
-nothing from word identity — frequency-invariance now comes from *what it learns*,
-not from having no weights.
-
-**Ventral / LTM is a proper associative memory.**
-A recurrent encoder maps the phoneme sequence to a 300-d semantic vector that is
-aligned (cosine + MSE) to a lexical semantic vector for the word (a real **GloVe**
-vector if available, otherwise a stable deterministic pseudo-vector); a recurrent
-decoder regenerates the phoneme form from that single semantic vector. Because a
-word lives at one point in semantic space regardless of how many phonemes it has,
-the ventral route is length-invariant; because frequent words get more gradient
-(log-frequency weighting), it is frequency-sensitive.
-
-**The Motor Cortex is a single shared layer.**
-Both routes emit a pre-motor vector in phoneme space; the gate mixes them and the
-*same* `Motor` linear+softmax articulates the phoneme. This is the bottleneck
-through which both streams must speak.
-
----
-
-## The gate (error-suppression / lexicality routing)
-
-The two routes are combined by a single gate (`models/gating.py`):
+## Architecture
 
 ```
-premotor = g · ltm_premotor + (1 − g) · wm_premotor
-g = sigmoid(alpha · (lexical_confidence − 0.5))
+phonemes ─► shared phoneme embedding (64)
+              │
+              ├─► dorsal WM route      GRU encoder→decoder, hidden 128
+              │                        (models/wm_route.py)
+              │
+              └─► ventral LTM route    uniGRU encoder (128) → semantic vector (300)
+                                       → GRU decoder (128)
+                                       (models/ltm_route.py)
+                        │
+                  familiarity / confidence gate      (models/gating.py)
+                  g = sigmoid(alpha · (c_LTM − threshold))
+                        │
+                  premotor mixture (128)
+                        │
+                  shared motor read-out → phoneme logits   (models/motor.py)
 ```
 
-`lexical_confidence` is the LTM route's max cosine similarity to a known lexeme.
-A known word → confident LTM → `g→1` → the ventral route speaks and the WM buffer
-is suppressed; a non-word → low confidence → `g→0` → the dorsal buffer carries the
-trial. This single mechanism drives every result below (the neighborhood, the
-generalization split, and the lesion dissociation).
+Canonical historical settings, as recovered from the archived checkpoints and
+job scripts (**not** from `config.py`):
 
-> The project deliberately ships **one** gating hypothesis. Earlier
-> density-competition and learned-routing variants live in the git history if you
-> want to compare them.
+| | Value |
+|---|---|
+| phoneme embedding | 64 |
+| WM hidden | 128 |
+| LTM encoder | `unigru_last_hidden`, hidden 128, 1 layer |
+| LTM decoder hidden | 128 |
+| semantic dimension | 300 (GloVe) |
+| premotor dimension | 128 |
+| gate `alpha` | 2.0 |
+| gate `threshold` | 0.7 |
+| gate `usage_prior` | 0.5 |
+| WM `interference_noise` | 0.0 |
+| ventral noise | 0.0 |
+| loss weights | rep 1.0, align 1.0, dec 0.5, wm 0.5, gate 0.05 |
+
+> ⚠️ **`config.py` defaults are NOT the canonical training configuration.**
+> Of 46 compared fields, 19 differ; four are architecture-incompatible —
+> `ltm.enc_hidden` and `ltm.dec_hidden` default to 256 (canonical 128), and
+> `ltm.ltm_encoder_mode` defaults to `bigru_masked_mean` (canonical
+> `unigru_last_hidden`), with the derived `bidirectional_encoder` flag
+> following. `wm.interference_noise` defaults to 0.1 (canonical 0.0), and the
+> gate defaults to alpha 4.0 / threshold 0.5 (canonical 2.0 / 0.7).
+>
+> This is **harmless when loading a canonical checkpoint** — checkpoints store
+> their own `cfg_*` dictionaries and the evaluator rebuilds the config from
+> them — but running `python train.py`, whose `__main__` calls
+> `default_config()`, would silently build a **different model**.
+>
+> Authoritative record: [`configs/canonical_93a577f.yaml`](configs/canonical_93a577f.yaml)
+> · field-by-field diff: [`configs/canonical_93a577f_vs_defaults.tsv`](configs/canonical_93a577f_vs_defaults.tsv)
 
 ---
 
-## Quick start
+## Canonical repetition model
+
+Cohort `93a577f`, trained on the full **29,571-word GloVe-covered lexicon**
+(`data/lexicon_en_glove_covered.tsv`) with **no validation split**, seeds
+19–22, **200 epochs** in two stages:
+
+| Stage | Epochs | LR | Notes |
+|---|---|---|---|
+| 1 | 1–100 | `1e-3` | `--save_every_epochs 0` → `seed_<s>_e100.pt` |
+| 2 | 101–200 | `1e-4` | resumes stage 1, `--save_every_epochs 5` |
+
+The learning-rate change is **not a scheduler**: it is a two-job boundary, with
+stage 2 resuming the stage-1 checkpoint under a fresh AdamW at the new rate.
+Optimiser AdamW, batch 64, weight decay `1e-5`, grad clip 1.0, teacher forcing
+1.0, dorsal pseudoword pool 4000, frequency-weighted sampling.
+
+Evaluation: deterministic **autoregressive** decoding, FULL route, exact
+whole-word repetition over the full training lexicon, at epochs 105–200 in steps
+of 5 (20 evaluations per seed, 80 total).
+
+### Selection policy — X = 5
+
+A seed qualifies on **5 consecutive zero-error FULL evaluations**; the selected
+checkpoint is the *first* of the streak.
+
+| Seed | Epoch | Zero streak | Canonical? |
+|---|---|---|---|
+| **19** | **155** | 6 (155–180) | **✅ canonical** |
+| **22** | **140** | 13 (140–200) | **✅ canonical** |
+| 20 | 130 | 2 (130–135) | ❌ historical, non-canonical |
+| 21 | 145 | 0 (never reached zero) | ❌ historical, non-canonical |
+
+Raising the criterion from the earlier X = 2 **changed no selected epoch** —
+seeds 19 and 22 select 155 and 140 at every X. What changed is cohort
+*membership*. Several analyses predate the restriction and legitimately use all
+four historical selected checkpoints as a multi-seed robustness cohort; they
+were not rerun and are not relabelled.
+
+Full policy: [`docs/canonical_selection_X5.md`](docs/canonical_selection_X5.md)
+· cohort creation record: [`docs/full_lexicon_ceiling.md`](docs/full_lexicon_ceiling.md)
+· hashes and roles: [`manifests/checkpoints.tsv`](manifests/checkpoints.tsv)
+
+---
+
+## Cohort transparency
+
+Which result family used which checkpoints. This matters for reading any figure
+in this repository.
+
+| Result family | Checkpoint cohort | Status |
+|---|---|---|
+| Behavioral WFE release (F1–F7, S1–S12) | 19/e155, 20/e130, 21/e145, 22/e140 | **historical four-checkpoint robustness cohort** — not all canonical |
+| Ventral semantic / RSA | 19/e155, 22/e140 | **X = 5 canonical cohort** |
+| Frozen naming/comprehension baseline | 19/e155, 20/e130, 21/e145, 22/e140 | historical four-checkpoint aggregate, descriptive only |
+| Phase 2/3 acquisition and warm-start | 22/e140 | canonical warm-start source |
+| Phase 4 joint multitask from scratch | random initialisation (no source checkpoint) | **ACTIVE / NOT RELEASE-CANONICAL** |
+
+---
+
+## Main scientific findings
+
+### Behavioral route division
+
+From the curated release in
+[`reports/behavioral_wfe_fulllexicon_93a577f/final_release/`](reports/behavioral_wfe_fulllexicon_93a577f/final_release/)
+(7 main figures F1–F7, 12 supplementary S1–S12, 24 indexed tables, each with a
+recorded finding *and* limitation).
+
+- **F1** — for trained real words FULL and WM are at exact ceiling and LTM shows
+  only a very weak slope; for novel pseudowords LTM develops a large length
+  effect while WM stays far more robust and FULL stays near ceiling.
+- **F2** — the LTM−WM pseudoword length-slope difference is positive in all four
+  seeds (+0.183 to +0.246 edit operations per phoneme).
+- **F4** — substitutions dominate, then deletions, then insertions; the burden is
+  concentrated in long LTM pseudowords.
+- **F5** — 87 observed premature end-of-sequence events, 82 of them in LTM, all
+  on pseudowords, none on trained real words.
+- **F6** — the LTM Zipf frequency slope is negative in all four seeds
+  (mean −0.0130); higher-frequency trained words have slightly fewer errors.
+- **F7** — route and lexicality/exposure lead jointly, length is a stable third,
+  morphology negligible. The route-vs-lexicality ordering is **not resolved** by
+  these data.
+- **F3** — serial-position profile: LTM pseudowords show a strong late-position
+  increase; FULL and WM increase much less. This is classified
+  **`DESCRIPTIVE_ONLY`** (zip-mismatch positions, no Levenshtein alignment,
+  pooled over seeds) and should not be read as an estimated effect.
+
+The ceiling zeros for FULL and WM on trained words are **structural**
+(`CEILING_LIMITED`), not evidence that those routes lack length information.
+
+> A "WM rescues LTM errors" result is often discussed, but **no release figure
+> exists for it**. The closest tracked evidence is
+> `reports/behavioral_wfe_fulllexicon_93a577f/yair_corrections/ltm_pseudoword_success/`.
+> It is listed as outstanding work, not as a finding.
+
+### Representational dissociation
+
+From [`reports/ventral_semantic_93a577f/`](reports/ventral_semantic_93a577f/)
+(X = 5 cohort). The RSA is **exact over all 437,207,235 unique word pairs** —
+nothing sampled.
+
+| Seed | Route | vs GloVe (semantic) | vs phonological (raw Levenshtein) | vs phonological (normalised) |
+|---|---|---|---|---|
+| 19/e155 | **LTM** | **0.398** | 0.021 | 0.041 |
+| 19/e155 | **WM** | 0.054 | **0.155** | **0.421** |
+| 22/e140 | **LTM** | **0.388** | 0.026 | 0.041 |
+| 22/e140 | **WM** | 0.055 | **0.130** | **0.430** |
+
+The two reference geometries are nearly independent (GloVe vs raw phonological
+r = 0.0079), so the dissociation is not an artefact of shared structure, and a
+partial regression reproduces it.
+
+Two things must be stated with the result, not after it:
+
+1. **Normalisation sensitivity.** Normalising Levenshtein by length raises the
+   dorsal–phonological correlation from ~0.13–0.16 to ~0.42–0.43. The
+   qualitative conclusion is unchanged and in fact strengthened, but **no single
+   number should be quoted as "the" dorsal–phonology correlation**. Effect sizes
+   are modest overall (best model R² = 0.16).
+2. **The ventral space is not identification-grade.** Semantic target retrieval
+   from `s_hat` is 2.65 % / 2.54 % top-1 against a chance level of 0.0034 %
+   — far above chance, but for a typical word some *other* GloVe vector is
+   nearer than its own (median margin ≈ −0.22). The geometry is organised
+   semantically without individual words being recoverable.
+
+Details: [`RESULTS_SUMMARY.md`](reports/ventral_semantic_93a577f/RESULTS_SUMMARY.md)
+(Phase B) and [`RESULTS_SUMMARY_PHASE_C.md`](reports/ventral_semantic_93a577f/RESULTS_SUMMARY_PHASE_C.md)
+(Phase C).
+
+### Naming and comprehension
+
+Curated in [`reports/naming_comprehension_93a577f/`](reports/naming_comprehension_93a577f/).
+
+**Frozen baseline** (before any task training; mean over the four historical
+checkpoints): comprehension top-1 **2.55 %**, naming from **true GloVe exactly
+0.00 %**, but naming from the model's **own learned internal semantic code
+`s_hat` 98.73 %**. The decoder is already highly functional from its internal
+code; raw GloVe is simply not yet an interchangeable interface. This is what
+motivated training the two tasks explicitly.
+
+**Trained acquisition.** Naming is learnable but the cost rises steeply with
+lexicon size (criterion at 550 exposures for N = 3,288, 1,200 for N = 10,000,
+and 9.8 % after 3,000 exposures at N = 29,571 — a cost result, not a proof of
+impossibility). Comprehension reaches criterion at 3,850 exposures with no
+architecture, scope, objective or hyper-parameter change.
+
+**Catastrophic forgetting.** Single-task training leaves WM numerically
+unchanged (0.999763, bit-identical) while LTM repetition falls from 98.9 % to
+1.4 % (comprehension) or 0.14 % (naming). The damage is specific to the ventral
+route.
+
+**Sequential / block results.** Training Block A then Block B forgets A almost
+completely within 50 B-exposures (97.51 % → 0.02 %) *and* slows B acquisition
+relative to training B alone. Both blocks are individually learnable, so neither
+is a capacity limit. A separate control shows the effect depends on how many
+mappings are trained at once, not on which: each ~10k block reaches 97–98 %
+alone while the identical words sit at ~10 % inside the full lexicon.
+
+### Warm-start multitask
+
+- **Local three-task coexistence.** With repetition rehearsed on the same
+  population as naming and comprehension, all three eventually coexist in the
+  same LTM parameters (criterion met at 720k steps, confirmed at 760k and 780k).
+  Coexistence is **not monotonically stable** — repetition LTM dips well below
+  criterion during training.
+- **Local rehearsal does not preserve global repetition.** Phase 3B endpoint:
+  comprehension 95.1 / naming 100.0 / repetition-on-subset 100.0 but
+  **repetition on the full lexicon 11.8 %**.
+- **Full-lexicon rehearsal largely restores it.** Phase 3C: 91.5 / 100.0 / 97.3 /
+  **97.1 %** full-lexicon. WM is numerically unchanged in every condition.
+- **Preservation–acquisition trade-off.** Global preservation costs
+  comprehension acquisition speed, and LTM is *not* perfectly preserved: 97.1 %
+  is 1.8 absolute points below the canonical 98.9 %.
+
+> ⚠️ **Documented limitation.** The Phase 3B vs Phase 3C comparison changes the
+> repetition rehearsal population from 3,288 to 29,571 while repetition
+> task-step frequency is held fixed, so the number of repetition presentations
+> *per item* also falls (≈2,500 → ≈288 passes). **Rehearsal breadth and
+> effective per-item exposure change together and are not separable from this
+> comparison alone.** The endpoints also differ slightly (780k vs 800k steps).
+
+### Joint multitask from scratch (Phase 4)
+
+**ACTIVE / NOT RELEASE-CANONICAL.** This branch contains the Phase 4A1
+infrastructure — a paired H0/J0 driver that initialises randomly rather than
+warm-starting — but **no release-canonical scientific conclusion**. No Phase 4
+result appears in any manifest or figure inventory here.
+
+---
+
+## Installation
+
+Recommended:
+
+```bash
+conda env create -f environment.yml
+conda activate lichtheim3
+```
+
+Alternative:
 
 ```bash
 pip install -r requirements.txt
-
-# train the model (PyTorch) and run every evaluation end to end
-python run_all.py                                  # quick run (small lexicon)
-python run_all.py --epochs 15 --max_words 8000     # fuller run
 ```
 
-This writes the **whole figure set** — loss curve, generalization, serial-position
-curve, neighborhood, sonority confusion matrix, the frequency × length
-dissociation, and the lesion figures — into an organized tree:
+Both install the same nine packages: `torch`, `numpy`, `matplotlib`,
+`Levenshtein`, `pandas`, `scipy`, `scikit-learn`, `rapidfuzz`, `pytest`.
+`Levenshtein` must be the rapidfuzz-backed distribution, not the legacy
+`python-Levenshtein` wrapper — see the rationale in `requirements.txt`.
+
+**No bit-exact historical reproduction is claimed.** The canonical cohort was
+trained on IDRIS Jean-Zay (SLURM, V100, module `pytorch-gpu/py3/2.6.0`); the
+later adaptation and analysis work records `torch 2.12.1`. The resolved
+CUDA/cuDNN versions and the training-time Python version are **not recoverable**
+from any archived artefact. GPU support is deliberately unpinned — install the
+`torch` build appropriate to your platform.
+
+---
+
+## Data
+
+See [`data/README.md`](data/README.md) for the full inventory.
+
+| Dataset | Status |
+|---|---|
+| `data/lexicon_en_glove_covered.tsv` — canonical 29,571-word lexicon | tracked |
+| `data/lexicon_en.tsv` — legacy 30,000-word lexicon | tracked, **non-canonical** |
+| GloVe 6B 300d | **external download** (~1.04 GB), `bash data/get_glove.sh` |
+| `data/raw-nwr_swp/` — NWR/SWP stimuli | tracked, **redistribution status UNRESOLVED** |
+| `data/eval_external/` — derived evaluation TSVs | tracked, inherits the unresolved status |
+
+---
+
+## Checkpoint access
+
+**Canonical checkpoints are not distributed through normal Git.** They live in a
+frozen archive bundle under `archives/`, which is gitignored, and were produced
+on Jean-Zay.
+
+| File | Seed / epoch | SHA-256 |
+|---|---|---|
+| `seed_19_epoch_0155.pt` | 19 / 155 | `7d05f9c2ad5a53e705f7d55ccde2581754918938d8ca888da35c0a859666478e` |
+| `seed_22_epoch_0140.pt` | 22 / 140 | `a15846cbf3c7df88ed289512bbb20cbefd2121d0deec1b39f363932a743da595` |
+
+Historical, non-canonical: `seed_20_epoch_0130.pt`
+(`b44548b6916ea89c6f099402b78031063445e572932acee8dd7558a73dfc6cfb`) and
+`seed_21_epoch_0145.pt`
+(`ab58092e7c2bfac42ab977352e6d5d6416ca605b71a3eacb777300060b30f5cf`).
+
+Checkpoint distribution is being prepared; integrity hashes and provenance are
+already recorded in [`manifests/checkpoints.tsv`](manifests/checkpoints.tsv).
+**External reproduction requiring checkpoints is therefore not yet fully
+self-contained.**
+
+---
+
+## Reproducibility status
+
+| Result family | Tracked evidence | Needs checkpoint | Needs GloVe | Current status |
+|---|---|---|---|---|
+| Full-lexicon selection | streak audits, `selected_checkpoints.tsv`, mf2 figure | no | no | **inspectable now** |
+| Behavioral analysis (F1–F7, S1–S12) | figures, captions, all pointer tables, provenance JSON, output SHA-256 manifest | no (release loaded none) | no | **figures + numbers inspectable now**; regenerating *predictions* needs checkpoints |
+| RSA / ventral semantic | figures, correlation and partial-regression tables, metadata | to regenerate | yes | **results inspectable now**; recomputation blocked |
+| Frozen naming/comprehension | cohort + per-seed summaries, figure | to regenerate | yes | **results inspectable now**; recomputation blocked |
+| Single-task acquisition | 9 run summaries + trajectories + 6 figures | to regenerate | yes | **results inspectable now**; recomputation blocked |
+| Warm-start multitask | 3 run summaries + trajectories + 4 figures | to regenerate | yes | **results inspectable now**; recomputation blocked |
+| Phase 4 | driver + tests only | n/a (random init) | yes | **ACTIVE / NOT RELEASE-CANONICAL** |
+
+Provenance caveat: seven of the twelve retained naming/comprehension runs were
+executed from a dirty working tree. What that does and does not permit is set
+out in
+[`PROVENANCE_LIMITATIONS.md`](reports/naming_comprehension_93a577f/PROVENANCE_LIMITATIONS.md).
+Phase 3B and Phase 3C, which carry the preservation–acquisition result, were
+both clean.
+
+---
+
+## Where things live
 
 ```
-figures/train/   figures/eval/   figures/ablation/   figures/summary.json
+configs/      canonical_93a577f.yaml            recovered historical training recipe
+              canonical_93a577f_vs_defaults.tsv 46-field diff against config.py
+docs/         canonical_selection_X5.md         which cohort each result family uses
+              full_lexicon_ceiling.md           cohort creation record (historical X=2)
+manifests/    checkpoints.tsv  datasets.tsv  figures.tsv
+reports/      fulllexicon_cohort_93a577f/       selection evidence
+              behavioral_wfe_fulllexicon_93a577f/   F1-F7, S1-S12, tables, final_release/
+              ventral_semantic_93a577f/         RSA, PCA, semantic identification
+              naming_comprehension_93a577f/     curated runs, figures, manifest, limitations
+models/       wm_route.py ltm_route.py gating.py motor.py dual_route.py
+scripts/      behavioral_analysis/  length_effect_analysis/
+              ventral_semantic/  naming_comprehension/
 ```
 
-For real GloVe semantic targets, fetch them once:
+Every figure in the publication-oriented set is indexed in
+[`manifests/figures.tsv`](manifests/figures.tsv) with its numeric source,
+generating script, checkpoint cohort, code commit and documented limitation.
+
+---
+
+## Reproduction commands
+
+Commands below are taken from the archived job scripts and from the scripts'
+own CLI definitions. **Where no robust command exists, that is said rather than
+guessed.**
+
+Canonical training (from `control/stage{1,2}_*.sbatch` in the archived bundle):
 
 ```bash
-bash data/get_glove.sh        # -> data/glove.6B.300d.txt (auto-detected)
+# stage 1 — epochs 1-100
+python scripts/train_checkpoint.py \
+  --lexicon_path data/lexicon_en_glove_covered.tsv \
+  --max_words 30000 --train_all_words \
+  --epochs 100 --seed <SEED> --split_seed 0 \
+  --batch_size 64 --lr 1e-3 --num_workers 0 --save_every_epochs 0 \
+  --ltm_encoder_mode unigru_last_hidden --hidden_size 128 \
+  --teacher_forcing_ratio 1.0 --interference_noise 0.0 --ventral_noise 0.0 \
+  --gate_alpha 2.0 --gate_threshold 0.7 \
+  --ckpt <CKPT_DIR>/seed_<SEED>_e100.pt --out_dir <RUN_DIR>
+
+# stage 2 — epochs 101-200 (architecture restored from the stage-1 checkpoint)
+python scripts/train_checkpoint.py \
+  --resume_from <CKPT_DIR>/seed_<SEED>_e100.pt \
+  --epochs 200 --lr 1e-4 --num_workers 0 --save_every_epochs 5 \
+  --ckpt <CKPT_DIR>/seed_<SEED>.pt --out_dir <RUN_DIR>
 ```
 
-Tip: run `python -m tests.smoke_test` first — it trains a tiny model and runs the
-evaluations in a few seconds, catching any environment issue before a full run.
-
----
-
-## Lexicon & frequency
-
-The repo ships a **realistic English lexicon** in `data/lexicon_en.tsv`: the
-**30,000 most frequent words** with real **CMU ARPABET** pronunciations and a
-frequency rank (the top ~9k carry a measured frequency rank; the long tail is
-real CMUdict∩hunspell words with continued Zipfian rank). It loads offline with
-no downloads. Semantic targets for the ventral route use **GloVe** if you place
-`glove.6B.300d.txt` in `data/`, otherwise a stable deterministic pseudo-vector.
-
-Frequency enters through **exposure**: words are *presented* in proportion to
-their **log frequency** (`data.lexicon.logfreq_weights`) — the PyTorch dataset's
-sampler draws words by these weights — rather than re-weighting the loss. Word
-frequencies are Zipfian, so the log compresses
-the huge high-frequency tail (raw frequency would mean essentially only ever
-seeing *the/of/and*), matching practice in the word-repetition literature.
-Rebuild the lexicon from your own frequency list with:
+Ceiling evaluation of a checkpoint:
 
 ```bash
-python -m data.build_lexicon_en  RANKED_WORDS.txt  30000
+python scripts/evaluate_train_lexicon_ceiling.py \
+  --ckpt <CHECKPOINT> --decode autoregressive --out_dir <OUT_DIR>
 ```
+
+Frozen naming/comprehension probe and cohort aggregation:
+
+```bash
+python scripts/naming_comprehension/frozen_probe.py --ckpt <CHECKPOINT> --out-dir <DIR>
+python scripts/naming_comprehension/aggregate_cohort.py --run-dir <DIR> --seeds 19 20 21 22
+```
+
+Tests:
+
+```bash
+python -m pytest -m "not slow" tests/
+```
+
+**Not yet available as robust commands.** `run_all.py` drives an obsolete
+pipeline from June 2026 and must not be used to reproduce anything in this
+README. The `scripts/ventral_semantic/` modules take no command-line arguments —
+their input paths are module constants — so the RSA and semantic-identification
+figures cannot currently be regenerated by an external user without editing the
+source. There is no single end-to-end reproduction entry point.
 
 ---
 
-## Loss
+## Known blockers
 
-```
-L_total =  λ_rep  * CE(repetition, target)          # both routes -> motor
-         + λ_align* (1 - cos(s_hat, glove)) + MSE    # ventral semantic alignment
-         + λ_dec  * CE(ltm_decode, target)           # ventral form reconstruction
-         + λ_wm   * CE(wm_only, target)              # keep WM honest (aux)
-         + λ_gate * gate_regularizer                  # route-usage prior
-```
+**Blocking a public release**
 
-See `losses.py` and `config.py:LossConfig` for the default weights and the
-rationale behind each term.
+1. NWR/SWP redistribution status is **unresolved**; no permission is claimed.
+2. No repository LICENSE has been agreed.
+3. Canonical checkpoints are not yet distributed.
+4. This integrated tree is not the repository default branch.
 
----
+**Important before handoff**
 
-## Training curve + unseen-word generalization
+5. `scripts/ventral_semantic/` needs command-line arguments.
+6. No one-command evaluation entry point.
+7. `data/get_glove.sh` performs no checksum verification, and no trustworthy
+   published checksum is recorded in this repository.
+8. The test suite has not been executed in this environment.
+9. No Git tags exist for `93a577f` or the integration commits.
+10. No release figure exists for the WM-rescue claim.
 
-`run_all.py` saves a `training_loss.png` (train vs held-out repetition loss) and
-runs `evaluate/generalization.py`, which repeats **trained vs novel (held-out)
-words** through each route in isolation — the protocol from Chang et al.,
-*Modelling Word Repetition with Deep Neural Networks* (arXiv:2506.13450). The
-expected pattern is a dual-route **crossover**: the **ventral** route wins on
-trained words but fails on novel forms (lexical knowledge does not transfer to
-non-words), the **dorsal** route generalizes to novel forms but falls off with
-length, and the **gated** model tracks the better route item-by-item.
+**Polish**
 
----
-
-## Lesion / ablation studies (Ueno et al. 2011, "Lichtheim 2")
-
-Following Ueno, Saito, Rogers & Lambon Ralph (2011, *Neuron* 72:385–396),
-`evaluate/ablation.py` simulates damage by **removing a proportion of a pathway's
-units and adding noise over its output**, titrating severity and averaging over
-random "patients" (seeds), reported as mean ± SE (figures in
-`figures/ablation/`). Lesioning each route reproduces the classic
-**double dissociation**:
-
-| Lesion | Word (trained) repetition | Nonword (novel) repetition | Aphasia analogue |
-|--------|---------------------------|----------------------------|------------------|
-| **Dorsal (WM/iSMG)** | spared (~1.0) | abolished (→ 0) | conduction aphasia |
-| **Ventral (LTM/vATL)** | abolished (→ 0) | spared (~0.46) | lexical-semantic (SD-like) |
-
-This mirrors Ueno et al.'s Figures 3–4 (and Fig 7: a ventral-only system cannot
-repeat nonwords). Figures produced: `ablation_severity.png` (two-panel severity
-curves), `ablation_dissociation.png` (the dissociation at a fixed severity), and
-`ablation_length.png` (a dorsal lesion erases nonword repetition at every
-length). The same study runs on the full PyTorch model via
-`evaluate/ablation.py` (lesions applied with forward hooks; included in
-`run_all.py`).
-
-> Ueno, T., Saito, S., Rogers, T. T., & Lambon Ralph, M. A. (2011). Lichtheim 2:
-> Synthesizing aphasia and the neural basis of language in a neurocomputational
-> model of the dual dorsal-ventral language pathways. *Neuron, 72*(2), 385–396.
+11. Obsolete June-2026 figures under `figures/` are still tracked; they describe
+    a superseded model and are flagged `OBSOLETE_SUPERSEDED` in
+    `manifests/figures.tsv`.
+12. No `CITATION.cff`.
+13. Four ventral word-map PNGs are 9–16 MB each.
 
 ---
 
-## Layout
+## Reference
 
-```
-lichtheim3/
-├── config.py                # all hyperparameters as dataclasses
-├── run_all.py               # train + evaluate end-to-end
-├── train.py                 # training loop (+ loss-curve plot)
-├── losses.py                # L_total assembly
-├── data/
-│   ├── phonemes.py          # ARPABET inventory + sonority/phonetic features
-│   ├── lexicon.py           # bundled-lexicon loader + log-frequency weights
-│   ├── lexicon_en.tsv       # 30k real words + ARPABET + frequency rank
-│   ├── build_lexicon_en.py  # (re)build lexicon_en.tsv from a frequency list
-│   ├── get_glove.sh         # fetch GloVe 6B 300d into data/
-│   └── dataset.py           # Dataset + log-frequency sampler + pseudoword pool
-├── models/
-│   ├── wm_route.py          # dorsal recurrent serial-recall net
-│   ├── ltm_route.py         # ventral encoder/decoder
-│   ├── motor.py             # shared motor bottleneck
-│   ├── gating.py            # error-suppression gate
-│   └── dual_route.py        # top-level model
-├── evaluate/
-│   ├── hooks.py             # activation capture
-│   ├── primacy_recency.py   neighborhood.py   sonority.py
-│   ├── dissociation.py      # frequency × length
-│   ├── generalization.py    # trained vs unseen words
-│   └── ablation.py          # Ueno-style lesions
-├── tests/smoke_test.py      # fast end-to-end sanity check
-└── utils/
-    ├── seed.py
-    └── plotting.py
-```
+Ueno, T., Saito, S., Rogers, T. T., & Lambon Ralph, M. A. (2011). Lichtheim 2:
+Synthesizing aphasia and the neural basis of language in a neurocomputational
+model of the dual dorsal-ventral language pathways. *Neuron, 72*(2), 385–396.

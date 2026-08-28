@@ -45,9 +45,16 @@ from scripts.naming_comprehension.train_tasks import (                 # noqa: E
     band_of_rank, select_nested_subset)
 from utils.provenance import git_state, sha256_file                    # noqa: E402
 
-CANONICAL = ("/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/archives/"
-             "fulllexicon_93a577f/extracted/fulllexicon_final_bundle_93a577f/"
-             "selected_checkpoints/seed_22_epoch_0140.pt")
+# Canonical source checkpoint (seed 22 / epoch 140).  Repository-relative by
+# default so the script is portable; override with LICHTHEIM3_CANONICAL_CKPT
+# when the archived bundle lives outside the working tree (archives/ is
+# gitignored).  Resolves to the same file as before when the bundle sits at
+# the repository root, so behaviour is unchanged.
+CANONICAL = os.environ.get(
+    "LICHTHEIM3_CANONICAL_CKPT",
+    os.path.join(ROOT, "archives", "fulllexicon_93a577f", "extracted",
+                 "fulllexicon_final_bundle_93a577f", "selected_checkpoints",
+                 "seed_22_epoch_0140.pt"))
 RUN_DIR = "outputs/naming_comprehension_93a577f/phase2c_c3_subset3288_seed22"
 OUT_DIR = "outputs/naming_comprehension_93a577f/phase2d1_c3_subset3288_diagnostic"
 CHUNK = 256
