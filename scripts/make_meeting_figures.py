@@ -177,7 +177,16 @@ figure is drawn.
 
 # ------------------------------------------------------- mf2 stable zero
 
-def figure_stable_zero() -> Dict[str, str]:
+def figure_stable_zero(out_dir: str | None = None) -> Dict[str, str]:
+    """Stable-zero model-selection figure (mf2).
+
+    Reads only the tracked stable-zero audit tables under
+    reports/.../yair_corrections/stable_zero_audit/.  No checkpoint, no GloVe,
+    no NWR/SWP data and no model inference are involved.
+
+    out_dir defaults to the canonical meeting_figures directory so existing
+    behaviour is unchanged; pass an explicit directory to write elsewhere.
+    """
     traj = pd.read_csv(os.path.join(SZ, "stable_zero_trajectory.tsv"), sep="\t")
     streaks = pd.read_csv(os.path.join(SZ, "stable_zero_streaks.tsv"), sep="\t")
     verd = pd.read_csv(os.path.join(SZ, "stable_zero_verdicts.tsv"), sep="\t")
@@ -303,7 +312,8 @@ selected by the fallback rule (earliest checkpoint with the minimum error count,
 Read from the audited trajectories only; nothing is recomputed and no training
 or inference was run.
 """
-    return save_figure(fig, OUT, "mf2_stable_zero_bottom_line", caption)
+    return save_figure(fig, out_dir if out_dir is not None else OUT,
+                       "mf2_stable_zero_bottom_line", caption)
 
 
 def main() -> int:
