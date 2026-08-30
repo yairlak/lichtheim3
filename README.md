@@ -358,7 +358,7 @@ self-contained.**
 
 | Result family | Tracked evidence | Needs checkpoint | Needs GloVe | Current status |
 |---|---|---|---|---|
-| Full-lexicon selection | streak audits, `selected_checkpoints.tsv`, mf2 figure | no | no | **inspectable now** |
+| Full-lexicon selection | streak audits, `selected_checkpoints.tsv`, mf2 figure | no | no | **REPRODUCIBLE NOW** — `python scripts/reproduce.py stable-zero --out-dir <DIR>` |
 | Behavioral analysis (F1–F7, S1–S12) | figures, captions, all pointer tables, provenance JSON, output SHA-256 manifest, and the validated aggregate reference tables under `reports/.../repro_inputs/` | no (release loaded none) | no | **PARTIAL** — figures and numbers inspectable now, and the validated-reference cross-checks run from a clone; tests needing the untracked per-item table skip (see below) |
 | RSA / ventral semantic | figures, correlation and partial-regression tables, metadata | to regenerate | yes | **results inspectable now**; recomputation blocked |
 | Frozen naming/comprehension | cohort + per-seed summaries, figure | to regenerate | yes | **results inspectable now**; recomputation blocked |
@@ -413,6 +413,28 @@ Every figure in the publication-oriented set is indexed in
 generating script, checkpoint cohort, code commit and documented limitation.
 
 ---
+
+## Reproduce a tracked result
+
+Stable-zero model selection is currently the **only** result that regenerates
+end to end from the repository alone — no checkpoint, no GloVe, no NWR/SWP data,
+no CUDA and no training:
+
+```bash
+python scripts/reproduce.py stable-zero --out-dir reproduced/stable_zero
+```
+
+This redraws the canonical model-selection figure (mf2) from the tracked
+stable-zero audit tables and writes PNG, PDF, SVG and the caption. Verified from
+a fresh clone: the PNG is pixel-identical to the tracked canonical figure and the
+caption is byte-identical. `--out-dir` is required, so nothing is written unless
+you say where.
+
+Nothing is recomputed: the figure is drawn from already-validated audit tables
+and its annotations are asserted against those tables as it is drawn.
+
+**No other result family is self-contained yet** — see
+[Reproducibility status](#reproducibility-status) for what each one still needs.
 
 ## Reproduction commands
 
