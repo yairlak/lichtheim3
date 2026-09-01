@@ -1,0 +1,107 @@
+{
+  "seed": 22,
+  "conditions": {
+    "H0": {
+      "condition": "H0",
+      "regime": "h0",
+      "seed": 22,
+      "final_epoch": 440,
+      "final_step": 203720,
+      "retrieval_enabled": false,
+      "naming_enabled": false,
+      "lambda_C": 0.0,
+      "lambda_N": 0.0,
+      "tau": null,
+      "presence_source": "derived from regime (pre-factorial checkpoint)",
+      "subset_definition_sha256": "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf",
+      "glove_found": 29571,
+      "glove_fallback": 0,
+      "git_commit": "581406f50d8d98180ddb966ca492cb1be493e562",
+      "git_tracked_dirty": false,
+      "source_dirs": [
+        "outputs/joint_scratch/phase4a2a_h0_seed22_e160",
+        "outputs/joint_scratch/phase4a2c_h0_seed22_e440"
+      ],
+      "n_snapshots": 89
+    },
+    "C-only": {
+      "condition": "C-only",
+      "regime": "c_only",
+      "seed": 22,
+      "final_epoch": 440,
+      "final_step": 203720,
+      "retrieval_enabled": true,
+      "naming_enabled": false,
+      "lambda_C": 0.087,
+      "lambda_N": 0.0,
+      "tau": 0.1,
+      "presence_source": "explicit",
+      "subset_definition_sha256": "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf",
+      "glove_found": 29571,
+      "glove_fallback": 0,
+      "git_commit": "8acd1b771b50fcccfd5461f971c826b29750e935",
+      "git_tracked_dirty": false,
+      "source_dirs": [
+        "outputs/joint_scratch/phase4a3b_c_only_seed22_e440"
+      ],
+      "n_snapshots": 89
+    },
+    "N-only": {
+      "condition": "N-only",
+      "regime": "n_only",
+      "seed": 22,
+      "final_epoch": 440,
+      "final_step": 203720,
+      "retrieval_enabled": false,
+      "naming_enabled": true,
+      "lambda_C": 0.0,
+      "lambda_N": 1.0,
+      "tau": null,
+      "presence_source": "explicit",
+      "subset_definition_sha256": "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf",
+      "glove_found": 29571,
+      "glove_fallback": 0,
+      "git_commit": "8acd1b771b50fcccfd5461f971c826b29750e935",
+      "git_tracked_dirty": false,
+      "source_dirs": [
+        "outputs/joint_scratch/phase4a3c_n_only_seed22_e440"
+      ],
+      "n_snapshots": 89
+    },
+    "J0": {
+      "condition": "J0",
+      "regime": "j0",
+      "seed": 22,
+      "final_epoch": 440,
+      "final_step": 203720,
+      "retrieval_enabled": true,
+      "naming_enabled": true,
+      "lambda_C": 0.087,
+      "lambda_N": 1.0,
+      "tau": 0.1,
+      "presence_source": "derived from regime (pre-factorial checkpoint)",
+      "subset_definition_sha256": "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf",
+      "glove_found": 29571,
+      "glove_fallback": 0,
+      "git_commit": "581406f50d8d98180ddb966ca492cb1be493e562",
+      "git_tracked_dirty": false,
+      "source_dirs": [
+        "outputs/joint_scratch/phase4a2b_j0_seed22_e160",
+        "outputs/joint_scratch/phase4a2c_j0_seed22_e440"
+      ],
+      "n_snapshots": 89
+    }
+  },
+  "alignment": {
+    "n_snapshots": 89,
+    "first_step": 0,
+    "last_step": 203720,
+    "identical_across_conditions": true,
+    "duplicate_steps": false
+  },
+  "lexicon_size": 29571,
+  "subset_size": 3288,
+  "final_epoch": 440,
+  "final_step": 203720,
+  "note": "analysis-only; no training, no scientific artifact was written or modified"
+}

@@ -1,0 +1,13 @@
+quantity	errors
+E_H0	522
+E_C_only	1217
+E_N_only	932
+E_J0	1635
+retrieval_cost_naming_off	695
+retrieval_cost_naming_on	703
+naming_cost_retrieval_off	410
+naming_cost_retrieval_on	418
+additive_prediction	1105
+observed_J0_cost	1113
+interaction	8
+lexicon_size	29571

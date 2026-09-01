@@ -1,0 +1,72 @@
+{
+  "H0": {
+    "errors": {
+      "full": 2,
+      "wm": 2,
+      "ltm": 522
+    }
+  },
+  "C-only": {
+    "errors": {
+      "full": 1,
+      "wm": 2,
+      "ltm": 1217
+    }
+  },
+  "N-only": {
+    "errors": {
+      "full": 1,
+      "wm": 15,
+      "ltm": 932
+    },
+    "wm_error_detail": {
+      "n_wm_errors": 15,
+      "rescued_by_full": 15,
+      "also_wrong_in_ltm": 3,
+      "in_subset3288": 1,
+      "in_probe": 2,
+      "mean_target_length": 8.27,
+      "edit_distances": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "words": [
+        "consisting",
+        "consists",
+        "definitive",
+        "dualistic",
+        "enlist",
+        "felicitate",
+        "holistic",
+        "inelastic",
+        "scoundrel",
+        "shoplifting",
+        "skinflint",
+        "sleepwalk",
+        "sleepwalker",
+        "sleepwalking",
+        "sleepwear"
+      ]
+    }
+  },
+  "J0": {
+    "errors": {
+      "full": 2,
+      "wm": 1,
+      "ltm": 1635
+    }
+  }
+}

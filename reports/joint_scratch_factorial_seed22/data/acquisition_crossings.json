@@ -1,0 +1,198 @@
+{
+  "comprehension_top1": {
+    "H0": {
+      "0.20": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.50": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.80": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.90": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.95": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      }
+    },
+    "C-only": {
+      "0.20": {
+        "first_epoch": 25,
+        "sustained_epoch": 25
+      },
+      "0.50": {
+        "first_epoch": 50,
+        "sustained_epoch": 50
+      },
+      "0.80": {
+        "first_epoch": 145,
+        "sustained_epoch": 145
+      },
+      "0.90": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.95": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      }
+    },
+    "N-only": {
+      "0.20": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.50": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.80": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.90": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.95": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      }
+    },
+    "J0": {
+      "0.20": {
+        "first_epoch": 35,
+        "sustained_epoch": 35
+      },
+      "0.50": {
+        "first_epoch": 90,
+        "sustained_epoch": 90
+      },
+      "0.80": {
+        "first_epoch": 310,
+        "sustained_epoch": 340
+      },
+      "0.90": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.95": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      }
+    }
+  },
+  "naming_exact": {
+    "H0": {
+      "0.20": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.50": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.80": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.95": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.99": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "1.00": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      }
+    },
+    "C-only": {
+      "0.20": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.50": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.80": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.95": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "0.99": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      },
+      "1.00": {
+        "first_epoch": null,
+        "sustained_epoch": null
+      }
+    },
+    "N-only": {
+      "0.20": {
+        "first_epoch": 5,
+        "sustained_epoch": 5
+      },
+      "0.50": {
+        "first_epoch": 5,
+        "sustained_epoch": 5
+      },
+      "0.80": {
+        "first_epoch": 10,
+        "sustained_epoch": 10
+      },
+      "0.95": {
+        "first_epoch": 10,
+        "sustained_epoch": 10
+      },
+      "0.99": {
+        "first_epoch": 25,
+        "sustained_epoch": 60
+      },
+      "1.00": {
+        "first_epoch": 105,
+        "sustained_epoch": 105
+      }
+    },
+    "J0": {
+      "0.20": {
+        "first_epoch": 5,
+        "sustained_epoch": 5
+      },
+      "0.50": {
+        "first_epoch": 5,
+        "sustained_epoch": 5
+      },
+      "0.80": {
+        "first_epoch": 10,
+        "sustained_epoch": 10
+      },
+      "0.95": {
+        "first_epoch": 10,
+        "sustained_epoch": 10
+      },
+      "0.99": {
+        "first_epoch": 20,
+        "sustained_epoch": 20
+      },
+      "1.00": {
+        "first_epoch": 105,
+        "sustained_epoch": 105
+      }
+    }
+  }
+}
