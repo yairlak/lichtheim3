@@ -98,7 +98,8 @@ from utils.provenance import git_state, sha256_file                       # noqa
 from utils.seed import set_seed                                           # noqa: E402
 
 from scripts.naming_comprehension.train_tasks import (                    # noqa: E402
-    comprehension_forward, evaluate_comprehension_subset, evaluate_naming,
+    canonical_phonology_indices, comprehension_forward,
+    evaluate_comprehension_subset, evaluate_naming,
     make_batches, naming_objective, repetition_snapshot, retrieval_loss,
     select_nested_subset, select_representative_subset, subset_definition_hash,
     subset_records, verify_bank_mapping,
@@ -184,6 +185,50 @@ SUBSET_PER_BAND = 822
 SUBSET_SEED = 0
 EXPECTED_SUBSET_HASH = (
     "df48250092cdd8a6d37c33bc008b915f84a1e829ddaa2bafbaa593cce446d5cf")
+
+# ---- FINAL population mode (Phase FINAL-1A) ----
+# R = all 29,571 entries (unchanged); N = all 29,571 entries; C = one
+# canonical target per exact phonological form (highest-frequency member per
+# class, tie-break lowest bank index; see canonical_phonology_indices).  The
+# retrieval bank stays the FULL 29,571-row GloVe bank in every mode, so the
+# excluded homophone IDs remain retrieval competitors.  This makes 100% strict
+# word-ID top-1 mathematically attainable on the C population (FINAL-0
+# established the full-lexicon word-ID top-1 ceiling is 94.62% because
+# homophones are bit-identical encoder inputs).
+FINAL_FULL_MODE = "final_full"
+EXPECTED_CANONICAL_C_N = 27_981
+EXPECTED_CANONICAL_C_HASH = (
+    "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50")
+HOMOPHONE_POLICY_NOTE = (
+    "Comprehension uses ONE canonical lexical target per exact phonological "
+    "encoder input (phoneme-ID sequence): the highest-frequency member of each "
+    "phonological equivalence class (lowest LexEntry.rank; ties break to the "
+    "lowest bank index, provably inert on the canonical lexicon). Excluded "
+    "homophone IDs remain full-bank retrieval competitors and full members of "
+    "the repetition and naming populations. Related but NOT identical to Ueno "
+    "et al., who removed homophones from the training corpus outright."
+)
+
+# Developmental (cadence) evaluation in final_full mode runs on fixed
+# deterministic samples so evaluation cost stays at the historical subset
+# scale; full-population evaluation runs at the endpoint (--endpoint-eval).
+# Seed namespace disjoint from the stream seeds (S*1_000_003+{0..3}), the
+# subset selectors (0.., 1_000_000+..) and the probe (2_000_000+..).
+DEV_EVAL_SIZE = 3288
+DEV_EVAL_SEED = 3_000_000
+
+
+def deterministic_sample(population: Sequence[int], n: int, seed: int) -> List[int]:
+    """First `n` of a seeded permutation of `population`, returned sorted.
+
+    A pure function of (population, n, seed); never touches the global RNG.
+    """
+    pop = [int(i) for i in population]
+    if len(pop) <= n:
+        return sorted(pop)
+    g = torch.Generator().manual_seed(int(seed))
+    perm = torch.randperm(len(pop), generator=g).tolist()
+    return sorted(pop[i] for i in perm[:n])
 
 # ---- default scientific run length (the Phase 4A2 knob) ----
 # 160 R epochs spans the whole canonical stable-zero window (e140 seed22,
@@ -472,27 +517,94 @@ class JointScratchTrainer:
             self.model.parameters(), lr=LR_STAGE1,
             weight_decay=self.cfg.train.weight_decay)
 
-        # ---- C / N population ----
+        # ---- C / N populations ----
+        # Legacy modes ("nested", "representative"): C and N share one subset
+        # population, exactly as in Phases 2-4.  FINAL_FULL_MODE: C = the
+        # canonical one-target-per-phonology population, N = the full lexicon.
         self.subset_mode = subset_mode
-        if subset_mode == "nested":
-            self.subset_idx = select_nested_subset(
-                self.entries, subset_per_band, subset_seed=SUBSET_SEED)
-        elif subset_mode == "representative":
-            self.subset_idx = select_representative_subset(
-                self.entries, subset_size, subset_seed=SUBSET_SEED)
+        if subset_mode == FINAL_FULL_MODE:
+            self.comp_idx = canonical_phonology_indices(self.entries)
+            self.naming_idx = list(range(len(self.entries)))
+            self.comp_population_name = "canonical_phonology"
+            self.naming_population_name = "full_lexicon"
+            self.comp_hash = subset_definition_hash(
+                subset_records(self.entries, self.comp_idx, self.vocab))
+            self.naming_hash = subset_definition_hash(
+                subset_records(self.entries, self.naming_idx, self.vocab))
+            # The frozen expectations apply exactly when the lexicon is the
+            # canonical 29,571-entry GloVe-covered lexicon.
+            if require_subset_hash:
+                if len(self.entries) != CANONICAL_N_WORDS:
+                    raise RuntimeError(
+                        f"final_full expects the canonical {CANONICAL_N_WORDS}-entry "
+                        f"lexicon, got {len(self.entries)} entries.")
+                if len(self.comp_idx) != EXPECTED_CANONICAL_C_N:
+                    raise RuntimeError(
+                        f"canonical comprehension population has {len(self.comp_idx)} "
+                        f"targets, expected {EXPECTED_CANONICAL_C_N}.")
+                if self.comp_hash != EXPECTED_CANONICAL_C_HASH:
+                    raise RuntimeError(
+                        f"canonical C population hash mismatch:\n"
+                        f"  expected {EXPECTED_CANONICAL_C_HASH}\n"
+                        f"  got      {self.comp_hash}")
+            # Compatibility aliases: the legacy checkpoint/provenance fields
+            # named subset_* refer to the COMPREHENSION population in this mode.
+            self.subset_idx = self.comp_idx
+            self.subset_hash = self.comp_hash
         else:
-            raise ValueError(f"unknown subset_mode {subset_mode!r}")
-        self.subset_hash = subset_definition_hash(
-            subset_records(self.entries, self.subset_idx, self.vocab))
-        if require_subset_hash and self.subset_hash != EXPECTED_SUBSET_HASH:
-            raise RuntimeError(
-                f"subset definition hash mismatch:\n"
-                f"  expected {EXPECTED_SUBSET_HASH}\n"
-                f"  got      {self.subset_hash}\n"
-                f"The C/N population is not the frozen Phase 2C subset3288.")
-        verify_bank_mapping(self.entries, self.bank_raw, self.subset_idx)
-        self.probe_idx = out_of_subset_probe(self.entries, self.subset_idx,
-                                             n=len(self.subset_idx))
+            if subset_mode == "nested":
+                self.subset_idx = select_nested_subset(
+                    self.entries, subset_per_band, subset_seed=SUBSET_SEED)
+            elif subset_mode == "representative":
+                self.subset_idx = select_representative_subset(
+                    self.entries, subset_size, subset_seed=SUBSET_SEED)
+            else:
+                raise ValueError(f"unknown subset_mode {subset_mode!r}")
+            self.subset_hash = subset_definition_hash(
+                subset_records(self.entries, self.subset_idx, self.vocab))
+            if require_subset_hash and self.subset_hash != EXPECTED_SUBSET_HASH:
+                raise RuntimeError(
+                    f"subset definition hash mismatch:\n"
+                    f"  expected {EXPECTED_SUBSET_HASH}\n"
+                    f"  got      {self.subset_hash}\n"
+                    f"The C/N population is not the frozen Phase 2C subset3288.")
+            self.comp_idx = self.naming_idx = self.subset_idx
+            self.comp_population_name = self.naming_population_name = (
+                f"subset{len(self.subset_idx)}_{subset_mode}")
+            self.comp_hash = self.naming_hash = self.subset_hash
+        verify_bank_mapping(self.entries, self.bank_raw, self.comp_idx)
+        if self.naming_idx is not self.comp_idx:
+            verify_bank_mapping(self.entries, self.bank_raw,
+                                self.naming_idx[::97])
+
+        # ---- out-of-subset repetition probe ----
+        # Meaningful only when the C/N populations leave a complement.  In
+        # FINAL_FULL_MODE the naming/repetition populations cover the whole
+        # lexicon, so the probe is explicitly disabled rather than faked.
+        if subset_mode == FINAL_FULL_MODE:
+            self.probe_idx: List[int] = []
+            self.probe_note = (
+                "disabled: naming and repetition populations cover the full "
+                "lexicon, so no out-of-subset complement exists")
+        else:
+            self.probe_idx = out_of_subset_probe(self.entries, self.subset_idx,
+                                                 n=len(self.subset_idx))
+            self.probe_note = "uniform sample of the subset complement"
+
+        # ---- developmental-evaluation populations ----
+        # Legacy modes evaluate on the subset itself (bit-identical to the
+        # historical behaviour).  final_full evaluates the cadence on fixed
+        # deterministic samples and the full populations at the endpoint.
+        if subset_mode == FINAL_FULL_MODE:
+            self.dev_comp_idx = deterministic_sample(
+                self.comp_idx, DEV_EVAL_SIZE, DEV_EVAL_SEED)
+            self.dev_naming_idx = deterministic_sample(
+                self.naming_idx, DEV_EVAL_SIZE, DEV_EVAL_SEED + 1)
+            self.dev_rep_idx = deterministic_sample(
+                range(len(self.entries)), DEV_EVAL_SIZE, DEV_EVAL_SEED + 2)
+        else:
+            self.dev_comp_idx = self.dev_naming_idx = self.dev_rep_idx = (
+                self.subset_idx)
 
         # ---- dorsal pool ----
         self.pool_entries = build_pool_entries(
@@ -513,10 +625,10 @@ class JointScratchTrainer:
                                         self.stream_seeds["repetition"], weights=w),
             "pool": CounterStream("pool", list(range(len(self.pool_entries))),
                                   batch_size, self.stream_seeds["pool"]),
-            "comprehension": CounterStream("comprehension", self.subset_idx,
+            "comprehension": CounterStream("comprehension", self.comp_idx,
                                            batch_size,
                                            self.stream_seeds["comprehension"]),
-            "naming": CounterStream("naming", self.subset_idx, batch_size,
+            "naming": CounterStream("naming", self.naming_idx, batch_size,
                                     self.stream_seeds["naming"]),
         }
         self.cursors: Dict[str, int] = {k: 0 for k in STREAM_NAMES}
@@ -619,13 +731,13 @@ class JointScratchTrainer:
         cadence can never become a hidden experimental factor."""
         with preserved_rng(), torch.no_grad():
             rep = repetition_snapshot(self.model, self.vocab, self.entries,
-                                      self.subset_idx, self.bank_raw,
+                                      self.dev_rep_idx, self.bank_raw,
                                       self.device, include_teacher_forced=False)
             comp = evaluate_comprehension_subset(
                 self.model, self.vocab, self.entries, self.bank_raw,
-                self.subset_idx, self.device)
+                self.dev_comp_idx, self.device)
             nam = evaluate_naming(self.model, self.vocab, self.entries,
-                                  self.bank_raw, self.subset_idx, self.device,
+                                  self.bank_raw, self.dev_naming_idx, self.device,
                                   NAMING_MAX_STEPS, return_per_item=True)
             per_item = nam.pop("_per_item", [])
             out = {
@@ -655,8 +767,14 @@ class JointScratchTrainer:
                 "full_rep_ltm": float("nan"),
                 "full_rep_full": float("nan"),
                 "full_rep_wm": float("nan"),
+                "full_comp_top1": float("nan"),
+                "full_comp_top5": float("nan"),
+                "full_naming_exact": float("nan"),
+                "full_naming_wer": float("nan"),
             }
-            if with_probe:
+            # The probe is skipped (NaN, never fabricated) when no
+            # out-of-subset complement exists (final_full mode).
+            if with_probe and self.probe_idx:
                 pr = repetition_snapshot(self.model, self.vocab, self.entries,
                                          self.probe_idx, self.bank_raw,
                                          self.device,
@@ -671,6 +789,21 @@ class JointScratchTrainer:
                 out["full_rep_ltm"] = fr["primary_readout"]["exact_match"]["ltm"]
                 out["full_rep_full"] = fr["primary_readout"]["exact_match"]["full"]
                 out["full_rep_wm"] = fr["primary_readout"]["exact_match"]["wm"]
+                # Full C/N population evaluation where the cadence used dev
+                # samples (final_full); in legacy modes dev == full subset, so
+                # re-evaluating would only duplicate the regular columns.
+                if self.dev_comp_idx is not self.comp_idx:
+                    fc = evaluate_comprehension_subset(
+                        self.model, self.vocab, self.entries, self.bank_raw,
+                        self.comp_idx, self.device)
+                    out["full_comp_top1"] = fc["top1"]
+                    out["full_comp_top5"] = fc["top5"]
+                if self.dev_naming_idx is not self.naming_idx:
+                    fn = evaluate_naming(self.model, self.vocab, self.entries,
+                                         self.bank_raw, self.naming_idx,
+                                         self.device, NAMING_MAX_STEPS)
+                    out["full_naming_exact"] = fn["exact_match"]
+                    out["full_naming_wer"] = fn["whole_word_error_rate"]
         return out
 
     # ---------------------------------------------------------- checkpoints
@@ -691,11 +824,29 @@ class JointScratchTrainer:
             "repetition_population": len(self.entries),
             "repetition_sampler": "log-frequency weighted, with replacement, "
                                   f"freq_temp={cfg.data.freq_temp}",
-            "comprehension_population": len(self.subset_idx),
-            "naming_population": len(self.subset_idx),
+            "comprehension_population": len(self.comp_idx),
+            "comprehension_population_name": self.comp_population_name,
+            "comprehension_population_sha256": self.comp_hash,
+            "naming_population": len(self.naming_idx),
+            "naming_population_name": self.naming_population_name,
+            "naming_population_sha256": self.naming_hash,
+            "homophone_policy": (HOMOPHONE_POLICY_NOTE
+                                 if self.subset_mode == FINAL_FULL_MODE
+                                 else "C/N population is homophone-free by "
+                                      "construction (legacy subset mode)"),
             "subset_mode": self.subset_mode,
             "subset_definition_sha256": self.subset_hash,
             "out_of_subset_probe_n": len(self.probe_idx),
+            "out_of_subset_probe": self.probe_note,
+            "dev_eval_populations": {
+                "repetition": len(self.dev_rep_idx),
+                "comprehension": len(self.dev_comp_idx),
+                "naming": len(self.dev_naming_idx),
+                "note": ("fixed deterministic samples (final_full); full "
+                         "populations evaluated with --endpoint-eval"
+                         if self.subset_mode == FINAL_FULL_MODE
+                         else "identical to the C/N subset (legacy modes)"),
+            },
             "batch_size": cfg.train.batch_size,
             "batches_per_rep_epoch": self.streams["repetition"].per_epoch,
             "dorsal_pool_size": len(self.pool_entries),
@@ -755,7 +906,17 @@ class JointScratchTrainer:
             "subset_definition_sha256": self.subset_hash,
             "subset_mode": self.subset_mode,
             "subset_indices": list(self.subset_idx),
+            # Explicit per-task population provenance (FINAL-1A).  In
+            # final_full mode the legacy subset_* fields alias the
+            # comprehension population; these fields are authoritative.
+            "comprehension_population_name": self.comp_population_name,
+            "comprehension_population_sha256": self.comp_hash,
+            "comprehension_population_n": len(self.comp_idx),
+            "naming_population_name": self.naming_population_name,
+            "naming_population_sha256": self.naming_hash,
+            "naming_population_n": len(self.naming_idx),
             "probe_indices": list(self.probe_idx),
+            "probe_note": self.probe_note,
             "lexicon_path": self.cfg.data.lexicon_path,
             "lexicon_file_sha256": sha256_file(
                 os.path.join(ROOT, self.cfg.data.lexicon_path or "")),
@@ -782,6 +943,14 @@ class JointScratchTrainer:
             raise RuntimeError(f"checkpoint seed {ckpt['seed']} != {self.seed}")
         if ckpt["subset_definition_sha256"] != self.subset_hash:
             raise RuntimeError("checkpoint subset hash differs from the rebuilt subset")
+        if ckpt.get("subset_mode", self.subset_mode) != self.subset_mode:
+            raise RuntimeError(
+                f"checkpoint subset_mode {ckpt.get('subset_mode')!r} != "
+                f"{self.subset_mode!r}")
+        ck_naming_hash = ckpt.get("naming_population_sha256")
+        if ck_naming_hash is not None and ck_naming_hash != self.naming_hash:
+            raise RuntimeError(
+                "checkpoint naming population hash differs from the rebuilt one")
         if dict(ckpt["stream_seeds"]) != dict(self.stream_seeds):
             raise RuntimeError("checkpoint stream seeds differ from the derived ones")
 
@@ -846,6 +1015,7 @@ METRIC_COLUMNS = [
     "naming_pred_len_mean", "naming_target_len_mean",
     "probe_rep_ltm", "probe_rep_full",
     "full_rep_ltm", "full_rep_full", "full_rep_wm",
+    "full_comp_top1", "full_comp_top5", "full_naming_exact", "full_naming_wer",
 ]
 
 
@@ -926,8 +1096,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-words", type=int, default=CANONICAL_MAX_WORDS)
     p.add_argument("--batch-size", type=int, default=CANONICAL_BATCH_SIZE)
     p.add_argument("--dorsal-pool-size", type=int, default=CANONICAL_DORSAL_POOL_SIZE)
-    p.add_argument("--subset-mode", choices=("nested", "representative"),
-                   default="nested")
+    p.add_argument("--subset-mode",
+                   choices=("nested", "representative", FINAL_FULL_MODE),
+                   default="nested",
+                   help="C/N populations: 'nested' = frozen subset3288 "
+                        "(Phases 2-4); 'representative' = uniform smoke subset; "
+                        "'final_full' = FINAL populations (C = canonical "
+                        "one-per-phonology 27,981; N = full 29,571)")
     p.add_argument("--subset-per-band", type=int, default=SUBSET_PER_BAND)
     p.add_argument("--subset-size", type=int, default=64,
                    help="only used with --subset-mode representative (smoke)")
@@ -936,16 +1111,35 @@ def build_parser() -> argparse.ArgumentParser:
                    help="SMOKE ONLY: permit pseudo-vectors instead of real GloVe")
     p.add_argument("--no-subset-hash-check", action="store_true",
                    help="SMOKE ONLY: skip the frozen subset3288 hash assertion")
+    p.add_argument("--torch-deterministic", action="store_true",
+                   help="opt-in strict determinism: "
+                        "torch.use_deterministic_algorithms(True) + "
+                        "cuDNN deterministic, benchmark off.  On CUDA also "
+                        "export CUBLAS_WORKSPACE_CONFIG=:4096:8 before launch. "
+                        "May reduce throughput; never enabled silently.")
     return p
 
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = build_parser().parse_args(argv)
 
+    if args.torch_deterministic:
+        torch.use_deterministic_algorithms(True)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        print("[determinism] torch.use_deterministic_algorithms(True), "
+              "cudnn.deterministic=True, cudnn.benchmark=False")
+        if "cuda" in args.device and os.environ.get(
+                "CUBLAS_WORKSPACE_CONFIG") not in (":4096:8", ":16:8"):
+            print("[determinism] WARNING: CUBLAS_WORKSPACE_CONFIG is not set; "
+                  "CUDA matmuls may raise. Export CUBLAS_WORKSPACE_CONFIG=:4096:8.")
+
     require_hash = (not args.no_subset_hash_check
-                    and args.subset_mode == "nested"
-                    and args.subset_per_band == SUBSET_PER_BAND
-                    and args.max_words == CANONICAL_MAX_WORDS)
+                    and ((args.subset_mode == "nested"
+                          and args.subset_per_band == SUBSET_PER_BAND
+                          and args.max_words == CANONICAL_MAX_WORDS)
+                         or (args.subset_mode == FINAL_FULL_MODE
+                             and args.max_words == CANONICAL_MAX_WORDS)))
 
     t0 = time.time()
     trainer = JointScratchTrainer(
@@ -998,6 +1192,21 @@ def main(argv: Optional[List[str]] = None) -> int:
             "lexicon_file_sha256": sha256_file(
                 os.path.join(ROOT, args.lexicon_path)),
             "subset_definition_sha256": trainer.subset_hash,
+            "subset_mode": trainer.subset_mode,
+            "comprehension_population": {
+                "name": trainer.comp_population_name,
+                "n": len(trainer.comp_idx),
+                "sha256": trainer.comp_hash,
+            },
+            "naming_population": {
+                "name": trainer.naming_population_name,
+                "n": len(trainer.naming_idx),
+                "sha256": trainer.naming_hash,
+            },
+            "homophone_policy": (HOMOPHONE_POLICY_NOTE
+                                 if trainer.subset_mode == FINAL_FULL_MODE
+                                 else None),
+            "torch_deterministic": bool(args.torch_deterministic),
             "stream_seeds": trainer.stream_seeds,
             "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
             "started": time.strftime("%Y-%m-%dT%H:%M:%S"),

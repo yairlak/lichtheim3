@@ -173,6 +173,34 @@ def homophone_indices(entries: Sequence[LexEntry]) -> List[int]:
     return sorted(i for g in groups.values() if len(g) > 1 for i in g)
 
 
+def canonical_phonology_indices(entries: Sequence[LexEntry]) -> List[int]:
+    """One canonical comprehension target per exact phonological form.
+
+    Policy (Phase FINAL-1A human decision, 2026-09-01): equivalence classes
+    are keyed by `tuple(e.phonemes)` -- the exact phoneme token-ID sequence,
+    which is precisely what the comprehension encoder receives (the appended
+    EOS and the padding/mask are class-invariant, verified in FINAL-0).
+    Within each class the entry with the LOWEST frequency rank
+    (`LexEntry.rank`, the lexicon's authoritative hybrid frequency field:
+    measured core + deterministic Zipf-continued tail, see
+    data/build_lexicon_en.py) is kept; ties break to the lowest bank index
+    (= file order).  On the canonical GloVe-covered lexicon ranks are unique
+    and file order is ascending rank, so the tie-break is provably inert, but
+    it is implemented so the policy is total over any entry list.
+
+    Singleton phonologies are unchanged; each homophone group contributes
+    exactly its most frequent member.  The full lexicon stays in the
+    retrieval bank as competitors and in the repetition/naming populations.
+
+    Historical note: Ueno et al. removed homophone items from their training
+    corpus outright; this is a related but NOT identical modern adaptation,
+    retaining one canonical target per identifiable phonological form.
+    """
+    groups = phonology_groups(entries)
+    return sorted(min(g, key=lambda i: (entries[i].rank, i))
+                  for g in groups.values())
+
+
 def verify_bank_mapping(entries: Sequence[LexEntry], bank_raw: torch.Tensor,
                         indices: Sequence[int]) -> None:
     """Assert each item's own GloVe target IS the bank row it points at.
