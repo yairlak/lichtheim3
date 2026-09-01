@@ -102,6 +102,8 @@ def main() -> int:
     for _ in range(args.warmup):
         trainer.train_step()
     sync(args.device)
+    if args.device.startswith("cuda") and torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
 
     t1 = time.time()
     for _ in range(args.timed):
@@ -131,6 +133,10 @@ def main() -> int:
         "steps_per_second": round(steps_per_s, 3),
         "examples_per_second": round(steps_per_s * examples_per_step, 1),
         "projected_hours_per_100k_steps": round(100_000 / steps_per_s / 3600, 3),
+        "peak_gpu_memory_mb": (
+            round(torch.cuda.max_memory_allocated() / 2**20, 1)
+            if args.device.startswith("cuda") and torch.cuda.is_available()
+            else None),
         "trainer_init_seconds": round(t_init, 2),
         "end_to_end_seconds": round(time.time() - t_start, 2),
         "populations": {

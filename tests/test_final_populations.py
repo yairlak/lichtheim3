@@ -252,6 +252,35 @@ def test_resume_rejects_population_mode_mismatch(tmp_path):
         b.load_state_dict(torch.load(str(ck), weights_only=False), source="t")
 
 
+def test_milestone_full_eval_inside_one_run(tmp_path):
+    """--full-eval-at writes a full-population metrics row and a checkpoint at
+    the requested step, inside one continuous run (no segmentation)."""
+    import csv
+    from scripts.naming_comprehension.train_joint_scratch import main
+
+    out = str(tmp_path / "runs")
+    rc = main(["--regime", "j0", "--seed", "22", "--subset-mode", "final_full",
+               "--device", "cpu", "--max-steps", "3", "--full-eval-at", "2",
+               "--eval-every", "0", "--save-every", "0", "--log-every", "0",
+               "--max-words", "400", "--batch-size", "8",
+               "--dorsal-pool-size", "32", "--lr-boundary-steps", "6",
+               "--out-dir", out, "--run-id", "m",
+               "--glove-path", "tests/_no_such_glove_file.txt",
+               "--allow-glove-fallback", "--no-subset-hash-check"])
+    assert rc == 0
+    assert os.path.exists(os.path.join(out, "m", "checkpoints",
+                                       "step_00000002.pt"))
+    rows = list(csv.DictReader(open(os.path.join(out, "m", "metrics.tsv")),
+                               delimiter="\t"))
+    mile = [r for r in rows if r["step"] == "2"]
+    assert len(mile) == 1, "exactly one milestone row at step 2"
+    for k in ("full_rep_full", "full_comp_top1", "full_naming_exact"):
+        assert mile[0][k] not in ("", "nan"), f"{k} not filled at the milestone"
+    import json
+    cfgj = json.load(open(os.path.join(out, "m", "config.json")))
+    assert cfgj["full_eval_at"] == [2]
+
+
 # =====================================================  metric semantics  ==
 
 def test_naming_evaluation_has_no_target_length_leakage():

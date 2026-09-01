@@ -1,59 +1,67 @@
 #!/bin/bash
-#SBATCH --job-name=l3_final
-#SBATCH --account=<JEANZAY_ACCOUNT>          # e.g. abc@v100 / abc@a100 — fill in
+#SBATCH --job-name=l3_final1
+#SBATCH --account=llg@v100
+#SBATCH --partition=gpu_p13
+#SBATCH --qos=qos_gpu-t3
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
-#SBATCH --gres=gpu:1                          # or remove + use --device cpu below
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=10
 #SBATCH --hint=nomultithread
-#SBATCH --time=<JEANZAY_WALLTIME>             # e.g. 20:00:00 (respect partition limits)
+#SBATCH --time=<WALLTIME>                     # choose after the preflight benchmark
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
-#SBATCH --requeue                             # preempted/timed-out jobs may be requeued
-##SBATCH --partition=<JEANZAY_PARTITION>      # only if your project requires one
-##SBATCH --qos=<JEANZAY_QOS>                  # only if needed
-##SBATCH -C <JEANZAY_CONSTRAINT>              # e.g. v100-32g / a100
+#SBATCH --requeue
 
 # ===========================================================================
-# Lichtheim3 FINAL scientific run template — exact-resume safe.
+# Lichtheim3 FINAL-1 scientific run — ONE continuous, exactly-resumable job.
 #
-# The driver's checkpoints contain model, optimizer, all stream cursors and
-# all RNG states; resuming from the latest checkpoint continues the run
-# EXACTLY (verified by tests/test_joint_scratch.py and
-# tests/test_final_populations.py).  Because of that, this script is
-# idempotent: submit it again (or let --requeue rerun it) and it picks up
-# from the latest checkpoint automatically.
+# Scientific question: does summed from-scratch J0 with the FINAL populations
+# (R=29,571; N=29,571; C=canonical 27,981; bank=29,571) put full-lexicon
+# naming onto a clearly better trajectory than the historical single-task
+# full-lex naming run?  No decision is made inside the run; milestones at
+# 300/500/700 N-exposures are evaluated on the FULL populations and
+# checkpointed, and all three are inspected AFTER the run.
 #
-# Fill in every <PLACEHOLDER> and the environment block before first use.
+# Contract: export L3_EXPECTED_COMMIT=<sha> before sbatch.  The job refuses
+# to start on branch/commit mismatch or a dirty TRACKED tree (untracked
+# historical files do not block).  Population sizes and the frozen canonical
+# hashes are asserted by the driver itself (final_full + real GloVe).
+#
+# Resume: the driver checkpoints contain model, optimizer, stream cursors and
+# all RNG states (CUDA included); this script auto-resumes from the latest
+# checkpoint, so resubmission after walltime/preemption continues EXACTLY.
 # ===========================================================================
 set -euo pipefail
 
-# ---- environment (fill in ONE of the two options) -------------------------
-# module purge
-# module load <JEANZAY_PYTORCH_MODULE>
-# source <PATH_TO_YOUR_ENV>/bin/activate
+module purge
+module load pytorch-gpu/py3/2.6.0
+module load git
 
-REPO=${L3_REPO:-$HOME/lichtheim3}
-RUNS=${L3_RUNS:-$SCRATCH/lichtheim3_runs}     # $SCRATCH is fast but purge-eligible:
-                                              # archive checkpoints to $STORE/$WORK
+REPO=${L3_REPO:-$WORK/lichtheim3/lichtheim3}
+EXPECTED_BRANCH=${L3_EXPECTED_BRANCH:-feat/joint-multitask-scratch}
+[[ -n "${L3_EXPECTED_COMMIT:-}" ]] || { echo "FATAL: export L3_EXPECTED_COMMIT"; exit 1; }
 cd "$REPO"
 
-# ---- run configuration (edit per experiment) ------------------------------
+BRANCH=$(git branch --show-current); HEAD=$(git rev-parse HEAD)
+[[ "$BRANCH" == "$EXPECTED_BRANCH" ]] || { echo "FATAL: branch $BRANCH != $EXPECTED_BRANCH"; exit 1; }
+[[ "$HEAD" == "$L3_EXPECTED_COMMIT" ]] || { echo "FATAL: HEAD $HEAD != $L3_EXPECTED_COMMIT"; exit 1; }
+[[ -z "$(git status --porcelain -uno)" ]] || { echo "FATAL: tracked working tree dirty"; exit 1; }
+test -f data/glove.6B.300d.txt || { echo "FATAL: real GloVe missing (bash data/get_glove.sh)"; exit 1; }
+echo "== contract OK: $BRANCH @ $HEAD"
+
+# ---- FINAL-1 configuration (frozen; edit only for a NEW experiment) -------
 REGIME=j0
 SEED=22
 SUBSET_MODE=final_full
 DEVICE=cuda
-EPOCHS=<TOTAL_REP_EPOCHS>                     # 1 epoch = 463 optimizer steps
+EPOCHS=700                                    # 700 x 463 = 324,100 optimizer steps
+FULL_EVAL_AT=138900,231500,324100             # 300 / 500 / 700 N-exposures
+EVAL_EVERY=2315                               # dev-sample cadence (5 epochs)
+SAVE_EVERY=4630                               # safety checkpoints (10 epochs)
 RUN_ID="final1_${REGIME}_seed${SEED}_${SUBSET_MODE}"
-EVAL_EVERY=2315
-SAVE_EVERY=4630
-# Optional strict determinism (measure its cost with the smoke A/B first):
-# DETERMINISM="--torch-deterministic"; export CUBLAS_WORKSPACE_CONFIG=:4096:8
-DETERMINISM=""
-
-# ---- scientific runs REQUIRE real GloVe -----------------------------------
-test -f data/glove.6B.300d.txt || {
-    echo "ERROR: data/glove.6B.300d.txt missing — run: bash data/get_glove.sh"; exit 1; }
+RUNS=${L3_RUNS:-$SCRATCH/lichtheim3_runs}     # $SCRATCH is purge-eligible:
+                                              # archive finished runs to $STORE
 
 # ---- automatic exact resume from the latest checkpoint --------------------
 RESUME_ARGS=()
@@ -66,9 +74,11 @@ fi
 srun python scripts/naming_comprehension/train_joint_scratch.py \
     --regime "$REGIME" --seed "$SEED" --subset-mode "$SUBSET_MODE" \
     --device "$DEVICE" --epochs "$EPOCHS" \
+    --full-eval-at "$FULL_EVAL_AT" \
     --eval-every "$EVAL_EVERY" --save-every "$SAVE_EVERY" --log-every 100 \
     --endpoint-eval \
     --out-dir "$RUNS" --run-id "$RUN_ID" \
-    $DETERMINISM "${RESUME_ARGS[@]}"
+    "${RESUME_ARGS[@]}"
 
 echo "== run complete: $RUNS/$RUN_ID"
+echo "== archive with: cp -r $RUNS/$RUN_ID $STORE/lichtheim3_final1/"

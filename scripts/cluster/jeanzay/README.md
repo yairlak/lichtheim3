@@ -1,105 +1,101 @@
-# Jean Zay support for Lichtheim3 (Phase FINAL-1A)
+# Jean Zay support for Lichtheim3 (Phase FINAL-1)
 
-Minimal cluster material for running the Phase-4 joint driver
-(`scripts/naming_comprehension/train_joint_scratch.py`) on Jean Zay.
-Nothing here is submitted automatically; you run every command yourself.
+Cluster material for the FINAL multitask driver
+(`scripts/naming_comprehension/train_joint_scratch.py`) on the **already
+validated** Lichtheim3 Jean Zay environment. Earlier Lichtheim3 work on Jean
+Zay validated CUDA training, checkpointing, optimizer/RNG resume (CUDA RNG
+included), deterministic AR evaluation and V100 execution; nothing here
+redesigns that setup — these scripts only validate and run the NEW driver.
+
+## Validated environment (fixed)
+
+| item | value |
+|---|---|
+| user / project | `uss35bp` / `llg` |
+| WORK | `/lustre/fswork/projects/rech/llg/uss35bp` |
+| SCRATCH | `/lustre/fsn1/projects/rech/llg/uss35bp` |
+| STORE | `/lustre/fsstor/projects/rech/llg/uss35bp` |
+| repo | `$WORK/lichtheim3/lichtheim3` |
+| modules | `module purge; module load pytorch-gpu/py3/2.6.0; module load git` |
+| SLURM (V100) | `--account=llg@v100 --partition=gpu_p13 --qos=qos_gpu-t3 --gres=gpu:1 --cpus-per-task=10 --hint=nomultithread` (no `--mem`) |
+
+## Repository contract
+
+Scientific jobs REQUIRE, and verify at job start:
+
+- branch `feat/joint-multitask-scratch`;
+- `HEAD == $L3_EXPECTED_COMMIT` (exported at submit time; see the block below);
+- clean **tracked** working tree (`git status --porcelain -uno` empty —
+  untracked historical files such as old SLURM logs do NOT block);
+- real GloVe present; population sizes and the frozen canonical hashes
+  (`C = 27,981`, sha `10c2f06e…`) are asserted by the driver itself.
 
 ## Files
 
 | file | purpose |
 |---|---|
-| `smoke_benchmark.slurm` | 30-minute smoke: CPU + GPU throughput, determinism A/B, checkpoint + exact-resume test. NOT scientific. |
-| `scientific_run.slurm` | Template for a real run: requeue-safe, resumes exactly from the latest checkpoint on resubmission. |
-| `../benchmark_throughput.py` | Matched Mac/Jean-Zay throughput benchmark (same command both platforms, only `--device` changes). |
+| `final_preflight.slurm` | ONE compact preflight job: environment, git contract, GloVe, FINAL tests, R/N/C/bank sizes, CUDA final_full smoke with bitwise exact resume + endpoint eval, CUDA throughput benchmark with peak GPU memory, PASS/FAIL summary. NOT scientific. |
+| `scientific_run.slurm` | FINAL-1: one continuous exactly-resumable job to 700 N-exposures, full-population milestone evals at 300/500/700 (no in-run decisions). Requeue-safe; resubmission resumes exactly. |
+| `../benchmark_throughput.py` | Matched Mac/Jean-Zay throughput benchmark (identical command; only `--device` differs). |
 
-## What you must fill in (no values are invented here)
+## Preflight (run this once before FINAL-1)
 
-In both `.slurm` files:
-
-1. `<JEANZAY_ACCOUNT>` — your project accounting, e.g. `abc@v100` (from `idracct` / your project welcome mail).
-2. The environment block — either `module load <JEANZAY_PYTORCH_MODULE>` (find one with `module avail pytorch`) or `source <your env>/bin/activate`. Requirements: `torch>=2.0`, `numpy`, `matplotlib`, `Levenshtein` (see `requirements.txt`).
-3. Optional `<JEANZAY_PARTITION>` / `<JEANZAY_QOS>` / `<JEANZAY_CONSTRAINT>` lines — only if your allocation requires them; otherwise leave commented.
-4. `scientific_run.slurm` only: `<JEANZAY_WALLTIME>` and `<TOTAL_REP_EPOCHS>`.
-5. Paths: the scripts use `L3_REPO` (default `$HOME/lichtheim3`) and `$SCRATCH`-based work dirs. Checkpoints on `$SCRATCH` are purge-eligible — archive finished runs to `$STORE` or `$WORK`.
-
-## One-time setup (login node)
+Copy-paste on Jean Zay (fill only `<FINAL_SHA>` — the value is given with each
+release message):
 
 ```bash
-# clone / sync the repo, then:
-cd $L3_REPO
-bash data/get_glove.sh          # real GloVe — REQUIRED for scientific runs
-                                # (smoke/benchmark use --allow-glove-fallback)
-python -m pytest tests/test_final_populations.py tests/test_joint_scratch.py -q
+export L3_EXPECTED_COMMIT=<FINAL_SHA>
+cd $WORK/lichtheim3/lichtheim3
+git fetch origin
+git checkout feat/joint-multitask-scratch
+git pull --ff-only origin feat/joint-multitask-scratch
+[ "$(git rev-parse HEAD)" = "$L3_EXPECTED_COMMIT" ] || echo "STOP: HEAD mismatch"
+test -f data/glove.6B.300d.txt || bash data/get_glove.sh
+cd scripts/cluster/jeanzay
+sbatch --export=ALL,L3_EXPECTED_COMMIT final_preflight.slurm
 ```
 
-## Smoke benchmark (run this before any scientific job)
+Monitor / collect:
 
 ```bash
-cd $L3_REPO/scripts/cluster/jeanzay
-sbatch smoke_benchmark.slurm
+squeue -u uss35bp
+sacct -j <JOBID> --format=JobID,State,Elapsed,MaxRSS
+tail -f l3_final_preflight_<JOBID>.out
+cat $SCRATCH/lichtheim3_preflight/summary_<JOBID>.txt        # PASS/FAIL verdict
+cat $SCRATCH/lichtheim3_preflight/bench_cuda_<JOBID>.json    # throughput numbers
 ```
 
-Check status / logs:
+## FINAL-1 scientific run (WAIT for explicit GO)
+
+After the preflight PASSes and a walltime is chosen from the measured
+throughput, edit `<WALLTIME>` in `scientific_run.slurm`, then:
 
 ```bash
-squeue -u $USER
-tail -f l3_smoke_<JOBID>.out
+export L3_EXPECTED_COMMIT=<FINAL_SHA>
+cd $WORK/lichtheim3/lichtheim3/scripts/cluster/jeanzay
+sbatch --export=ALL,L3_EXPECTED_COMMIT scientific_run.slurm
+# resume after walltime/preemption: just resubmit the same command —
+# the job finds the latest checkpoint and continues exactly.
 ```
 
-Collect results (from your Mac):
+## Platform decision rule (Mac reference already measured)
 
-```bash
-scp jean-zay:'$SCRATCH/lichtheim3_smoke/bench_*.json' .
-```
-
-The smoke verifies, on one job: CPU throughput, one-GPU CUDA throughput,
-the cost of `--torch-deterministic`, checkpoint creation, and an
-interrupted-then-resumed execution (150 steps → checkpoint → resume → 300).
-
-## Scientific run
-
-```bash
-# edit scientific_run.slurm (regime/seed/epochs/walltime), then:
-sbatch scientific_run.slurm
-```
-
-Resume after timeout/preemption/cancellation — just resubmit; the script
-finds the latest checkpoint and continues exactly:
-
-```bash
-sbatch scientific_run.slurm
-```
-
-## Mac vs Jean Zay decision rule (matched benchmark protocol)
-
-Same command on both platforms (only `--device` differs), 30 warmup steps,
-200 timed steps, evaluation excluded from the timed window; the JSON reports
-`seconds_per_step`, `steps_per_second`, `examples_per_second`,
-`projected_hours_per_100k_steps`, and separately `trainer_init_seconds` and
-`end_to_end_seconds`:
-
-```bash
-# Mac (reference, already measured in FINAL-1A):
-python scripts/cluster/benchmark_throughput.py --device cpu
-
-# Jean Zay (inside the smoke job): --device cpu, then --device cuda
-```
-
-Decision rule: use Jean Zay for long runs only if its
-`projected_hours_per_100k_steps` is **at most half** of the Mac's measured
-value (the model is ~433k parameters at batch 64 — GPU benefit is NOT assumed;
-queue latency and $SCRATCH purges are real costs). Otherwise run on the Mac
-and reserve Jean Zay for parallel multi-seed/multi-schedule sweeps, where
-concurrency, not per-step speed, is the payoff.
+Mac CPU (FINAL-1A): **0.0672 s/step = 1.87 h per 100k summed optimizer
+steps** (`bench` protocol: 30 warmup + 200 timed steps, eval and init
+excluded; the JSON also reports `examples_per_second`, `trainer_init_seconds`,
+`end_to_end_seconds`, and on CUDA `peak_gpu_memory_mb`). Use Jean Zay for
+long runs only if its `projected_hours_per_100k_steps` is at most half the
+Mac's; otherwise the Mac remains the reference platform and Jean Zay's value
+is concurrency (parallel seeds/schedules). No GPU speed is assumed before
+the preflight measurement.
 
 ## Determinism notes
 
-- The driver's training streams never touch the global RNG; checkpoints save
-  and restore Python/NumPy/Torch-CPU/Torch-CUDA RNG states.
-- Bitwise CUDA reproducibility additionally needs
-  `--torch-deterministic` **and** `export CUBLAS_WORKSPACE_CONFIG=:4096:8`
-  (both wired into the templates). This may cost throughput — measure it with
-  the smoke A/B and decide explicitly; it is never enabled silently.
-- CPU→GPU and GPU-model→CPU-eval bit-identity is NOT guaranteed by PyTorch;
-  cross-device comparisons must be tolerance-based, and any mixed-platform
-  plan should keep training and evaluation on one device class per run.
+- Training streams never read the global RNG; checkpoints save/restore
+  Python/NumPy/Torch-CPU/Torch-CUDA RNG states; exact resume is bitwise
+  (tests + preflight verify).
+- Optional strict algorithm determinism: `--torch-deterministic` plus
+  `export CUBLAS_WORKSPACE_CONFIG=:4096:8`. Never enabled silently; measure
+  its cost first (`benchmark_throughput.py --device cuda --torch-deterministic`).
+- CPU-vs-GPU bit-identity is not guaranteed by PyTorch; keep any one run's
+  training and evaluation on a single device class.

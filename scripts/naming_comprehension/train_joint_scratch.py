@@ -1087,6 +1087,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--log-every", type=int, default=100)
     p.add_argument("--endpoint-eval", action="store_true",
                    help="run the full 29,571-word repetition evaluation at the end")
+    p.add_argument("--full-eval-at", default="",
+                   help="comma-separated GLOBAL STEP numbers at which to run a "
+                        "full-population milestone evaluation (probe + full "
+                        "repetition, and full C/N in final_full mode) and save "
+                        "a checkpoint, inside one continuous run.  E.g. for "
+                        "FINAL-1: 138900,231500,324100 (= 300/500/700 "
+                        "N-exposures at 463 steps per pass).")
     p.add_argument("--eval-at-start", action="store_true")
 
     # deliberately few knobs; these exist for smoke tests only
@@ -1174,6 +1181,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     settings["eval_every"] = args.eval_every
     settings["probe_every"] = args.probe_every
     settings["save_every"] = args.save_every
+    settings["full_eval_at"] = sorted({int(s) for s in args.full_eval_at.split(",")
+                                       if s.strip()})
     print(f"\n[joint_scratch] RESOLVED SCIENTIFIC CONFIGURATION ({run_id})")
     for k, v in settings.items():
         print(f"  {k:28s} : {v}")
@@ -1215,6 +1224,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     metrics = os.path.join(run_dir, "metrics.tsv")
     losses_tsv = os.path.join(run_dir, "logs", "losses.tsv")
 
+    full_eval_steps = settings["full_eval_at"]
+    if full_eval_steps:
+        print(f"[joint_scratch] milestone full evaluations at steps "
+              f"{full_eval_steps}")
+
     last_eval: tuple = (None, None)          # (step, probe_included)
     if args.eval_at_start:
         append_metrics(metrics, trainer.evaluate())
@@ -1230,7 +1244,20 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"pool={rec['pool_ce']:.4f} "
                   f"ret={rec['retrieval_ce']:.4f} nam={rec['naming_ce']:.4f} "
                   f"| {time.time() - t0:6.1f}s", flush=True)
-        if args.eval_every and trainer.global_step % args.eval_every == 0:
+        saved_this_step = False
+        if trainer.global_step in full_eval_steps:
+            # Milestone: full-population evaluation + checkpoint, inside the
+            # continuous run (no human-mediated segmentation, no decision).
+            row = trainer.evaluate(with_probe=True, with_full_lexicon=True)
+            append_metrics(metrics, row)
+            last_eval = (trainer.global_step, True)
+            torch.save(trainer.state_dict(), ckpt_path(run_dir, trainer.global_step))
+            saved_this_step = True
+            print(f"  [MILESTONE @ {row['step']}] "
+                  f"full_rep={row['full_rep_full']:.6f} "
+                  f"full_naming={row['full_naming_exact']:.6f} "
+                  f"full_comp_top1={row['full_comp_top1']:.6f}", flush=True)
+        elif args.eval_every and trainer.global_step % args.eval_every == 0:
             probed = bool(args.probe_every
                           and trainer.global_step % args.probe_every == 0)
             row = trainer.evaluate(with_probe=probed)
@@ -1239,7 +1266,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"  [eval @ {row['step']}] rep_ltm={row['rep_ltm']:.4f} "
                   f"comp_top1={row['comp_top1']:.4f} "
                   f"naming_exact={row['naming_exact']:.4f}", flush=True)
-        if args.save_every and trainer.global_step % args.save_every == 0:
+        if (args.save_every and not saved_this_step
+                and trainer.global_step % args.save_every == 0):
             torch.save(trainer.state_dict(), ckpt_path(run_dir, trainer.global_step))
 
     # The endpoint row is skipped when the cadence already produced an
