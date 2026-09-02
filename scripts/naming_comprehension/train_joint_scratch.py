@@ -92,7 +92,7 @@ if ROOT not in sys.path:
 from config import Config, default_config, validate_split_config          # noqa: E402
 from data.lexicon import LexEntry, build_lexicon, logfreq_weights         # noqa: E402
 from data.phonemes import Vocab, build_vocab                              # noqa: E402
-from losses import total_loss                                             # noqa: E402
+from losses import alignment_loss, total_loss                             # noqa: E402
 from models.dual_route import DualRouteModel                              # noqa: E402
 from utils.provenance import git_state, sha256_file                       # noqa: E402
 from utils.seed import set_seed                                           # noqa: E402
@@ -558,7 +558,8 @@ class JointScratchTrainer:
                  batch_size: int, subset_mode: str, subset_per_band: int,
                  subset_size: int, lr_boundary_steps: int,
                  allow_glove_fallback: bool, require_subset_hash: bool,
-                 glove_path: Optional[str] = "data/glove.6B.300d.txt") -> None:
+                 glove_path: Optional[str] = "data/glove.6B.300d.txt",
+                 c_align_weight: float = 0.0) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -572,6 +573,18 @@ class JointScratchTrainer:
         self.seed = int(seed)
         self.device = device
         self.lr_boundary_steps = int(lr_boundary_steps)
+        # FINAL-2A knob.  0.0 = the frozen FINAL-1 objective.
+        self.c_align_weight = float(c_align_weight)
+        if self.c_align_weight < 0.0:
+            raise ValueError(
+                f"c_align_weight must be >= 0, got {self.c_align_weight}")
+        if self.c_align_weight > 0.0 and not self.retrieval_enabled:
+            # The C stream is only drawn when retrieval is on, so a positive
+            # weight here would be a silent no-op rather than an experiment.
+            raise RuntimeError(
+                f"c_align_weight={self.c_align_weight} requires the "
+                f"comprehension stream, which regime {regime!r} does not draw. "
+                f"Use a regime with retrieval enabled ({RETRIEVAL_REGIMES}).")
 
         self.cfg = canonical_config(
             seed, device, max_words=max_words, lexicon_path=lexicon_path,
@@ -775,6 +788,9 @@ class JointScratchTrainer:
         # j0 (both on) is numerically identical to the pre-factorial code and
         # h0 (both off) adds nothing at all.
         rec["retrieval_ce"] = float("nan")
+        rec["retrieval_weighted"] = float("nan")
+        rec["c_align"] = float("nan")
+        rec["c_align_weighted"] = float("nan")
         rec["naming_ce"] = float("nan")
         if self.retrieval_enabled:
             c = self.batch("comprehension")
@@ -783,6 +799,20 @@ class JointScratchTrainer:
                                  c["bank_idx"], TAU)
             loss = loss + LAMBDA_C * ret
             rec["retrieval_ce"] = float(ret.detach())
+            rec["retrieval_weighted"] = LAMBDA_C * rec["retrieval_ce"]
+            # FINAL-2A intervention (off by default, c_align_weight = 0.0).
+            # The C stream gets its own semantic-target alignment, reusing the
+            # s_hat already computed for retrieval and the SAME canonical
+            # `losses.alignment_loss` the R stream uses.  It is weighted by
+            # c_align_weight ALONE -- never by LAMBDA_C -- so the C
+            # contribution is  LAMBDA_C * retrieval_CE + c_align_weight *
+            # alignment.  At weight 0.0 nothing is computed and nothing enters
+            # the graph, so FINAL-1 semantics are preserved exactly.
+            if self.c_align_weight > 0.0:
+                c_align = alignment_loss(s_hat, c["semantic"])
+                loss = loss + self.c_align_weight * c_align
+                rec["c_align"] = float(c_align.detach())
+                rec["c_align_weighted"] = self.c_align_weight * rec["c_align"]
 
         if self.naming_enabled:
             n = self.batch("naming")
@@ -957,6 +987,14 @@ class JointScratchTrainer:
             "lambda_C_canonical": LAMBDA_C,
             "lambda_N_canonical": LAMBDA_N,
             "tau_canonical": TAU,
+            # FINAL-2A: weight on the C stream's own semantic-target alignment
+            # (losses.alignment_loss on the retrieval s_hat).  0.0 = FINAL-1.
+            "c_align_weight": self.c_align_weight,
+            "c_stream_objective": (
+                f"{LAMBDA_C} * retrieval_CE + {self.c_align_weight} * "
+                f"alignment_loss(s_hat_C, GloVe_C)"
+                if self.c_align_weight > 0.0
+                else f"{LAMBDA_C} * retrieval_CE (FINAL-1 objective)"),
             "retrieval_bank_size": int(self.bank_raw.shape[0]),
             "optimizer": "AdamW",
             "weight_decay": cfg.train.weight_decay,
@@ -992,6 +1030,7 @@ class JointScratchTrainer:
             "lr_boundary_steps": self.lr_boundary_steps,
             "subset_definition_sha256": self.subset_hash,
             "subset_mode": self.subset_mode,
+            "c_align_weight": self.c_align_weight,
             "subset_indices": list(self.subset_idx),
             # Explicit per-task population provenance (FINAL-1A).  In
             # final_full mode the legacy subset_* fields alias the
@@ -1028,6 +1067,15 @@ class JointScratchTrainer:
             raise RuntimeError(
                 f"checkpoint subset_mode {ckpt.get('subset_mode')!r} != "
                 f"{self.subset_mode!r}")
+        # Checkpoints predating FINAL-2A carry no weight; they were produced
+        # with the FINAL-1 objective, i.e. 0.0.  Resuming across a change of
+        # the C objective would silently splice two different experiments.
+        ck_calign = float(ckpt.get("c_align_weight", 0.0))
+        if ck_calign != self.c_align_weight:
+            raise RuntimeError(
+                f"checkpoint c_align_weight {ck_calign} != "
+                f"{self.c_align_weight}: this checkpoint was trained under a "
+                f"different comprehension objective")
         ck_naming_hash = ckpt.get("naming_population_sha256")
         if ck_naming_hash is not None and ck_naming_hash != self.naming_hash:
             raise RuntimeError(
@@ -1104,8 +1152,8 @@ def append_metrics(path: str, row: dict) -> None:
 
 def append_losses(path: str, row: dict) -> None:
     cols = ["step", "lr", "lr_phase", "joint_total", "total", "rep", "align",
-            "dec", "wm", "gate", "pool_ce", "retrieval_ce", "naming_ce",
-            "grad_norm"]
+            "dec", "wm", "gate", "pool_ce", "retrieval_ce", "retrieval_weighted",
+            "c_align", "c_align_weighted", "naming_ce", "grad_norm"]
     new = not os.path.exists(path)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "a", encoding="utf-8") as fh:
@@ -1192,6 +1240,13 @@ def build_parser() -> argparse.ArgumentParser:
                    help="SMOKE ONLY: permit pseudo-vectors instead of real GloVe")
     p.add_argument("--no-subset-hash-check", action="store_true",
                    help="SMOKE ONLY: skip the frozen subset3288 hash assertion")
+    p.add_argument("--c-align-weight", type=float, default=0.0,
+                   help="FINAL-2A: weight on the comprehension stream's own "
+                        "semantic-target alignment (the canonical "
+                        "losses.alignment_loss on the retrieval s_hat), added "
+                        "to LAMBDA_C * retrieval_CE and NOT scaled by "
+                        "LAMBDA_C.  0.0 (default) = the frozen FINAL-1 "
+                        "objective; FINAL-2A uses 1.0.")
     p.add_argument("--torch-deterministic", action="store_true",
                    help="opt-in strict determinism: "
                         "torch.use_deterministic_algorithms(True) + "
@@ -1231,7 +1286,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         subset_size=args.subset_size,
         lr_boundary_steps=args.lr_boundary_steps,
         allow_glove_fallback=args.allow_glove_fallback,
-        require_subset_hash=require_hash, glove_path=args.glove_path)
+        require_subset_hash=require_hash, glove_path=args.glove_path,
+        c_align_weight=args.c_align_weight)
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)
@@ -1289,6 +1345,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             "homophone_policy": (HOMOPHONE_POLICY_NOTE
                                  if trainer.subset_mode == FINAL_FULL_MODE
                                  else None),
+            "c_align_weight": trainer.c_align_weight,
+            "c_stream_objective": trainer.resolved_settings()["c_stream_objective"],
             "torch_deterministic": bool(args.torch_deterministic),
             "stream_seeds": trainer.stream_seeds,
             "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
