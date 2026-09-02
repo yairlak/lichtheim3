@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=10
 #SBATCH --hint=nomultithread
-#SBATCH --time=<WALLTIME>                     # choose after the preflight benchmark
+#SBATCH --time=08:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 #SBATCH --requeue
@@ -31,6 +31,11 @@
 # Resume: the driver checkpoints contain model, optimizer, stream cursors and
 # all RNG states (CUDA included); this script auto-resumes from the latest
 # checkpoint, so resubmission after walltime/preemption continues EXACTLY.
+#
+# Walltime 08:00:00 is set from the measured V100 preflight (job 1643901):
+# 324,100 steps x 0.04269 s/step = 3.84 h of training, plus ~140 dev-sample
+# evaluations and 4 full-population evaluations -- roughly 2x margin.  A
+# timeout is recoverable rather than fatal: resubmitting resumes exactly.
 # ===========================================================================
 set -euo pipefail
 
