@@ -33,16 +33,19 @@
 # 2 N and 3 C, deterministically shuffled from (schedule seed, cycle index).
 #
 # LR follows REPETITION progress: 1e-3 while completed R batches < 46,300
-# (= 100 R exposures), then 1e-4.  The pilot therefore ends exactly AT the
-# boundary and runs entirely in stage 1 -- an interpretive caveat handled in
-# the GO/STOP analysis, not by a second intervention.
+# (= 100 R exposures), then 1e-4.  M2 sits exactly ON that boundary, and
+# FINAL-1 showed substantial immediate consolidation just after it (LTM
+# repetition .736 -> .868 within five exposures), so stopping there would risk
+# a false negative.  The pilot therefore runs 10 further R exposures UNDER
+# LR 1e-4 -- 27,780 extra steps, ~6 minutes at the measured V100 throughput.
 #
-# HARD PILOT ENDPOINT: 100 R exposures = 46,300 macro-cycles = 277,800
+# HARD PILOT ENDPOINT: 110 R exposures = 50,930 macro-cycles = 305,580
 # optimizer steps.  There is NO automatic continuation.  If the result is a
 # GO we resume this exact checkpoint; we never restart.
 #
-#   M1   50 R exp = 138,900 steps = 100 N exp, ~158.56 C exp
-#   M2  100 R exp = 277,800 steps = 200 N exp, ~317.12 C exp
+#   M1   50 R exp = 138,900 steps = 100 N exp, ~158.56 C exp   (stage 1)
+#   M2  100 R exp = 277,800 steps = 200 N exp, ~317.12 C exp   (LR boundary)
+#   M3  110 R exp = 305,580 steps = 220 N exp, ~348.84 C exp   (post-boundary)
 #
 # Contract: export L3_EXPECTED_COMMIT=<sha> before sbatch.  Resume refuses a
 # checkpoint from a different schedule, population or C objective.
@@ -71,8 +74,8 @@ SEED=22
 SUBSET_MODE=final_full
 SCHEDULE=interleaved_123
 DEVICE=cuda
-EPOCHS=100                                    # REPETITION epochs -> 277,800 steps
-FULL_EVAL_AT=138900,277800                    # M1 (50 R exp) and M2 (100 R exp)
+EPOCHS=110                                    # REPETITION epochs -> 305,580 steps
+FULL_EVAL_AT=138900,277800,305580             # M1 (50 R), M2 (100 R), M3 (110 R)
 EVAL_EVERY=13890                              # dev cadence: every 5 R exposures
 SAVE_EVERY=27780                              # safety checkpoints: every 10 R exp
 RUN_ID="final3p_i123_seed${SEED}_${SUBSET_MODE}"
@@ -98,7 +101,7 @@ srun python scripts/naming_comprehension/train_joint_scratch.py \
     --out-dir "$RUNS" --run-id "$RUN_ID" \
     "${RESUME_ARGS[@]}"
 
-echo "== FINAL-3P complete (hard endpoint 100 R exposures): $RUNS/$RUN_ID"
+echo "== FINAL-3P complete (hard endpoint 110 R exposures): $RUNS/$RUN_ID"
 echo "== analyse with:"
 echo "   python scripts/naming_comprehension/analyze_joint_dynamics.py \\"
 echo "       --run $RUNS/$RUN_ID --baseline \$STORE/lichtheim3_final1/final1_j0_seed22_final_full"

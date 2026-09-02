@@ -154,6 +154,40 @@ def test_trainer_exposure_helpers_agree_with_the_cursors():
     assert acc["ratio_R_N_C"] == [1, 2, 3]
 
 
+def test_final3p_milestone_accounting():
+    """M1 / M2 / M3, the declared FINAL-3P milestones.
+
+    M2 sits exactly on the repetition-cursor LR boundary; M3 adds ten further
+    R exposures under LR 1e-4 so the pilot cannot stop precisely at the
+    transition and mistake missing consolidation for a negative result.
+    """
+    r_pass, c_pass = 463, 438
+    expected = {                     # R exp -> (cycles, steps, N exp, C exp)
+        50:  (23_150, 138_900, 100.0, 158.5616),
+        100: (46_300, 277_800, 200.0, 317.1233),
+        110: (50_930, 305_580, 220.0, 348.8356),
+    }
+    for r_exp, (cycles, steps, n_exp, c_exp) in expected.items():
+        assert r_exp * r_pass == cycles
+        assert cycles * MACRO_CYCLE_STEPS == steps
+        r, n, c = RATIO_123
+        assert cycles * r / r_pass == pytest.approx(r_exp)
+        assert cycles * n / r_pass == pytest.approx(n_exp)
+        assert cycles * c / c_pass == pytest.approx(c_exp, abs=1e-3)
+    # the extension is 10 R exposures = 27,780 steps
+    assert expected[110][1] - expected[100][1] == 27_780
+
+
+def test_m3_lies_after_the_lr_boundary_and_m2_exactly_on_it():
+    boundary = 46_300                       # canonical: 100 R exposures
+    assert lr_for_step(50 * 463, boundary) == LR_STAGE1          # M1: stage 1
+    assert lr_for_step(100 * 463 - 1, boundary) == LR_STAGE1     # just before M2
+    assert lr_for_step(100 * 463, boundary) == LR_STAGE2         # M2: on the boundary
+    assert lr_for_step(110 * 463, boundary) == LR_STAGE2         # M3: post-boundary
+    # the final stretch is genuinely trained at 1e-4
+    assert 110 * 463 - boundary == 4_630     # R batches after the transition
+
+
 def test_epochs_are_repetition_epochs_in_both_schedules():
     s = make_trainer()
     i = make_trainer(schedule=INTERLEAVED_123)
@@ -161,8 +195,27 @@ def test_epochs_are_repetition_epochs_in_both_schedules():
     assert s.steps_for_rep_epochs(100) == 100 * per
     assert i.steps_for_rep_epochs(100) == 100 * per * MACRO_CYCLE_STEPS
     # the FINAL-3P budget, on the real populations
+    assert 110 * 463 * MACRO_CYCLE_STEPS == 305_580
     assert 100 * 463 * MACRO_CYCLE_STEPS == 277_800
     assert 50 * 463 * MACRO_CYCLE_STEPS == 138_900
+
+
+def test_final3p_slurm_job_declares_the_pilot_budget():
+    """Pin the submitted job against drift: it must stop at M3 and run full
+    evaluations at all three milestones, with the recipe untouched."""
+    path = os.path.join(ROOT, "scripts", "cluster", "jeanzay",
+                        "final3p_run.slurm")
+    text = open(path, encoding="utf-8").read()
+    assert "EPOCHS=110" in text, "pilot must stop at 110 R exposures (M3)"
+    assert "FULL_EVAL_AT=138900,277800,305580" in text
+    for frozen in ("SCHEDULE=interleaved_123", "SEED=22",
+                   "SUBSET_MODE=final_full", "--endpoint-eval"):
+        assert frozen in text, f"{frozen} missing from the pilot job"
+    # the frozen recipe must not be overridden on the command line
+    for forbidden in ("--c-align-weight", "--lr-boundary-steps",
+                      "--batch-size", "--dorsal-pool-size",
+                      "--allow-glove-fallback", "--no-subset-hash-check"):
+        assert forbidden not in text, f"{forbidden} must not appear in the pilot job"
 
 
 # =============================================  per-task parameter touch  ===
