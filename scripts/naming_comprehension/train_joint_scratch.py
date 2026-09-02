@@ -404,6 +404,93 @@ def lr_phase(global_step: int, boundary: int) -> str:
     return "stage1_lr1e-3" if int(global_step) < int(boundary) else "stage2_lr1e-4"
 
 
+# ===========================================================================
+#  RNG state serialization contract
+# ===========================================================================
+#
+# Checkpoints store every global RNG as CPU uint8 ByteTensors, the only form
+# `torch.set_rng_state` and `torch.cuda.set_rng_state_all` accept.
+#
+# `torch.load(..., map_location=device)` relocates EVERY tensor in the file,
+# RNG states included, so a checkpoint reloaded on a GPU node hands back CUDA
+# tensors.  Those are not `torch.ByteTensor` (a CPU type) and the setters
+# reject them with "RNG state must be a torch.ByteTensor".  The tensors'
+# VALUES survive the round trip untouched, so moving them back to CPU
+# restores the state exactly: this is a representation repair, never a
+# re-seed, and it therefore cannot change any trajectory.
+#
+# Same contract, and the same helper name, as the historical driver
+# (`scripts/train_checkpoint.py::_as_cpu_byte_tensor`), which already solved
+# this for the Phase-1 resume path.
+
+def _as_cpu_byte_tensor(x: object, name: str = "rng_state") -> torch.Tensor:
+    """Normalise one saved RNG state to a CPU torch.uint8 ByteTensor."""
+    if isinstance(x, torch.Tensor):
+        return x.detach().cpu().to(torch.uint8)
+    try:
+        return torch.as_tensor(x, dtype=torch.uint8, device="cpu")
+    except Exception as e:                                   # pragma: no cover
+        raise TypeError(
+            f"Could not convert {name} to a CPU torch.uint8 ByteTensor "
+            f"(type={type(x)!r}, dtype={getattr(x, 'dtype', None)}, "
+            f"device={getattr(x, 'device', None)})") from e
+
+
+def capture_rng_states() -> Dict[str, object]:
+    """Every global RNG, in exactly the form `restore_rng_states` expects.
+
+    CUDA states are a LIST of CPU uint8 ByteTensors, one per visible device,
+    which is what `torch.cuda.set_rng_state_all` consumes.
+    """
+    return {
+        "torch": _as_cpu_byte_tensor(torch.get_rng_state(), "torch"),
+        "numpy": np.random.get_state(),
+        "python": random.getstate(),
+        "cuda": ([_as_cpu_byte_tensor(s, f"cuda:{i}")
+                  for i, s in enumerate(torch.cuda.get_rng_state_all())]
+                 if torch.cuda.is_available() else None),
+    }
+
+
+def restore_rng_states(rs: Dict[str, object]) -> List[str]:
+    """Restore the global RNGs saved by `capture_rng_states`.
+
+    Returns the names actually restored.  Accepts checkpoints written by any
+    earlier version of this driver, and checkpoints whose tensors were
+    relocated by `map_location` (see the module note above).  A CUDA state is
+    restored only when CUDA is available, so a GPU checkpoint resumes cleanly
+    on a CPU-only machine (and vice versa).
+    """
+    restored: List[str] = []
+    if rs.get("torch") is not None:
+        torch.set_rng_state(_as_cpu_byte_tensor(rs["torch"], "torch"))
+        restored.append("torch")
+    if rs.get("numpy") is not None:
+        np.random.set_state(rs["numpy"])
+        restored.append("numpy")
+    if rs.get("python") is not None:
+        random.setstate(rs["python"])
+        restored.append("python")
+
+    cuda = rs.get("cuda")
+    if cuda is None or not torch.cuda.is_available():
+        return restored
+    if torch.is_tensor(cuda):            # tolerate a single-device scalar form
+        cuda = [cuda]
+    states = [_as_cpu_byte_tensor(s, f"cuda:{i}") for i, s in enumerate(cuda)]
+    n_dev = torch.cuda.device_count()
+    if len(states) != n_dev:
+        # Honest partial restore rather than a crash or a silent re-seed.
+        print(f"[resume] WARNING: checkpoint holds {len(states)} CUDA RNG "
+              f"state(s) but {n_dev} device(s) are visible; restoring "
+              f"{min(len(states), n_dev)}.")
+        states = states[:n_dev]
+    if states:
+        torch.cuda.set_rng_state_all(states)
+        restored.append(f"cuda[{len(states)}]")
+    return restored
+
+
 @contextlib.contextmanager
 def preserved_rng():
     """Restore every global RNG on exit.
@@ -922,13 +1009,7 @@ class JointScratchTrainer:
                 os.path.join(ROOT, self.cfg.data.lexicon_path or "")),
             "glove_found": self.glove_found,
             "glove_fallback": self.glove_fallback,
-            "rng_states": {
-                "torch": torch.get_rng_state(),
-                "numpy": np.random.get_state(),
-                "python": random.getstate(),
-                "cuda": (torch.cuda.get_rng_state_all()
-                         if torch.cuda.is_available() else None),
-            },
+            "rng_states": capture_rng_states(),
             "git": git_state(ROOT),
             "resume_provenance": list(self.resume_provenance),
             "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
@@ -969,16 +1050,9 @@ class JointScratchTrainer:
         for g in self.optim.param_groups:
             g["lr"] = lr
 
-        rs = ckpt.get("rng_states") or {}
-        if "torch" in rs and rs["torch"] is not None:
-            torch.set_rng_state(rs["torch"].cpu().to(torch.uint8)
-                                if torch.is_tensor(rs["torch"]) else rs["torch"])
-        if "numpy" in rs and rs["numpy"] is not None:
-            np.random.set_state(rs["numpy"])
-        if "python" in rs and rs["python"] is not None:
-            random.setstate(rs["python"])
-        if rs.get("cuda") is not None and torch.cuda.is_available():
-            torch.cuda.set_rng_state_all(rs["cuda"])
+        # Every RNG goes through the explicit checkpoint contract, which
+        # repairs states relocated by `map_location` on GPU nodes.
+        restore_rng_states(ckpt.get("rng_states") or {})
 
         self.resume_provenance = list(ckpt.get("resume_provenance", []))
         self.resume_provenance.append({
