@@ -105,7 +105,7 @@ from scripts.naming_comprehension.train_tasks import (                    # noqa
     subset_records, verify_bank_mapping,
 )
 from scripts.naming_comprehension.train_multitask import (                # noqa: E402
-    out_of_subset_probe,
+    MACRO_CYCLE_STEPS, TASKS, macro_cycle, out_of_subset_probe,
 )
 
 
@@ -229,6 +229,39 @@ def deterministic_sample(population: Sequence[int], n: int, seed: int) -> List[i
     g = torch.Generator().manual_seed(int(seed))
     perm = torch.randperm(len(pop), generator=g).tolist()
     return sorted(pop[i] for i in perm[:n])
+
+# ---- FINAL-3 task schedules ----
+# "summed"          : the frozen FINAL-1 update -- R + pool + C + N summed into
+#                     ONE backward, one global clip, one AdamW step.
+# "interleaved_123" : Ueno/Lichtheim2-style.  ONE task per optimizer step, in
+#                     macro-cycles of six steps holding exactly 1 R, 2 N and
+#                     3 C.  Every step is its own zero_grad -> backward ->
+#                     clip(1.0) -> step on the SHARED AdamW state.  All model
+#                     parameters stay trainable (unlike the Phase-3 driver,
+#                     which warm-started and froze WM/phon_embed/motor).
+SUMMED_SCHEDULE = "summed"
+INTERLEAVED_123 = "interleaved_123"
+SCHEDULES = (SUMMED_SCHEDULE, INTERLEAVED_123)
+# Ratio in train_multitask.TASKS order: (repetition, naming, comprehension).
+RATIO_123 = (1, 2, 3)
+SCHEDULE_RATIOS = {INTERLEAVED_123: RATIO_123}
+# The task-order permutation lives in its own seed namespace, disjoint from the
+# four data streams (offsets 0..3) so a schedule can never share a generator
+# seed with a sampler.
+SCHEDULE_SEED_OFFSET = 4
+TASK_ORDER_POLICY = (
+    "deterministically shuffled macro-cycle: the six labels of cycle c are "
+    "macro_cycle(ratio, schedule_seed, c), a pure function of (schedule_seed, "
+    "cycle index) drawn from a private torch.Generator. It never reads the "
+    "global RNG and needs no stored shuffle state, so cycle position is "
+    "recomputed from global_step alone and exact resume is automatic.")
+
+
+def derive_schedule_seed(seed: int) -> int:
+    """Task-order seed for experimental seed S (documented rule, not a magic
+    literal), in the same namespace as `derive_stream_seeds` but disjoint."""
+    return int(seed) * STREAM_SEED_STRIDE + SCHEDULE_SEED_OFFSET
+
 
 # ---- default scientific run length (the Phase 4A2 knob) ----
 # 160 R epochs spans the whole canonical stable-zero window (e140 seed22,
@@ -390,18 +423,26 @@ def canonical_config(seed: int, device: str, *, max_words: int,
     return cfg
 
 
-def lr_for_step(global_step: int, boundary: int) -> float:
-    """Historical two-stage LR as a pure function of completed steps.
+def lr_for_step(rep_cursor: int, boundary: int) -> float:
+    """Historical two-stage LR as a pure function of REPETITION progress.
 
-    `global_step` counts COMPLETED optimizer updates, so the update numbered
-    boundary (the 46,300th) still runs at stage-1 and the next one is the first
-    at stage-2 — exactly the historical e100/e101 split.
+    The argument counts COMPLETED repetition batches, so the R batch numbered
+    boundary (the 46,300th = 100 repetition epochs) still runs at stage-1 and
+    the next one is the first at stage-2 — exactly the historical e100/e101
+    split, whose meaning was always tied to the repetition recipe.
+
+    Under the summed schedule the repetition cursor equals `global_step` at
+    every point (R is drawn on every update in every regime), so this is
+    numerically identical to the previous global-step rule and FINAL-1 is
+    unaffected.  Under an interleaved schedule the two diverge, and anchoring
+    to the repetition stream is what preserves the historical meaning of the
+    boundary rather than silently moving it.
     """
-    return LR_STAGE1 if int(global_step) < int(boundary) else LR_STAGE2
+    return LR_STAGE1 if int(rep_cursor) < int(boundary) else LR_STAGE2
 
 
-def lr_phase(global_step: int, boundary: int) -> str:
-    return "stage1_lr1e-3" if int(global_step) < int(boundary) else "stage2_lr1e-4"
+def lr_phase(rep_cursor: int, boundary: int) -> str:
+    return "stage1_lr1e-3" if int(rep_cursor) < int(boundary) else "stage2_lr1e-4"
 
 
 # ===========================================================================
@@ -559,7 +600,8 @@ class JointScratchTrainer:
                  subset_size: int, lr_boundary_steps: int,
                  allow_glove_fallback: bool, require_subset_hash: bool,
                  glove_path: Optional[str] = "data/glove.6B.300d.txt",
-                 c_align_weight: float = 0.0) -> None:
+                 c_align_weight: float = 0.0,
+                 schedule: str = SUMMED_SCHEDULE) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -573,6 +615,22 @@ class JointScratchTrainer:
         self.seed = int(seed)
         self.device = device
         self.lr_boundary_steps = int(lr_boundary_steps)
+        # FINAL-3 task schedule.  "summed" = the frozen FINAL-1 update.
+        if schedule not in SCHEDULES:
+            raise ValueError(f"schedule must be one of {SCHEDULES}, got {schedule!r}")
+        self.schedule = schedule
+        self.schedule_seed = derive_schedule_seed(seed)
+        self.ratio = SCHEDULE_RATIOS.get(schedule)
+        if schedule != SUMMED_SCHEDULE and not (
+                self.retrieval_enabled and self.naming_enabled):
+            # An interleaved cycle emits N and C steps by construction, so a
+            # regime that switches those objectives off cannot execute it.
+            raise RuntimeError(
+                f"schedule {schedule!r} emits naming and comprehension steps and "
+                f"therefore requires a regime with both objectives enabled; "
+                f"regime {regime!r} has retrieval={self.retrieval_enabled}, "
+                f"naming={self.naming_enabled}.")
+
         # FINAL-2A knob.  0.0 = the frozen FINAL-1 objective.
         self.c_align_weight = float(c_align_weight)
         if self.c_align_weight < 0.0:
@@ -753,16 +811,182 @@ class JointScratchTrainer:
     def rep_epoch(self) -> int:
         return self.cursors["repetition"] // self.streams["repetition"].per_epoch
 
+    @property
+    def rep_cursor(self) -> int:
+        """Completed repetition batches — the LR clock (see `lr_for_step`)."""
+        return self.cursors["repetition"]
+
+    def current_lr(self) -> float:
+        return lr_for_step(self.rep_cursor, self.lr_boundary_steps)
+
+    # ------------------------------------------------------------- schedule
+    def task_for_step(self, global_step: int) -> str:
+        """Which task the `global_step`-th optimizer update trains.
+
+        Pure function of (schedule seed, step): cycle = step // 6, position =
+        step % 6, and the cycle's six labels are recomputed by `macro_cycle`.
+        Nothing about the task order is stored, so resume is exact by
+        construction — including mid-cycle.
+        """
+        if self.schedule == SUMMED_SCHEDULE:
+            return SUMMED_SCHEDULE
+        cycle, pos = divmod(int(global_step), MACRO_CYCLE_STEPS)
+        return macro_cycle(self.ratio, self.schedule_seed, cycle)[pos]
+
+    def steps_for_rep_epochs(self, n_epochs: int) -> int:
+        """Optimizer steps that deliver `n_epochs` full repetition passes.
+
+        Summed: every update draws an R batch, so it is 463 steps per epoch.
+        Interleaved 1:2:3: only one update in six is an R step, so an R epoch
+        costs 463 * 6 = 2,778 optimizer steps.
+        """
+        per_epoch = self.streams["repetition"].per_epoch
+        if self.schedule == SUMMED_SCHEDULE:
+            return int(n_epochs) * per_epoch
+        return int(n_epochs) * per_epoch * MACRO_CYCLE_STEPS
+
+    def exposures(self) -> Dict[str, float]:
+        """Exact exposures/item per task, from the cursors and populations."""
+        return {name: self.cursors[name] / self.streams[name].per_epoch
+                for name in STREAM_NAMES}
+
+    def exposure_accounting(self) -> dict:
+        """The schedule's exposure arithmetic, recorded in the provenance."""
+        per = {n: self.streams[n].per_epoch for n in STREAM_NAMES}
+        acc = {
+            "batches_per_pass": per,
+            "populations": {n: self.streams[n].n for n in STREAM_NAMES},
+            "batch_size": self.cfg.train.batch_size,
+        }
+        if self.schedule == SUMMED_SCHEDULE:
+            acc.update({
+                "optimizer_steps_per_cycle": 1,
+                "batches_per_cycle": {n: 1 for n in STREAM_NAMES
+                                      if self.stream_active[n]},
+                "exposures_per_step": {n: 1.0 / per[n] for n in STREAM_NAMES
+                                       if self.stream_active[n]},
+            })
+        else:
+            r, n, c = self.ratio
+            acc.update({
+                "ratio_R_N_C": list(self.ratio),
+                "optimizer_steps_per_cycle": MACRO_CYCLE_STEPS,
+                "batches_per_cycle": {"repetition": r, "pool": r,
+                                      "naming": n, "comprehension": c},
+                "exposures_per_cycle": {
+                    "repetition": r / per["repetition"],
+                    "naming": n / per["naming"],
+                    "comprehension": c / per["comprehension"]},
+                "cycles_per_repetition_exposure": per["repetition"] / r,
+                "steps_per_repetition_exposure":
+                    per["repetition"] * MACRO_CYCLE_STEPS / r,
+            })
+        return acc
+
     # ----------------------------------------------------------- train step
     def train_step(self) -> dict:
-        """One joint optimizer update: one summed loss, one backward, one clip,
-        one `optimizer.step()`.  No task-alternating updates, no 1:2:3
-        interleaving — those belong to Phase 3, not Phase 4."""
+        """One optimizer update, dispatched by the configured schedule."""
+        if self.schedule != SUMMED_SCHEDULE:
+            return self._interleaved_step()
+        return self._summed_step()
+
+    # ------------------------------------------------------ interleaved step
+    def _interleaved_step(self) -> dict:
+        """One task's optimizer update: zero_grad -> backward -> clip -> step.
+
+        The task is a pure function of the step index (`task_for_step`).  There
+        is no cross-task summation: each task owns its own gradient, its own
+        global clip at `grad_clip`, and its own AdamW update on the SHARED
+        optimizer state.  Only the streams the step actually consumes advance,
+        so the cursors are the exposure ledger.
+
+        Objectives are exactly the FINAL-1 ones, unbundled:
+            R : total_loss(R) + cfg.loss.wm * pool_CE(pool)   [one backward]
+            N : LAMBDA_N * naming_CE
+            C : LAMBDA_C * retrieval_CE          (c_align_weight applies here
+                                                  too, and is 0.0 in FINAL-3P)
+        """
         cfg = self.cfg
         pad_id = self.model.vocab.pad_id
         self.model.train(True)
 
-        lr = lr_for_step(self.global_step, self.lr_boundary_steps)
+        lr = self.current_lr()
+        for g in self.optim.param_groups:
+            g["lr"] = lr
+
+        task = self.task_for_step(self.global_step)
+        rec: Dict[str, object] = {"task": task}
+        touched: List[str] = []
+
+        if task == "repetition":
+            # The dorsal pool rides every R step inside the same backward,
+            # exactly as in the historical recipe, which keeps the pool:R
+            # batch ratio at 1:1 and the pool exposure rate unchanged.
+            r = self.batch("repetition")
+            out = self.model(r["enc_in"], r["enc_mask"], r["dec_in"])
+            parts = total_loss(out, r, cfg.loss, pad_id,
+                               usage_prior=cfg.gating.usage_prior)
+            p = self.batch("pool")
+            pout = self.model(p["enc_in"], p["enc_mask"], p["dec_in"])
+            V = pout["wm_logits"].shape[-1]
+            pool_ce = F.cross_entropy(pout["wm_logits"].reshape(-1, V),
+                                      p["dec_tgt"].reshape(-1),
+                                      ignore_index=pad_id)
+            loss = parts["total"] + cfg.loss.wm * pool_ce
+            rec.update({k: float(v.detach()) for k, v in parts.items()})
+            rec["pool_ce"] = float(pool_ce.detach())
+            touched = ["repetition", "pool"]
+
+        elif task == "naming":
+            n = self.batch("naming")
+            nam = naming_objective(self.model, n, pad_id)["total"]
+            loss = LAMBDA_N * nam
+            rec["naming_ce"] = float(nam.detach())
+            touched = ["naming"]
+
+        elif task == "comprehension":
+            c = self.batch("comprehension")
+            s_hat = comprehension_forward(self.model, c["enc_in"], c["enc_mask"])
+            ret = retrieval_loss(s_hat, self.model.ltm.semantic_bank,
+                                 c["bank_idx"], TAU)
+            loss = LAMBDA_C * ret
+            rec["retrieval_ce"] = float(ret.detach())
+            rec["retrieval_weighted"] = LAMBDA_C * rec["retrieval_ce"]
+            if self.c_align_weight > 0.0:
+                c_align = alignment_loss(s_hat, c["semantic"])
+                loss = loss + self.c_align_weight * c_align
+                rec["c_align"] = float(c_align.detach())
+                rec["c_align_weighted"] = self.c_align_weight * rec["c_align"]
+            touched = ["comprehension"]
+
+        else:                                                # pragma: no cover
+            raise RuntimeError(f"unknown scheduled task {task!r}")
+
+        self.optim.zero_grad(set_to_none=True)
+        loss.backward()
+        gnorm = torch.nn.utils.clip_grad_norm_(self.model.parameters(),
+                                               cfg.train.grad_clip)
+        self.optim.step()
+
+        for name in touched:
+            self.cursors[name] += 1
+        self.global_step += 1
+
+        rec.update({"step": self.global_step, "lr": lr,
+                    "lr_phase": lr_phase(self.rep_cursor, self.lr_boundary_steps),
+                    "joint_total": float(loss.detach()),
+                    "grad_norm": float(gnorm)})
+        return rec
+
+    # ----------------------------------------------------------- summed step
+    def _summed_step(self) -> dict:
+        """One joint optimizer update: one summed loss, one backward, one clip,
+        one `optimizer.step()`.  The frozen FINAL-1 update."""
+        cfg = self.cfg
+        pad_id = self.model.vocab.pad_id
+        self.model.train(True)
+
+        lr = self.current_lr()
         for g in self.optim.param_groups:
             g["lr"] = lr
 
@@ -835,8 +1059,8 @@ class JointScratchTrainer:
                 self.cursors[name] += 1
         self.global_step += 1
 
-        rec.update({"step": self.global_step, "lr": lr,
-                    "lr_phase": lr_phase(self.global_step, self.lr_boundary_steps),
+        rec.update({"step": self.global_step, "lr": lr, "task": SUMMED_SCHEDULE,
+                    "lr_phase": lr_phase(self.rep_cursor, self.lr_boundary_steps),
                     "joint_total": float(loss.detach()),
                     "grad_norm": float(gnorm)})
         return rec
@@ -857,10 +1081,14 @@ class JointScratchTrainer:
                                   self.bank_raw, self.dev_naming_idx, self.device,
                                   NAMING_MAX_STEPS, return_per_item=True)
             per_item = nam.pop("_per_item", [])
+            exp = self.exposures()
             out = {
                 "step": self.global_step,
                 "rep_epoch": self.rep_epoch,
-                "lr": lr_for_step(self.global_step, self.lr_boundary_steps),
+                "r_exposures": exp["repetition"],
+                "n_exposures": exp["naming"],
+                "c_exposures": exp["comprehension"],
+                "lr": lr_for_step(self.rep_cursor, self.lr_boundary_steps),
                 "rep_full": rep["primary_readout"]["exact_match"]["full"],
                 "rep_wm": rep["primary_readout"]["exact_match"]["wm"],
                 "rep_ltm": rep["primary_readout"]["exact_match"]["ltm"],
@@ -951,6 +1179,21 @@ class JointScratchTrainer:
                                  if self.subset_mode == FINAL_FULL_MODE
                                  else "C/N population is homophone-free by "
                                       "construction (legacy subset mode)"),
+            "schedule": self.schedule,
+            "schedule_ratio_R_N_C": (list(self.ratio) if self.ratio else None),
+            "schedule_seed": self.schedule_seed,
+            "task_order_policy": (TASK_ORDER_POLICY
+                                  if self.schedule != SUMMED_SCHEDULE
+                                  else "single summed update per step"),
+            "macro_cycle_steps": (MACRO_CYCLE_STEPS
+                                  if self.schedule != SUMMED_SCHEDULE else 1),
+            "exposure_accounting": self.exposure_accounting(),
+            "lr_convention": (
+                "LR is a pure function of the REPETITION cursor: "
+                f"{LR_STAGE1} while completed R batches < {self.lr_boundary_steps} "
+                f"({self.lr_boundary_steps // self.streams['repetition'].per_epoch} "
+                f"R exposures), then {LR_STAGE2}. Identical to the historical "
+                "global-step rule under the summed schedule."),
             "subset_mode": self.subset_mode,
             "subset_definition_sha256": self.subset_hash,
             "out_of_subset_probe_n": len(self.probe_idx),
@@ -1002,7 +1245,7 @@ class JointScratchTrainer:
             "lr_stage1": LR_STAGE1,
             "lr_stage2": LR_STAGE2,
             "lr_boundary_steps": self.lr_boundary_steps,
-            "current_lr": lr_for_step(self.global_step, self.lr_boundary_steps),
+            "current_lr": lr_for_step(self.rep_cursor, self.lr_boundary_steps),
             "stream_seeds": dict(self.stream_seeds),
             "glove_found": self.glove_found,
             "glove_fallback": self.glove_fallback,
@@ -1025,12 +1268,16 @@ class JointScratchTrainer:
                                    % self.streams["repetition"].per_epoch),
             "cursors": dict(self.cursors),
             "stream_seeds": dict(self.stream_seeds),
-            "lr": lr_for_step(self.global_step, self.lr_boundary_steps),
-            "lr_phase": lr_phase(self.global_step, self.lr_boundary_steps),
+            "lr": lr_for_step(self.rep_cursor, self.lr_boundary_steps),
+            "lr_phase": lr_phase(self.rep_cursor, self.lr_boundary_steps),
             "lr_boundary_steps": self.lr_boundary_steps,
             "subset_definition_sha256": self.subset_hash,
             "subset_mode": self.subset_mode,
             "c_align_weight": self.c_align_weight,
+            "schedule": self.schedule,
+            "schedule_seed": self.schedule_seed,
+            "schedule_ratio": (list(self.ratio) if self.ratio else None),
+            "exposures": self.exposures(),
             "subset_indices": list(self.subset_idx),
             # Explicit per-task population provenance (FINAL-1A).  In
             # final_full mode the legacy subset_* fields alias the
@@ -1076,6 +1323,21 @@ class JointScratchTrainer:
                 f"checkpoint c_align_weight {ck_calign} != "
                 f"{self.c_align_weight}: this checkpoint was trained under a "
                 f"different comprehension objective")
+        # Checkpoints predating FINAL-3 carry no schedule; they are summed.
+        ck_sched = ckpt.get("schedule", SUMMED_SCHEDULE)
+        if ck_sched != self.schedule:
+            raise RuntimeError(
+                f"checkpoint schedule {ck_sched!r} != {self.schedule!r}: "
+                f"summed and interleaved trajectories must never be spliced")
+        ck_sseed = ckpt.get("schedule_seed")
+        if ck_sseed is not None and int(ck_sseed) != int(self.schedule_seed):
+            raise RuntimeError(
+                f"checkpoint schedule_seed {ck_sseed} != {self.schedule_seed}: "
+                f"the task order would differ after resume")
+        ck_ratio = ckpt.get("schedule_ratio")
+        if ck_ratio is not None and list(ck_ratio) != list(self.ratio or []):
+            raise RuntimeError(
+                f"checkpoint schedule_ratio {ck_ratio} != {self.ratio}")
         ck_naming_hash = ckpt.get("naming_population_sha256")
         if ck_naming_hash is not None and ck_naming_hash != self.naming_hash:
             raise RuntimeError(
@@ -1094,7 +1356,7 @@ class JointScratchTrainer:
         self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
         # LR is a pure function of the step counter, so it is re-derived rather
         # than trusted from the file; the optimizer is never reconstructed.
-        lr = lr_for_step(self.global_step, self.lr_boundary_steps)
+        lr = lr_for_step(self.rep_cursor, self.lr_boundary_steps)
         for g in self.optim.param_groups:
             g["lr"] = lr
 
@@ -1130,7 +1392,8 @@ HISTORICAL_FIDELITY_NOTE = (
 # ===========================================================================
 
 METRIC_COLUMNS = [
-    "step", "rep_epoch", "lr", "rep_full", "rep_wm", "rep_ltm",
+    "step", "rep_epoch", "r_exposures", "n_exposures", "c_exposures",
+    "lr", "rep_full", "rep_wm", "rep_ltm",
     "comp_top1", "comp_top5", "comp_rank_median", "comp_rank_mean",
     "comp_cos_mean", "comp_margin_mean",
     "naming_exact", "naming_wer", "naming_mean_edit", "naming_eos_rate",
@@ -1151,9 +1414,13 @@ def append_metrics(path: str, row: dict) -> None:
 
 
 def append_losses(path: str, row: dict) -> None:
-    cols = ["step", "lr", "lr_phase", "joint_total", "total", "rep", "align",
-            "dec", "wm", "gate", "pool_ce", "retrieval_ce", "retrieval_weighted",
-            "c_align", "c_align_weighted", "naming_ce", "grad_norm"]
+    # Convention: a blank cell means the quantity was NOT computed on this
+    # optimizer step (an interleaved step trains exactly one task), never that
+    # it was computed and happened to be zero.
+    cols = ["step", "task", "lr", "lr_phase", "joint_total", "total", "rep",
+            "align", "dec", "wm", "gate", "pool_ce", "retrieval_ce",
+            "retrieval_weighted", "c_align", "c_align_weighted", "naming_ce",
+            "grad_norm"]
     new = not os.path.exists(path)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "a", encoding="utf-8") as fh:
@@ -1240,6 +1507,14 @@ def build_parser() -> argparse.ArgumentParser:
                    help="SMOKE ONLY: permit pseudo-vectors instead of real GloVe")
     p.add_argument("--no-subset-hash-check", action="store_true",
                    help="SMOKE ONLY: skip the frozen subset3288 hash assertion")
+    p.add_argument("--schedule", choices=SCHEDULES, default=SUMMED_SCHEDULE,
+                   help="task schedule: 'summed' (default) = the frozen "
+                        "FINAL-1 update, R+pool+C+N summed into one backward; "
+                        "'interleaved_123' = one task per optimizer step in "
+                        "deterministically shuffled six-step macro-cycles "
+                        "holding exactly 1 R, 2 N and 3 C (Ueno-style). "
+                        "--epochs always counts REPETITION epochs, so an "
+                        "interleaved epoch costs 6x the optimizer steps.")
     p.add_argument("--c-align-weight", type=float, default=0.0,
                    help="FINAL-2A: weight on the comprehension stream's own "
                         "semantic-target alignment (the canonical "
@@ -1287,7 +1562,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         lr_boundary_steps=args.lr_boundary_steps,
         allow_glove_fallback=args.allow_glove_fallback,
         require_subset_hash=require_hash, glove_path=args.glove_path,
-        c_align_weight=args.c_align_weight)
+        c_align_weight=args.c_align_weight, schedule=args.schedule)
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)
@@ -1302,8 +1577,10 @@ def main(argv: Optional[List[str]] = None) -> int:
               f"cursors={trainer.cursors}")
 
     per_epoch = trainer.streams["repetition"].per_epoch
+    # --epochs always counts REPETITION epochs, so the budget is comparable
+    # across schedules at matched R exposures rather than raw steps.
     total_steps = (args.max_steps if args.max_steps is not None
-                   else args.epochs * per_epoch)
+                   else trainer.steps_for_rep_epochs(args.epochs))
 
     settings = trainer.resolved_settings()
     settings["total_steps"] = total_steps
@@ -1347,6 +1624,12 @@ def main(argv: Optional[List[str]] = None) -> int:
                                  else None),
             "c_align_weight": trainer.c_align_weight,
             "c_stream_objective": trainer.resolved_settings()["c_stream_objective"],
+            "schedule": trainer.schedule,
+            "schedule_ratio_R_N_C": (list(trainer.ratio) if trainer.ratio else None),
+            "schedule_seed": trainer.schedule_seed,
+            "task_order_policy": trainer.resolved_settings()["task_order_policy"],
+            "exposure_accounting": trainer.exposure_accounting(),
+            "lr_convention": trainer.resolved_settings()["lr_convention"],
             "torch_deterministic": bool(args.torch_deterministic),
             "stream_seeds": trainer.stream_seeds,
             "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
@@ -1370,11 +1653,18 @@ def main(argv: Optional[List[str]] = None) -> int:
         rec = trainer.train_step()
         if args.log_every and trainer.global_step % args.log_every == 0:
             append_losses(losses_tsv, rec)
-            print(f"[step {trainer.global_step:>7d}/{total_steps}] "
+            # An interleaved step computes exactly one task's losses, so the
+            # line reports whatever that step actually produced rather than
+            # assuming every component exists.
+            parts = " ".join(f"{k}={rec[k]:.4f}" for k in
+                             ("rep", "align", "dec", "pool_ce",
+                              "retrieval_ce", "naming_ce")
+                             if k in rec and rec[k] == rec[k])
+            task = rec.get("task", SUMMED_SCHEDULE)
+            tag = "" if task == SUMMED_SCHEDULE else f"[{task[:4]}] "
+            print(f"[step {trainer.global_step:>7d}/{total_steps}] {tag}"
                   f"lr={rec['lr']:.0e} joint={rec['joint_total']:.4f} "
-                  f"rep={rec['rep']:.4f} align={rec['align']:.4f} "
-                  f"pool={rec['pool_ce']:.4f} "
-                  f"ret={rec['retrieval_ce']:.4f} nam={rec['naming_ce']:.4f} "
+                  f"{parts} gnorm={rec['grad_norm']:.3f} "
                   f"| {time.time() - t0:6.1f}s", flush=True)
         saved_this_step = False
         if trainer.global_step in full_eval_steps:

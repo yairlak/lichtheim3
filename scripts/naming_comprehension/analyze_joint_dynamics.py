@@ -59,8 +59,29 @@ def fnum(row: dict, key: str) -> float:
 
 
 def exposures(step: int, steps_per_pass: int) -> float:
-    """Exposures/item after `step` optimizer updates of a flat stream."""
+    """Exposures/item after `step` optimizer updates of a flat stream.
+
+    Only valid for the SUMMED schedule, where every update draws one batch of
+    every active stream.  Interleaved runs record their exposures per row (see
+    `row_exposures`), because there a step trains only one task.
+    """
     return step / steps_per_pass
+
+
+def row_exposures(row: dict, step: int) -> Dict[str, float]:
+    """Per-task exposures for one metrics row.
+
+    Prefers the recorded `{r,n,c}_exposures` columns, which are the cursor
+    ledger and are correct under ANY schedule; falls back to the summed-schedule
+    arithmetic for runs written before those columns existed (FINAL-1/2A).
+    """
+    rec = {k: fnum(row, f"{p}_exposures")
+           for k, p in (("R", "r"), ("N", "n"), ("C", "c"))}
+    if all(not math.isnan(v) for v in rec.values()):
+        return rec
+    return {"R": exposures(step, STEPS_PER_R_PASS),
+            "N": exposures(step, STEPS_PER_R_PASS),
+            "C": exposures(step, STEPS_PER_C_PASS)}
 
 
 def series(rows: Sequence[dict], key: str) -> List[Tuple[int, float]]:
@@ -141,17 +162,20 @@ def analyse(run_dir: str, every: int) -> dict:
         "c_stream_objective": cfg.get("c_stream_objective"),
         "comprehension_population": cfg.get("comprehension_population"),
         "naming_population": cfg.get("naming_population"),
+        "schedule": cfg.get("schedule", "summed"),
+        "schedule_ratio_R_N_C": cfg.get("schedule_ratio_R_N_C"),
         "max_step": max_step,
-        "n_exposures": exposures(max_step, STEPS_PER_R_PASS),
         "trajectory": [], "slopes": {}, "milestones": [], "clipping": {},
     }
     for r in rows:
         s = int(r["step"])
         if s % every and s != max_step:
             continue
+        ex = row_exposures(r, s)
         rec = {"step": s,
-               "N_exposures": round(exposures(s, STEPS_PER_R_PASS), 2),
-               "C_exposures": round(exposures(s, STEPS_PER_C_PASS), 2),
+               "R_exposures": round(ex["R"], 2),
+               "N_exposures": round(ex["N"], 2),
+               "C_exposures": round(ex["C"], 2),
                "lr": fnum(r, "lr")}
         rec.update({k: fnum(r, k) for k in TRAJECTORY_KEYS})
         out["trajectory"].append(rec)
@@ -163,8 +187,11 @@ def analyse(run_dir: str, every: int) -> dict:
                               for n, (a, b) in windows.items()}
 
     for r in milestone_rows(rows):
+        ex = row_exposures(r, int(r["step"]))
         m = {"step": int(r["step"]),
-             "N_exposures": round(exposures(int(r["step"]), STEPS_PER_R_PASS), 1)}
+             "R_exposures": round(ex["R"], 1),
+             "N_exposures": round(ex["N"], 1),
+             "C_exposures": round(ex["C"], 1)}
         m.update({k: fnum(r, k) for k in FULL_KEYS})
         m["full_rep_errors"] = (1.0 - m["full_rep_full"]) * 29_571
         out["milestones"].append(m)
@@ -185,18 +212,20 @@ def analyse(run_dir: str, every: int) -> dict:
 def print_report(a: dict, baseline: Optional[dict] = None) -> None:
     print(f"\n=== {a['run_dir']} ===")
     print(f"c_align_weight={a['c_align_weight']}  |  {a['c_stream_objective']}")
-    print(f"steps={a['max_step']}  N-exposures={a['n_exposures']:.0f}")
+    print(f"schedule={a['schedule']} ratio={a['schedule_ratio_R_N_C']}  "
+          f"steps={a['max_step']}")
 
     print("\n-- trajectory (exact recorded values) --")
-    hdr = ("  {:>8}{:>8}{:>8}{:>8}{:>9}{:>9}{:>9}{:>9}{:>9}{:>10}".format(
-        "step", "N_exp", "C_exp", "lr", "naming", "c_top1", "c_top5",
+    hdr = ("  {:>8}{:>7}{:>7}{:>7}{:>8}{:>9}{:>9}{:>9}{:>9}{:>9}{:>10}".format(
+        "step", "R_exp", "N_exp", "C_exp", "lr", "naming", "c_top1", "c_top5",
         "rep_full", "rep_ltm", "rank_med"))
     print(hdr)
     for r in a["trajectory"]:
         mark = "  <-- LR drop" if r["step"] == LR_BOUNDARY else ""
-        print("  {:>8}{:>8.0f}{:>8.0f}{:>8.0e}{:>9.4f}{:>9.4f}{:>9.4f}"
+        print("  {:>8}{:>7.0f}{:>7.0f}{:>7.0f}{:>8.0e}{:>9.4f}{:>9.4f}{:>9.4f}"
               "{:>9.4f}{:>9.4f}{:>10.1f}{}".format(
-                  r["step"], r["N_exposures"], r["C_exposures"], r["lr"],
+                  r["step"], r["R_exposures"], r["N_exposures"],
+                  r["C_exposures"], r["lr"],
                   r["naming_exact"], r["comp_top1"], r["comp_top5"],
                   r["rep_full"], r["rep_ltm"], r["comp_rank_median"], mark))
 
@@ -207,13 +236,14 @@ def print_report(a: dict, baseline: Optional[dict] = None) -> None:
 
     if a["milestones"]:
         print("\n-- full-population milestones --")
-        print("  {:>8}{:>7}{:>11}{:>11}{:>12}{:>11}{:>12}".format(
-            "step", "N_exp", "full_rep", "rep_errors", "full_C_top1",
+        print("  {:>8}{:>7}{:>7}{:>11}{:>11}{:>12}{:>11}{:>12}".format(
+            "step", "R_exp", "N_exp", "full_rep", "rep_errors", "full_C_top1",
             "full_C_top5", "full_naming"))
         for m in a["milestones"]:
-            print("  {:>8}{:>7.0f}{:>11.6f}{:>11.0f}{:>12.6f}{:>11.6f}"
+            print("  {:>8}{:>7.0f}{:>7.0f}{:>11.6f}{:>11.0f}{:>12.6f}{:>11.6f}"
                   "{:>12.6f}".format(
-                      m["step"], m["N_exposures"], m["full_rep_full"],
+                      m["step"], m["R_exposures"], m["N_exposures"],
+                      m["full_rep_full"],
                       m["full_rep_errors"], m["full_comp_top1"],
                       m["full_comp_top5"], m["full_naming_exact"]))
             if baseline:
