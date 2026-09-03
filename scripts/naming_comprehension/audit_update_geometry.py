@@ -32,8 +32,8 @@ os.chdir(ROOT)
 
 from losses import alignment_loss, total_loss                            # noqa: E402
 from scripts.naming_comprehension.train_joint_scratch import (           # noqa: E402
-    FINAL_FULL_MODE, INTERLEAVED_123, LAMBDA_C, LAMBDA_N, TAU,
-    JointScratchTrainer, build_batch,
+    FINAL_FULL_MODE, INTERLEAVED_123, LAMBDA_C, LAMBDA_N,
+    OPT_POLICY_SHARED, TAU, JointScratchTrainer, build_batch,
 )
 from scripts.naming_comprehension.train_tasks import (                   # noqa: E402
     comprehension_forward, naming_objective, retrieval_loss,
@@ -80,6 +80,11 @@ def cos(a, b):
 
 class Audit:
     def __init__(self, ckpt_path, n_batches):
+        # The checkpoint is read FIRST: its optimizer policy must be matched
+        # when the trainer is built, or load_state_dict refuses (a run with
+        # task-separated or grouped moment banks cannot be read back under the
+        # historical shared policy).
+        ck = torch.load(ckpt_path, map_location="cpu", weights_only=False)
         self.tr = JointScratchTrainer(
             regime="j0", seed=22, device="cpu", max_words=30000,
             lexicon_path="data/lexicon_en_glove_covered.tsv",
@@ -87,9 +92,10 @@ class Audit:
             subset_mode=FINAL_FULL_MODE, subset_per_band=822, subset_size=64,
             lr_boundary_steps=46300, allow_glove_fallback=False,
             require_subset_hash=True, glove_path="data/glove.6B.300d.txt",
-            schedule=INTERLEAVED_123)
-        ck = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+            schedule=INTERLEAVED_123,
+            optimizer_policy=ck.get("optimizer_policy", OPT_POLICY_SHARED))
         self.tr.load_state_dict(ck, source=os.path.basename(ckpt_path))
+        self.optimizer_policy = self.tr.optimizer_policy
         self.ckpt_step = int(ck["global_step"])
         self.cursors = dict(self.tr.cursors)
         assert float(ck.get("c_align_weight", 0.0)) == 0.0, \
