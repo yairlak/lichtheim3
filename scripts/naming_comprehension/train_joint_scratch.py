@@ -1595,9 +1595,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"  {k:28s} : {v}")
     print(f"  {'historical_fidelity':28s} : {HISTORICAL_FIDELITY_NOTE}\n")
 
-    with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as fh:
+    # Run-control metadata is per LAUNCH.  A continuation extends the budget
+    # and adds future milestones, so writing it back to config.json /
+    # provenance.json would erase the original launch's record (its command,
+    # start time and budget).  metrics.tsv and losses.tsv are append-only and
+    # already accumulate across launches; these files now do the same, by
+    # giving each continuation its own step-suffixed pair and leaving the
+    # first launch's files untouched.
+    suffix = f"_from_step_{trainer.global_step:08d}" if args.resume else ""
+    with open(os.path.join(run_dir, f"config{suffix}.json"), "w",
+              encoding="utf-8") as fh:
         json.dump(settings, fh, indent=2, default=str)
-    with open(os.path.join(run_dir, "provenance.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(run_dir, f"provenance{suffix}.json"), "w",
+              encoding="utf-8") as fh:
         json.dump({
             "run_id": run_id, "regime": args.regime, "seed": args.seed,
             "retrieval_enabled": trainer.retrieval_enabled,
@@ -1634,6 +1644,15 @@ def main(argv: Optional[List[str]] = None) -> int:
             "stream_seeds": trainer.stream_seeds,
             "historical_fidelity": HISTORICAL_FIDELITY_NOTE,
             "started": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            # Continuation context: the scientific recipe is validated against
+            # the checkpoint by load_state_dict, so a launch that resumes is
+            # the SAME trajectory carried further, never a new experiment.
+            "resumed_from": portable_path(args.resume) if args.resume else None,
+            "resumed_at_step": trainer.global_step if args.resume else None,
+            "budget_this_launch": {"total_steps": total_steps,
+                                   "rep_epochs": args.epochs,
+                                   "full_eval_at": settings["full_eval_at"]},
+            "resume_provenance": list(trainer.resume_provenance),
         }, fh, indent=2, default=str)
 
     metrics = os.path.join(run_dir, "metrics.tsv")
