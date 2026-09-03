@@ -230,11 +230,32 @@ def test_budget_and_milestones_are_not_scientific_fields(tmp_path):
     # nothing budget-like is compared by the guard
     _tiny().load_state_dict(ck, source="t")          # must not raise
     assert "total_steps" not in ck and "full_eval_at" not in ck
-    # the LR boundary IS scientific and is restored FROM the checkpoint,
-    # so a continuation cannot move it via the CLI
-    other = _tiny(lr_boundary_steps=999_999)
-    other.load_state_dict(ck, source="t")
-    assert other.lr_boundary_steps == a.lr_boundary_steps == 6
+
+
+def test_lr_boundary_is_scientific_and_a_mismatch_is_refused(tmp_path):
+    """The LR boundary is part of the two-stage LR POLICY (FINAL-4), so a
+    command line asking for a different one is refused rather than silently
+    overwritten by the checkpoint's value -- a request that would otherwise
+    have diverged from what actually ran.  Changing it is a phase transition
+    like any other LR-policy change."""
+    a = _tiny()
+    a.train_step()
+    p = tmp_path / "c.pt"
+    torch.save(a.state_dict(), str(p))
+    ck = torch.load(str(p), weights_only=False)
+
+    with pytest.raises(RuntimeError, match="PHASE TRANSITION"):
+        _tiny(lr_boundary_steps=999_999).load_state_dict(ck, source="t")
+    # declared deliberately, it is accepted and recorded
+    moved = _tiny(lr_boundary_steps=999_999, allow_phase_transition=True)
+    moved.load_state_dict(ck, source="t")
+    assert moved.phase_transitions[-1]["new_lr_policy"][
+        "boundary_rep_batches"] == 999_999
+    # the matching boundary (what every job actually passes) resumes cleanly
+    same = _tiny()
+    same.load_state_dict(ck, source="t")
+    assert same.lr_boundary_steps == a.lr_boundary_steps == 6
+    assert not same.phase_transitions
 
 
 def test_scientific_mismatch_still_refuses_resume(tmp_path):

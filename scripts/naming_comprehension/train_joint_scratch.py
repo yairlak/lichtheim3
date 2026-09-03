@@ -423,6 +423,45 @@ def canonical_config(seed: int, device: str, *, max_words: int,
     return cfg
 
 
+# ===========================================================================
+#  Learning-rate policy (FINAL-4)
+# ===========================================================================
+#
+# Two policies exist, and a run declares exactly one:
+#
+#   "two_stage_rep_cursor" : the historical schedule -- LR_STAGE1 while the
+#       repetition cursor is below the boundary, LR_STAGE2 after.  This is the
+#       default and is what every run through FINAL-3 used; nothing about it
+#       changes.
+#
+#   "task_specific" : one fixed learning rate per task, applied on that task's
+#       own optimizer step.  Only meaningful for interleaved schedules, where
+#       a step trains exactly one task.  It REPLACES the two-stage schedule
+#       rather than modulating it, so the declared eta values are absolute.
+#
+# The policy is scientific state: it is stored in the checkpoint, and resuming
+# with a different one is refused unless an explicit phase transition is
+# declared (see JointScratchTrainer.load_state_dict).
+LR_POLICY_TWO_STAGE = "two_stage_rep_cursor"
+LR_POLICY_TASK = "task_specific"
+LR_TASKS = ("repetition", "naming", "comprehension")
+
+
+def two_stage_lr_policy(boundary: int) -> Dict[str, object]:
+    return {"kind": LR_POLICY_TWO_STAGE, "stage1": LR_STAGE1,
+            "stage2": LR_STAGE2, "boundary_rep_batches": int(boundary)}
+
+
+def task_lr_policy(repetition: float, naming: float,
+                   comprehension: float) -> Dict[str, object]:
+    for name, v in (("repetition", repetition), ("naming", naming),
+                    ("comprehension", comprehension)):
+        if not (v > 0):
+            raise ValueError(f"task learning rate {name}={v} must be > 0")
+    return {"kind": LR_POLICY_TASK, "repetition": float(repetition),
+            "naming": float(naming), "comprehension": float(comprehension)}
+
+
 def lr_for_step(rep_cursor: int, boundary: int) -> float:
     """Historical two-stage LR as a pure function of REPETITION progress.
 
@@ -601,7 +640,9 @@ class JointScratchTrainer:
                  allow_glove_fallback: bool, require_subset_hash: bool,
                  glove_path: Optional[str] = "data/glove.6B.300d.txt",
                  c_align_weight: float = 0.0,
-                 schedule: str = SUMMED_SCHEDULE) -> None:
+                 schedule: str = SUMMED_SCHEDULE,
+                 task_lrs: Optional[Dict[str, float]] = None,
+                 allow_phase_transition: bool = False) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -630,6 +671,25 @@ class JointScratchTrainer:
                 f"therefore requires a regime with both objectives enabled; "
                 f"regime {regime!r} has retrieval={self.retrieval_enabled}, "
                 f"naming={self.naming_enabled}.")
+
+        # FINAL-4 learning-rate policy.  Absent task LRs => the historical
+        # two-stage schedule, bit-for-bit as before.
+        if task_lrs is None:
+            self.lr_policy = two_stage_lr_policy(self.lr_boundary_steps)
+        else:
+            missing = [t for t in LR_TASKS if t not in task_lrs]
+            if missing:
+                raise ValueError(
+                    f"task-specific LR needs every task; missing {missing}")
+            if schedule == SUMMED_SCHEDULE:
+                # One summed update trains all tasks at once, so a per-task LR
+                # has no meaning there; refuse rather than silently pick one.
+                raise RuntimeError(
+                    "task-specific learning rates require an interleaved "
+                    "schedule (a summed step trains every task at once)")
+            self.lr_policy = task_lr_policy(**{t: task_lrs[t] for t in LR_TASKS})
+        self.allow_phase_transition = bool(allow_phase_transition)
+        self.phase_transitions: List[dict] = []
 
         # FINAL-2A knob.  0.0 = the frozen FINAL-1 objective.
         self.c_align_weight = float(c_align_weight)
@@ -816,8 +876,25 @@ class JointScratchTrainer:
         """Completed repetition batches — the LR clock (see `lr_for_step`)."""
         return self.cursors["repetition"]
 
-    def current_lr(self) -> float:
-        return lr_for_step(self.rep_cursor, self.lr_boundary_steps)
+    def current_lr(self, task: Optional[str] = None) -> float:
+        """The learning rate for the step about to be taken.
+
+        Under the historical two-stage policy this is a pure function of the
+        repetition cursor and `task` is ignored, so every pre-FINAL-4 run is
+        unaffected.  Under the task-specific policy the caller must say which
+        task the step trains.
+        """
+        if self.lr_policy["kind"] == LR_POLICY_TWO_STAGE:
+            return lr_for_step(self.rep_cursor, self.lr_boundary_steps)
+        if task not in LR_TASKS:
+            raise RuntimeError(
+                f"task-specific LR policy needs the step's task, got {task!r}")
+        return float(self.lr_policy[task])
+
+    def lr_phase_label(self, task: Optional[str] = None) -> str:
+        if self.lr_policy["kind"] == LR_POLICY_TWO_STAGE:
+            return lr_phase(self.rep_cursor, self.lr_boundary_steps)
+        return f"task_specific_{task}"
 
     # ------------------------------------------------------------- schedule
     def task_for_step(self, global_step: int) -> str:
@@ -910,11 +987,13 @@ class JointScratchTrainer:
         pad_id = self.model.vocab.pad_id
         self.model.train(True)
 
-        lr = self.current_lr()
+        # The task is resolved first: under the task-specific policy the LR of
+        # this step is a property of the task it trains.
+        task = self.task_for_step(self.global_step)
+        lr = self.current_lr(task)
         for g in self.optim.param_groups:
             g["lr"] = lr
 
-        task = self.task_for_step(self.global_step)
         rec: Dict[str, object] = {"task": task}
         touched: List[str] = []
 
@@ -973,7 +1052,7 @@ class JointScratchTrainer:
         self.global_step += 1
 
         rec.update({"step": self.global_step, "lr": lr,
-                    "lr_phase": lr_phase(self.rep_cursor, self.lr_boundary_steps),
+                    "lr_phase": self.lr_phase_label(task),
                     "joint_total": float(loss.detach()),
                     "grad_norm": float(gnorm)})
         return rec
@@ -1060,7 +1139,7 @@ class JointScratchTrainer:
         self.global_step += 1
 
         rec.update({"step": self.global_step, "lr": lr, "task": SUMMED_SCHEDULE,
-                    "lr_phase": lr_phase(self.rep_cursor, self.lr_boundary_steps),
+                    "lr_phase": self.lr_phase_label(),
                     "joint_total": float(loss.detach()),
                     "grad_norm": float(gnorm)})
         return rec
@@ -1088,7 +1167,7 @@ class JointScratchTrainer:
                 "r_exposures": exp["repetition"],
                 "n_exposures": exp["naming"],
                 "c_exposures": exp["comprehension"],
-                "lr": lr_for_step(self.rep_cursor, self.lr_boundary_steps),
+                "lr": self.current_lr("repetition"),
                 "rep_full": rep["primary_readout"]["exact_match"]["full"],
                 "rep_wm": rep["primary_readout"]["exact_match"]["wm"],
                 "rep_ltm": rep["primary_readout"]["exact_match"]["ltm"],
@@ -1188,6 +1267,16 @@ class JointScratchTrainer:
             "macro_cycle_steps": (MACRO_CYCLE_STEPS
                                   if self.schedule != SUMMED_SCHEDULE else 1),
             "exposure_accounting": self.exposure_accounting(),
+            "lr_policy": dict(self.lr_policy),
+            "phase_transitions": list(self.phase_transitions),
+            # Under a task-specific policy there is no single scalar LR; the
+            # per-step value is exact in losses.tsv, and the metrics.tsv "lr"
+            # column reports the REPETITION rate as the anchor.
+            "lr_column_convention": (
+                "metrics.tsv lr = repetition LR (anchor); losses.tsv lr is the "
+                "exact per-step rate"
+                if self.lr_policy["kind"] == LR_POLICY_TASK
+                else "single scalar LR from the two-stage schedule"),
             "lr_convention": (
                 "LR is a pure function of the REPETITION cursor: "
                 f"{LR_STAGE1} while completed R batches < {self.lr_boundary_steps} "
@@ -1245,7 +1334,7 @@ class JointScratchTrainer:
             "lr_stage1": LR_STAGE1,
             "lr_stage2": LR_STAGE2,
             "lr_boundary_steps": self.lr_boundary_steps,
-            "current_lr": lr_for_step(self.rep_cursor, self.lr_boundary_steps),
+            "current_lr": self.current_lr("repetition"),
             "stream_seeds": dict(self.stream_seeds),
             "glove_found": self.glove_found,
             "glove_fallback": self.glove_fallback,
@@ -1268,12 +1357,14 @@ class JointScratchTrainer:
                                    % self.streams["repetition"].per_epoch),
             "cursors": dict(self.cursors),
             "stream_seeds": dict(self.stream_seeds),
-            "lr": lr_for_step(self.rep_cursor, self.lr_boundary_steps),
-            "lr_phase": lr_phase(self.rep_cursor, self.lr_boundary_steps),
+            "lr": self.current_lr("repetition"),
+            "lr_phase": self.lr_phase_label("repetition"),
             "lr_boundary_steps": self.lr_boundary_steps,
             "subset_definition_sha256": self.subset_hash,
             "subset_mode": self.subset_mode,
             "c_align_weight": self.c_align_weight,
+            "lr_policy": dict(self.lr_policy),
+            "phase_transitions": list(self.phase_transitions),
             "schedule": self.schedule,
             "schedule_seed": self.schedule_seed,
             "schedule_ratio": (list(self.ratio) if self.ratio else None),
@@ -1345,6 +1436,35 @@ class JointScratchTrainer:
         if dict(ckpt["stream_seeds"]) != dict(self.stream_seeds):
             raise RuntimeError("checkpoint stream seeds differ from the derived ones")
 
+        # ---- learning-rate policy: a scientific field with ONE sanctioned
+        # way to change it, an explicitly declared phase transition.  Every
+        # other guard above is unconditional and is NOT relaxed by that flag.
+        ck_policy = ckpt.get("lr_policy") or two_stage_lr_policy(
+            int(ckpt["lr_boundary_steps"]))
+        self.phase_transitions = list(ckpt.get("phase_transitions", []))
+        if dict(ck_policy) != dict(self.lr_policy):
+            if not self.allow_phase_transition:
+                raise RuntimeError(
+                    f"checkpoint LR policy {ck_policy} != requested "
+                    f"{self.lr_policy}. Changing the learning-rate policy is a "
+                    f"PHASE TRANSITION, not a continuation: it makes this a "
+                    f"staged recipe rather than the same one. Pass "
+                    f"--phase-transition to declare it deliberately.")
+            self.phase_transitions.append({
+                "transition_step": int(ckpt["global_step"]),
+                "old_lr_policy": dict(ck_policy),
+                "new_lr_policy": dict(self.lr_policy),
+                "source_checkpoint": source,
+                "source_commit": (ckpt.get("git") or {}).get("commit"),
+                "new_commit": (git_state(ROOT) or {}).get("commit"),
+                "exposures_at_transition": {
+                    k: int(v) / self.streams[k].per_epoch
+                    for k, v in ckpt["cursors"].items()},
+                "declared_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            })
+            print(f"[phase] DECLARED TRANSITION at step {ckpt['global_step']}: "
+                  f"{ck_policy} -> {self.lr_policy}")
+
         self.model.load_state_dict(ckpt["model_state_dict"])
         self.optim.load_state_dict(ckpt["optimizer_state_dict"])
         for st in self.optim.state.values():
@@ -1356,7 +1476,10 @@ class JointScratchTrainer:
         self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
         # LR is a pure function of the step counter, so it is re-derived rather
         # than trusted from the file; the optimizer is never reconstructed.
-        lr = lr_for_step(self.rep_cursor, self.lr_boundary_steps)
+        # Re-derived, never trusted from the file.  Under a task-specific
+        # policy the per-step rate is set by _interleaved_step anyway; this
+        # just leaves the optimizer in a coherent state after loading.
+        lr = self.current_lr("repetition")
         for g in self.optim.param_groups:
             g["lr"] = lr
 
@@ -1515,6 +1638,21 @@ def build_parser() -> argparse.ArgumentParser:
                         "holding exactly 1 R, 2 N and 3 C (Ueno-style). "
                         "--epochs always counts REPETITION epochs, so an "
                         "interleaved epoch costs 6x the optimizer steps.")
+    p.add_argument("--lr-repetition", type=float, default=None,
+                   help="FINAL-4: fixed learning rate for repetition steps. "
+                        "Giving the three --lr-<task> flags selects the "
+                        "task-specific LR policy, which REPLACES the two-stage "
+                        "schedule and requires an interleaved schedule. "
+                        "Omitting them keeps the historical schedule exactly.")
+    p.add_argument("--lr-naming", type=float, default=None,
+                   help="FINAL-4: fixed learning rate for naming steps.")
+    p.add_argument("--lr-comprehension", type=float, default=None,
+                   help="FINAL-4: fixed learning rate for comprehension steps.")
+    p.add_argument("--phase-transition", action="store_true",
+                   help="declare deliberately that this launch changes the "
+                        "learning-rate policy of the checkpoint it resumes, "
+                        "making the run a STAGED recipe. Without it such a "
+                        "resume is refused. It relaxes no other guard.")
     p.add_argument("--c-align-weight", type=float, default=0.0,
                    help="FINAL-2A: weight on the comprehension stream's own "
                         "semantic-target alignment (the canonical "
@@ -1529,6 +1667,25 @@ def build_parser() -> argparse.ArgumentParser:
                         "export CUBLAS_WORKSPACE_CONFIG=:4096:8 before launch. "
                         "May reduce throughput; never enabled silently.")
     return p
+
+
+def task_lrs_from_args(args) -> Optional[Dict[str, float]]:
+    """The three --lr-<task> flags, all-or-nothing.
+
+    Returning None selects the historical two-stage schedule, so a command
+    line that does not mention them is unchanged in every respect.
+    """
+    given = {"repetition": args.lr_repetition, "naming": args.lr_naming,
+             "comprehension": args.lr_comprehension}
+    present = {k: v for k, v in given.items() if v is not None}
+    if not present:
+        return None
+    if len(present) != len(given):
+        raise SystemExit(
+            "task-specific learning rates are all-or-nothing: got "
+            f"{sorted(present)}, missing "
+            f"{sorted(set(given) - set(present))}")
+    return present
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -1562,7 +1719,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         lr_boundary_steps=args.lr_boundary_steps,
         allow_glove_fallback=args.allow_glove_fallback,
         require_subset_hash=require_hash, glove_path=args.glove_path,
-        c_align_weight=args.c_align_weight, schedule=args.schedule)
+        c_align_weight=args.c_align_weight, schedule=args.schedule,
+        task_lrs=task_lrs_from_args(args),
+        allow_phase_transition=args.phase_transition)
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)
@@ -1634,6 +1793,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                                  else None),
             "c_align_weight": trainer.c_align_weight,
             "c_stream_objective": trainer.resolved_settings()["c_stream_objective"],
+            "lr_policy": dict(trainer.lr_policy),
+            "phase_transition_declared": bool(args.phase_transition),
+            "phase_transitions": list(trainer.phase_transitions),
             "schedule": trainer.schedule,
             "schedule_ratio_R_N_C": (list(trainer.ratio) if trainer.ratio else None),
             "schedule_seed": trainer.schedule_seed,
