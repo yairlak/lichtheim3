@@ -84,6 +84,79 @@ def row_exposures(row: dict, step: int) -> Dict[str, float]:
             "C": exposures(step, STEPS_PER_C_PASS)}
 
 
+def lr_phases(run_dir: str) -> List[Tuple[int, dict]]:
+    """(start_step, lr_policy) for every launch of a run, in order.
+
+    A run's first launch writes config.json; later launches write
+    config_from_step_<N>.json.  A run whose learning-rate policy changed
+    mid-flight (a declared phase transition) therefore has several, and only
+    the one covering a given step describes that step truthfully.
+    """
+    phases: List[Tuple[int, dict]] = []
+    for name in sorted(os.listdir(run_dir)) if os.path.isdir(run_dir) else []:
+        if not (name.startswith("config") and name.endswith(".json")):
+            continue
+        start = 0
+        if name.startswith("config_from_step_"):
+            try:
+                start = int(name[len("config_from_step_"):-len(".json")])
+            except ValueError:
+                continue
+        try:
+            cfg = json.load(open(os.path.join(run_dir, name), encoding="utf-8"))
+        except Exception:
+            continue
+        pol = cfg.get("lr_policy")
+        if not pol:
+            # Runs predating the explicit policy (FINAL-1 .. FINAL-3) always
+            # used the two-stage schedule; reconstruct it from the fields they
+            # did record rather than reporting an empty policy.
+            pol = {"kind": "two_stage_rep_cursor",
+                   "stage1": cfg.get("lr_stage1"),
+                   "stage2": cfg.get("lr_stage2"),
+                   "boundary_rep_batches": cfg.get("lr_boundary_steps")}
+        phases.append((start, pol))
+    return sorted(phases, key=lambda p: p[0])
+
+
+def policy_at(phases: Sequence[Tuple[int, dict]], step: int) -> dict:
+    """The policy that TRAINED `step`.
+
+    A phase recorded as starting at N resumed AT step N and trained steps
+    N+1 onward, so the row at exactly N still belongs to the previous phase --
+    which matters precisely at a transition boundary, where the two policies
+    differ.  The initial phase covers step 0.
+    """
+    if not phases:
+        return {}
+    cur = phases[0][1]
+    for start, pol in phases:
+        if start < step:
+            cur = pol
+    return cur
+
+
+def task_lrs_at(phases: Sequence[Tuple[int, dict]], step: int,
+                scalar_lr: float) -> Dict[str, float]:
+    """Per-task learning rates for one row.
+
+    Under the two-stage policy all three tasks share the row's recorded scalar
+    LR.  Under a task-specific policy the three differ and a single number
+    would be a fabrication, so the declared rates are used.
+    """
+    pol = policy_at(phases, step)
+    if pol.get("kind") == "task_specific":
+        return {"R": float(pol["repetition"]), "N": float(pol["naming"]),
+                "C": float(pol["comprehension"])}
+    return {"R": scalar_lr, "N": scalar_lr, "C": scalar_lr}
+
+
+def format_lrs(lrs: Dict[str, float]) -> str:
+    if lrs["R"] == lrs["N"] == lrs["C"]:
+        return f"{lrs['R']:.0e}"
+    return "/".join(f"{lrs[k]:.0e}" for k in ("R", "N", "C"))
+
+
 def series(rows: Sequence[dict], key: str) -> List[Tuple[int, float]]:
     """(step, value) pairs for one metric, de-duplicated and sorted by step."""
     seen: Dict[int, float] = {}
@@ -155,6 +228,7 @@ def analyse(run_dir: str, every: int) -> dict:
     cfg_path = os.path.join(run_dir, "config.json")
     cfg = json.load(open(cfg_path)) if os.path.exists(cfg_path) else {}
     max_step = max(int(r["step"]) for r in rows) if rows else 0
+    phases = lr_phases(run_dir)
 
     out = {
         "run_dir": os.path.abspath(run_dir),
@@ -164,6 +238,7 @@ def analyse(run_dir: str, every: int) -> dict:
         "naming_population": cfg.get("naming_population"),
         "schedule": cfg.get("schedule", "summed"),
         "schedule_ratio_R_N_C": cfg.get("schedule_ratio_R_N_C"),
+        "lr_phases": [{"from_step": st, "lr_policy": pol} for st, pol in phases],
         "max_step": max_step,
         "trajectory": [], "slopes": {}, "milestones": [], "clipping": {},
     }
@@ -172,11 +247,14 @@ def analyse(run_dir: str, every: int) -> dict:
         if s % every and s != max_step:
             continue
         ex = row_exposures(r, s)
+        lrs = task_lrs_at(phases, s, fnum(r, "lr"))
         rec = {"step": s,
                "R_exposures": round(ex["R"], 2),
                "N_exposures": round(ex["N"], 2),
                "C_exposures": round(ex["C"], 2),
-               "lr": fnum(r, "lr")}
+               "lr_R": lrs["R"], "lr_N": lrs["N"], "lr_C": lrs["C"],
+               "lr_policy_kind": (policy_at(phases, s).get("kind")
+                                  or "two_stage_rep_cursor")}
         rec.update({k: fnum(r, k) for k in TRAJECTORY_KEYS})
         out["trajectory"].append(rec)
 
@@ -188,7 +266,9 @@ def analyse(run_dir: str, every: int) -> dict:
 
     for r in milestone_rows(rows):
         ex = row_exposures(r, int(r["step"]))
+        mlrs = task_lrs_at(phases, int(r["step"]), fnum(r, "lr"))
         m = {"step": int(r["step"]),
+             "lr_R": mlrs["R"], "lr_N": mlrs["N"], "lr_C": mlrs["C"],
              "R_exposures": round(ex["R"], 1),
              "N_exposures": round(ex["N"], 1),
              "C_exposures": round(ex["C"], 1)}
@@ -214,18 +294,29 @@ def print_report(a: dict, baseline: Optional[dict] = None) -> None:
     print(f"c_align_weight={a['c_align_weight']}  |  {a['c_stream_objective']}")
     print(f"schedule={a['schedule']} ratio={a['schedule_ratio_R_N_C']}  "
           f"steps={a['max_step']}")
+    for ph in a.get("lr_phases", []):
+        pol = ph["lr_policy"] or {}
+        if pol.get("kind") == "task_specific":
+            desc = (f"task_specific R={pol['repetition']:g} "
+                    f"N={pol['naming']:g} C={pol['comprehension']:g}")
+        else:
+            desc = (f"{pol.get('kind','two_stage_rep_cursor')} "
+                    f"(stage1={pol.get('stage1')}, stage2={pol.get('stage2')}, "
+                    f"boundary={pol.get('boundary_rep_batches')} R batches)")
+        print(f"  LR phase from step {ph['from_step']:>8}: {desc}")
 
     print("\n-- trajectory (exact recorded values) --")
-    hdr = ("  {:>8}{:>7}{:>7}{:>7}{:>8}{:>9}{:>9}{:>9}{:>9}{:>9}{:>10}".format(
-        "step", "R_exp", "N_exp", "C_exp", "lr", "naming", "c_top1", "c_top5",
-        "rep_full", "rep_ltm", "rank_med"))
+    hdr = ("  {:>8}{:>7}{:>7}{:>7}{:>19}{:>9}{:>9}{:>9}{:>9}{:>9}{:>10}".format(
+        "step", "R_exp", "N_exp", "C_exp", "lr R/N/C", "naming", "c_top1",
+        "c_top5", "rep_full", "rep_ltm", "rank_med"))
     print(hdr)
     for r in a["trajectory"]:
         mark = "  <-- LR drop" if r["step"] == LR_BOUNDARY else ""
-        print("  {:>8}{:>7.0f}{:>7.0f}{:>7.0f}{:>8.0e}{:>9.4f}{:>9.4f}{:>9.4f}"
+        print("  {:>8}{:>7.0f}{:>7.0f}{:>7.0f}{:>19}{:>9.4f}{:>9.4f}{:>9.4f}"
               "{:>9.4f}{:>9.4f}{:>10.1f}{}".format(
                   r["step"], r["R_exposures"], r["N_exposures"],
-                  r["C_exposures"], r["lr"],
+                  r["C_exposures"],
+                  format_lrs({"R": r["lr_R"], "N": r["lr_N"], "C": r["lr_C"]}),
                   r["naming_exact"], r["comp_top1"], r["comp_top5"],
                   r["rep_full"], r["rep_ltm"], r["comp_rank_median"], mark))
 
@@ -236,13 +327,15 @@ def print_report(a: dict, baseline: Optional[dict] = None) -> None:
 
     if a["milestones"]:
         print("\n-- full-population milestones --")
-        print("  {:>8}{:>7}{:>7}{:>11}{:>11}{:>12}{:>11}{:>12}".format(
-            "step", "R_exp", "N_exp", "full_rep", "rep_errors", "full_C_top1",
-            "full_C_top5", "full_naming"))
+        print("  {:>8}{:>7}{:>7}{:>19}{:>11}{:>11}{:>12}{:>11}{:>12}".format(
+            "step", "R_exp", "N_exp", "lr R/N/C", "full_rep", "rep_errors",
+            "full_C_top1", "full_C_top5", "full_naming"))
         for m in a["milestones"]:
-            print("  {:>8}{:>7.0f}{:>7.0f}{:>11.6f}{:>11.0f}{:>12.6f}{:>11.6f}"
-                  "{:>12.6f}".format(
+            print("  {:>8}{:>7.0f}{:>7.0f}{:>19}{:>11.6f}{:>11.0f}{:>12.6f}"
+                  "{:>11.6f}{:>12.6f}".format(
                       m["step"], m["R_exposures"], m["N_exposures"],
+                      format_lrs({"R": m["lr_R"], "N": m["lr_N"],
+                                  "C": m["lr_C"]}),
                       m["full_rep_full"],
                       m["full_rep_errors"], m["full_comp_top1"],
                       m["full_comp_top5"], m["full_naming_exact"]))

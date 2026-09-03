@@ -1277,12 +1277,20 @@ class JointScratchTrainer:
                 "exact per-step rate"
                 if self.lr_policy["kind"] == LR_POLICY_TASK
                 else "single scalar LR from the two-stage schedule"),
+            # Describes the policy ACTUALLY in force, never a stale default.
             "lr_convention": (
                 "LR is a pure function of the REPETITION cursor: "
                 f"{LR_STAGE1} while completed R batches < {self.lr_boundary_steps} "
                 f"({self.lr_boundary_steps // self.streams['repetition'].per_epoch} "
                 f"R exposures), then {LR_STAGE2}. Identical to the historical "
-                "global-step rule under the summed schedule."),
+                "global-step rule under the summed schedule."
+                if self.lr_policy["kind"] == LR_POLICY_TWO_STAGE else
+                "Task-specific LR: each optimizer step uses its own task's "
+                f"fixed rate (repetition={self.lr_policy['repetition']:g}, "
+                f"naming={self.lr_policy['naming']:g}, "
+                f"comprehension={self.lr_policy['comprehension']:g}). This "
+                "REPLACES the two-stage repetition-cursor schedule; there is "
+                "no single scalar LR for the run."),
             "subset_mode": self.subset_mode,
             "subset_definition_sha256": self.subset_hash,
             "out_of_subset_probe_n": len(self.probe_idx),
@@ -1669,6 +1677,48 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def ancestry_record(resume_path: str, run_id: str, trainer) -> dict:
+    """Where this launch came from, and whether it BRANCHES from another run.
+
+    A branch (parent run id != this run id) starts a new, independent history:
+    its own metrics.tsv and losses.tsv, its own checkpoints, and the parent's
+    files are never read for writing or appended to.  The pointers here are
+    what make the branch reconstructible from the parent.
+    """
+    ck_dir = os.path.dirname(os.path.abspath(resume_path))
+    parent_run_dir = os.path.dirname(ck_dir)
+    parent_run_id = os.path.basename(parent_run_dir)
+    rec = {
+        "parent_run_id": parent_run_id,
+        "parent_checkpoint": portable_path(resume_path),
+        "parent_global_step": int(trainer.global_step),
+        "parent_git_commit": None,
+        "parent_exposures": {k: v for k, v in trainer.exposures().items()},
+        "is_branch": parent_run_id != run_id,
+        "inherited": ["model", "optimizer moments", "task cursors",
+                      "macro-cycle position", "RNG states"],
+    }
+    try:
+        ck = torch.load(resume_path, map_location="cpu", weights_only=False)
+        rec["parent_git_commit"] = (ck.get("git") or {}).get("commit")
+        rec["parent_lr_policy"] = ck.get("lr_policy")
+    except Exception:                                    # pragma: no cover
+        pass
+    # Best-effort snapshot of the parent's own metric row at the branch point,
+    # so the comparison baseline travels with the branch.  Read-only.
+    try:
+        import csv as _csv
+        with open(os.path.join(parent_run_dir, "metrics.tsv"),
+                  encoding="utf-8") as fh:
+            for row in _csv.DictReader(fh, delimiter="\t"):
+                if int(row["step"]) == trainer.global_step:
+                    rec["parent_metrics_row"] = row
+                    break
+    except Exception:                                    # pragma: no cover
+        pass
+    return rec
+
+
 def task_lrs_from_args(args) -> Optional[Dict[str, float]]:
     """The three --lr-<task> flags, all-or-nothing.
 
@@ -1761,7 +1811,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     # already accumulate across launches; these files now do the same, by
     # giving each continuation its own step-suffixed pair and leaving the
     # first launch's files untouched.
-    suffix = f"_from_step_{trainer.global_step:08d}" if args.resume else ""
+    # The suffix marks a LATER launch of an existing run, not merely a resume:
+    # a new run that BRANCHES from an external parent checkpoint is still that
+    # run's first launch and must own the primary config.json/provenance.json
+    # (analysis tools read those), while its ancestry is recorded inside.
+    suffix = (f"_from_step_{trainer.global_step:08d}"
+              if os.path.exists(os.path.join(run_dir, "config.json")) else "")
     with open(os.path.join(run_dir, f"config{suffix}.json"), "w",
               encoding="utf-8") as fh:
         json.dump(settings, fh, indent=2, default=str)
@@ -1811,6 +1866,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             # the SAME trajectory carried further, never a new experiment.
             "resumed_from": portable_path(args.resume) if args.resume else None,
             "resumed_at_step": trainer.global_step if args.resume else None,
+            "ancestry": (ancestry_record(args.resume, run_id, trainer)
+                         if args.resume else None),
             "budget_this_launch": {"total_steps": total_steps,
                                    "rep_epochs": args.epochs,
                                    "full_eval_at": settings["full_eval_at"]},

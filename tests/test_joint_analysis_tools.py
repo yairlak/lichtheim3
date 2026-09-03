@@ -21,7 +21,8 @@ if ROOT not in sys.path:
 
 from scripts.naming_comprehension.analyze_joint_dynamics import (      # noqa: E402
     STEPS_PER_C_PASS, STEPS_PER_R_PASS, analyse, clip_stats, exposures,
-    milestone_rows, series, slope_per_100_exposures,
+    format_lrs, lr_phases, milestone_rows, policy_at, series,
+    slope_per_100_exposures, task_lrs_at,
 )
 from scripts.naming_comprehension.grad_interference_audit import (     # noqa: E402
     Auditor, cosine, group_of,
@@ -105,6 +106,114 @@ def test_analyse_reproduces_the_reported_final1_milestones():
     assert sl["stage1 (LR 1e-3)"] > sl["231k-324k"]
     # pervasive clipping in the logged sample
     assert a["clipping"]["ALL"]["fraction_over_clip"] == pytest.approx(1.0)
+
+
+# ==============================  task-specific LR reporting (FINAL-5P) =====
+# Regression for two reporting bugs exposed by FINAL-4: the analysis showed a
+# single historical LR while the run was actually training R/N/C at different
+# rates, and the provenance kept a stale two-stage `lr_convention`.
+
+TWO_STAGE = {"kind": "two_stage_rep_cursor", "stage1": 1e-3, "stage2": 1e-4,
+             "boundary_rep_batches": 46_300}
+TASK_POL = {"kind": "task_specific", "repetition": 1e-4, "naming": 1e-3,
+            "comprehension": 1e-3}
+
+
+def _write_phase_dir(tmp_path, phases):
+    run = tmp_path / "run"
+    run.mkdir()
+    for start, pol in phases:
+        name = "config.json" if start == 0 else f"config_from_step_{start:08d}.json"
+        json.dump({"lr_policy": pol}, open(run / name, "w"))
+    return str(run)
+
+
+def test_lr_phases_are_read_in_order(tmp_path):
+    run = _write_phase_dir(tmp_path, [(0, TWO_STAGE), (277_800, TASK_POL)])
+    assert lr_phases(run) == [(0, TWO_STAGE), (277_800, TASK_POL)]
+
+
+def test_lr_phases_reconstruct_legacy_configs(tmp_path):
+    """Runs predating lr_policy must still report their real schedule."""
+    run = tmp_path / "legacy"
+    run.mkdir()
+    json.dump({"lr_stage1": 1e-3, "lr_stage2": 1e-4, "lr_boundary_steps": 46_300},
+              open(run / "config.json", "w"))
+    (start, pol), = lr_phases(str(run))
+    assert start == 0 and pol == TWO_STAGE
+
+
+def test_policy_at_attributes_the_boundary_row_to_the_previous_phase():
+    """A phase recorded at step N resumed AT N and trained N+1 onward, so the
+    row at exactly N belongs to the phase before it."""
+    ph = [(0, TWO_STAGE), (277_800, TASK_POL)]
+    assert policy_at(ph, 0)["kind"] == "two_stage_rep_cursor"
+    assert policy_at(ph, 277_800)["kind"] == "two_stage_rep_cursor"
+    assert policy_at(ph, 277_801)["kind"] == "task_specific"
+    assert policy_at([], 5) == {}
+
+
+def test_task_lrs_never_fabricate_a_single_rate():
+    ph = [(0, TWO_STAGE), (277_800, TASK_POL)]
+    # two-stage: all three tasks share the row's recorded scalar
+    assert task_lrs_at(ph, 100_000, 1e-3) == {"R": 1e-3, "N": 1e-3, "C": 1e-3}
+    # task-specific: the declared per-task rates, not the stale scalar
+    got = task_lrs_at(ph, 300_000, 1e-4)
+    assert got == {"R": 1e-4, "N": 1e-3, "C": 1e-3}
+    assert format_lrs(got) == "1e-04/1e-03/1e-03"
+    assert format_lrs({"R": 1e-4, "N": 1e-4, "C": 1e-4}) == "1e-04"
+
+
+def test_report_shows_per_task_rates_for_a_two_phase_run(tmp_path, capsys):
+    """End-to-end: a run whose LR policy changed must never be summarised
+    with one LR."""
+    from scripts.naming_comprehension.analyze_joint_dynamics import (
+        print_report)
+    run = _write_phase_dir(tmp_path, [(0, TWO_STAGE), (12, TASK_POL)])
+    cols = ["step", "r_exposures", "n_exposures", "c_exposures", "lr",
+            "naming_exact", "comp_top1", "comp_top5", "rep_full", "rep_ltm",
+            "rep_wm", "comp_rank_median"]
+    with open(os.path.join(run, "metrics.tsv"), "w") as fh:
+        fh.write("\t".join(cols) + "\n")
+        for step in (12, 24):
+            fh.write("\t".join(str(v) for v in
+                               [step, 1, 2, 3, 1e-4, 0.05, 0.07, 0.12,
+                                0.99, 0.8, 1.0, 200]) + "\n")
+    a = analyse(run, every=12)
+    assert [p["from_step"] for p in a["lr_phases"]] == [0, 12]
+    rows = {r["step"]: r for r in a["trajectory"]}
+    assert rows[12]["lr_policy_kind"] == "two_stage_rep_cursor"
+    assert rows[24]["lr_policy_kind"] == "task_specific"
+    assert (rows[24]["lr_R"], rows[24]["lr_N"], rows[24]["lr_C"]) == (1e-4, 1e-3, 1e-3)
+    print_report(a)
+    out = capsys.readouterr().out
+    assert "task_specific R=0.0001 N=0.001 C=0.001" in out
+    assert "1e-04/1e-03/1e-03" in out
+    assert "lr R/N/C" in out
+
+
+def test_provenance_lr_convention_matches_the_policy():
+    """The recorded convention must describe the rates actually in force."""
+    from scripts.naming_comprehension.train_joint_scratch import (
+        FINAL_FULL_MODE, INTERLEAVED_123, JointScratchTrainer)
+    kw = dict(device="cpu", max_words=400,
+              lexicon_path="data/lexicon_en_glove_covered.tsv",
+              dorsal_pool_size=32, batch_size=8, subset_mode=FINAL_FULL_MODE,
+              subset_per_band=822, subset_size=32, lr_boundary_steps=6,
+              allow_glove_fallback=True, require_subset_hash=False,
+              glove_path="tests/_no_such_glove_file.txt")
+    legacy = JointScratchTrainer(regime="j0", seed=22,
+                                 schedule=INTERLEAVED_123, **kw)
+    assert "REPETITION cursor" in legacy.resolved_settings()["lr_convention"]
+    task = JointScratchTrainer(
+        regime="j0", seed=22, schedule=INTERLEAVED_123,
+        task_lrs={"repetition": 1e-4, "naming": 1e-3, "comprehension": 1e-3},
+        **kw)
+    conv = task.resolved_settings()["lr_convention"]
+    assert "Task-specific" in conv
+    assert "repetition=0.0001" in conv and "naming=0.001" in conv
+    assert "no single scalar LR" in conv
+    assert "REPETITION cursor" not in conv, "stale two-stage text leaked"
 
 
 # ==========================================  gradient auditor behaviour  ====
