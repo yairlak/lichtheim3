@@ -373,6 +373,47 @@ def test_final9p_job_contract():
     assert "matched" in t.lower() and "507.3973" in t
 
 
+def test_cadences_sit_at_a_constant_macro_cycle_phase():
+    """Both cadences fire on ABSOLUTE step multiples.  Making them multiples
+    of the seven-step cycle keeps every dev evaluation and safety checkpoint
+    at one fixed phase, so the dev curve is not read at drifting R/N/C
+    positions.  Landing them ON the milestones is arithmetically impossible
+    -- gcd(361140, 32410) is 4630, which is not a multiple of seven -- and is
+    also unnecessary, because --full-eval-at checkpoints unconditionally."""
+    t = script()
+    assert "EVAL_EVERY=16205" in t and "SAVE_EVERY=32410" in t
+    cycle = cycle_steps_for(INTERLEAVED_223)
+    anchor, end = 361_140, 458_370
+    for cadence in (16_205, 32_410):
+        assert cadence % cycle == 0, cadence
+        hits = [s for s in range(cadence, end + 1, cadence) if s > anchor]
+        assert hits, cadence
+        phases = {(s - anchor) % cycle for s in hits}
+        assert len(phases) == 1, (cadence, phases)
+    assert [s for s in range(16_205, end + 1, 16_205) if s > anchor] == \
+        [372_715, 388_920, 405_125, 421_330, 437_535, 453_740]
+    assert [s for s in range(32_410, end + 1, 32_410) if s > anchor] == \
+        [388_920, 421_330, 453_740]
+    # one safety checkpoint shortly before each milestone
+    for save, milestone in zip((388_920, 421_330, 453_740),
+                               (393_550, 425_960, 458_370)):
+        assert 0 < milestone - save <= 32_410
+
+
+def test_milestones_are_checkpointed_even_off_the_save_cadence(tmp_path):
+    """The milestones are not multiples of SAVE_EVERY, so the run depends on
+    --full-eval-at saving a checkpoint on its own.  Prove it does."""
+    out = str(tmp_path / "runs")
+    argv = SMOKE + ["--out-dir", out, "--run-id", "m",
+                    "--schedule", INTERLEAVED_223, "--max-steps", "21",
+                    "--full-eval-at", "14", "--save-every", "21"]
+    assert main(argv) == 0
+    assert 14 % 21 != 0, "14 must not be on the save cadence"
+    assert os.path.exists(ckpt(out, "m", 14)), \
+        "a milestone must checkpoint itself"
+    assert os.path.exists(ckpt(out, "m", 21))
+
+
 def test_earlier_family_scripts_are_untouched():
     for name, must in (
             ("final7l_fromscratch_gate_r220.slurm", "GATE_EPOCHS=220"),

@@ -97,8 +97,23 @@ OPT_POLICY=grouped_rn_c_adamw
 DEVICE=cuda
 MAX_STEPS=458370                              # matched-N/C endpoint (R190)
 FULL_EVAL_AT=393550,425960,458370             # M1 / M2 / M3
-EVAL_EVERY=13890                              # dev cadence
-SAVE_EVERY=32410                              # one cycle-block; M1 lands on it
+EVAL_EVERY=16205                              # 2315 cycles = 10 R / 10 N exp
+SAVE_EVERY=32410                              # 4630 cycles = 20 R / 20 N exp
+
+# CADENCES.  Both fire on ABSOLUTE step multiples.  Because gcd(361140, 32410)
+# is 4630 and 4630 is not a multiple of the seven-step cycle, no cadence can
+# both land on the milestones and be a whole number of cycles; the milestones
+# do not need it, because --full-eval-at checkpoints unconditionally at each
+# of them.  So the cadences are chosen for what they are actually for:
+#   EVAL_EVERY and SAVE_EVERY are both multiples of 7, so every dev evaluation
+#   and every safety checkpoint falls at the SAME fixed phase of the
+#   macro-cycle (position 4 after the anchor).  The dev curve is therefore
+#   read at a constant phase instead of drifting across R/N/C positions.
+#   Dev evals land at 372715, 388920, 405125, 421330, 437535, 453740.
+#   Safety checkpoints land at 388920, 421330, 453740 -- one shortly before
+#   each milestone, capping requeue loss at ~32410 steps.
+# Cycle position is computed as (global_step - schedule_anchor_step) mod 7, so
+# a mid-cycle checkpoint resumes at exactly the right position in the cycle.
 
 RUNS=${L3_RUNS:-$SCRATCH/lichtheim3_runs}
 PARENT_RUN_ID="final7l_fromscratch_seed${SEED}_${SUBSET_MODE}"
