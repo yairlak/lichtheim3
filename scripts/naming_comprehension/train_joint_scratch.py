@@ -702,7 +702,8 @@ class JointScratchTrainer:
                  schedule: str = SUMMED_SCHEDULE,
                  task_lrs: Optional[Dict[str, float]] = None,
                  allow_phase_transition: bool = False,
-                 optimizer_policy: str = OPT_POLICY_SHARED) -> None:
+                 optimizer_policy: str = OPT_POLICY_SHARED,
+                 dec_weight: Optional[float] = None) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -778,10 +779,21 @@ class JointScratchTrainer:
                 f"comprehension stream, which regime {regime!r} does not draw. "
                 f"Use a regime with retrieval enabled ({RETRIEVAL_REGIMES}).")
 
+        # FINAL-8 knob: the historical ventral-decode weight.  None keeps the
+        # canonical 0.5, so every earlier run and every command line that does
+        # not mention it is unaffected.
+        self.dec_weight = (CANONICAL_LOSS_WEIGHTS["dec"] if dec_weight is None
+                           else float(dec_weight))
+        if self.dec_weight < 0.0:
+            raise ValueError(f"dec_weight must be >= 0, got {self.dec_weight}")
+
         self.cfg = canonical_config(
             seed, device, max_words=max_words, lexicon_path=lexicon_path,
             dorsal_pool_size=dorsal_pool_size, batch_size=batch_size,
             glove_path=glove_path)
+        # `total_loss` reads cfg.loss.dec, so the override lands here and
+        # nowhere else; no other weight is touched.
+        self.cfg.loss.dec = self.dec_weight
 
         # ---- lexicon and bank, built BEFORE the model so that model
         # initialization consumes a freshly seeded RNG and is therefore
@@ -1470,7 +1482,12 @@ class JointScratchTrainer:
             "gate_alpha": cfg.gating.alpha,
             "gate_threshold": cfg.gating.gate_threshold,
             "usage_prior": cfg.gating.usage_prior,
-            "loss_weights": dict(CANONICAL_LOSS_WEIGHTS),
+            # The weights actually in force.  Reporting the canonical dict
+            # here would misstate a run that overrides one of them.
+            "loss_weights": {k: getattr(self.cfg.loss, k)
+                             for k in CANONICAL_LOSS_WEIGHTS},
+            "loss_weights_canonical": dict(CANONICAL_LOSS_WEIGHTS),
+            "dec_weight": self.dec_weight,
             "dorsal_pool_loss_weight": cfg.loss.wm,
             # Effective weights (0.0 where the objective is switched off) plus
             # the canonical constants, which are never rewritten by a regime.
@@ -1519,6 +1536,7 @@ class JointScratchTrainer:
                {"optimizer_states": {n: o.state_dict()
                                      for n, o in self.banks.items()}}),
             "optimizer_policy": self.optimizer_policy,
+            "dec_weight": self.dec_weight,
             "optimizer_bank_layout": (dict(self.task_to_bank)
                                       if self.task_to_bank else None),
             "global_step": self.global_step,
@@ -1617,6 +1635,12 @@ class JointScratchTrainer:
         changed = []
         if dict(ck_policy) != dict(self.lr_policy):
             changed.append("lr_policy")
+        # The ventral-decode weight is scientific: a checkpoint trained under
+        # a different one cannot be silently continued.  Checkpoints predating
+        # FINAL-8 carry none and were trained at the canonical 0.5.
+        ck_dec = float(ckpt.get("dec_weight", CANONICAL_LOSS_WEIGHTS["dec"]))
+        if ck_dec != self.dec_weight:
+            changed.append("dec_weight")
         if ck_opt_policy != self.optimizer_policy:
             # The ONLY sanctioned policy change is shared -> a multi-bank
             # policy, where every bank inherits the one shared history.  Any
@@ -1637,7 +1661,8 @@ class JointScratchTrainer:
                     f"checkpoint {' and '.join(changed)} differ(s) from the "
                     f"requested configuration (LR {ck_policy} -> "
                     f"{self.lr_policy}; optimizer {ck_opt_policy} -> "
-                    f"{self.optimizer_policy}). Changing either is a PHASE "
+                    f"{self.optimizer_policy}; dec weight {ck_dec} -> "
+                    f"{self.dec_weight}). Changing any of these is a PHASE "
                     f"TRANSITION, not a continuation: it makes this a staged "
                     f"recipe rather than the same one. Pass "
                     f"--phase-transition to declare it deliberately.")
@@ -1648,6 +1673,8 @@ class JointScratchTrainer:
                 "new_lr_policy": dict(self.lr_policy),
                 "old_optimizer_policy": ck_opt_policy,
                 "new_optimizer_policy": self.optimizer_policy,
+                "old_dec_weight": ck_dec,
+                "new_dec_weight": self.dec_weight,
                 "moment_initialization": (
                     (MOMENT_INIT_CLONE_GROUPED
                      if self.optimizer_policy == OPT_POLICY_GROUPED_RN_C
@@ -1666,7 +1693,7 @@ class JointScratchTrainer:
             print(f"[phase] DECLARED TRANSITION at step {ckpt['global_step']} "
                   f"({', '.join(changed)}): LR {ck_policy} -> "
                   f"{self.lr_policy}; optimizer {ck_opt_policy} -> "
-                  f"{self.optimizer_policy}")
+                  f"{self.optimizer_policy}; dec {ck_dec} -> {self.dec_weight}")
 
         self.model.load_state_dict(ckpt["model_state_dict"])
 
@@ -1897,6 +1924,12 @@ def build_parser() -> argparse.ArgumentParser:
                         "task's bank steps. Multi-bank policies require an "
                         "interleaved schedule; switching policy on resume is "
                         "a phase transition.")
+    p.add_argument("--dec-weight", type=float, default=None,
+                   help="FINAL-8: weight on the historical ventral form "
+                        "regeneration term L_dec inside the repetition "
+                        "objective. Omitted keeps the canonical 0.5, so every "
+                        "earlier run is unaffected; FINAL-8P uses 2.0. "
+                        "Changing it on resume is a phase transition.")
     p.add_argument("--phase-transition", action="store_true",
                    help="declare deliberately that this launch changes the "
                         "learning-rate policy of the checkpoint it resumes, "
@@ -2013,7 +2046,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         c_align_weight=args.c_align_weight, schedule=args.schedule,
         task_lrs=task_lrs_from_args(args),
         allow_phase_transition=args.phase_transition,
-        optimizer_policy=args.optimizer_policy)
+        optimizer_policy=args.optimizer_policy,
+        dec_weight=args.dec_weight)
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)
@@ -2092,6 +2126,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             "c_stream_objective": trainer.resolved_settings()["c_stream_objective"],
             "lr_policy": dict(trainer.lr_policy),
             "optimizer_policy": trainer.optimizer_policy,
+            "dec_weight": trainer.dec_weight,
+            "loss_weights": trainer.resolved_settings()["loss_weights"],
             "optimizer_bank_layout": (dict(trainer.task_to_bank)
                                       if trainer.task_to_bank else None),
             "optimizer_convention":
