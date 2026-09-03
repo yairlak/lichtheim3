@@ -441,10 +441,33 @@ def canonical_config(seed: int, device: str, *, max_words: int,
 # The policy is scientific state: stored in the checkpoint, and a mismatch on
 # resume is refused unless a phase transition is declared.  Legacy checkpoints
 # carry no field and are read as "shared_adamw".
+#   "grouped_rn_c_adamw"  : TWO banks over the same shared network -- one
+#       owning repetition (with its attached pool loss) AND naming, one owning
+#       comprehension.  Motivated by the asymmetric parameter overlap: C never
+#       trains the LTM decoder core, so under the shared policy the
+#       decoder-side statistics were an R+N history; this restores that while
+#       keeping C's optimizer memory separate from R on the encoder side.
 OPT_POLICY_SHARED = "shared_adamw"
 OPT_POLICY_SEPARATED = "task_separated_adamw"
-OPT_POLICIES = (OPT_POLICY_SHARED, OPT_POLICY_SEPARATED)
+OPT_POLICY_GROUPED_RN_C = "grouped_rn_c_adamw"
+OPT_POLICIES = (OPT_POLICY_SHARED, OPT_POLICY_SEPARATED,
+                OPT_POLICY_GROUPED_RN_C)
+
+# Which BANK each task steps, per policy.  The separated policy names its
+# banks after the tasks, so FINAL-6P checkpoints keep loading unchanged.
+OPT_BANK_MAP: Dict[str, Dict[str, str]] = {
+    OPT_POLICY_SEPARATED: {"repetition": "repetition", "naming": "naming",
+                           "comprehension": "comprehension"},
+    OPT_POLICY_GROUPED_RN_C: {"repetition": "rn", "naming": "rn",
+                              "comprehension": "comprehension"},
+}
 MOMENT_INIT_CLONE = "clone_shared_state_to_all_task_banks"
+MOMENT_INIT_CLONE_GROUPED = "clone_shared_state_to_grouped_banks"
+
+
+def bank_names_for(policy: str) -> List[str]:
+    """Deterministically ordered bank names of a multi-bank policy."""
+    return sorted(set(OPT_BANK_MAP[policy].values()))
 
 
 def clone_optimizer_state(state_dict: dict) -> dict:
@@ -714,13 +737,13 @@ class JointScratchTrainer:
             raise ValueError(
                 f"optimizer_policy must be one of {OPT_POLICIES}, "
                 f"got {optimizer_policy!r}")
-        if (optimizer_policy == OPT_POLICY_SEPARATED
+        if (optimizer_policy != OPT_POLICY_SHARED
                 and schedule == SUMMED_SCHEDULE):
             # A summed step trains every task in one backward, so there is no
             # "current task" whose bank should step.
             raise RuntimeError(
-                "task-separated optimizer state requires an interleaved "
-                "schedule (a summed step trains every task at once)")
+                f"optimizer policy {optimizer_policy!r} requires an "
+                "interleaved schedule (a summed step trains every task at once)")
         self.optimizer_policy = optimizer_policy
 
         # FINAL-4 learning-rate policy.  Absent task LRs => the historical
@@ -788,12 +811,21 @@ class JointScratchTrainer:
         self.optim = torch.optim.AdamW(
             self.model.parameters(), lr=LR_STAGE1,
             weight_decay=self.cfg.train.weight_decay)
+        # Banks are keyed by BANK name; `task_optims` is the task -> bank view
+        # used by the training step.  Under a grouped policy two tasks map to
+        # the SAME optimizer object, which is exactly the intervention.
+        self.banks: Optional[Dict[str, torch.optim.Optimizer]] = None
+        self.task_to_bank: Optional[Dict[str, str]] = None
         self.task_optims: Optional[Dict[str, torch.optim.Optimizer]] = None
-        if self.optimizer_policy == OPT_POLICY_SEPARATED:
-            self.task_optims = {
-                t: torch.optim.AdamW(self.model.parameters(), lr=LR_STAGE1,
-                                     weight_decay=self.cfg.train.weight_decay)
-                for t in LR_TASKS}
+        if self.optimizer_policy != OPT_POLICY_SHARED:
+            self.task_to_bank = dict(OPT_BANK_MAP[self.optimizer_policy])
+            self.banks = {
+                name: torch.optim.AdamW(
+                    self.model.parameters(), lr=LR_STAGE1,
+                    weight_decay=self.cfg.train.weight_decay)
+                for name in bank_names_for(self.optimizer_policy)}
+            self.task_optims = {t: self.banks[b]
+                                for t, b in self.task_to_bank.items()}
 
         # ---- C / N populations ----
         # Legacy modes ("nested", "representative"): C and N share one subset
@@ -961,6 +993,9 @@ class JointScratchTrainer:
         if self.task_optims is None:
             return {}
         flat: Dict[str, torch.Tensor] = {}
+        # Keyed by TASK: under a grouped policy two tasks share one bank, so
+        # their divergence is legitimately 0 -- that is the intervention, not
+        # a missing measurement.
         for t, opt in self.task_optims.items():
             parts = [st["exp_avg"].reshape(-1) for st in opt.state.values()
                      if "exp_avg" in st]
@@ -1372,16 +1407,20 @@ class JointScratchTrainer:
             "exposure_accounting": self.exposure_accounting(),
             "lr_policy": dict(self.lr_policy),
             "optimizer_policy": self.optimizer_policy,
-            "optimizer_state_banks": (1 if self.task_optims is None
-                                      else len(self.task_optims)),
+            "optimizer_state_banks": (1 if self.banks is None
+                                      else len(self.banks)),
+            "optimizer_bank_names": (sorted(self.banks) if self.banks else None),
+            "optimizer_bank_layout": (dict(self.task_to_bank)
+                                      if self.task_to_bank else None),
             "optimizer_convention": (
                 "ONE AdamW over every parameter, stepped by every task; on "
                 "shared weights the moment histories mix tasks."
-                if self.task_optims is None else
-                "ONE shared network with THREE AdamW banks over the SAME "
-                "Parameter objects (no parameters duplicated). Each bank owns "
-                "its exp_avg/exp_avg_sq/step counters and only the current "
-                "task's bank steps."),
+                if self.banks is None else
+                f"ONE shared network with {len(self.banks)} AdamW bank(s) "
+                f"{sorted(self.banks)} over the SAME Parameter objects (no "
+                f"parameters duplicated). Each bank owns its "
+                f"exp_avg/exp_avg_sq/step counters; a step uses the bank of "
+                f"its task ({self.task_to_bank})."),
             "phase_transitions": list(self.phase_transitions),
             # Under a task-specific policy there is no single scalar LR; the
             # per-step value is exact in losses.tsv, and the metrics.tsv "lr"
@@ -1477,9 +1516,11 @@ class JointScratchTrainer:
             # two formats can never be confused for one another.
             **({"optimizer_state_dict": self.optim.state_dict()}
                if self.task_optims is None else
-               {"optimizer_states": {t: o.state_dict()
-                                     for t, o in self.task_optims.items()}}),
+               {"optimizer_states": {n: o.state_dict()
+                                     for n, o in self.banks.items()}}),
             "optimizer_policy": self.optimizer_policy,
+            "optimizer_bank_layout": (dict(self.task_to_bank)
+                                      if self.task_to_bank else None),
             "global_step": self.global_step,
             "rep_epoch": self.rep_epoch,
             "batch_in_rep_epoch": (self.cursors["repetition"]
@@ -1577,14 +1618,18 @@ class JointScratchTrainer:
         if dict(ck_policy) != dict(self.lr_policy):
             changed.append("lr_policy")
         if ck_opt_policy != self.optimizer_policy:
-            # Collapsing three specialised banks back into one has no defined
-            # semantics (which bank would survive?), so it is never offered.
-            if (ck_opt_policy == OPT_POLICY_SEPARATED
-                    and self.optimizer_policy == OPT_POLICY_SHARED):
+            # The ONLY sanctioned policy change is shared -> a multi-bank
+            # policy, where every bank inherits the one shared history.  Any
+            # other translation (merging specialised banks back into one, or
+            # regrouping them) has no defined semantics and is never offered,
+            # with or without the declaration flag.
+            if ck_opt_policy != OPT_POLICY_SHARED:
                 raise RuntimeError(
-                    "cannot resume a task-separated checkpoint under the "
-                    "shared optimizer policy: there is no defined way to merge "
-                    "three moment banks back into one")
+                    f"cannot translate optimizer policy {ck_opt_policy!r} -> "
+                    f"{self.optimizer_policy!r}: there is no defined way to "
+                    f"merge or regroup specialised moment banks. Only "
+                    f"{OPT_POLICY_SHARED!r} -> a multi-bank policy is "
+                    f"supported, and only as a declared phase transition.")
             changed.append("optimizer_policy")
         if changed:
             if not self.allow_phase_transition:
@@ -1604,8 +1649,12 @@ class JointScratchTrainer:
                 "old_optimizer_policy": ck_opt_policy,
                 "new_optimizer_policy": self.optimizer_policy,
                 "moment_initialization": (
-                    MOMENT_INIT_CLONE
+                    (MOMENT_INIT_CLONE_GROUPED
+                     if self.optimizer_policy == OPT_POLICY_GROUPED_RN_C
+                     else MOMENT_INIT_CLONE)
                     if "optimizer_policy" in changed else "unchanged"),
+                "bank_layout": (dict(self.task_to_bank)
+                                if self.task_to_bank else None),
                 "source_checkpoint": source,
                 "source_commit": (ckpt.get("git") or {}).get("commit"),
                 "new_commit": (git_state(ROOT) or {}).get("commit"),
@@ -1632,25 +1681,28 @@ class JointScratchTrainer:
                     if isinstance(v, torch.Tensor):
                         st[k] = v.to(self.device)
 
-        if self.task_optims is None:
+        if self.banks is None:
             _restore(self.optim, ckpt["optimizer_state_dict"], clone=False)
-        elif ck_opt_policy == OPT_POLICY_SEPARATED:
-            # Resuming FINAL-6 itself: each bank restores its OWN saved
-            # state.  Nothing is re-cloned from a shared parent.
+        elif ck_opt_policy == self.optimizer_policy:
+            # Resuming the same multi-bank policy: each bank restores its OWN
+            # saved state.  Nothing is re-cloned from a shared parent.
             saved = ckpt["optimizer_states"]
-            for t, opt in self.task_optims.items():
-                _restore(opt, saved[t], clone=True)
-            _restore(self.optim, saved[LR_TASKS[0]], clone=True)
+            missing = [n for n in self.banks if n not in saved]
+            if missing:
+                raise RuntimeError(
+                    f"checkpoint is missing optimizer bank(s) {missing}")
+            for name, opt in self.banks.items():
+                _restore(opt, saved[name], clone=True)
+            _restore(self.optim, saved[sorted(self.banks)[0]], clone=True)
         else:
             # The declared transition: every bank inherits the EXACT shared
-            # optimization history, deep-copied so the three evolve apart.
+            # optimization history, deep-copied so the banks evolve apart.
             shared = ckpt["optimizer_state_dict"]
-            for opt in self.task_optims.values():
+            for opt in self.banks.values():
                 _restore(opt, shared, clone=True)
             _restore(self.optim, shared, clone=True)
             print(f"[phase] cloned shared AdamW state into "
-                  f"{len(self.task_optims)} task banks "
-                  f"({MOMENT_INIT_CLONE})")
+                  f"{len(self.banks)} bank(s) {sorted(self.banks)}")
         self.global_step = int(ckpt["global_step"])
         self.cursors = {k: int(v) for k, v in ckpt["cursors"].items()}
         self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
@@ -1660,8 +1712,8 @@ class JointScratchTrainer:
         # policy the per-step rate is set by _interleaved_step anyway; this
         # just leaves the optimizer in a coherent state after loading.
         lr = self.current_lr("repetition")
-        for opt in ([self.optim] if self.task_optims is None
-                    else [self.optim, *self.task_optims.values()]):
+        for opt in ([self.optim] if self.banks is None
+                    else [self.optim, *self.banks.values()]):
             for g in opt.param_groups:
                 g["lr"] = lr
 
@@ -1835,12 +1887,15 @@ def build_parser() -> argparse.ArgumentParser:
                    help="FINAL-4: fixed learning rate for comprehension steps.")
     p.add_argument("--optimizer-policy", choices=OPT_POLICIES,
                    default=OPT_POLICY_SHARED,
-                   help="FINAL-6: 'shared_adamw' (default) = the historical "
-                        "single AdamW stepped by every task; "
-                        "'task_separated_adamw' = three AdamW banks over the "
-                        "SAME parameters, each owning its own moments, only "
-                        "the current task's bank stepping. Requires an "
-                        "interleaved schedule. Switching policy on resume is "
+                   help="optimizer state layout over the ONE shared network: "
+                        "'shared_adamw' (default) = the historical single "
+                        "AdamW stepped by every task; 'task_separated_adamw' "
+                        "(FINAL-6) = three banks R|N|C; 'grouped_rn_c_adamw' "
+                        "(FINAL-7) = two banks, one owning repetition (with "
+                        "its pool loss) AND naming, one owning comprehension. "
+                        "Each bank owns its own moments and only the current "
+                        "task's bank steps. Multi-bank policies require an "
+                        "interleaved schedule; switching policy on resume is "
                         "a phase transition.")
     p.add_argument("--phase-transition", action="store_true",
                    help="declare deliberately that this launch changes the "
@@ -2037,6 +2092,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             "c_stream_objective": trainer.resolved_settings()["c_stream_objective"],
             "lr_policy": dict(trainer.lr_policy),
             "optimizer_policy": trainer.optimizer_policy,
+            "optimizer_bank_layout": (dict(trainer.task_to_bank)
+                                      if trainer.task_to_bank else None),
             "optimizer_convention":
                 trainer.resolved_settings()["optimizer_convention"],
             "phase_transition_declared": bool(args.phase_transition),

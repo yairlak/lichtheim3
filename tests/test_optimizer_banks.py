@@ -299,7 +299,7 @@ def test_wrong_mode_is_refused_in_both_directions(transitioned, tmp_path):
     ck_sep = torch.load(str(p), weights_only=False)
     # separated checkpoint under the shared policy: never, even if declared
     for allow in (False, True):
-        with pytest.raises(RuntimeError, match="merge three moment banks"):
+        with pytest.raises(RuntimeError, match="merge or regroup"):
             make(schedule=INTERLEAVED_123,
                  allow_phase_transition=allow).load_state_dict(
                      copy.deepcopy(ck_sep), source="t")
@@ -421,7 +421,10 @@ def test_reporting_identifies_the_optimizer_policy(tmp_path):
                optimizer_policy=OPT_POLICY_SEPARATED).resolved_settings()
     assert sep["optimizer_policy"] == OPT_POLICY_SEPARATED
     assert sep["optimizer_state_banks"] == 3
-    assert "THREE AdamW banks" in sep["optimizer_convention"]
+    assert "3 AdamW bank(s)" in sep["optimizer_convention"]
+    assert sep["optimizer_bank_names"] == ["comprehension", "naming",
+                                           "repetition"]
+    assert sep["optimizer_bank_layout"] == {t: t for t in LR_TASKS}
 
     out = str(tmp_path / "runs")
     launch(out, "src", 6, save_every=6)
