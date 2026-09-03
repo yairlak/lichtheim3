@@ -106,7 +106,8 @@ from scripts.naming_comprehension.train_tasks import (                    # noqa
     subset_records, verify_bank_mapping,
 )
 from scripts.naming_comprehension.train_multitask import (                # noqa: E402
-    MACRO_CYCLE_STEPS, TASKS, macro_cycle, out_of_subset_probe,
+    MACRO_CYCLE_STEPS, SCHEDULE_SEED_BASE, TASKS, macro_cycle,
+    out_of_subset_probe,
 )
 
 
@@ -242,10 +243,42 @@ def deterministic_sample(population: Sequence[int], n: int, seed: int) -> List[i
 #                     which warm-started and froze WM/phon_embed/motor).
 SUMMED_SCHEDULE = "summed"
 INTERLEAVED_123 = "interleaved_123"
-SCHEDULES = (SUMMED_SCHEDULE, INTERLEAVED_123)
+INTERLEAVED_223 = "interleaved_223"
+SCHEDULES = (SUMMED_SCHEDULE, INTERLEAVED_123, INTERLEAVED_223)
 # Ratio in train_multitask.TASKS order: (repetition, naming, comprehension).
 RATIO_123 = (1, 2, 3)
-SCHEDULE_RATIOS = {INTERLEAVED_123: RATIO_123}
+RATIO_223 = (2, 2, 3)        # FINAL-9: double the repetition maintenance rate
+SCHEDULE_RATIOS = {INTERLEAVED_123: RATIO_123, INTERLEAVED_223: RATIO_223}
+
+
+def cycle_steps_for(schedule: str) -> int:
+    """Optimizer steps in one macro-cycle of a schedule (1 for summed)."""
+    ratio = SCHEDULE_RATIOS.get(schedule)
+    return sum(ratio) if ratio else 1
+
+
+def macro_cycle_n(ratio: Sequence[int], schedule_seed: int,
+                  cycle_index: int) -> List[str]:
+    """The task labels of one macro-cycle, deterministically shuffled.
+
+    Identical in construction to `train_multitask.macro_cycle` -- same
+    multiset order, same generator seeding, same permutation -- but without
+    that function's hard assertion that the ratio sums to six, so cycles of
+    other lengths (FINAL-9's 2:2:3) are expressible.  For the 1:2:3 ratio it
+    returns exactly what the historical function returns, which is what keeps
+    every earlier interleaved run bit-identical (asserted by tests).
+    """
+    if len(ratio) != len(TASKS):
+        raise ValueError(f"ratio must have {len(TASKS)} entries, got {ratio!r}")
+    if any(int(k) < 0 for k in ratio) or sum(int(k) for k in ratio) == 0:
+        raise ValueError(f"invalid ratio {ratio!r}")
+    multiset: List[str] = []
+    for task, k in zip(TASKS, ratio):
+        multiset += [task] * int(k)
+    g = torch.Generator().manual_seed(
+        int(schedule_seed) * SCHEDULE_SEED_BASE + int(cycle_index))
+    order = torch.randperm(len(multiset), generator=g).tolist()
+    return [multiset[i] for i in order]
 # The task-order permutation lives in its own seed namespace, disjoint from the
 # four data streams (offsets 0..3) so a schedule can never share a generator
 # seed with a sampler.
@@ -723,6 +756,14 @@ class JointScratchTrainer:
         self.schedule = schedule
         self.schedule_seed = derive_schedule_seed(seed)
         self.ratio = SCHEDULE_RATIOS.get(schedule)
+        self.cycle_steps = cycle_steps_for(schedule)
+        # Cycle position is measured from the step at which THIS schedule took
+        # effect, not from 0.  A run that never changed schedule has anchor 0,
+        # so its task order is unchanged; after a declared schedule transition
+        # the new schedule's cycle 0 begins at the transition step, which is
+        # what makes the order well defined and exactly resumable across a
+        # change of cycle length.
+        self.schedule_anchor_step = 0
         if schedule != SUMMED_SCHEDULE and not (
                 self.retrieval_enabled and self.naming_enabled):
             # An interleaved cycle emits N and C steps by construction, so a
@@ -1055,8 +1096,13 @@ class JointScratchTrainer:
         """
         if self.schedule == SUMMED_SCHEDULE:
             return SUMMED_SCHEDULE
-        cycle, pos = divmod(int(global_step), MACRO_CYCLE_STEPS)
-        return macro_cycle(self.ratio, self.schedule_seed, cycle)[pos]
+        rel = int(global_step) - int(self.schedule_anchor_step)
+        if rel < 0:
+            raise RuntimeError(
+                f"step {global_step} precedes the schedule anchor "
+                f"{self.schedule_anchor_step}")
+        cycle, pos = divmod(rel, self.cycle_steps)
+        return macro_cycle_n(self.ratio, self.schedule_seed, cycle)[pos]
 
     def steps_for_rep_epochs(self, n_epochs: int) -> int:
         """Optimizer steps that deliver `n_epochs` full repetition passes.
@@ -1068,7 +1114,16 @@ class JointScratchTrainer:
         per_epoch = self.streams["repetition"].per_epoch
         if self.schedule == SUMMED_SCHEDULE:
             return int(n_epochs) * per_epoch
-        return int(n_epochs) * per_epoch * MACRO_CYCLE_STEPS
+        r_per_cycle = self.ratio[0]
+        total = int(n_epochs) * per_epoch * self.cycle_steps
+        if total % r_per_cycle:
+            # e.g. 2:2:3 puts 463 R batches at 2 per 7-step cycle, which is
+            # not a whole number of cycles; such a run is budgeted in steps.
+            raise RuntimeError(
+                f"{n_epochs} repetition epochs is not a whole number of "
+                f"{self.schedule} cycles ({per_epoch} R batches at "
+                f"{r_per_cycle} per cycle); budget this run with --max-steps")
+        return total // r_per_cycle
 
     def exposures(self) -> Dict[str, float]:
         """Exact exposures/item per task, from the cursors and populations."""
@@ -1095,7 +1150,8 @@ class JointScratchTrainer:
             r, n, c = self.ratio
             acc.update({
                 "ratio_R_N_C": list(self.ratio),
-                "optimizer_steps_per_cycle": MACRO_CYCLE_STEPS,
+                "optimizer_steps_per_cycle": self.cycle_steps,
+                "schedule_anchor_step": int(self.schedule_anchor_step),
                 "batches_per_cycle": {"repetition": r, "pool": r,
                                       "naming": n, "comprehension": c},
                 "exposures_per_cycle": {
@@ -1104,7 +1160,7 @@ class JointScratchTrainer:
                     "comprehension": c / per["comprehension"]},
                 "cycles_per_repetition_exposure": per["repetition"] / r,
                 "steps_per_repetition_exposure":
-                    per["repetition"] * MACRO_CYCLE_STEPS / r,
+                    per["repetition"] * self.cycle_steps / r,
             })
         return acc
 
@@ -1414,8 +1470,8 @@ class JointScratchTrainer:
             "task_order_policy": (TASK_ORDER_POLICY
                                   if self.schedule != SUMMED_SCHEDULE
                                   else "single summed update per step"),
-            "macro_cycle_steps": (MACRO_CYCLE_STEPS
-                                  if self.schedule != SUMMED_SCHEDULE else 1),
+            "macro_cycle_steps": self.cycle_steps,
+            "schedule_anchor_step": int(self.schedule_anchor_step),
             "exposure_accounting": self.exposure_accounting(),
             "lr_policy": dict(self.lr_policy),
             "optimizer_policy": self.optimizer_policy,
@@ -1556,6 +1612,7 @@ class JointScratchTrainer:
             "schedule": self.schedule,
             "schedule_seed": self.schedule_seed,
             "schedule_ratio": (list(self.ratio) if self.ratio else None),
+            "schedule_anchor_step": int(self.schedule_anchor_step),
             "exposures": self.exposures(),
             "subset_indices": list(self.subset_idx),
             # Explicit per-task population provenance (FINAL-1A).  In
@@ -1581,6 +1638,9 @@ class JointScratchTrainer:
         }
 
     def load_state_dict(self, ckpt: dict, *, source: str = "") -> None:
+        # Scientific fields whose change is sanctioned ONLY by an explicit
+        # phase-transition declaration; collected as the guards run.
+        changed: List[str] = []
         if ckpt.get("format") != "lichtheim3.joint_scratch.v1":
             raise RuntimeError(f"unexpected checkpoint format {ckpt.get('format')!r}")
         if ckpt["regime"] != self.regime:
@@ -1605,16 +1665,23 @@ class JointScratchTrainer:
         # Checkpoints predating FINAL-3 carry no schedule; they are summed.
         ck_sched = ckpt.get("schedule", SUMMED_SCHEDULE)
         if ck_sched != self.schedule:
-            raise RuntimeError(
-                f"checkpoint schedule {ck_sched!r} != {self.schedule!r}: "
-                f"summed and interleaved trajectories must never be spliced")
+            # Summed and interleaved are different update semantics, never a
+            # transition.  Changing the RATIO between two interleaved
+            # schedules is a declarable scientific phase transition.
+            if SUMMED_SCHEDULE in (ck_sched, self.schedule):
+                raise RuntimeError(
+                    f"checkpoint schedule {ck_sched!r} != {self.schedule!r}: "
+                    f"summed and interleaved trajectories must never be "
+                    f"spliced")
+            changed.append("schedule")
         ck_sseed = ckpt.get("schedule_seed")
         if ck_sseed is not None and int(ck_sseed) != int(self.schedule_seed):
             raise RuntimeError(
                 f"checkpoint schedule_seed {ck_sseed} != {self.schedule_seed}: "
                 f"the task order would differ after resume")
         ck_ratio = ckpt.get("schedule_ratio")
-        if ck_ratio is not None and list(ck_ratio) != list(self.ratio or []):
+        if (ck_sched == self.schedule and ck_ratio is not None
+                and list(ck_ratio) != list(self.ratio or [])):
             raise RuntimeError(
                 f"checkpoint schedule_ratio {ck_ratio} != {self.ratio}")
         ck_naming_hash = ckpt.get("naming_population_sha256")
@@ -1632,7 +1699,6 @@ class JointScratchTrainer:
         ck_opt_policy = ckpt.get("optimizer_policy", OPT_POLICY_SHARED)
         self.phase_transitions = list(ckpt.get("phase_transitions", []))
 
-        changed = []
         if dict(ck_policy) != dict(self.lr_policy):
             changed.append("lr_policy")
         # The ventral-decode weight is scientific: a checkpoint trained under
@@ -1675,6 +1741,14 @@ class JointScratchTrainer:
                 "new_optimizer_policy": self.optimizer_policy,
                 "old_dec_weight": ck_dec,
                 "new_dec_weight": self.dec_weight,
+                "old_schedule": ck_sched,
+                "new_schedule": self.schedule,
+                "old_schedule_ratio": (list(ck_ratio) if ck_ratio else None),
+                "new_schedule_ratio": (list(self.ratio) if self.ratio else None),
+                "schedule_anchor_step": (int(ckpt["global_step"])
+                                         if "schedule" in changed
+                                         else int(ckpt.get(
+                                             "schedule_anchor_step", 0))),
                 "moment_initialization": (
                     (MOMENT_INIT_CLONE_GROUPED
                      if self.optimizer_policy == OPT_POLICY_GROUPED_RN_C
@@ -1732,6 +1806,12 @@ class JointScratchTrainer:
                   f"{len(self.banks)} bank(s) {sorted(self.banks)}")
         self.global_step = int(ckpt["global_step"])
         self.cursors = {k: int(v) for k, v in ckpt["cursors"].items()}
+        # A declared schedule change restarts the macro-cycle count HERE; any
+        # other resume carries the stored anchor forward, so the task order is
+        # reproduced exactly and a requeue cannot shift it.
+        self.schedule_anchor_step = (
+            int(ckpt["global_step"]) if "schedule" in changed
+            else int(ckpt.get("schedule_anchor_step", 0)))
         self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
         # LR is a pure function of the step counter, so it is re-derived rather
         # than trusted from the file; the optimizer is never reconstructed.
