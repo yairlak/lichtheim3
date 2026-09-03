@@ -1,0 +1,273 @@
+{
+  "checkpoint_step": 416700,
+  "cursors": {
+    "repetition": 69450,
+    "pool": 69450,
+    "comprehension": 208350,
+    "naming": 138900
+  },
+  "batches": 16,
+  "theta_norm": {
+    "phon_embed": 34.63702392578125,
+    "encoder_core": 119.4493179321289,
+    "decoder_core": 135.523193359375,
+    "motor": 20.201580047607422,
+    "wm_only": 100.5479507446289,
+    "gate": 0.0,
+    "GLOBAL": 210.59768676757812
+  },
+  "conditions": {
+    "repetition|lambda=0.087|lr=0.0001": {
+      "preclip": {
+        "median": 1.4809667271604088,
+        "mean": 1.5182209631261172,
+        "min": 1.0758860492541138,
+        "max": 2.3165760431244737
+      },
+      "fraction_clipped": 1.0,
+      "clip_factor_median": 0.6755053815614396,
+      "postclip_median": 0.9999994862354278,
+      "delta_global_median": 0.013117887079715729,
+      "delta_global_mean": 0.01345699152443558,
+      "delta_rel_global": 6.228884695297256e-05,
+      "delta_by_group_median": {
+        "phon_embed": 0.001291855936869979,
+        "encoder_core": 0.010229360777884722,
+        "decoder_core": 0.007676126901060343,
+        "motor": 0.0014584657037630677,
+        "wm_only": 0.002044742228463292,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.013117831200361252,
+      "wd_median": 2.106007173695804e-07,
+      "sustained_delta_median": 0.07161811447385932
+    },
+    "naming|lambda=0.087|lr=0.0001": {
+      "preclip": {
+        "median": 1.365596729077518,
+        "mean": 1.3681159151763185,
+        "min": 1.213558057271033,
+        "max": 1.6661357805564019
+      },
+      "fraction_clipped": 1.0,
+      "clip_factor_median": 0.7323689796225046,
+      "postclip_median": 0.9999995064425693,
+      "delta_global_median": 0.008840280584990978,
+      "delta_global_mean": 0.008869909856002778,
+      "delta_rel_global": 4.1977102031264834e-05,
+      "delta_by_group_median": {
+        "phon_embed": 0.0012934019323438406,
+        "encoder_core": 0.0,
+        "decoder_core": 0.008586463052779436,
+        "motor": 0.001690129574853927,
+        "wm_only": 0.0,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.008840241003781557,
+      "wd_median": 1.4133116212937517e-07,
+      "sustained_delta_median": 0.04405758474930792
+    },
+    "naming|lambda=0.087|lr=0.0003": {
+      "preclip": {
+        "median": 1.365596729077518,
+        "mean": 1.3681159151763185,
+        "min": 1.213558057271033,
+        "max": 1.6661357805564019
+      },
+      "fraction_clipped": 1.0,
+      "clip_factor_median": 0.7323689796225046,
+      "postclip_median": 0.9999995064425693,
+      "delta_global_median": 0.02652071136981249,
+      "delta_global_mean": 0.026609604945406318,
+      "delta_rel_global": 0.00012593068697417143,
+      "delta_by_group_median": {
+        "phon_embed": 0.0038802147610113025,
+        "encoder_core": 0.0,
+        "decoder_core": 0.025759253650903702,
+        "motor": 0.005070393672212958,
+        "wm_only": 0.0,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.026520666666328907,
+      "wd_median": 4.2399348638812544e-07,
+      "sustained_delta_median": 0.1321727629238051
+    },
+    "comprehension|lambda=0.087|lr=0.0001": {
+      "preclip": {
+        "median": 0.16592240888947843,
+        "mean": 0.16566219745161803,
+        "min": 0.15438686582322292,
+        "max": 0.17453732302707178
+      },
+      "fraction_clipped": 0.0,
+      "clip_factor_median": 1.0,
+      "postclip_median": 0.16592240888947843,
+      "delta_global_median": 0.007874316070228815,
+      "delta_global_mean": 0.007876407413277775,
+      "delta_rel_global": 3.739032555907959e-05,
+      "delta_by_group_median": {
+        "phon_embed": 0.001112162775825709,
+        "encoder_core": 0.007794357603415847,
+        "decoder_core": 0.0,
+        "motor": 0.0,
+        "wm_only": 0.0,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.007874288596212864,
+      "wd_median": 1.2437032930431614e-07,
+      "sustained_delta_median": 0.01352067813702432
+    },
+    "comprehension|lambda=0.087|lr=0.0003": {
+      "preclip": {
+        "median": 0.16592240888947843,
+        "mean": 0.16566219745161803,
+        "min": 0.15438686582322292,
+        "max": 0.17453732302707178
+      },
+      "fraction_clipped": 0.0,
+      "clip_factor_median": 1.0,
+      "postclip_median": 0.16592240888947843,
+      "delta_global_median": 0.023622865788638592,
+      "delta_global_mean": 0.02362914802506566,
+      "delta_rel_global": 0.00011217058530519136,
+      "delta_by_group_median": {
+        "phon_embed": 0.0033364739501848817,
+        "encoder_core": 0.023382983170449734,
+        "decoder_core": 0.0,
+        "motor": 0.0,
+        "wm_only": 0.0,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.023622832261025906,
+      "wd_median": 3.7311098791294843e-07,
+      "sustained_delta_median": 0.040562036808396415
+    },
+    "comprehension|lambda=0.087|lr=0.001": {
+      "preclip": {
+        "median": 0.16592240888947843,
+        "mean": 0.16566219745161803,
+        "min": 0.15438686582322292,
+        "max": 0.17453732302707178
+      },
+      "fraction_clipped": 0.0,
+      "clip_factor_median": 1.0,
+      "postclip_median": 0.16592240888947843,
+      "delta_global_median": 0.07874278724193573,
+      "delta_global_mean": 0.07876372151076794,
+      "delta_rel_global": 0.0003739014822553042,
+      "delta_by_group_median": {
+        "phon_embed": 0.011121608316898346,
+        "encoder_core": 0.07794319465756416,
+        "decoder_core": 0.0,
+        "motor": 0.0,
+        "wm_only": 0.0,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.07874275743961334,
+      "wd_median": 1.2437032930431614e-06,
+      "sustained_delta_median": 0.13520679131781654
+    },
+    "comprehension|lambda=1.0|lr=0.0001": {
+      "preclip": {
+        "median": 1.9071538099752807,
+        "mean": 1.9041630213624245,
+        "min": 1.7745615216100235,
+        "max": 2.006175537227846
+      },
+      "fraction_clipped": 1.0,
+      "clip_factor_median": 0.5243419675328884,
+      "postclip_median": 0.9999996160621949,
+      "delta_global_median": 0.011142301838845015,
+      "delta_global_mean": 0.0111660257098265,
+      "delta_rel_global": 5.2907997280815296e-05,
+      "delta_by_group_median": {
+        "phon_embed": 0.0014576874091289937,
+        "encoder_core": 0.011045929975807667,
+        "decoder_core": 0.0,
+        "motor": 0.0,
+        "wm_only": 0.0,
+        "gate": 0.0
+      },
+      "adaptive_median": 0.011142272967845201,
+      "wd_median": 1.2437032930431614e-07,
+      "sustained_delta_median": 0.08110301700096378
+    }
+  },
+  "geometry": {
+    "raw_grad_R_vs_C_encoder_side": {
+      "phon_embed": {
+        "median": -0.010609391145408154,
+        "mean": -0.001528931490611285
+      },
+      "encoder_core": {
+        "median": -0.008766134269535542,
+        "mean": -0.00789362986870401
+      }
+    },
+    "raw_grad_R_vs_N_decoder_side": {
+      "decoder_core": {
+        "median": 0.001575293528730981,
+        "mean": 0.004624676426828955
+      },
+      "motor": {
+        "median": -0.027259611524641514,
+        "mean": -0.026079104412929155
+      }
+    },
+    "delta_R_vs_C_encoder_side": {
+      "phon_embed": {
+        "median": 0.83160400390625,
+        "mean": 0.8116323128342628
+      },
+      "encoder_core": {
+        "median": 0.732989490032196,
+        "mean": 0.7333980165421963
+      }
+    },
+    "delta_R_vs_N_decoder_side": {
+      "decoder_core": {
+        "median": 0.8519391119480133,
+        "mean": 0.8522570915520191
+      },
+      "motor": {
+        "median": 0.8363444209098816,
+        "mean": 0.8347472809255123
+      }
+    },
+    "delta_Clam1_vs_Clam087": {
+      "phon_embed": {
+        "median": 0.8456601798534393,
+        "mean": 0.8476326875388622
+      },
+      "encoder_core": {
+        "median": 0.8072382807731628,
+        "mean": 0.8059796579182148
+      }
+    },
+    "delta_Clam1_over_Clam087_norm_ratio": {
+      "phon_embed": 1.312685341470469,
+      "encoder_core": 1.4166259186174786
+    }
+  },
+  "c_diagnostic": {
+    "note": "DIAGNOSTIC ONLY: the current C update contains ZERO alignment contribution (c_align_weight=0).",
+    "cos_retrieval_vs_alignment": {
+      "enc_side": {
+        "median": 0.8115040361881256,
+        "mean": 0.8111548349261284
+      },
+      "phon_embed": {
+        "median": 0.7897809445858002,
+        "mean": 0.7849512211978436
+      },
+      "encoder_core": {
+        "median": 0.8146928548812866,
+        "mean": 0.8129444569349289
+      },
+      "to_semantic": {
+        "median": 0.8352294862270355,
+        "mean": 0.8374837711453438
+      }
+    }
+  }
+}
