@@ -61,7 +61,7 @@ from scripts.naming_comprehension.train_tasks import (                    # noqa
 )
 from data.lexicon import build_lexicon                                    # noqa: E402
 from data.phonemes import build_vocab                                     # noqa: E402
-from utils.provenance import git_state                                    # noqa: E402
+from utils.provenance import git_state, sha256_file                       # noqa: E402
 
 FORMAT = "lichtheim3.naming_capacity.v1"
 CANONICAL_WIDTHS = (128, 256, 512)
@@ -129,11 +129,14 @@ def assert_frozen_untouched(model: DualRouteModel,
 class NamingCapacityTrainer:
     def __init__(self, *, width: int, seed: int, device: str,
                  max_words: int = 30000, batch_size: int = BATCH_SIZE,
+                 lr: float = LR,
                  lexicon_path: str = "data/lexicon_en_glove_covered.tsv",
                  glove_path: Optional[str] = "data/glove.6B.300d.txt",
                  allow_glove_fallback: bool = False) -> None:
         self.width = int(width)
         self.seed = int(seed)
+        self.lr = float(lr)
+        self.lr_transitions: List[dict] = []
         self.device = device
         torch.manual_seed(self.seed)
 
@@ -171,7 +174,7 @@ class NamingCapacityTrainer:
                                     seeds["naming"])
         self.per_epoch = self.stream.per_epoch
 
-        self.optim = torch.optim.AdamW(self.model.parameters(), lr=LR,
+        self.optim = torch.optim.AdamW(self.model.parameters(), lr=self.lr,
                                        weight_decay=WEIGHT_DECAY)
         self.global_step = 0
         self.running_ce: Optional[float] = None
@@ -247,13 +250,15 @@ class NamingCapacityTrainer:
                 "optimizer_state_dict": self.optim.state_dict(),
                 "running_ce": self.running_ce,
                 "per_epoch": self.per_epoch,
-                "lr": LR, "weight_decay": WEIGHT_DECAY,
+                "lr": self.lr, "lr_transitions": list(self.lr_transitions),
+                "weight_decay": WEIGHT_DECAY,
                 "grad_clip": GRAD_CLIP,
                 "batch_size": self.stream.batch_size,
                 "rng_states": capture_rng_states(),
                 "git": git_state(ROOT)}
 
-    def load_state_dict(self, ckpt: dict) -> None:
+    def load_state_dict(self, ckpt: dict, *,
+                        allow_lr_transition: bool = False) -> None:
         if ckpt.get("format") != FORMAT:
             raise RuntimeError(f"unexpected format {ckpt.get('format')!r}")
         if int(ckpt["width"]) != self.width or int(ckpt["seed"]) != self.seed:
@@ -263,7 +268,25 @@ class NamingCapacityTrainer:
         if int(ckpt["per_epoch"]) != self.per_epoch:
             raise RuntimeError("population size changed between runs")
         self.model.load_state_dict(ckpt["model_state_dict"])
+        # AdamW moments restored exactly; load_state_dict also overwrites the
+        # param-group lr with the checkpoint's, so the requested lr is applied
+        # explicitly afterwards -- moments are NEVER reset by a transition.
         self.optim.load_state_dict(ckpt["optimizer_state_dict"])
+        ck_lr = float(ckpt.get("lr", LR))
+        self.lr_transitions = list(ckpt.get("lr_transitions", []))
+        if self.lr != ck_lr:
+            if not allow_lr_transition:
+                raise RuntimeError(
+                    f"LR TRANSITION REFUSED: checkpoint lr {ck_lr} != requested "
+                    f"{self.lr}. Pass --lr-transition to declare it.")
+            self.lr_transitions.append({
+                "from_lr": ck_lr, "to_lr": self.lr,
+                "at_step": int(ckpt["global_step"]),
+                "at_exposures": round(int(ckpt["global_step"])
+                                      / int(ckpt["per_epoch"]), 4),
+                "optimizer_moments": "preserved"})
+        for g in self.optim.param_groups:
+            g["lr"] = self.lr
         self.global_step = int(ckpt["global_step"])
         self.running_ce = ckpt.get("running_ce")
         restore_rng_states(ckpt["rng_states"])
@@ -294,6 +317,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--eval-exposures", default=",".join(map(str, EVAL_EXPOSURES)))
     ap.add_argument("--max-exposures", type=int, default=EVAL_EXPOSURES[-1])
     ap.add_argument("--resume", default=None)
+    ap.add_argument("--lr", type=float, default=LR,
+                    help="optimizer LR; differs from a resumed checkpoint's "
+                         "only with --lr-transition (moments preserved)")
+    ap.add_argument("--lr-transition", action="store_true",
+                    help="declare an intentional LR change on resume")
+    ap.add_argument("--no-stop-at-ceiling", action="store_true",
+                    help="keep training after exact_match reaches 1.0")
     ap.add_argument("--benchmark", type=int, default=0,
                     help="time N optimizer steps and exit (no eval, no save)")
     ap.add_argument("--allow-glove-fallback", action="store_true")
@@ -304,7 +334,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     tr = NamingCapacityTrainer(
         width=args.width, seed=args.seed, device=args.device,
-        max_words=args.max_words, batch_size=args.batch_size,
+        max_words=args.max_words, batch_size=args.batch_size, lr=args.lr,
         lexicon_path=args.lexicon_path, glove_path=args.glove_path,
         allow_glove_fallback=args.allow_glove_fallback)
 
@@ -336,13 +366,33 @@ def main(argv: Optional[List[str]] = None) -> int:
     os.makedirs(ckpt_dir, exist_ok=True)
     metrics = os.path.join(run_dir, "metrics.tsv")
 
+    parent_sha = None
     if args.resume:
+        import hashlib
+        parent_sha = hashlib.sha256(
+            open(args.resume, "rb").read()).hexdigest()
         tr.load_state_dict(torch.load(args.resume, map_location=args.device,
-                                      weights_only=False))
-        print(f"[capacity] resumed step {tr.global_step} from {args.resume}")
+                                      weights_only=False),
+                           allow_lr_transition=args.lr_transition)
+        print(f"[capacity] resumed step {tr.global_step} "
+              f"({tr.global_step/tr.per_epoch:.1f} exp) from {args.resume}")
+        print(f"[capacity] parent sha256 {parent_sha}")
+        if tr.lr_transitions:
+            print(f"[capacity] lr transitions: {tr.lr_transitions}")
 
     cfgdump = {"format": FORMAT, "width": args.width, "seed": args.seed,
-               "device": args.device, "lr": LR, "lr_schedule": "constant",
+               "device": args.device, "lr": args.lr,
+               "lr_schedule": "constant (single declared transition allowed)",
+               "lr_transitions": list(tr.lr_transitions),
+               "parent_checkpoint": args.resume,
+               "parent_checkpoint_sha256": parent_sha,
+               "resumed_at_step": (tr.global_step if args.resume else 0),
+               "resumed_at_exposures": (round(tr.global_step / tr.per_epoch, 4)
+                                        if args.resume else 0.0),
+               "optimizer_moments": ("preserved from parent" if args.resume
+                                     else "fresh"),
+               "lexicon_file_sha256": sha256_file(
+                   os.path.join(ROOT, args.lexicon_path)),
                "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
                "batch_size": args.batch_size,
                "population": len(tr.naming_idx), "per_epoch": tr.per_epoch,
@@ -363,7 +413,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     max_steps = args.max_exposures * tr.per_epoch
     t0 = time.time()
 
-    def do_eval() -> None:
+    def do_eval() -> Dict[str, object]:
         row = {"step": tr.global_step,
                "exposures": round(tr.global_step / tr.per_epoch, 4),
                "train_ce_running": ("" if tr.running_ce is None
@@ -378,10 +428,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"  [EVAL @ {row['exposures']} exp] exact={row['exact_match']} "
               f"ce={row['full_ce']} tf_tok={row['tf_token_acc']} "
               f"greedy_tok={row['greedy_token_acc']}", flush=True)
+        return row
 
-    if tr.global_step in eval_steps and tr.global_step == 0:
-        do_eval()
-    while tr.global_step < max_steps:
+    ceiling = False
+    if tr.global_step in eval_steps:
+        row0 = do_eval()          # step-0 baseline, or resume continuity point
+        ceiling = (row0["exact_match"] == 1.0
+                   and not args.no_stop_at_ceiling)
+    while tr.global_step < max_steps and not ceiling:
         ce = tr.train_step()
         if args.log_every and tr.global_step % args.log_every == 0:
             print(f"[step {tr.global_step}/{max_steps}] "
@@ -389,8 +443,13 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"run={tr.running_ce:.4f} | {time.time()-t0:.0f}s",
                   flush=True)
         if tr.global_step in eval_steps:
-            do_eval()
-    if tr.global_step not in eval_steps:
+            row = do_eval()
+            if row["exact_match"] == 1.0 and not args.no_stop_at_ceiling:
+                print(f"[capacity] CEILING REACHED: exact 1.0 over the full "
+                      f"population at {row['exposures']} exposures; "
+                      f"checkpoint saved; stopping this branch.", flush=True)
+                ceiling = True
+    if tr.global_step not in eval_steps and not ceiling:
         do_eval()
     print(f"[capacity] done: width={args.width} step={tr.global_step} "
           f"({tr.global_step/tr.per_epoch:.1f} exposures) -> {run_dir}")

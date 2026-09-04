@@ -104,6 +104,58 @@ def test_resume_refuses_a_different_width(tmp_path):
             map_location="cpu", weights_only=False))
 
 
+def test_lr_transition_preserves_moments_and_is_recorded(tmp_path):
+    out = str(tmp_path / "runs")
+    assert main(["--width", "64", "--out-dir", out, "--run-id", "base",
+                 "--eval-exposures", "1", "--max-exposures", "1"] + ARGS) == 0
+    src = os.path.join(out, "base", "checkpoints", "step_00000050.pt")
+    ck = torch.load(src, map_location="cpu", weights_only=False)
+    moments_before = {i: st["exp_avg"].clone()
+                      for i, st in ck["optimizer_state_dict"]["state"].items()}
+
+    tr = make(64)
+    tr.load_state_dict(torch.load(src, map_location="cpu", weights_only=False))
+    assert tr.optim.param_groups[0]["lr"] == 1e-3, "same lr needs no flag"
+
+    tr2 = make(64, lr=1e-4)
+    with pytest.raises(RuntimeError, match="LR TRANSITION REFUSED"):
+        tr2.load_state_dict(torch.load(src, map_location="cpu",
+                                       weights_only=False))
+    tr3 = make(64, lr=1e-4)
+    tr3.load_state_dict(torch.load(src, map_location="cpu",
+                                   weights_only=False),
+                        allow_lr_transition=True)
+    assert tr3.optim.param_groups[0]["lr"] == 1e-4
+    assert tr3.lr_transitions == [{"from_lr": 1e-3, "to_lr": 1e-4,
+                                   "at_step": 50, "at_exposures": 1.0,
+                                   "optimizer_moments": "preserved"}]
+    for i, ref in moments_before.items():
+        assert torch.equal(tr3.optim.state_dict()["state"][i]["exp_avg"], ref),             "AdamW moments must survive the transition bitwise"
+    # the transition is carried into the branch's own checkpoints
+    ck3 = tr3.state_dict()
+    assert ck3["lr"] == 1e-4 and len(ck3["lr_transitions"]) == 1
+
+
+def test_cap2_job_contract():
+    t = open(os.path.join(
+        ROOT, "scripts/cluster/jeanzay/cap2_h512_lr_branch.slurm"),
+        encoding="utf-8").read()
+    assert "b49da0aab5f68b1bf286a7af99ed60f5199951bce159e359d6b51ed1aacbe233" in t
+    assert "WIDTH=512" in t and "SEED=22" in t and "MAX_EXPOSURES=3000" in t
+    assert ("EVALS=0,100,125,150,175,200,250,300,400,500,750,1000,1500,"
+            "2000,2500,3000") in t
+    assert "step_00046300.pt" in t
+    assert 'case "$RUN_ID" in' in t and "cap2_*" in t
+    assert "--time=10:00:00" in t and "#SBATCH --requeue" in t
+    assert "--benchmark 200" in t
+    assert '--lr "$LR_ARG"' in t
+    assert "sort | tail -1" in t
+    # single factor: none of these may be overridden by the job
+    for forbidden in ("--batch-size", "--max-words", "--allow-glove-fallback",
+                      "--no-stop-at-ceiling", "--lexicon-path"):
+        assert forbidden not in t, forbidden
+
+
 def test_recipe_constants_are_the_declared_ones():
     assert LR == 1e-3 and WEIGHT_DECAY == 1e-5
     tr = make(64)
