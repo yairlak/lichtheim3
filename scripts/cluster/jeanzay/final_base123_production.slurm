@@ -99,7 +99,7 @@ ENC=$VENTRAL
 DEC=$VENTRAL
 U_MAX=500
 MAX_STEPS=1389000                        # 500 x 463 x 6
-FULL_EVAL_AT=69450,138900,277800,416700,555600,833400,1111200,1389000
+FULL_EVAL_AT=0,69450,138900,277800,416700,555600,833400,1111200,1389000
 EVAL_EVERY=13890                         # dev cadence, every 5 R exposures
 SAVE_EVERY=69450                         # safety checkpoints, every u=25
 RUNS=${L3_RUNS:-/lustre/fsn1/projects/rech/llg/uss35bp/lichtheim3_runs}
@@ -117,8 +117,10 @@ for bad in final1_ final2a_ final3p_ final4_ final5p_ final6 final7 final8p_ fin
 done
 
 # ---- requeue-safe resume from this run's own newest checkpoint ------------
-# u=0 evaluation happens on the first launch; a requeue continues from the
-# newest checkpoint by STEP NUMBER (zero-padded names sort numerically).
+# The u=0 full evaluation is produced by --eval-at-start together with the 0
+# entry in FULL_EVAL_AT: the in-loop milestone check runs after train_step()
+# and so can never observe step 0.  A requeue continues from the newest
+# checkpoint by STEP NUMBER (zero-padded names sort numerically).
 # Widths are pinned identically on resume, and the driver refuses a
 # checkpoint whose architecture differs, so a mis-mapped array index cannot
 # silently continue the wrong run.
@@ -142,7 +144,7 @@ srun python scripts/naming_comprehension/train_joint_scratch.py \
     --device cuda --max-steps "$MAX_STEPS" \
     --full-eval-at "$FULL_EVAL_AT" \
     --eval-every "$EVAL_EVERY" --save-every "$SAVE_EVERY" --log-every 500 \
-    --stop-at-ceiling --endpoint-eval \
+    --eval-at-start --stop-at-ceiling --endpoint-eval \
     --out-dir "$RUNS" --run-id "$RUN_ID" "${RESUME[@]}"
 
 echo "== $RUN_ID finished: $RUNS/$RUN_ID"

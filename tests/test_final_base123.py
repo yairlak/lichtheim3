@@ -55,6 +55,12 @@ def make(seed=22, wm=128, enc=128, dec=128, **over):
                                dec_hidden=dec, **kw)
 
 
+def _rows(path):
+    import csv
+    with open(path, encoding="utf-8") as f:
+        return list(csv.DictReader(f, delimiter="\t"))
+
+
 def script(path=JOB):
     return open(os.path.join(ROOT, path), encoding="utf-8").read()
 
@@ -341,10 +347,68 @@ def test_production_job_defines_exactly_the_eight_runs():
         assert forbidden not in ex, forbidden
 
 
-def test_production_job_evaluates_on_the_u_grid():
+def test_production_job_evaluates_on_the_u_grid_including_u0():
+    """u=0 needs BOTH a `0` entry in --full-eval-at and --eval-at-start: the
+    in-loop milestone check runs after train_step() and can never see step 0,
+    and --eval-at-start alone would yield only a dev row."""
     t = script()
-    for u in (0, 25, 50, 100, 150, 200, 300, 400, 500):
+    grid = [u * R_PASS * MACRO_CYCLE_STEPS
+            for u in (0, 25, 50, 100, 150, 200, 300, 400, 500)]
+    assert f"FULL_EVAL_AT={','.join(str(g) for g in grid)}" in t
+    assert "--eval-at-start" in t
+    srun = t.split("srun python", 1)[1].split("\n\n", 1)[0]
+    assert "--eval-at-start" in srun, "the flag must reach the driver"
+    assert '--full-eval-at "$FULL_EVAL_AT"' in srun
+    # the later grid is unchanged
+    for u in (25, 50, 100, 150, 200, 300, 400, 500):
         assert str(u * R_PASS * MACRO_CYCLE_STEPS) in t, f"u={u}"
+
+
+def test_start_eval_is_full_only_when_the_step_is_on_the_grid(tmp_path):
+    """Behavioural: with 0 on the grid the step-0 row carries FULL-population
+    metrics and a checkpoint; without --eval-at-start there is no step-0 row
+    at all."""
+    out = str(tmp_path / "runs")
+    common = ["--seed", "22", "--out-dir", out, "--enc-hidden", "64",
+              "--dec-hidden", "64", "--max-steps", "12", "--save-every", "12",
+              "--full-eval-at", "0,12"]
+    assert main(ARGS + common + ["--run-id", "off"]) == 0
+    rows = _rows(os.path.join(out, "off", "metrics.tsv"))
+    assert [r["step"] for r in rows] == ["12"], "no u=0 row without the flag"
+    assert not os.path.exists(os.path.join(
+        out, "off", "checkpoints", "step_00000000.pt"))
+
+    assert main(ARGS + common + ["--run-id", "on", "--eval-at-start"]) == 0
+    rows = _rows(os.path.join(out, "on", "metrics.tsv"))
+    assert [r["step"] for r in rows] == ["0", "12"]
+    zero = rows[0]
+    for k in ("full_rep_full", "full_rep_freear", "full_naming_exact",
+              "full_comp_top1", "full_rep_ltm", "gate_mean"):
+        assert zero[k] not in ("", None), f"u=0 row missing {k}"
+    assert os.path.exists(os.path.join(
+        out, "on", "checkpoints", "step_00000000.pt")), \
+        "the u=0 milestone must checkpoint the initial state"
+
+
+def test_start_eval_stays_dev_only_when_the_step_is_not_on_the_grid(tmp_path):
+    """Guard: --eval-at-start must not turn every resume into an expensive
+    full evaluation.  With 0 absent from the grid the start row is dev-only."""
+    out = str(tmp_path / "runs")
+    assert main(ARGS + ["--seed", "22", "--out-dir", out, "--run-id", "d",
+                        "--enc-hidden", "64", "--dec-hidden", "64",
+                        "--max-steps", "12", "--save-every", "12",
+                        "--full-eval-at", "12", "--eval-at-start"]) == 0
+    rows = _rows(os.path.join(out, "d", "metrics.tsv"))
+    assert [r["step"] for r in rows] == ["0", "12"]
+
+    def unset(v):                      # dev rows carry '' or nan, not a value
+        return v in ("", None) or v != v or v.lower() == "nan"
+
+    assert unset(rows[0]["full_rep_full"]), "step 0 is not on the grid"
+    assert not unset(rows[1]["full_rep_full"]), "step 12 IS on the grid"
+    assert not os.path.exists(os.path.join(
+        out, "d", "checkpoints", "step_00000000.pt")), \
+        "a dev-only start eval must not checkpoint"
 
 
 def test_benchmark_job_exercises_the_real_driver_at_both_widths():

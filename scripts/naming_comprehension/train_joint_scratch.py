@@ -2466,8 +2466,28 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     last_eval: tuple = (None, None)          # (step, probe_included)
     if args.eval_at_start:
-        append_metrics(metrics, trainer.evaluate())
-        last_eval = (trainer.global_step, False)
+        # A start evaluation is a FULL-population one exactly when the current
+        # step is listed in --full-eval-at.  The in-loop milestone check runs
+        # AFTER train_step(), so it can never observe step 0; without this a
+        # `0` entry in the full-evaluation grid would silently yield only a
+        # dev row.  It also covers the requeue edge case of resuming exactly
+        # on a milestone step, which the loop would otherwise skip.
+        # Evaluation only: no training state is touched.
+        at_full = trainer.global_step in full_eval_steps
+        row = trainer.evaluate(with_probe=at_full, with_full_lexicon=at_full)
+        append_metrics(metrics, row)
+        last_eval = (trainer.global_step, at_full)
+        if at_full:
+            torch.save(trainer.state_dict(),
+                       ckpt_path(run_dir, trainer.global_step))
+            print(f"  [MILESTONE @ {row['step']}] "
+                  f"full_rep={row['full_rep_full']:.6f} "
+                  f"full_rep_freeAR={row.get('full_rep_freear', float('nan')):.6f} "
+                  f"full_naming={row['full_naming_exact']:.6f} "
+                  f"full_comp_top1={row['full_comp_top1']:.6f} "
+                  f"| LTM_rep={row['full_rep_ltm']:.6f} "
+                  f"gate_mean={row.get('gate_mean', float('nan')):.4f}",
+                  flush=True)
 
     while trainer.global_step < total_steps and not ceiling_reached:
         rec = trainer.train_step()
