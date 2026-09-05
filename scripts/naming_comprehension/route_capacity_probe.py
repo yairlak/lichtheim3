@@ -57,7 +57,7 @@ from scripts.naming_comprehension.train_tasks import (                    # noqa
     canonical_phonology_indices, comprehension_forward, retrieval_loss,
     subset_definition_hash, subset_records,
 )
-from data.lexicon import build_lexicon                                    # noqa: E402
+from data.lexicon import build_lexicon, logfreq_weights                   # noqa: E402
 from data.phonemes import build_vocab                                     # noqa: E402
 from utils.provenance import git_state, sha256_file                       # noqa: E402
 
@@ -72,6 +72,12 @@ LR_STAGE1, LR_STAGE2 = 1e-3, 1e-4
 LR_BOUNDARY_EXPOSURES = 100        # CAP-2's validated transition point
 WEIGHT_DECAY, GRAD_CLIP, BATCH_SIZE = 1e-5, 1.0, 64
 TAU = 0.10                         # historical validated retrieval temperature
+
+# Genuine free-AR cap for the SECONDARY dorsal metric.  A single global
+# constant, never an item's own gold length: the longest form in either
+# evaluated population is 9 phonemes, so 12 leaves room for EOS plus
+# over-generation without truncating a correct answer.
+WM_FREE_AR_MAX_STEPS = 12
 
 # Trainable scope per route.  Everything else keeps its init value, asserted
 # at every evaluation.
@@ -88,8 +94,11 @@ METRIC_COLUMNS = {
         "margin_mean", "elapsed_s"],
     ROUTE_DORSAL: [
         "step", "exposures", "lr", "train_ce_running", "wm_ce",
-        "lex_exact", "lex_n", "pseudo_exact", "pseudo_n",
-        "pseudo_exact_short", "pseudo_exact_long", "elapsed_s"],
+        "tf_token_acc", "lex_exact", "lex_exact_freear", "lex_n",
+        "pseudo_exact", "pseudo_exact_freear", "pseudo_n",
+        "pseudo_exact_short", "pseudo_exact_long",
+        "pseudo_exact_freear_short", "pseudo_exact_freear_long",
+        "elapsed_s"],
 }
 
 
@@ -216,12 +225,32 @@ class RouteCapacityTrainer:
         self.stream_name = stream_name
 
         seeds = derive_stream_seeds(self.seed)
-        # Unweighted permutation stream (weights=None) for BOTH routes, so the
-        # cross-route capacity search is symmetric.  This deliberately differs
-        # from the historical log-frequency-weighted repetition sampler; the
-        # deviation is recorded in config.json.
+        # SAMPLER IS ROUTE-SPECIFIC, matching each route's own canonical
+        # recipe.  Cross-task equality of the sampler is not required: the
+        # scientific comparison is WITHIN a route, across widths, under one
+        # identical protocol.
+        #
+        #   dorsal        : the canonical/historical repetition sampler that
+        #       established the existing WM128 ceiling -- log-frequency
+        #       weights (log((N+1)/rank)) raised to freq_temp = 1.0, clipped
+        #       at 1e-6, normalised, drawn WITH REPLACEMENT via multinomial,
+        #       463 batches per pass over all 29,571 items.
+        #   comprehension : unweighted permutation, the canonical C stream.
+        if route == ROUTE_DORSAL:
+            w = logfreq_weights([self.entries[i].rank
+                                 for i in self.train_idx]) ** float(
+                                     self.cfg.data.freq_temp)
+            w = np.clip(w, 1e-6, None)
+            weights = w / w.sum()
+            self.sampler_note = (
+                f"log-frequency weighted, with replacement, "
+                f"freq_temp={self.cfg.data.freq_temp} (canonical historical "
+                f"repetition sampler)")
+        else:
+            weights = None
+            self.sampler_note = "unweighted permutation per pass (canonical C)"
         self.stream = CounterStream(stream_name, self.train_idx, batch_size,
-                                    seeds[stream_name])
+                                    seeds[stream_name], weights=weights)
         self.per_epoch = self.stream.per_epoch
 
         self.pseudo = (load_pseudowords(self.vocab)
@@ -366,28 +395,98 @@ class RouteCapacityTrainer:
                 ok.append(int(seq == f))
         return ok
 
+    def _wm_exact_free(self, forms: Sequence[List[int]],
+                       batch_size: int = 256) -> List[int]:
+        """SECONDARY readout: genuinely free WM autoregressive repetition.
+
+        Identical to `_wm_exact` except that the greedy loop runs to a single
+        GLOBAL cap (WM_FREE_AR_MAX_STEPS) and the prediction is cut at the
+        first EOS wherever it falls.  The item's own gold length is never
+        consulted, so an over-long or never-terminating output counts as an
+        error instead of being silently truncated to the right length.
+
+        Reported ALONGSIDE the canonical forced-length metric, never instead
+        of it: historical repetition numbers keep their own convention and
+        are not restated here.
+        """
+        ok: List[int] = []
+        for lo in range(0, len(forms), batch_size):
+            chunk = list(forms[lo:lo + batch_size])
+            max_enc = max(len(f) for f in chunk) + 1
+            enc_in = torch.full((len(chunk), max_enc), self.vocab.pad_id,
+                                dtype=torch.long)
+            enc_mask = torch.zeros((len(chunk), max_enc), dtype=torch.bool)
+            for i, f in enumerate(chunk):
+                enc_in[i, :len(f) + 1] = torch.tensor(f + [self.vocab.eos_id])
+                enc_mask[i, :len(f) + 1] = True
+            enc_in, enc_mask = enc_in.to(self.device), enc_mask.to(self.device)
+            h = self.model.wm.encode(enc_in, enc_mask)      # eval: no noise
+            dec = torch.full((len(chunk), 1), self.vocab.bos_id,
+                             dtype=torch.long, device=self.device)
+            for _ in range(WM_FREE_AR_MAX_STEPS):
+                pre = self.model.wm.decode_from_state(h, dec)["premotor"]
+                nxt = self.model.motor(pre)[:, -1, :].argmax(-1, keepdim=True)
+                dec = torch.cat([dec, nxt], dim=1)
+                if bool((dec == self.vocab.eos_id).any(dim=1).all()):
+                    break
+            for i, f in enumerate(chunk):
+                seq = dec[i, 1:].tolist()
+                if self.vocab.eos_id in seq:
+                    seq = seq[:seq.index(self.vocab.eos_id)]
+                ok.append(int(seq == f))
+        return ok
+
+    def _split_by_length(self, flags: Sequence[int], lens: np.ndarray,
+                         med: float) -> Dict[str, float]:
+        a = np.asarray(flags)
+        return {"short": float(np.mean(a[lens <= med])),
+                "long": float(np.mean(a[lens > med]))}
+
     def _evaluate_dorsal(self) -> Dict[str, object]:
-        lex = self._wm_exact([e.phonemes for e in self.entries])
-        out = {"lex_exact": float(np.mean(lex)), "lex_n": len(lex)}
-        ce_sum = ce_n = 0
+        forms = [e.phonemes for e in self.entries]
+        lex = self._wm_exact(forms)
+        lex_free = self._wm_exact_free(forms)
+        out = {"lex_exact": float(np.mean(lex)),
+               "lex_exact_freear": float(np.mean(lex_free)),
+               "lex_n": len(lex)}
+        ce_sum = ce_n = tf_ok = tf_all = 0
         for lo in range(0, len(self.train_idx), 512):
             idx = self.train_idx[lo:lo + 512]
             b = build_batch(self.entries, self.bank_raw, self.vocab, idx,
                             self.device)
             ce_sum += float(self.loss_on(b)) * len(idx)
             ce_n += len(idx)
+            h = self.model.wm.encode(b["enc_in"], b["enc_mask"])
+            pre = self.model.wm.decode_from_state(h, b["dec_in"])["premotor"]
+            pred = self.model.motor(pre).argmax(-1)
+            m = b["dec_tgt"] != self.vocab.pad_id
+            tf_ok += int((pred[m] == b["dec_tgt"][m]).sum())
+            tf_all += int(m.sum())
         out["wm_ce"] = ce_sum / max(ce_n, 1)
+        out["tf_token_acc"] = tf_ok / max(tf_all, 1)
         if self.pseudo:
-            pk = self._wm_exact([p["phonemes"] for p in self.pseudo])
+            pf = [p["phonemes"] for p in self.pseudo]
+            pk, pk_free = self._wm_exact(pf), self._wm_exact_free(pf)
             lens = np.array([p["length"] for p in self.pseudo])
             med = float(np.median(lens))
+            can = self._split_by_length(pk, lens, med)
+            fre = self._split_by_length(pk_free, lens, med)
             out.update({
-                "pseudo_exact": float(np.mean(pk)), "pseudo_n": len(pk),
-                "pseudo_exact_short": float(np.mean(np.array(pk)[lens <= med])),
-                "pseudo_exact_long": float(np.mean(np.array(pk)[lens > med]))})
+                "pseudo_exact": float(np.mean(pk)),
+                "pseudo_exact_freear": float(np.mean(pk_free)),
+                "pseudo_n": len(pk),
+                "pseudo_exact_short": can["short"],
+                "pseudo_exact_long": can["long"],
+                "pseudo_exact_freear_short": fre["short"],
+                "pseudo_exact_freear_long": fre["long"]})
         else:
-            out.update({"pseudo_exact": "", "pseudo_n": 0,
-                        "pseudo_exact_short": "", "pseudo_exact_long": ""})
+            for k in ("pseudo_exact", "pseudo_exact_freear",
+                      "pseudo_exact_short", "pseudo_exact_long",
+                      "pseudo_exact_freear_short", "pseudo_exact_freear_long"):
+                out[k] = ""
+            out["pseudo_n"] = 0
+        # Ceiling stays the CANONICAL metric, for comparability with every
+        # historical repetition number.
         out["_ceiling"] = out["lex_exact"] == 1.0
         return out
 
@@ -525,9 +624,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             "population_n": len(tr.train_idx),
             "population_sha256": tr.population_hash,
             "retrieval_bank_n": len(tr.entries),
-            "sampler": "unweighted permutation per pass (symmetric across "
-                       "routes; historical repetition used log-frequency "
-                       "weighting, deliberately not used here)",
+            "sampler": tr.sampler_note,
+            "free_ar_max_steps": WM_FREE_AR_MAX_STEPS,
             "wm_interference_noise": tr.cfg.wm.interference_noise,
             "ltm_encoder_mode": tr.cfg.ltm.ltm_encoder_mode,
             "trainable_scope": list(tr.scope),
@@ -538,8 +636,11 @@ def main(argv: Optional[List[str]] = None) -> int:
             "evaluation": ("strict canonical top-1 word ID over the C "
                            "population against the full bank"
                            if args.route == ROUTE_COMPREHENSION else
-                           "route-isolated WM autoregressive repetition "
-                           "(canonical forced-length convention)"),
+                           "PRIMARY route-isolated WM autoregressive "
+                           "repetition, canonical forced-length convention "
+                           "(comparable to all historical numbers); SECONDARY "
+                           "genuine free-AR to a global cap that never "
+                           "consults gold length"),
             "lexicon_file_sha256": sha256_file(
                 os.path.join(ROOT, args.lexicon_path)),
             "max_exposures": args.max_exposures,
@@ -572,7 +673,9 @@ def main(argv: Optional[List[str]] = None) -> int:
               (f"top5={row['top5']} rank_med={row['rank_median']} "
                f"ce={row['retrieval_ce']}"
                if tr.route == ROUTE_COMPREHENSION else
-               f"pseudo={row['pseudo_exact']} ce={row['wm_ce']}"), flush=True)
+               f"free={row['lex_exact_freear']} "
+               f"pseudo={row['pseudo_exact']}/{row['pseudo_exact_freear']} "
+               f"tf_tok={row['tf_token_acc']} ce={row['wm_ce']}"), flush=True)
         row["_ceiling"] = ceiling
         return row
 

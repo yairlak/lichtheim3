@@ -23,7 +23,8 @@ if ROOT not in sys.path:
 from scripts.naming_comprehension.route_capacity_probe import (          # noqa: E402
     GRAD_CLIP, LR_BOUNDARY_EXPOSURES, LR_STAGE1, LR_STAGE2, ROUTE_DORSAL,
     ROUTE_COMPREHENSION, SCOPE, TAU, WEIGHT_DECAY, WIDTHS,
-    RouteCapacityTrainer, lr_for_exposure, main, param_census,
+    WM_FREE_AR_MAX_STEPS, METRIC_COLUMNS, RouteCapacityTrainer,
+    lr_for_exposure, main, param_census,
 )
 from scripts.naming_comprehension.train_joint_scratch import (           # noqa: E402
     EXPECTED_CANONICAL_C_HASH, EXPECTED_CANONICAL_C_N,
@@ -246,3 +247,97 @@ def test_earlier_jobs_are_untouched():
                        ("final9p_ratio223_r130.slurm", "MAX_STEPS=458370")):
         t = script(f"scripts/cluster/jeanzay/{name}")
         assert must in t, name
+
+
+# =====================  corrections: sampler + free-AR metric  =============
+
+def test_dorsal_uses_the_canonical_repetition_sampler():
+    """The dorsal probe must reuse the sampler that established the existing
+    WM128 repetition ceiling -- log-frequency weighted, WITH REPLACEMENT --
+    not a uniform permutation borrowed from the C probe."""
+    tr = make(ROUTE_DORSAL)
+    assert tr.stream.weights is not None, "dorsal must be frequency-weighted"
+    assert "log-frequency weighted" in tr.sampler_note
+    assert "with replacement" in tr.sampler_note
+    assert "freq_temp=1.0" in tr.sampler_note
+    w = tr.stream.weights
+    assert float(w.sum()) == pytest.approx(1.0)
+    ranks = [tr.entries[i].rank for i in tr.train_idx]
+    order = sorted(range(len(ranks)), key=lambda k: ranks[k])
+    assert w[order[0]] > w[order[-1]], "rank 1 must carry the largest weight"
+    # with replacement a full pass repeats items and omits others; an
+    # unweighted permutation covers each item exactly once
+    drawn = [i for k in range(tr.per_epoch) for i in tr.stream.indices(k)]
+    assert len(drawn) == len(tr.train_idx)
+    assert len(set(drawn)) < len(drawn), \
+        "a with-replacement pass must contain duplicates"
+
+
+def test_dorsal_stream_is_batch_identical_to_the_joint_repetition_stream():
+    """Runs on the REAL lexicon: the probe must draw exactly the batches the
+    canonical repetition stream draws, or it is not the historical recipe."""
+    from scripts.naming_comprehension.train_joint_scratch import (
+        CounterStream, derive_stream_seeds)
+    from data.lexicon import logfreq_weights
+    import numpy as np
+    tr = RouteCapacityTrainer(route=ROUTE_DORSAL, wm_hidden=128,
+                              enc_hidden=128, dec_hidden=128, seed=22,
+                              device="cpu")
+    w = logfreq_weights([e.rank for e in tr.entries]) ** float(
+        tr.cfg.data.freq_temp)
+    w = np.clip(w, 1e-6, None)
+    ref = CounterStream("repetition", list(range(len(tr.entries))), 64,
+                        derive_stream_seeds(22)["repetition"],
+                        weights=w / w.sum())
+    assert tr.per_epoch == ref.per_epoch == 463
+    for k in (0, 1, 5, 462, 463, 1000):
+        assert tr.stream.indices(k) == ref.indices(k), k
+
+
+def test_comprehension_sampler_is_unchanged_by_the_dorsal_correction():
+    """Guard: the C jobs are already running on this driver.  The dorsal
+    sampler change must not touch the C stream."""
+    tr = make(ROUTE_COMPREHENSION)
+    assert tr.stream.weights is None
+    assert tr.sampler_note == "unweighted permutation per pass (canonical C)"
+
+
+def test_free_ar_cap_is_global_and_clears_the_longest_form():
+    assert WM_FREE_AR_MAX_STEPS == 12
+    tr = make(ROUTE_DORSAL)
+    longest = max(len(e.phonemes) for e in tr.entries)
+    assert WM_FREE_AR_MAX_STEPS > longest + 1,         "the cap must not truncate a correct answer"
+
+
+def test_dorsal_reports_both_conventions_and_ceilings_on_the_canonical_one():
+    tr = make(ROUTE_DORSAL)
+    row = tr.evaluate()
+    for k in ("lex_exact", "lex_exact_freear", "tf_token_acc",
+              "pseudo_exact", "pseudo_exact_freear",
+              "pseudo_exact_short", "pseudo_exact_long",
+              "pseudo_exact_freear_short", "pseudo_exact_freear_long"):
+        assert k in row, k
+        assert k in METRIC_COLUMNS[ROUTE_DORSAL], f"{k} missing from the TSV"
+    # ceiling must stay the canonical metric, so history stays comparable
+    assert row["_ceiling"] == (row["lex_exact"] == 1.0)
+
+
+def test_free_ar_never_consults_gold_length():
+    """A model that never emits EOS must score 0 under free-AR for every
+    item, whatever its length -- the forced-length window cannot rescue it."""
+    tr = make(ROUTE_DORSAL)
+    eos = tr.vocab.eos_id
+    real_motor = tr.model.motor
+
+    class NoEos(torch.nn.Module):
+        def forward(self, x):
+            out = real_motor(x)
+            out[..., eos] = -1e9          # EOS can never win
+            return out
+
+    tr.model.motor = NoEos()
+    try:
+        forms = [e.phonemes for e in tr.entries[:64]]
+        assert sum(tr._wm_exact_free(forms)) == 0
+    finally:
+        tr.model.motor = real_motor
