@@ -102,9 +102,16 @@ METRIC_COLUMNS = {
 }
 
 
-def lr_for_exposure(exposures: float) -> float:
-    """Two-stage capacity schedule, identical for every route and width."""
-    return LR_STAGE1 if exposures < LR_BOUNDARY_EXPOSURES else LR_STAGE2
+def lr_for_exposure(exposures: float, stage2: float = LR_STAGE2) -> float:
+    """Two-stage capacity schedule, identical for every route and width.
+
+    `stage2` is the LR applied from LR_BOUNDARY_EXPOSURES on.  It defaults to
+    the width-probe value 1e-4, so every CAP-3 width run is unchanged; a
+    continuation may override it only by declaring the change explicitly
+    (see RouteCapacityTrainer.load_state_dict).  Passing stage2 == LR_STAGE1
+    expresses "keep stage 1 after the boundary".
+    """
+    return LR_STAGE1 if exposures < LR_BOUNDARY_EXPOSURES else float(stage2)
 
 
 def param_census(model: DualRouteModel) -> Dict[str, int]:
@@ -163,12 +170,15 @@ class RouteCapacityTrainer:
                  lexicon_path: str = "data/lexicon_en_glove_covered.tsv",
                  glove_path: Optional[str] = "data/glove.6B.300d.txt",
                  allow_glove_fallback: bool = False,
-                 require_population_hash: bool = True) -> None:
+                 require_population_hash: bool = True,
+                 lr_stage2: float = LR_STAGE2) -> None:
         if route not in ROUTES:
             raise ValueError(f"route must be one of {ROUTES}, got {route!r}")
         self.route = route
         self.seed = int(seed)
         self.device = device
+        self.lr_stage2 = float(lr_stage2)
+        self.lr_transitions: List[dict] = []
         torch.manual_seed(self.seed)
 
         cfg = canonical_config(self.seed, device, max_words=max_words,
@@ -283,7 +293,7 @@ class RouteCapacityTrainer:
         return self.global_step / self.per_epoch
 
     def current_lr(self) -> float:
-        return lr_for_exposure(self.exposures)
+        return lr_for_exposure(self.exposures, self.lr_stage2)
 
     def assert_frozen(self) -> None:
         params = dict(self.model.named_parameters())
@@ -497,7 +507,8 @@ class RouteCapacityTrainer:
                 "model_state_dict": self.model.state_dict(),
                 "optimizer_state_dict": self.optim.state_dict(),
                 "running_ce": self.running_ce, "per_epoch": self.per_epoch,
-                "lr": self.current_lr(), "tau": TAU,
+                "lr": self.current_lr(), "lr_stage2": self.lr_stage2,
+                "lr_transitions": list(self.lr_transitions), "tau": TAU,
                 "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
                 "batch_size": self.stream.batch_size,
                 "population_n": len(self.train_idx),
@@ -505,7 +516,8 @@ class RouteCapacityTrainer:
                 "trainable_scope": list(self.scope),
                 "rng_states": capture_rng_states(), "git": git_state(ROOT)}
 
-    def load_state_dict(self, ckpt: dict) -> None:
+    def load_state_dict(self, ckpt: dict, *,
+                        allow_lr_transition: bool = False) -> None:
         if ckpt.get("format") != FORMAT:
             raise RuntimeError(f"unexpected format {ckpt.get('format')!r}")
         if ckpt["route"] != self.route or ckpt["widths"] != self.widths:
@@ -514,7 +526,24 @@ class RouteCapacityTrainer:
                 f"is {self.route} {self.widths}")
         if ckpt["population_sha256"] != self.population_hash:
             raise RuntimeError("population changed between runs")
+        ck_stage2 = float(ckpt.get("lr_stage2", LR_STAGE2))
+        self.lr_transitions = list(ckpt.get("lr_transitions", []))
+        if self.lr_stage2 != ck_stage2:
+            if not allow_lr_transition:
+                raise RuntimeError(
+                    f"LR TRANSITION REFUSED: checkpoint stage-2 lr "
+                    f"{ck_stage2} != requested {self.lr_stage2}. Pass "
+                    f"--lr-transition to declare it.")
+            self.lr_transitions.append({
+                "from_stage2_lr": ck_stage2, "to_stage2_lr": self.lr_stage2,
+                "at_step": int(ckpt["global_step"]),
+                "at_exposures": round(int(ckpt["global_step"])
+                                      / int(ckpt["per_epoch"]), 4),
+                "optimizer_moments": "preserved"})
         self.model.load_state_dict(ckpt["model_state_dict"])
+        # AdamW moments restored exactly.  load_state_dict also restores the
+        # param-group lr; train_step re-derives it from the schedule on every
+        # step, so the branch LR takes effect without ever resetting moments.
         self.optim.load_state_dict(ckpt["optimizer_state_dict"])
         self.global_step = int(ckpt["global_step"])
         self.running_ce = ckpt.get("running_ce")
@@ -549,6 +578,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--eval-exposures", required=True)
     ap.add_argument("--max-exposures", type=int, required=True)
     ap.add_argument("--resume", default=None)
+    ap.add_argument("--lr-stage2", type=float, default=LR_STAGE2,
+                    help="LR from exposure 100 on (default 1e-4, the width "
+                         "probe value); pass 1e-3 to keep stage 1")
+    ap.add_argument("--lr-transition", action="store_true",
+                    help="declare an intentional stage-2 LR change on resume")
     ap.add_argument("--benchmark", type=int, default=0)
     ap.add_argument("--allow-glove-fallback", action="store_true")
     ap.add_argument("--no-population-hash-check", action="store_true")
@@ -564,7 +598,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         max_words=args.max_words, batch_size=args.batch_size,
         lexicon_path=args.lexicon_path, glove_path=args.glove_path,
         allow_glove_fallback=args.allow_glove_fallback,
-        require_population_hash=not args.no_population_hash_check)
+        require_population_hash=not args.no_population_hash_check,
+        lr_stage2=args.lr_stage2)
 
     census = param_census(tr.model)
     print(f"[probe] route={args.route} widths={tr.widths} "
@@ -597,10 +632,17 @@ def main(argv: Optional[List[str]] = None) -> int:
     metrics = os.path.join(run_dir, "metrics.tsv")
     columns = METRIC_COLUMNS[args.route]
 
+    parent_sha = None
     if args.resume:
+        import hashlib
+        parent_sha = hashlib.sha256(open(args.resume, "rb").read()).hexdigest()
         tr.load_state_dict(torch.load(args.resume, map_location=args.device,
-                                      weights_only=False))
+                                      weights_only=False),
+                           allow_lr_transition=args.lr_transition)
         print(f"[probe] resumed step {tr.global_step} ({tr.exposures:.1f} exp)")
+        print(f"[probe] parent sha256 {parent_sha}")
+        if tr.lr_transitions:
+            print(f"[probe] lr transitions: {tr.lr_transitions}")
 
     cfg_path = os.path.join(run_dir, "config.json")
     if not os.path.exists(cfg_path):
@@ -608,8 +650,11 @@ def main(argv: Optional[List[str]] = None) -> int:
             "format": FORMAT, "route": args.route, "widths": tr.widths,
             "seed": args.seed, "device": args.device,
             "lr_schedule": f"{LR_STAGE1} through exposure "
-                           f"{LR_BOUNDARY_EXPOSURES}, then {LR_STAGE2}",
-            "lr_stage1": LR_STAGE1, "lr_stage2": LR_STAGE2,
+                           f"{LR_BOUNDARY_EXPOSURES}, then {tr.lr_stage2}",
+            "lr_stage1": LR_STAGE1, "lr_stage2": tr.lr_stage2,
+            "lr_transitions": list(tr.lr_transitions),
+            "parent_checkpoint": args.resume,
+            "parent_checkpoint_sha256": parent_sha,
             "lr_boundary_exposures": LR_BOUNDARY_EXPOSURES,
             "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
             "batch_size": args.batch_size, "tau": TAU,
