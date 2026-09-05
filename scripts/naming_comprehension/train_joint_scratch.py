@@ -180,7 +180,12 @@ LR_BOUNDARY_STEPS = 46_300
 TAU = 0.10                          # retrieval temperature (Phase 2 validated)
 LAMBDA_C = 0.087                    # weight on retrieval CE
 LAMBDA_N = 1.0                      # weight on naming CE
+CEILING_CONSECUTIVE_REQUIRED = 2    # scheduled full evals at 100/100/100/100
 NAMING_MAX_STEPS = 10               # free-AR decode cap, never target length
+# Global cap for GENUINE free-AR repetition.  The longest form in the final
+# lexicon is 9 phonemes, so 12 cannot truncate a correct answer while still
+# scoring over-generation and non-termination as errors.
+FREE_AR_MAX_STEPS = 12
 
 # ---- C / N population: the frozen Phase 2C subset3288 ----
 SUBSET_PER_BAND = 822
@@ -413,8 +418,18 @@ def build_batch(entries: Sequence[LexEntry], bank_raw: torch.Tensor,
 def canonical_config(seed: int, device: str, *, max_words: int,
                      lexicon_path: str, dorsal_pool_size: int,
                      batch_size: int,
-                     glove_path: Optional[str] = "data/glove.6B.300d.txt") -> Config:
-    """A Config with every scientifically relevant field set explicitly."""
+                     glove_path: Optional[str] = "data/glove.6B.300d.txt",
+                     wm_hidden: int = CANONICAL_HIDDEN,
+                     enc_hidden: int = CANONICAL_HIDDEN,
+                     dec_hidden: int = CANONICAL_HIDDEN) -> Config:
+    """A Config with every scientifically relevant field set explicitly.
+
+    The three recurrent widths are INDEPENDENT arguments, each defaulting to
+    the historical CANONICAL_HIDDEN, so omitting them reproduces the audited
+    FINAL-1/FINAL-3P architecture exactly.  There is deliberately no single
+    "hidden size" knob: a ventral-capacity run must not be able to resize the
+    dorsal route by accident.
+    """
     cfg = default_config()
 
     cfg.data.use_real = True
@@ -427,11 +442,11 @@ def canonical_config(seed: int, device: str, *, max_words: int,
     cfg.data.split_seed = 0
     cfg.data.seed = 0
 
-    cfg.wm.hidden = CANONICAL_HIDDEN
+    cfg.wm.hidden = int(wm_hidden)
     cfg.wm.interference_noise = CANONICAL_INTERFERENCE_NOISE
 
-    cfg.ltm.enc_hidden = CANONICAL_HIDDEN
-    cfg.ltm.dec_hidden = CANONICAL_HIDDEN
+    cfg.ltm.enc_hidden = int(enc_hidden)
+    cfg.ltm.dec_hidden = int(dec_hidden)
     cfg.ltm.ltm_encoder_mode = CANONICAL_LTM_ENCODER_MODE
     cfg.ltm.ventral_noise = CANONICAL_VENTRAL_NOISE
     cfg.ltm.__post_init__()          # re-normalise bidirectional_encoder
@@ -552,6 +567,22 @@ def task_lr_policy(repetition: float, naming: float,
             raise ValueError(f"task learning rate {name}={v} must be > 0")
     return {"kind": LR_POLICY_TASK, "repetition": float(repetition),
             "naming": float(naming), "comprehension": float(comprehension)}
+
+
+def at_ceiling(row: Dict[str, object]) -> bool:
+    """The NUMERICAL stopping predicate for the final baseline.
+
+    All four full-population readouts must be exactly 1.0 in the same
+    evaluation: canonical (forced-length) repetition, GENUINE free-AR
+    repetition, genuine greedy free-AR naming, and strict canonical
+    comprehension top-1.  A missing key is not a pass.
+    """
+    keys = ("full_rep_full", "full_rep_freear", "full_naming_exact",
+            "full_comp_top1")
+    try:
+        return all(float(row[k]) == 1.0 for k in keys)
+    except (KeyError, TypeError, ValueError):
+        return False
 
 
 def lr_for_step(rep_cursor: int, boundary: int) -> float:
@@ -736,7 +767,10 @@ class JointScratchTrainer:
                  task_lrs: Optional[Dict[str, float]] = None,
                  allow_phase_transition: bool = False,
                  optimizer_policy: str = OPT_POLICY_SHARED,
-                 dec_weight: Optional[float] = None) -> None:
+                 dec_weight: Optional[float] = None,
+                 wm_hidden: int = CANONICAL_HIDDEN,
+                 enc_hidden: int = CANONICAL_HIDDEN,
+                 dec_hidden: int = CANONICAL_HIDDEN) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -828,10 +862,16 @@ class JointScratchTrainer:
         if self.dec_weight < 0.0:
             raise ValueError(f"dec_weight must be >= 0, got {self.dec_weight}")
 
+        # The ventral-capacity factor.  Recorded as three separate fields so
+        # provenance can never conflate a ventral change with a dorsal one.
+        self.widths = {"wm_hidden": int(wm_hidden),
+                       "ltm_enc_hidden": int(enc_hidden),
+                       "ltm_dec_hidden": int(dec_hidden)}
         self.cfg = canonical_config(
             seed, device, max_words=max_words, lexicon_path=lexicon_path,
             dorsal_pool_size=dorsal_pool_size, batch_size=batch_size,
-            glove_path=glove_path)
+            glove_path=glove_path, wm_hidden=wm_hidden,
+            enc_hidden=enc_hidden, dec_hidden=dec_hidden)
         # `total_loss` reads cfg.loss.dec, so the override lands here and
         # nowhere else; no other weight is touched.
         self.cfg.loss.dec = self.dec_weight
@@ -996,6 +1036,8 @@ class JointScratchTrainer:
         }
         self.cursors: Dict[str, int] = {k: 0 for k in STREAM_NAMES}
         self.global_step = 0
+        # Persisted so a requeue cannot silently restart the ceiling streak.
+        self.consecutive_ceiling = 0
         self.resume_provenance: List[dict] = []
 
     # -------------------------------------------------------------- batches
@@ -1419,6 +1461,22 @@ class JointScratchTrainer:
                 out["full_rep_ltm"] = fr["primary_readout"]["exact_match"]["ltm"]
                 out["full_rep_full"] = fr["primary_readout"]["exact_match"]["full"]
                 out["full_rep_wm"] = fr["primary_readout"]["exact_match"]["wm"]
+                n_rep = len(self.entries)
+                out["full_rep_errors"] = int(round(
+                    (1.0 - out["full_rep_full"]) * n_rep))
+                # GENUINE free-AR repetition, all three routes: the ceiling
+                # criterion requires it alongside the canonical metric.
+                far = self.free_ar_repetition(list(range(n_rep)),
+                                              routes=("full", "wm", "ltm"))
+                out["full_rep_freear"] = far["full"]
+                out["full_rep_freear_wm"] = far["wm"]
+                out["full_rep_freear_ltm"] = far["ltm"]
+                out["full_rep_freear_errors"] = int(round(
+                    (1.0 - far["full"]) * n_rep))
+                # route-health: a saturated gate or a dead ventral route makes
+                # a numerically perfect model scientifically unusable
+                out.update(self.gate_statistics(
+                    list(range(0, n_rep, max(1, n_rep // 4000)))))
                 # Full C/N population evaluation where the cadence used dev
                 # samples (final_full); in legacy modes dev == full subset, so
                 # re-evaluating would only duplicate the regular columns.
@@ -1428,15 +1486,138 @@ class JointScratchTrainer:
                         self.comp_idx, self.device)
                     out["full_comp_top1"] = fc["top1"]
                     out["full_comp_top5"] = fc["top5"]
+                    out["full_comp_rank_median"] = fc["target_rank_median"]
+                    out["full_comp_rank_mean"] = fc["target_rank_mean"]
+                    out["full_comp_cos_mean"] = fc["target_cos_mean"]
+                    out["full_comp_margin_mean"] = fc["margin_mean"]
+                    out["full_comp_errors"] = int(round(
+                        (1.0 - fc["top1"]) * len(self.comp_idx)))
                 if self.dev_naming_idx is not self.naming_idx:
                     fn = evaluate_naming(self.model, self.vocab, self.entries,
                                          self.bank_raw, self.naming_idx,
                                          self.device, NAMING_MAX_STEPS)
                     out["full_naming_exact"] = fn["exact_match"]
                     out["full_naming_wer"] = fn["whole_word_error_rate"]
+                    out["full_naming_mean_edit"] = fn["mean_edit"]
+                    out["full_naming_eos_rate"] = fn["eos_emission_rate"]
+                    out["full_naming_errors"] = int(round(
+                        (1.0 - fn["exact_match"]) * len(self.naming_idx)))
         return out
 
     # ---------------------------------------------------------- checkpoints
+    def parameter_census(self) -> Dict[str, int]:
+        """Trainable parameters by route/module, for the capacity report.
+
+        `named_parameters()` de-duplicates the shared phoneme embedding, which
+        is aliased as both `phon_embed.weight` and `ltm.phon_embed.weight`;
+        it is counted once, under `shared_phon_embed`.
+        """
+        g = {"total": 0, "wm_dorsal": 0, "ltm_encoder": 0,
+             "ltm_to_semantic": 0, "ltm_sem_to_h0": 0, "ltm_decoder": 0,
+             "ltm_dec_to_premotor": 0, "shared_phon_embed": 0,
+             "shared_motor": 0, "gate": 0}
+        for name, prm in self.model.named_parameters():
+            n = prm.numel()
+            g["total"] += n
+            if name.startswith("wm."):
+                g["wm_dorsal"] += n
+            elif name.startswith("ltm.encoder"):
+                g["ltm_encoder"] += n
+            elif name.startswith("ltm.to_semantic"):
+                g["ltm_to_semantic"] += n
+            elif name.startswith("ltm.sem_to_h0."):
+                g["ltm_sem_to_h0"] += n
+            elif name.startswith("ltm.decoder."):
+                g["ltm_decoder"] += n
+            elif name.startswith("ltm.dec_to_premotor."):
+                g["ltm_dec_to_premotor"] += n
+            elif name.startswith(("phon_embed.", "ltm.phon_embed.")):
+                g["shared_phon_embed"] += n
+            elif name.startswith("motor."):
+                g["shared_motor"] += n
+            elif name.startswith("gate."):
+                g["gate"] += n
+        g["ltm_ventral_total"] = (g["ltm_encoder"] + g["ltm_to_semantic"]
+                                  + g["ltm_sem_to_h0"] + g["ltm_decoder"]
+                                  + g["ltm_dec_to_premotor"])
+        return g
+
+    @torch.no_grad()
+    def free_ar_repetition(self, indices: Sequence[int],
+                           routes: Sequence[str] = ("full",),
+                           batch_size: int = 256) -> Dict[str, float]:
+        """GENUINE free-autoregressive repetition: no target-length use.
+
+        The canonical repetition metric (`repetition_snapshot`) is
+        FORCED-LENGTH -- it truncates each item's readout to its own gold
+        length + 1 -- which is legitimate for repetition but leaves an
+        over-generation loophole.  This decodes to a single GLOBAL cap and
+        cuts at the first EOS wherever it falls, so over-generation and
+        non-termination count as errors.  Reported ALONGSIDE the canonical
+        metric; no historical number is restated.
+        """
+        was_training = self.model.training
+        self.model.eval()
+        out: Dict[str, float] = {}
+        for route in routes:
+            ok = 0
+            for lo in range(0, len(indices), batch_size):
+                idx = list(indices[lo:lo + batch_size])
+                forms = [self.entries[i].phonemes for i in idx]
+                max_enc = max(len(f) for f in forms) + 1
+                enc_in = torch.full((len(idx), max_enc), self.vocab.pad_id,
+                                    dtype=torch.long)
+                enc_mask = torch.zeros((len(idx), max_enc), dtype=torch.bool)
+                for k, f in enumerate(forms):
+                    enc_in[k, :len(f) + 1] = torch.tensor(
+                        f + [self.vocab.eos_id])
+                    enc_mask[k, :len(f) + 1] = True
+                enc_in = enc_in.to(self.device)
+                enc_mask = enc_mask.to(self.device)
+                dec = torch.full((len(idx), 1), self.vocab.bos_id,
+                                 dtype=torch.long, device=self.device)
+                for _ in range(FREE_AR_MAX_STEPS):
+                    o = self.model(enc_in, enc_mask, dec)
+                    key = {"full": "logits", "wm": "wm_logits",
+                           "ltm": "ltm_logits"}[route]
+                    nxt = o[key][:, -1, :].argmax(-1, keepdim=True)
+                    dec = torch.cat([dec, nxt], dim=1)
+                    if bool((dec == self.vocab.eos_id).any(dim=1).all()):
+                        break
+                for k, f in enumerate(forms):
+                    seq = dec[k, 1:].tolist()
+                    if self.vocab.eos_id in seq:
+                        seq = seq[:seq.index(self.vocab.eos_id)]
+                    ok += int(seq == f)
+            out[route] = ok / max(len(indices), 1)
+        self.model.train(was_training)
+        return out
+
+    @torch.no_grad()
+    def gate_statistics(self, indices: Sequence[int],
+                        batch_size: int = 256) -> Dict[str, float]:
+        """Route-use diagnostics.  A 100/100/100 model whose gate is
+        saturated, or whose ventral contribution to repetition has collapsed,
+        is numerically at ceiling but is not a usable dual-route model."""
+        was_training = self.model.training
+        self.model.eval()
+        vals: List[torch.Tensor] = []
+        for lo in range(0, len(indices), batch_size):
+            idx = list(indices[lo:lo + batch_size])
+            b = build_batch(self.entries, self.bank_raw, self.vocab, idx,
+                            self.device)
+            o = self.model(b["enc_in"], b["enc_mask"], b["dec_in"])
+            vals.append(o["gate"].detach().reshape(-1).float().cpu())
+        self.model.train(was_training)
+        if not vals:
+            return {}
+        g = torch.cat(vals)
+        return {"gate_mean": float(g.mean()), "gate_std": float(g.std()),
+                "gate_p05": float(g.quantile(0.05)),
+                "gate_p95": float(g.quantile(0.95)),
+                "gate_frac_below_0.05": float((g < 0.05).float().mean()),
+                "gate_frac_above_0.95": float((g > 0.95).float().mean())}
+
     def resolved_settings(self) -> dict:
         """Every scientific value actually in force, for printing and saving."""
         cfg = self.cfg
@@ -1579,6 +1760,8 @@ class JointScratchTrainer:
             "format": "lichtheim3.joint_scratch.v1",
             "regime": self.regime,
             "seed": self.seed,
+            "widths": dict(self.widths),
+            "parameter_census": self.parameter_census(),
             "config": {"data": vars(self.cfg.data), "wm": vars(self.cfg.wm),
                        "ltm": vars(self.cfg.ltm), "gating": vars(self.cfg.gating),
                        "loss": vars(self.cfg.loss), "train": vars(self.cfg.train)},
@@ -1613,6 +1796,7 @@ class JointScratchTrainer:
             "schedule_seed": self.schedule_seed,
             "schedule_ratio": (list(self.ratio) if self.ratio else None),
             "schedule_anchor_step": int(self.schedule_anchor_step),
+            "consecutive_ceiling": int(self.consecutive_ceiling),
             "exposures": self.exposures(),
             "subset_indices": list(self.subset_idx),
             # Explicit per-task population provenance (FINAL-1A).  In
@@ -1684,6 +1868,12 @@ class JointScratchTrainer:
                 and list(ck_ratio) != list(self.ratio or [])):
             raise RuntimeError(
                 f"checkpoint schedule_ratio {ck_ratio} != {self.ratio}")
+        ck_widths = ckpt.get("widths")
+        if ck_widths is not None and dict(ck_widths) != self.widths:
+            raise RuntimeError(
+                f"ARCHITECTURE MISMATCH: checkpoint was trained at widths "
+                f"{dict(ck_widths)}, this trainer is {self.widths}. Widths are "
+                f"never a phase transition -- start a new run instead.")
         ck_naming_hash = ckpt.get("naming_population_sha256")
         if ck_naming_hash is not None and ck_naming_hash != self.naming_hash:
             raise RuntimeError(
@@ -1812,6 +2002,9 @@ class JointScratchTrainer:
         self.schedule_anchor_step = (
             int(ckpt["global_step"]) if "schedule" in changed
             else int(ckpt.get("schedule_anchor_step", 0)))
+        # The ceiling streak is state, not a derived quantity: a requeue must
+        # not silently restart it and turn one lucky evaluation into a stop.
+        self.consecutive_ceiling = int(ckpt.get("consecutive_ceiling", 0))
         self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
         # LR is a pure function of the step counter, so it is re-derived rather
         # than trusted from the file; the optimizer is never reconstructed.
@@ -1865,6 +2058,17 @@ METRIC_COLUMNS = [
     "probe_rep_ltm", "probe_rep_full",
     "full_rep_ltm", "full_rep_full", "full_rep_wm",
     "full_comp_top1", "full_comp_top5", "full_naming_exact", "full_naming_wer",
+    # CAP/FINAL-BASE123 additions: the genuine free-AR repetition metric that
+    # the ceiling criterion requires, explicit error counts, richer full-
+    # population C/N diagnostics, and gate/route-use health.
+    "full_rep_freear", "full_rep_freear_wm", "full_rep_freear_ltm",
+    "full_rep_errors", "full_rep_freear_errors",
+    "full_comp_errors", "full_comp_rank_median", "full_comp_rank_mean",
+    "full_comp_cos_mean",
+    "full_comp_margin_mean",
+    "full_naming_errors", "full_naming_mean_edit", "full_naming_eos_rate",
+    "gate_mean", "gate_std", "gate_p05", "gate_p95",
+    "gate_frac_below_0.05", "gate_frac_above_0.95",
     # FINAL-6: relative divergence of the task banks' first moments; blank
     # under the shared policy, where there is only one bank.
     "m_div_RN", "m_div_RC", "m_div_NC",
@@ -1959,6 +2163,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-words", type=int, default=CANONICAL_MAX_WORDS)
     p.add_argument("--batch-size", type=int, default=CANONICAL_BATCH_SIZE)
     p.add_argument("--dorsal-pool-size", type=int, default=CANONICAL_DORSAL_POOL_SIZE)
+    p.add_argument("--wm-hidden", type=int, default=CANONICAL_HIDDEN,
+                   help="dorsal WM GRU width (FIXED at 128 in the capacity "
+                        "block; the dorsal probe showed no gain above it)")
+    p.add_argument("--enc-hidden", type=int, default=CANONICAL_HIDDEN,
+                   help="ventral LTM encoder width")
+    p.add_argument("--dec-hidden", type=int, default=CANONICAL_HIDDEN,
+                   help="ventral LTM decoder width")
     p.add_argument("--subset-mode",
                    choices=("nested", "representative", FINAL_FULL_MODE),
                    default="nested",
@@ -2010,6 +2221,10 @@ def build_parser() -> argparse.ArgumentParser:
                         "objective. Omitted keeps the canonical 0.5, so every "
                         "earlier run is unaffected; FINAL-8P uses 2.0. "
                         "Changing it on resume is a phase transition.")
+    p.add_argument("--stop-at-ceiling", action="store_true",
+                   help="stop after CEILING_CONSECUTIVE_REQUIRED consecutive "
+                        "scheduled full evaluations with canonical rep, "
+                        "free-AR rep, naming and strict C all exactly 1.0")
     p.add_argument("--phase-transition", action="store_true",
                    help="declare deliberately that this launch changes the "
                         "learning-rate policy of the checkpoint it resumes, "
@@ -2127,7 +2342,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         task_lrs=task_lrs_from_args(args),
         allow_phase_transition=args.phase_transition,
         optimizer_policy=args.optimizer_policy,
-        dec_weight=args.dec_weight)
+        dec_weight=args.dec_weight,
+        wm_hidden=args.wm_hidden, enc_hidden=args.enc_hidden,
+        dec_hidden=args.dec_hidden)
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)
@@ -2240,6 +2457,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     metrics = os.path.join(run_dir, "metrics.tsv")
     losses_tsv = os.path.join(run_dir, "logs", "losses.tsv")
 
+    consecutive_ceiling = trainer.consecutive_ceiling
+    ceiling_reached = False
     full_eval_steps = settings["full_eval_at"]
     if full_eval_steps:
         print(f"[joint_scratch] milestone full evaluations at steps "
@@ -2250,7 +2469,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         append_metrics(metrics, trainer.evaluate())
         last_eval = (trainer.global_step, False)
 
-    while trainer.global_step < total_steps:
+    while trainer.global_step < total_steps and not ceiling_reached:
         rec = trainer.train_step()
         if args.log_every and trainer.global_step % args.log_every == 0:
             append_losses(losses_tsv, rec)
@@ -2278,8 +2497,30 @@ def main(argv: Optional[List[str]] = None) -> int:
             saved_this_step = True
             print(f"  [MILESTONE @ {row['step']}] "
                   f"full_rep={row['full_rep_full']:.6f} "
+                  f"full_rep_freeAR={row.get('full_rep_freear', float('nan')):.6f} "
                   f"full_naming={row['full_naming_exact']:.6f} "
-                  f"full_comp_top1={row['full_comp_top1']:.6f}", flush=True)
+                  f"full_comp_top1={row['full_comp_top1']:.6f} "
+                  f"| LTM_rep={row['full_rep_ltm']:.6f} "
+                  f"gate_mean={row.get('gate_mean', float('nan')):.4f}",
+                  flush=True)
+            # NUMERICAL early stop: two CONSECUTIVE scheduled full evaluations
+            # at 100/100/100/100.  Any shortfall resets the counter, so a
+            # single lucky evaluation can never end a run.
+            if args.stop_at_ceiling:
+                if at_ceiling(row):
+                    consecutive_ceiling += 1
+                    trainer.consecutive_ceiling = consecutive_ceiling
+                    print(f"  [CEILING] all four full readouts == 1.0 "
+                          f"({consecutive_ceiling} consecutive)", flush=True)
+                else:
+                    if consecutive_ceiling:
+                        print("  [CEILING] streak reset", flush=True)
+                    consecutive_ceiling = 0
+                    trainer.consecutive_ceiling = 0
+                if consecutive_ceiling >= CEILING_CONSECUTIVE_REQUIRED:
+                    print(f"  [STOP] {CEILING_CONSECUTIVE_REQUIRED} consecutive "
+                          f"full evaluations at ceiling; stopping.", flush=True)
+                    ceiling_reached = True
         elif args.eval_every and trainer.global_step % args.eval_every == 0:
             probed = bool(args.probe_every
                           and trainer.global_step % args.probe_every == 0)
