@@ -21,7 +21,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from scripts.naming_comprehension.c_error_audit import (                 # noqa: E402
-    COLUMNS, MARGIN_EPS, NEIGHBOUR_COS, main as audit_main,
+    COLUMNS, MARGIN_EPS, NEIGHBOUR_COS, classify_error, main as audit_main,
 )
 from scripts.naming_comprehension.route_capacity_probe import (          # noqa: E402
     LR_BOUNDARY_EXPOSURES, LR_STAGE1, LR_STAGE2, ROUTE_COMPREHENSION,
@@ -194,50 +194,75 @@ def test_error_audit_lists_every_top1_error_with_the_required_fields(tmp_path):
     assert margins == sorted(margins, reverse=True)
 
 
-def test_audit_taxonomy_separates_homophones_and_duplicate_vectors(tmp_path):
-    """Force each diagnostic category on a controlled bank."""
-    from scripts.naming_comprehension import c_error_audit as mod
+def test_only_a_lower_indexed_identical_vector_is_unavoidable():
+    """The impossibility rule.  A homophone is NOT impossible: the C
+    population designates one canonical target per phonology, so the mapping
+    is a deterministic function an encoder can learn."""
+    # identical vector at a LOWER index -> argmax can never pick the target
+    cat, un = classify_error(dup_group=[5, 9], target_index=9,
+                             same_phon=False, margin=-0.5, glove_cos=0.0)
+    assert (cat, un) == ("unavoidable_tie", True)
+    # identical vector at a HIGHER index -> target still reachable
+    cat, un = classify_error(dup_group=[9, 12], target_index=9,
+                             same_phon=False, margin=-0.5, glove_cos=0.0)
+    assert (cat, un) == ("duplicate_vector", False)
+    # a homophone competitor is reported, never excused
+    cat, un = classify_error(dup_group=[9], target_index=9, same_phon=True,
+                             margin=-0.5, glove_cos=0.9)
+    assert (cat, un) == ("homophone_competitor", False)
+    assert un is False, "homophony must never be called impossible"
+    for kw, expect in (
+            (dict(same_phon=False, margin=-0.001, glove_cos=0.0), "near_tie"),
+            (dict(same_phon=False, margin=-0.5, glove_cos=0.9),
+             "semantic_neighbour"),
+            (dict(same_phon=False, margin=-0.5, glove_cos=0.1), "far_miss")):
+        cat, un = classify_error(dup_group=[9], target_index=9, **kw)
+        assert cat == expect and un is False
+
+
+def test_audit_rows_agree_with_the_classifier_and_flag_columns(tmp_path):
     out = str(tmp_path / "runs")
     assert main(["--route", "comprehension", "--enc-hidden", "64",
                  "--out-dir", out, "--run-id", "c",
                  "--eval-exposures", "1", "--max-exposures", "1"] + ARGS) == 0
-    ck_path = os.path.join(out, "c", "checkpoints", "step_00000049.pt")
-
-    def classify(same_phon, identical, margin, glove_cos):
-        if identical:
-            return "duplicate_semantic"
-        if same_phon:
-            return "homophone"
-        if margin > -MARGIN_EPS:
-            return "near_tie"
-        if glove_cos >= NEIGHBOUR_COS:
-            return "semantic_neighbour"
-        return "far_miss"
-
-    assert classify(True, True, -1.0, 0.0) == "duplicate_semantic"
-    assert classify(True, False, -1.0, 0.0) == "homophone"
-    assert classify(False, False, -0.001, 0.0) == "near_tie"
-    assert classify(False, False, -0.5, 0.9) == "semantic_neighbour"
-    assert classify(False, False, -0.5, 0.1) == "far_miss"
-    assert mod.MARGIN_EPS == 0.01 and mod.NEIGHBOUR_COS == 0.60
-
     adir = str(tmp_path / "audit")
-    assert audit_main(["--ckpt", ck_path, "--out-dir", adir,
-                       "--max-words", "400", "--glove-path",
-                       "tests/_no_such_glove_file.txt",
+    assert audit_main(["--ckpt", os.path.join(out, "c", "checkpoints",
+                                              "step_00000049.pt"),
+                       "--out-dir", adir, "--max-words", "400",
+                       "--glove-path", "tests/_no_such_glove_file.txt",
                        "--allow-glove-fallback",
                        "--no-population-hash-check"]) == 0
     rows = list(csv.DictReader(
         open(os.path.join(adir, "c512_top1_errors.tsv")), delimiter="\t"))
+    summary = json.load(open(os.path.join(adir, "c512_error_summary.json")))
+    for c in ("mathematically_unavoidable", "duplicate_vector_group_size",
+              "homophone_group_words", "is_homophone_of_target"):
+        assert c in COLUMNS and c in rows[0]
+    # an unavoidable row must carry an identical-vector competitor
     for r in rows:
-        assert r["category"] == classify(
-            bool(int(r["is_homophone_of_target"])),
-            bool(int(r["identical_glove_vectors"])),
-            float(r["margin_target_minus_top1"]),
-            float(r["pred_target_glove_cos"]))
-        # a homophone row must really share the phoneme string
-        if int(r["is_homophone_of_target"]):
-            assert r["target_phonemes"] == r["pred_phonemes"]
+        if int(r["mathematically_unavoidable"]):
+            assert int(r["duplicate_vector_group_size"]) > 1
+            assert r["category"] == "unavoidable_tie"
+    assert summary["mathematically_unavoidable_errors"] == sum(
+        int(r["mathematically_unavoidable"]) for r in rows)
+    mo = summary["margin_of_errors"]
+    assert mo["min"] <= mo["median"] <= mo["max"] < 0
+    assert sum(q["errors"] for q in
+               summary["frequency_effect"]["error_rate_by_frequency_quintile"]
+               ) == len(rows)
+    assert sum(l["errors"] for l in
+               summary["length_effect"]["error_rate_by_phon_length"]
+               ) == len(rows)
+
+
+def test_audit_job_is_read_only_and_targets_the_best_checkpoint():
+    t = script("scripts/cluster/jeanzay/cap4_c_error_audit.slurm")
+    assert "step_00438000.pt" in t
+    assert "cap3_c_enc512_seed22_full" in t
+    assert "c_error_audit.py" in t
+    assert "--device cuda" in t
+    assert "--time=00:30:00" in t
+    assert "route_capacity_probe" not in t, "the audit must not train"
 
 
 def test_audit_refuses_a_non_comprehension_checkpoint(tmp_path):
