@@ -59,6 +59,17 @@ def ck(out, run_id, step):
     return os.path.join(out, run_id, "checkpoints", f"step_{step:08d}.pt")
 
 
+def _fresh(enc=64, dec=64):
+    return JointScratchTrainer(
+        regime="j0", seed=19, device="cpu", max_words=400, batch_size=8,
+        lexicon_path="data/lexicon_en_glove_covered.tsv", dorsal_pool_size=32,
+        subset_mode="final_full", subset_per_band=822, subset_size=32,
+        lr_boundary_steps=6, allow_glove_fallback=True,
+        require_subset_hash=False, schedule=INTERLEAVED_123,
+        glove_path="tests/_no_such_glove_file.txt",
+        enc_hidden=enc, dec_hidden=dec)
+
+
 # ================================  training code is unchanged since u500 ===
 
 def test_driver_diff_since_u500_is_stopping_control_only():
@@ -118,11 +129,21 @@ def test_no_runtime_imported_file_changed_since_u500():
     # relative imports inside models/ are followed explicitly
     order += ["models/wm_route.py", "models/ltm_route.py", "models/gating.py",
               "models/motor.py"]
-    changed = [r for r in sorted(set(order))
+    # The DRIVER itself is deliberately excluded here: it does change (the
+    # ceiling rule and milestone-save ordering), and its diff is constrained
+    # by test_driver_diff_since_u500_is_stopping_control_only.  Every OTHER
+    # module the driver imports must be bitwise identical -- no loss, model,
+    # sampler, optimizer or data file may move.
+    others = sorted(set(order) - {DRIVER})
+    changed = [r for r in others
                if git("rev-parse", f"{COMMIT_U500}:{r}")
                != git("rev-parse", f"HEAD:{r}")]
     assert not changed, f"runtime-imported files changed: {changed}"
-    assert len(set(order)) >= 15
+    assert len(others) >= 14
+    for critical in ("losses.py", "models/dual_route.py", "models/wm_route.py",
+                     "models/ltm_route.py", "data/lexicon.py", "config.py",
+                     "scripts/naming_comprehension/train_tasks.py"):
+        assert critical in others, critical
 
 
 def test_launcher_pins_the_driver_blob_not_just_the_commit():
@@ -497,3 +518,173 @@ def test_launcher_l3_repo_guards_execute(tmp_path):
                        env=env)
     assert r.returncode == 1
     assert "is not a git worktree" in r.stdout + r.stderr
+
+
+# ==============  milestone ordering: checkpoint carries POST-eval state  ===
+
+def _always_ceiling(monkeypatch, value=True):
+    from scripts.naming_comprehension import train_joint_scratch as m
+    monkeypatch.setattr(m, "at_ceiling", lambda row: value)
+
+
+def _run(out, run_id, *, max_steps, full_eval_at, resume=None, required=5,
+         stop=True, save_every=None):
+    # Width 64, not the production 512: the streak/resume logic is entirely
+    # width-independent, and 512 checkpoints are ~15x larger for no added
+    # coverage.  Later argparse values win, so this overrides ARGS.
+    argv = ARGS + ["--enc-hidden", "64", "--dec-hidden", "64",
+                   "--seed", "19", "--out-dir", out, "--run-id", run_id,
+                   "--max-steps", str(max_steps),
+                   "--save-every", str(save_every or max_steps),
+                   "--full-eval-at", full_eval_at,
+                   "--ceiling-consecutive-required", str(required)]
+    if stop:
+        argv += ["--stop-at-ceiling"]
+    if resume:
+        argv += ["--resume", resume]
+    from scripts.naming_comprehension import train_joint_scratch as m
+    return m.main(argv)
+
+
+def _state(out, run_id, step):
+    c = torch.load(ck(out, run_id, step), map_location="cpu",
+                   weights_only=False)
+    return c["consecutive_ceiling"], c["last_ceiling_step"], c["global_step"]
+
+
+def test_milestone_checkpoint_holds_the_post_evaluation_streak(tmp_path,
+                                                               monkeypatch):
+    """The bug: the checkpoint used to be saved BEFORE the streak update, so
+    it persisted the PREVIOUS streak and, because saved_this_step suppresses
+    the save_every branch, the stale value was never corrected."""
+    _always_ceiling(monkeypatch)
+    out = str(tmp_path / "runs")
+    assert _run(out, "m", max_steps=36, full_eval_at="12,24,36") == 0
+    assert _state(out, "m", 12) == (1, 12, 12)
+    assert _state(out, "m", 24) == (2, 24, 24)
+    assert _state(out, "m", 36) == (3, 36, 36)
+
+
+def test_first_ceiling_milestone_restores_streak_one(tmp_path, monkeypatch):
+    _always_ceiling(monkeypatch)
+    out = str(tmp_path / "runs")
+    assert _run(out, "one", max_steps=12, full_eval_at="12") == 0
+    tr = _fresh()
+    tr.load_state_dict(torch.load(ck(out, "one", 12), map_location="cpu",
+                                  weights_only=False))
+    assert tr.consecutive_ceiling == 1 and tr.last_ceiling_step == 12
+
+
+def test_split_after_three_ceiling_milestones_restores_three(tmp_path,
+                                                             monkeypatch):
+    _always_ceiling(monkeypatch)
+    out = str(tmp_path / "runs")
+    assert _run(out, "s", max_steps=36, full_eval_at="12,24,36") == 0
+    tr = _fresh()
+    tr.load_state_dict(torch.load(ck(out, "s", 36), map_location="cpu",
+                                  weights_only=False))
+    assert tr.consecutive_ceiling == 3 and tr.last_ceiling_step == 36
+
+
+def test_after_resume_the_next_distinct_milestone_becomes_four(tmp_path,
+                                                               monkeypatch):
+    _always_ceiling(monkeypatch)
+    out = str(tmp_path / "runs")
+    assert _run(out, "a", max_steps=36, full_eval_at="12,24,36") == 0
+    assert _run(out, "b", max_steps=48, full_eval_at="48",
+                resume=ck(out, "a", 36)) == 0
+    assert _state(out, "b", 48) == (4, 48, 48), \
+        "the resumed streak must continue at 4, not restart or repeat 3"
+
+
+def test_resume_at_the_requirement_takes_zero_optimizer_steps(tmp_path,
+                                                              monkeypatch):
+    _always_ceiling(monkeypatch)
+    out = str(tmp_path / "runs")
+    assert _run(out, "five", max_steps=60, full_eval_at="12,24,36,48,60") == 0
+    streak, last, step = _state(out, "five", 60)
+    assert (streak, last, step) == (5, 60, 60)
+
+    before = sorted(os.listdir(os.path.join(out, "five", "checkpoints")))
+    metrics = os.path.join(out, "five", "metrics.tsv")
+    m_before = open(metrics).read()
+    # resume with a LARGER budget: it must refuse to take a single step
+    assert _run(out, "five", max_steps=120, full_eval_at="72,84",
+                resume=ck(out, "five", 60)) == 0
+    after = sorted(os.listdir(os.path.join(out, "five", "checkpoints")))
+    assert after == before, "a no-op resume must not write a checkpoint"
+    assert open(metrics).read() == m_before, \
+        "a no-op resume must not append an evaluation row"
+
+
+def test_a_failed_milestone_persists_the_reset(tmp_path, monkeypatch):
+    from scripts.naming_comprehension import train_joint_scratch as m
+    out = str(tmp_path / "runs")
+    seen = {"n": 0}
+
+    def flaky(row):                 # ceiling, ceiling, then a shortfall
+        seen["n"] += 1
+        return seen["n"] < 3
+
+    monkeypatch.setattr(m, "at_ceiling", flaky)
+    assert _run(out, "f", max_steps=36, full_eval_at="12,24,36") == 0
+    assert _state(out, "f", 12) == (1, 12, 12)
+    assert _state(out, "f", 24) == (2, 24, 24)
+    assert _state(out, "f", 36) == (0, 36, 36), "the reset must be persisted"
+    tr = _fresh()
+    tr.load_state_dict(torch.load(ck(out, "f", 36), map_location="cpu",
+                                  weights_only=False))
+    assert tr.consecutive_ceiling == 0
+
+
+def test_re_evaluating_the_same_step_cannot_alter_the_persisted_streak(
+        tmp_path, monkeypatch):
+    """A requeue that lands on an already-counted milestone must neither
+    increment nor reset, even if the evaluation now fails."""
+    _always_ceiling(monkeypatch)
+    out = str(tmp_path / "runs")
+    assert _run(out, "r", max_steps=24, full_eval_at="12,24") == 0
+    assert _state(out, "r", 24) == (2, 24, 24)
+
+    from scripts.naming_comprehension import train_joint_scratch as m
+    monkeypatch.setattr(m, "at_ceiling", lambda row: False)
+    # resume AT step 24 and schedule a milestone at 24 again (already counted)
+    assert _run(out, "r2", max_steps=36, full_eval_at="24,36",
+                resume=ck(out, "r", 24)) == 0
+    # step 24 is never re-reached in-loop (the loop increments first), and the
+    # persisted streak is carried forward untouched into the next milestone,
+    # where the failing evaluation legitimately resets it
+    s36, l36, _ = _state(out, "r2", 36)
+    assert l36 == 36 and s36 == 0
+    tr = _fresh()
+    tr.load_state_dict(torch.load(ck(out, "r", 24), map_location="cpu",
+                                  weights_only=False))
+    assert tr.consecutive_ceiling == 2, "the source checkpoint was mutated"
+
+
+def test_stopping_control_does_not_change_training(tmp_path, monkeypatch):
+    """Training dynamics must be identical whether or not the ceiling
+    machinery is active -- the fix is evaluation/stopping control only."""
+    _always_ceiling(monkeypatch, value=False)   # never stop
+    out = str(tmp_path / "runs")
+    assert _run(out, "with", max_steps=24, full_eval_at="24", stop=True) == 0
+    assert _run(out, "without", max_steps=24, full_eval_at="24",
+                stop=False) == 0
+    a = torch.load(ck(out, "with", 24), map_location="cpu", weights_only=False)
+    b = torch.load(ck(out, "without", 24), map_location="cpu",
+                   weights_only=False)
+    sa, sb = a["model_state_dict"], b["model_state_dict"]
+    assert not [k for k in sa if not torch.equal(sa[k], sb[k])]
+    oa, ob = a["optimizer_state_dict"]["state"], b["optimizer_state_dict"]["state"]
+    for i in oa:
+        for mkey in ("exp_avg", "exp_avg_sq"):
+            assert torch.equal(oa[i][mkey], ob[i][mkey])
+    assert a["cursors"] == b["cursors"]
+
+
+def test_milestone_is_checkpointed_even_without_stop_at_ceiling(tmp_path):
+    out = str(tmp_path / "runs")
+    assert _run(out, "nostop", max_steps=24, full_eval_at="12,24",
+                stop=False) == 0
+    assert os.path.exists(ck(out, "nostop", 12))
+    assert os.path.exists(ck(out, "nostop", 24))

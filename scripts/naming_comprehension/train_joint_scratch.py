@@ -2480,11 +2480,26 @@ def main(argv: Optional[List[str]] = None) -> int:
     if required < 1:
         raise SystemExit("--ceiling-consecutive-required must be >= 1")
     consecutive_ceiling = trainer.consecutive_ceiling
-    ceiling_reached = False
+    # A checkpoint whose persisted streak already meets the requirement has
+    # ALREADY satisfied the stopping criterion.  Initialising the flag from
+    # the restored state -- rather than from False -- is what guarantees that
+    # such a resume takes ZERO optimizer steps instead of training one more
+    # milestone before noticing.
+    ceiling_reached = bool(args.stop_at_ceiling
+                           and consecutive_ceiling >= required)
     full_eval_steps = settings["full_eval_at"]
     if full_eval_steps:
         print(f"[joint_scratch] milestone full evaluations at steps "
               f"{full_eval_steps}")
+
+    if ceiling_reached:
+        print(f"[joint_scratch] resumed checkpoint already satisfies the "
+              f"ceiling criterion ({consecutive_ceiling} >= {required} "
+              f"consecutive full evaluations at 100/100/100/100); taking NO "
+              f"optimizer step and writing no further evaluation.", flush=True)
+        print(f"[joint_scratch] done: {trainer.global_step} steps "
+              f"(no-op resume) -> {run_dir}")
+        return 0
 
     last_eval: tuple = (None, None)          # (step, probe_included)
     if args.eval_at_start:
@@ -2535,8 +2550,6 @@ def main(argv: Optional[List[str]] = None) -> int:
             row = trainer.evaluate(with_probe=True, with_full_lexicon=True)
             append_metrics(metrics, row)
             last_eval = (trainer.global_step, True)
-            torch.save(trainer.state_dict(), ckpt_path(run_dir, trainer.global_step))
-            saved_this_step = True
             print(f"  [MILESTONE @ {row['step']}] "
                   f"full_rep={row['full_rep_full']:.6f} "
                   f"full_rep_freeAR={row.get('full_rep_freear', float('nan')):.6f} "
@@ -2575,6 +2588,17 @@ def main(argv: Optional[List[str]] = None) -> int:
                     print(f"  [STOP] {required} consecutive full evaluations "
                           f"at ceiling; stopping.", flush=True)
                     ceiling_reached = True
+            # The milestone checkpoint is written LAST, so it carries the
+            # POST-evaluation ceiling state.  Saving it before the accounting
+            # would persist the PREVIOUS streak and last_ceiling_step, and
+            # because saved_this_step suppresses the save_every branch the
+            # stale values would never be corrected -- a requeue would then
+            # resume with a streak one short of the truth.  The save is
+            # unconditional, so a milestone is checkpointed even when
+            # --stop-at-ceiling is off.
+            torch.save(trainer.state_dict(),
+                       ckpt_path(run_dir, trainer.global_step))
+            saved_this_step = True
         elif args.eval_every and trainer.global_step % args.eval_every == 0:
             probed = bool(args.probe_every
                           and trainer.global_step % args.probe_every == 0)

@@ -107,13 +107,16 @@ test -f data/glove.6B.300d.txt || { echo "FATAL: real GloVe missing"; exit 1; }
 #
 # The driver differs from the u0-u500 blob (e6c48ff8f4569c16af1773211d1d6a72
 # d92307ea) in STOPPING/EVALUATION CONTROL ONLY: the ceiling requirement is
-# now a CLI value defaulting to 5 instead of a hard-coded 2, and a milestone
-# step already counted toward the streak can no longer be counted twice.
+# now a CLI value defaulting to 5 instead of a hard-coded 2; a milestone step
+# already counted toward the streak can no longer be counted twice; the
+# milestone checkpoint is written AFTER the streak is updated so it persists
+# the post-evaluation state; and a resume whose streak already meets the
+# requirement takes zero optimizer steps.
 # No optimizer, loss, sampler, schedule, LR or data path is touched, and the
 # training updates produced before any stop are bitwise identical -- verified
 # by running both versions and comparing checkpoints (see
 # tests/test_base123_continue750.py).
-TRAIN_BLOB_EXPECTED=ad3d6fe100cfd8da430aabe32cb98f44e90b35bf
+TRAIN_BLOB_EXPECTED=24742adf9f13c205673a3f8ff1f34bdce7a45e58
 GOT_BLOB=$(git rev-parse HEAD:scripts/naming_comprehension/train_joint_scratch.py)
 [[ "$GOT_BLOB" == "$TRAIN_BLOB_EXPECTED" ]] || {
     echo "FATAL: training driver blob $GOT_BLOB != expected $TRAIN_BLOB_EXPECTED"
