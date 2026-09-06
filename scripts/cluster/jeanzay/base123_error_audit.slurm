@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=l3_b123_errs
+#SBATCH --job-name=l3_b123_errs750
 #SBATCH --account=llg@v100
 #SBATCH --partition=gpu_p13
 #SBATCH --qos=qos_gpu-t3
@@ -17,13 +17,18 @@
 # Read-only per-item R/N/C error audit of the FINAL base-123 endpoints.
 # Trains nothing; writes only <run>/error_audit_u<U>/.
 #
-#   array 0-3 : H512 seeds 19,20,21,22 at u=500  (step 1,389,000)
-#   array 4-7 : H512 seeds 19,20,21,22 at u=400  (step 1,111,200)
+#   array 0-3 : H512 seeds 19,20,21,22 at u=600  (step 1,666,800)
+#   array 4-7 : H512 seeds 19,20,21,22 at u=750  (step 2,083,500)
 #
-# The u400 pass is what makes the u400-vs-u500 overlap analysis possible,
-# which is the discriminator between a moving error frontier and a stable
-# systematic set.  Override the width with L3_AUDIT_WIDTH=256 to audit the
-# H256 arm instead.
+# These are the two preregistered post-continuation audit points.  Together
+# with the already-completed u400 and u500 audits they give the within-seed
+# persistence chain u500 -> u600 -> u750 and the across-seed structure at
+# u750, which is what decides whether the residual has become a small stable
+# near-tie core (margin/hard-negative trigger) or is still a moving frontier.
+# Override the width with L3_AUDIT_WIDTH=256 to audit the H256 arm instead.
+#
+# READ-ONLY: loads a checkpoint, re-runs the committed evaluations, and writes
+# only <run>/error_audit_u<U>/.  No training, no checkpoint is modified.
 # ===========================================================================
 set -euo pipefail
 module purge
@@ -35,7 +40,7 @@ RUNS=${L3_RUNS:-/lustre/fsn1/projects/rech/llg/uss35bp/lichtheim3_runs}
 W=${L3_AUDIT_WIDTH:-512}
 
 SEEDS=(19 20 21 22 19 20 21 22)
-STEPS=(1389000 1389000 1389000 1389000 1111200 1111200 1111200 1111200)
+STEPS=(1666800 1666800 1666800 1666800 2083500 2083500 2083500 2083500)
 IDX=${SLURM_ARRAY_TASK_ID:?must run as an array job}
 SEED=${SEEDS[$IDX]}; STEP=${STEPS[$IDX]}
 U=$(( STEP / (463*6) ))
