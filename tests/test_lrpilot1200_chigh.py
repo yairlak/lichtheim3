@@ -1,4 +1,4 @@
-"""Acceptance tests for the u850 -> u950 C-high LR pilot.
+"""Acceptance tests for the u850 -> u1200 C-high LR pilot.
 
 Two arms branch from the same 3e-5 u850 state.  Repetition and naming stay at
 3e-5 in both; only the COMPREHENSION task LR moves (3e-5 -> 1e-4).  The tests
@@ -24,10 +24,11 @@ from scripts.naming_comprehension.train_joint_scratch import (           # noqa:
     main,
 )
 
-JOB = "scripts/cluster/jeanzay/final_lrpilot950_u850_to_u950.slurm"
+JOB = "scripts/cluster/jeanzay/final_lrpilot_u850_to_u1200.slurm"
 PREV = "scripts/cluster/jeanzay/final_lrpilot_u750_to_u850.slurm"
 R_PASS, CYCLE = 463, 6
-U850, U950 = 2_361_300, 2_639_100
+U850, U1200 = 2_361_300, 3_333_600
+GRID_US = list(range(875, 1201, 25))
 
 BASE = ["--regime", "j0", "--subset-mode", "final_full", "--device", "cpu",
         "--max-words", "400", "--batch-size", "8", "--dorsal-pool-size", "32",
@@ -218,7 +219,7 @@ def test_job_maps_two_arms_four_seeds():
     assert "ARMS=(all3e5 all3e5 all3e5 all3e5 chigh chigh chigh chigh)" in t
     assert "LR_C=(3e-5 3e-5 3e-5 3e-5 1e-4 1e-4 1e-4 1e-4)" in t
     assert "SEEDS=(19 20 21 22 19 20 21 22)" in t
-    assert 'RUN_ID="final_lrpilot950_${ARM}_h512_s${SEED}"' in t
+    assert 'RUN_ID="final_lrpilot1200_${ARM}_h512_s${SEED}"' in t
     assert len(set(zip(["all3e5"] * 4 + ["chigh"] * 4,
                        [19, 20, 21, 22] * 2))) == 8
 
@@ -241,31 +242,47 @@ def test_job_holds_r_and_n_fixed_and_moves_only_c():
     assert 'REPO="$L3_REPO"' in ex and 'REPO=${L3_REPO:-' not in ex
 
 
-def test_job_pins_source_and_grid():
+def test_job_pins_source_and_the_full_u1200_grid():
     t = script()
-    assert "SOURCE_STEP=2361300" in t and "MAX_STEPS=2639100" in t
-    assert "FULL_EVAL_AT=2430750,2500200,2569650,2639100" in t
+    assert "SOURCE_STEP=2361300" in t and "MAX_STEPS=3333600" in t
     assert 'PARENT_RUN_ID="final_lrpilot_3e5_h512_s${SEED}"' in t
     assert 'int(ck["cursors"]["repetition"]) == 393550' in t
     assert 'abs(float(p[t]) - 3e-5) < 1e-12' in t, \
         "the source must be verified to be the 3e-5 arm"
     assert "L3_U850_SHA" in t and "sha256sum" in t
-    for u, step in ((850, U850), (875, 2_430_750), (900, 2_500_200),
-                    (925, 2_569_650), (950, U950)):
-        assert u * R_PASS * CYCLE == step
-        assert step % 69450 == 0
+    # the grid is every 25u from u875 to u1200: 14 milestones, in order,
+    # each an exact SAVE_EVERY multiple
+    expected = [u * R_PASS * CYCLE for u in GRID_US]
+    assert len(expected) == 14
+    assert f"FULL_EVAL_AT={','.join(str(s) for s in expected)}" in t
+    assert expected == sorted(expected)
+    for s in expected:
+        assert s % 69450 == 0
+    assert expected[0] == 2_430_750 and expected[-1] == U1200
+    assert U850 == 850 * R_PASS * CYCLE
+    # the horizon is 350u past the source
+    assert (U1200 - U850) // (R_PASS * CYCLE) == 350
+
+
+def test_horizon_allows_the_five_milestone_ceiling_rule_to_fire():
+    """Over four milestones the rule could not fire at all; over fourteen it
+    can, so an early stop here is a genuine stable-ceiling result."""
+    t = script()
+    assert "CEILING_REQUIRED=5" in t
+    assert len(GRID_US) >= 5
+    assert "CAN fire" in t
 
 
 def test_job_cannot_write_into_any_parent_lineage():
     t = script()
     assert '[[ "$RUN_ID" != final_base123_* ]]' in t
     assert '[[ "$RUN_ID" != "$PARENT_RUN_ID" ]]' in t
-    assert "final_lrpilot950_all3e5_h512_s19" in t
-    assert "final_lrpilot950_chigh_h512_s22" in t
+    assert "final_lrpilot1200_all3e5_h512_s19" in t
+    assert "final_lrpilot1200_chigh_h512_s22" in t
     assert "READ ONLY" in t
 
 
 def test_previous_pilot_script_is_untouched():
     t = script(PREV)
     assert "MAX_STEPS=2361300" in t
-    assert "2639100" not in t
+    assert "3333600" not in t and "2639100" not in t
