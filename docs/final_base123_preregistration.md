@@ -29,8 +29,8 @@ C 1585.62 — C is 3u × 463/438, not 3u). No automatic continuation.
 
 Full evaluations at u = 0, 25, 50, 100, 150, 200, 300, 400, 500.
 
-**Numerical stop** only when TWO CONSECUTIVE scheduled full evaluations have
-all four exactly 1.0: canonical (forced-length) repetition, GENUINE free-AR
+**Numerical stop** only when CEILING_CONSECUTIVE_REQUIRED consecutive,
+DISTINCT, scheduled full evaluations have all four exactly 1.0: canonical (forced-length) repetition, GENUINE free-AR
 repetition, free greedy AR naming, strict canonical C top-1. Any shortfall
 resets the streak; the streak is checkpointed so a requeue cannot restart it.
 
@@ -101,3 +101,31 @@ retrieval-based comprehension objective.
 Avoid: "faithful implementation of Ueno's training algorithm", "exact Ueno
 optimizer", "exact Lichtheim 2 training regime", or bare "Ueno schedule".
 The fidelity is to the experience/presentation principle, not the algorithm.
+
+
+---
+
+## Amendment 1 (before the u500 -> u750 continuation)
+
+The ceiling requirement is raised from **2 to 5** consecutive DISTINCT
+scheduled full-lexicon evaluations, so that a claimed 100/100/100 is
+demonstrably stable rather than a lucky pair.  `at_ceiling()` is unchanged:
+canonical repetition, genuine free-AR repetition, genuine free-AR naming and
+strict canonical C top-1 must all be exactly 1.0 in the same evaluation, and
+any shortfall resets the streak to zero.
+
+This is an early-stopping / evaluation-control change only.  No training
+dynamic changes: same model, shared AdamW and moments, RNG, cursors, 1:2:3
+schedule, LR 1e-4, losses, lambda_C 0.087, tau 0.10, samplers, architecture
+and data.  Training updates before the stop are bitwise identical to the
+u0-u500 code, verified by running both versions and comparing checkpoints.
+
+The completed u0-u500 block ran under the old value of 2, which never fired
+(no run reached ceiling), so no executed trajectory is affected.
+
+Consequence for the continuation, accepted deliberately: within u550..u750
+there are only five scheduled milestones, so a stop can occur at u750 only if
+the model is at ceiling at u550 and stays there throughout.  If ceiling begins
+later, the leg ends at u750 with a persisted streak < 5 and does NOT qualify
+as stable ceiling; accumulating five distinct milestones would then require a
+further continuation.

@@ -56,6 +56,13 @@
 #     the SAME operation and no branch/warm-start code path is involved
 #   - stream seeds are re-derived from the seed and then VERIFIED against the
 #     checkpoint, so the samplers cannot silently differ
+#
+# STOPPING RULE: 5 consecutive DISTINCT scheduled full evaluations at
+# 100/100/100/100 (raised from 2).  Within this leg there are exactly five
+# milestones, so a stop can occur at u750 only if the model is at ceiling at
+# u550 and stays there through u600/u650/u700/u750.  If ceiling begins later,
+# the leg ends at u750 with a persisted streak < 5 and does NOT qualify as a
+# stable ceiling; a further continuation would be needed.  This is intended.
 # The u0-u500 block is independently archived in STORE regardless.
 #
 # STATE PRESERVED EXACTLY (all restored by load_state_dict): model, the ONE
@@ -75,7 +82,17 @@ module purge
 module load pytorch-gpu/py3/2.6.0
 module load git
 
-REPO=${L3_REPO:-/lustre/fswork/projects/rech/llg/uss35bp/lichtheim3/lichtheim3}
+# L3_REPO is MANDATORY.  The first continuation attempt failed safely because
+# a default checkout was used while L3_EXPECTED_COMMIT pointed elsewhere; the
+# fallback is removed so the pinned worktree must be named explicitly and the
+# job can never silently run from the historical checkout.
+[[ -n "${L3_REPO:-}" ]] || {
+    echo "FATAL: L3_REPO must be exported to the pinned continuation worktree"
+    exit 1
+}
+REPO="$L3_REPO"
+[[ -d "$REPO/.git" || -f "$REPO/.git" ]] || {
+    echo "FATAL: L3_REPO=$REPO is not a git worktree"; exit 1; }
 cd "$REPO"
 HEAD=$(git rev-parse HEAD)
 echo "== repo $REPO @ $HEAD ($(git branch --show-current))"
@@ -84,15 +101,24 @@ test -f data/glove.6B.300d.txt || { echo "FATAL: real GloVe missing"; exit 1; }
 [[ -n "${L3_EXPECTED_COMMIT:-}" ]] || { echo "FATAL: export L3_EXPECTED_COMMIT"; exit 1; }
 [[ "$HEAD" == "$L3_EXPECTED_COMMIT" ]] || { echo "FATAL: HEAD != L3_EXPECTED_COMMIT"; exit 1; }
 
-# The training driver must be the SAME BLOB that produced u0-u500.  This is a
-# stronger check than the commit pin: it survives unrelated commits and fails
-# loudly if the driver itself was touched.
-TRAIN_BLOB_U500=e6c48ff8f4569c16af1773211d1d6a72d92307ea
+# The training driver must be the EXACT expected blob.  This is stronger than
+# the commit pin: it survives unrelated commits and fails loudly if the driver
+# is touched by anything else.
+#
+# The driver differs from the u0-u500 blob (e6c48ff8f4569c16af1773211d1d6a72
+# d92307ea) in STOPPING/EVALUATION CONTROL ONLY: the ceiling requirement is
+# now a CLI value defaulting to 5 instead of a hard-coded 2, and a milestone
+# step already counted toward the streak can no longer be counted twice.
+# No optimizer, loss, sampler, schedule, LR or data path is touched, and the
+# training updates produced before any stop are bitwise identical -- verified
+# by running both versions and comparing checkpoints (see
+# tests/test_base123_continue750.py).
+TRAIN_BLOB_EXPECTED=ad3d6fe100cfd8da430aabe32cb98f44e90b35bf
 GOT_BLOB=$(git rev-parse HEAD:scripts/naming_comprehension/train_joint_scratch.py)
-[[ "$GOT_BLOB" == "$TRAIN_BLOB_U500" ]] || {
-    echo "FATAL: training driver blob $GOT_BLOB != $TRAIN_BLOB_U500 used through u500"
+[[ "$GOT_BLOB" == "$TRAIN_BLOB_EXPECTED" ]] || {
+    echo "FATAL: training driver blob $GOT_BLOB != expected $TRAIN_BLOB_EXPECTED"
     exit 1; }
-echo "== training driver blob matches the u0-u500 code exactly: $GOT_BLOB"
+echo "== training driver blob verified: $GOT_BLOB"
 
 # ---- explicit array mapping ----------------------------------------------
 SEEDS=(19 20 21 22)
@@ -108,6 +134,7 @@ MAX_STEPS=2083500                 # 750 x 463 x 6
 FULL_EVAL_AT=1527900,1666800,1805700,1944600,2083500   # u550,600,650,700,750
 EVAL_EVERY=13890                  # unchanged
 SAVE_EVERY=69450                  # unchanged
+CEILING_REQUIRED=5                # consecutive DISTINCT scheduled full evals
 RUN_ID="final_base123_h512_s${SEED}"
 RUNS=${L3_RUNS:-/lustre/fsn1/projects/rech/llg/uss35bp/lichtheim3_runs}
 RUN_DIR="$RUNS/$RUN_ID"
@@ -192,6 +219,12 @@ PY
 
 # NOTE: no --eval-at-start, and 1389000 is deliberately absent from
 # FULL_EVAL_AT, so the already-completed u500 full evaluation is NOT redone.
+# NO --endpoint-eval either: u750 (2,083,500) is already IN FULL_EVAL_AT, so
+# the in-loop milestone branch evaluates and checkpoints it exactly once.
+# With --endpoint-eval the driver deliberately re-runs the final full
+# evaluation even when the same milestone just ran, which is what produced
+# the duplicate step-1,389,000 rows in the u0-u500 metrics.  Each of u550,
+# u600, u650, u700, u750 therefore yields EXACTLY ONE full-evaluation row.
 # No --phase-transition, no --optimizer-policy, no --lr-*, no --dec-weight,
 # no --c-align-weight: every scientific setting comes from the checkpoint and
 # the driver's audited defaults, exactly as through u0-u500.
@@ -202,7 +235,8 @@ srun python scripts/naming_comprehension/train_joint_scratch.py \
     --device cuda --max-steps "$MAX_STEPS" \
     --full-eval-at "$FULL_EVAL_AT" \
     --eval-every "$EVAL_EVERY" --save-every "$SAVE_EVERY" --log-every 500 \
-    --stop-at-ceiling --endpoint-eval \
+    --stop-at-ceiling \
+    --ceiling-consecutive-required "$CEILING_REQUIRED" \
     --out-dir "$RUNS" --run-id "$RUN_ID" --resume "$OWN_LATEST"
 
 echo "== $RUN_ID continuation finished: $RUN_DIR"

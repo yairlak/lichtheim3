@@ -63,10 +63,15 @@
 # u=500, NOT 1500: 1:2:3 is a presentation/update ratio and the C population
 # is smaller.  No automatic continuation beyond u=500.
 #
-# STOPPING: only when TWO CONSECUTIVE scheduled full evaluations have
-# canonical repetition, GENUINE free-AR repetition, free-AR naming and strict
-# canonical C top-1 all exactly 1.0.  Any shortfall resets the streak, and the
-# streak is checkpointed so a requeue cannot restart it.
+# STOPPING: only when CEILING_CONSECUTIVE_REQUIRED consecutive, DISTINCT,
+# scheduled full evaluations have canonical repetition, GENUINE free-AR
+# repetition, free-AR naming and strict canonical C top-1 all exactly 1.0.
+# Any shortfall resets the streak, and the streak is checkpointed so a requeue
+# cannot restart it.
+# HISTORICAL NOTE: the completed u0-u500 block ran with that requirement set
+# to 2.  It never fired (no run reached ceiling), so the executed trajectory
+# is unaffected.  The requirement is now 5; re-running this script today would
+# use 5.
 #
 # Usage:  sbatch --export=ALL,L3_EXPECTED_COMMIT=<sha> final_base123_production.slurm
 # ===========================================================================

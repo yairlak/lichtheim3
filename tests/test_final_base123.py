@@ -206,7 +206,9 @@ def test_ceiling_predicate_requires_all_four_readouts():
         assert not at_ceiling(bad), k
         missing = dict(full); missing.pop(k)
         assert not at_ceiling(missing), k
-    assert CEILING_CONSECUTIVE_REQUIRED == 2
+    # raised from 2 to 5 before the u500 -> u750 continuation; the u0-u500
+    # block ran under 2 and never triggered it (no run reached ceiling)
+    assert CEILING_CONSECUTIVE_REQUIRED == 5
 
 
 def test_streak_persists_across_resume(tmp_path):

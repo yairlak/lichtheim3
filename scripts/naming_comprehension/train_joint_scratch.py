@@ -180,7 +180,13 @@ LR_BOUNDARY_STEPS = 46_300
 TAU = 0.10                          # retrieval temperature (Phase 2 validated)
 LAMBDA_C = 0.087                    # weight on retrieval CE
 LAMBDA_N = 1.0                      # weight on naming CE
-CEILING_CONSECUTIVE_REQUIRED = 2    # scheduled full evals at 100/100/100/100
+# Early stopping requires this many CONSECUTIVE, DISTINCT, SCHEDULED
+# full-lexicon evaluations at 100/100/100/100.  Raised from 2 to 5 so that a
+# claimed ceiling is demonstrably stable rather than a lucky pair.  Only the
+# in-loop milestone branch counts: ordinary dev evaluations and the optional
+# duplicate endpoint evaluation never touch the streak, and a step already
+# counted can never be counted again.
+CEILING_CONSECUTIVE_REQUIRED = 5
 NAMING_MAX_STEPS = 10               # free-AR decode cap, never target length
 # Global cap for GENUINE free-AR repetition.  The longest form in the final
 # lexicon is 9 phonemes, so 12 cannot truncate a correct answer while still
@@ -1038,6 +1044,9 @@ class JointScratchTrainer:
         self.global_step = 0
         # Persisted so a requeue cannot silently restart the ceiling streak.
         self.consecutive_ceiling = 0
+        # Step of the last milestone already counted toward the streak; makes
+        # double-counting the same global step impossible across a requeue.
+        self.last_ceiling_step = -1
         self.resume_provenance: List[dict] = []
 
     # -------------------------------------------------------------- batches
@@ -1797,6 +1806,7 @@ class JointScratchTrainer:
             "schedule_ratio": (list(self.ratio) if self.ratio else None),
             "schedule_anchor_step": int(self.schedule_anchor_step),
             "consecutive_ceiling": int(self.consecutive_ceiling),
+            "last_ceiling_step": int(self.last_ceiling_step),
             "exposures": self.exposures(),
             "subset_indices": list(self.subset_idx),
             # Explicit per-task population provenance (FINAL-1A).  In
@@ -2005,6 +2015,9 @@ class JointScratchTrainer:
         # The ceiling streak is state, not a derived quantity: a requeue must
         # not silently restart it and turn one lucky evaluation into a stop.
         self.consecutive_ceiling = int(ckpt.get("consecutive_ceiling", 0))
+        # Checkpoints written before this field default to -1, which only
+        # means "nothing counted yet" and cannot suppress a future milestone.
+        self.last_ceiling_step = int(ckpt.get("last_ceiling_step", -1))
         self.lr_boundary_steps = int(ckpt["lr_boundary_steps"])
         # LR is a pure function of the step counter, so it is re-derived rather
         # than trusted from the file; the optimizer is never reconstructed.
@@ -2221,6 +2234,11 @@ def build_parser() -> argparse.ArgumentParser:
                         "objective. Omitted keeps the canonical 0.5, so every "
                         "earlier run is unaffected; FINAL-8P uses 2.0. "
                         "Changing it on resume is a phase transition.")
+    p.add_argument("--ceiling-consecutive-required", type=int,
+                   default=CEILING_CONSECUTIVE_REQUIRED,
+                   help="consecutive DISTINCT scheduled full evaluations at "
+                        "ceiling required to stop (default "
+                        f"{CEILING_CONSECUTIVE_REQUIRED})")
     p.add_argument("--stop-at-ceiling", action="store_true",
                    help="stop after CEILING_CONSECUTIVE_REQUIRED consecutive "
                         "scheduled full evaluations with canonical rep, "
@@ -2367,6 +2385,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     settings = trainer.resolved_settings()
     settings["total_steps"] = total_steps
     settings["epochs"] = args.epochs
+    settings["ceiling_consecutive_required"] = args.ceiling_consecutive_required
     settings["eval_every"] = args.eval_every
     settings["probe_every"] = args.probe_every
     settings["save_every"] = args.save_every
@@ -2457,6 +2476,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     metrics = os.path.join(run_dir, "metrics.tsv")
     losses_tsv = os.path.join(run_dir, "logs", "losses.tsv")
 
+    required = int(args.ceiling_consecutive_required)
+    if required < 1:
+        raise SystemExit("--ceiling-consecutive-required must be >= 1")
     consecutive_ceiling = trainer.consecutive_ceiling
     ceiling_reached = False
     full_eval_steps = settings["full_eval_at"]
@@ -2523,23 +2545,35 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"| LTM_rep={row['full_rep_ltm']:.6f} "
                   f"gate_mean={row.get('gate_mean', float('nan')):.4f}",
                   flush=True)
-            # NUMERICAL early stop: two CONSECUTIVE scheduled full evaluations
-            # at 100/100/100/100.  Any shortfall resets the counter, so a
-            # single lucky evaluation can never end a run.
+            # NUMERICAL early stop: `required` CONSECUTIVE, DISTINCT,
+            # SCHEDULED full evaluations at 100/100/100/100.  Any shortfall
+            # resets the streak to zero, so a lucky run of evaluations cannot
+            # end a run early.  Only this branch counts: ordinary dev
+            # evaluations and the optional duplicate endpoint evaluation are
+            # outside it and can never move the streak.
             if args.stop_at_ceiling:
-                if at_ceiling(row):
-                    consecutive_ceiling += 1
-                    trainer.consecutive_ceiling = consecutive_ceiling
-                    print(f"  [CEILING] all four full readouts == 1.0 "
-                          f"({consecutive_ceiling} consecutive)", flush=True)
+                if trainer.global_step <= trainer.last_ceiling_step:
+                    # This milestone step was already counted (e.g. a requeue
+                    # that re-evaluated it).  Neither increment nor reset.
+                    print(f"  [CEILING] step {trainer.global_step} already "
+                          f"counted; streak unchanged at "
+                          f"{consecutive_ceiling}", flush=True)
                 else:
-                    if consecutive_ceiling:
-                        print("  [CEILING] streak reset", flush=True)
-                    consecutive_ceiling = 0
-                    trainer.consecutive_ceiling = 0
-                if consecutive_ceiling >= CEILING_CONSECUTIVE_REQUIRED:
-                    print(f"  [STOP] {CEILING_CONSECUTIVE_REQUIRED} consecutive "
-                          f"full evaluations at ceiling; stopping.", flush=True)
+                    trainer.last_ceiling_step = trainer.global_step
+                    if at_ceiling(row):
+                        consecutive_ceiling += 1
+                        print(f"  [CEILING] all four full readouts == 1.0 "
+                              f"({consecutive_ceiling}/{required} consecutive)",
+                              flush=True)
+                    else:
+                        if consecutive_ceiling:
+                            print(f"  [CEILING] streak reset "
+                                  f"({consecutive_ceiling} -> 0)", flush=True)
+                        consecutive_ceiling = 0
+                    trainer.consecutive_ceiling = consecutive_ceiling
+                if consecutive_ceiling >= required:
+                    print(f"  [STOP] {required} consecutive full evaluations "
+                          f"at ceiling; stopping.", flush=True)
                     ceiling_reached = True
         elif args.eval_every and trainer.global_step % args.eval_every == 0:
             probed = bool(args.probe_every
