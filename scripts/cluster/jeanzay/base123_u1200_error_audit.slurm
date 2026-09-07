@@ -35,6 +35,22 @@ module load pytorch-gpu/py3/2.6.0
 [[ -n "${L3_REPO:-}" ]] || { echo "FATAL: export L3_REPO"; exit 1; }
 cd "$L3_REPO"
 RUNS=${L3_RUNS:-/lustre/fsn1/projects/rech/llg/uss35bp/lichtheim3_runs}
+# ---- canonical real GloVe -------------------------------------------------
+# data/glove.*.txt is gitignored, so a DETACHED WORKTREE contains no GloVe and
+# the driver's default --glove-path ("data/glove.6B.300d.txt", relative to the
+# cwd) resolves to a missing file.  Point at the canonical copy in the main
+# checkout explicitly and verify it BEFORE any Python starts.  The file is
+# never copied into the worktree, and pseudo-vector fallback is never enabled.
+GLOVE=${L3_GLOVE:-/lustre/fswork/projects/rech/llg/uss35bp/lichtheim3/lichtheim3/data/glove.6B.300d.txt}
+GLOVE_SHA_EXPECTED=91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed
+[[ -f "$GLOVE" ]] || {
+    echo "FATAL: real GloVe not found at $GLOVE (set L3_GLOVE)"; exit 1; }
+GLOVE_SHA=$(sha256sum "$GLOVE" | cut -d' ' -f1)
+[[ "$GLOVE_SHA" == "$GLOVE_SHA_EXPECTED" ]] || {
+    echo "FATAL: GloVe sha256 $GLOVE_SHA != $GLOVE_SHA_EXPECTED"; exit 1; }
+echo "== real GloVe verified: $GLOVE"
+echo "== GloVe sha256: $GLOVE_SHA"
+
 
 RUNIDS=(final_lrpilot1200_chigh_h512_s19 final_lrpilot1200_chigh_h512_s20 \
         final_lrpilot1200_chigh_h512_s21 final_lrpilot1200_chigh_h512_s22 \
@@ -58,6 +74,7 @@ echo "== sha256 $(sha256sum "$CKPT" | cut -d' ' -f1)"
 echo "== READ-ONLY: writes only $OUT"
 
 srun python scripts/naming_comprehension/base123_error_audit.py \
-    --ckpt "$CKPT" --out-dir "$OUT" --device cuda
+    --ckpt "$CKPT" --out-dir "$OUT" --device cuda \
+    --glove-path "$GLOVE"
 
 echo "== done -> $OUT"

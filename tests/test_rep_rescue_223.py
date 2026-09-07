@@ -450,3 +450,76 @@ def test_persistence_report_accepts_lrpilot_run_ids():
     src = inspect.getsource(m.switch_trigger)
     assert ">= 0.85" in src and ">= 0.80" in src
     assert "0.90" in src and "0.50" in src
+
+
+# ================================  GloVe resolution (the 1857757/8 failure) ==
+
+GLOVE_SHA = "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed"
+
+
+def test_glove_is_gitignored_so_a_worktree_never_has_it():
+    """Root cause: data/glove.*.txt is not tracked, so a detached worktree
+    contains no GloVe and the driver's cwd-relative default cannot resolve."""
+    import subprocess
+    tracked = subprocess.run(["git", "-C", ROOT, "ls-files", "data"],
+                             capture_output=True, text=True).stdout
+    assert "glove.6B.300d.txt" not in tracked
+    ignore = open(os.path.join(ROOT, ".gitignore"), encoding="utf-8").read()
+    assert "data/glove.*.txt" in ignore
+
+
+@pytest.mark.parametrize("path", [JOB, AUDIT])
+def test_both_launchers_verify_and_pass_the_real_glove(path):
+    t = script(path)
+    ex = "\n".join(l for l in t.splitlines()
+                   if l.strip() and not l.lstrip().startswith("#"))
+    # explicit, overridable, absolute canonical path
+    assert "GLOVE=${L3_GLOVE:-/lustre/fswork/projects/rech/llg/uss35bp/" \
+           "lichtheim3/lichtheim3/data/glove.6B.300d.txt}" in ex
+    # existence AND sha verified before any Python
+    assert f"GLOVE_SHA_EXPECTED={GLOVE_SHA}" in ex
+    assert '[[ -f "$GLOVE" ]]' in ex
+    assert 'sha256sum "$GLOVE"' in ex
+    assert '[[ "$GLOVE_SHA" == "$GLOVE_SHA_EXPECTED" ]]' in ex
+    # the path actually reaches the python invocation
+    assert '--glove-path "$GLOVE"' in ex
+    # fallback is never enabled
+    assert "--allow-glove-fallback" not in ex
+    # the old cwd-relative guard is gone
+    assert "test -f data/glove.6B.300d.txt" not in ex
+
+
+def test_guard_precedes_python_in_both_launchers():
+    for path in (JOB, AUDIT):
+        t = script(path)
+        g = t.index("GLOVE_SHA_EXPECTED=")
+        first_py = min([i for i in
+                        (t.find("srun python"), t.find("python - <<"))
+                        if i != -1])
+        assert g < first_py, f"{path}: glove check must precede any Python"
+
+
+def test_preflight_constants_match_the_launchers():
+    from scripts.naming_comprehension import preflight_data as pf
+    assert pf.GLOVE_SHA == GLOVE_SHA
+    assert pf.C_N == 27_981
+    assert pf.C_SHA == \
+        "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50"
+    assert pf.FULL_N == 29_571
+    assert pf.LEXICON_SHA == \
+        "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+
+
+def test_preflight_rejects_missing_and_wrong_sha(tmp_path):
+    import subprocess
+    script_path = os.path.join(
+        ROOT, "scripts/naming_comprehension/preflight_data.py")
+    r = subprocess.run([sys.executable, script_path, "--glove-path",
+                        str(tmp_path / "absent.txt"), "--quick"],
+                       capture_output=True, text=True, cwd=ROOT)
+    assert r.returncode == 1 and "not found" in r.stderr
+    bad = tmp_path / "bad.txt"
+    bad.write_text("not glove")
+    r = subprocess.run([sys.executable, script_path, "--glove-path", str(bad),
+                        "--quick"], capture_output=True, text=True, cwd=ROOT)
+    assert r.returncode == 1 and "sha256" in r.stderr

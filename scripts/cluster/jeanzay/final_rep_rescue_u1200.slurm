@@ -91,7 +91,21 @@ cd "$REPO"
 HEAD=$(git rev-parse HEAD)
 echo "== repo $REPO @ $HEAD"
 [[ -z "$(git status --porcelain -uno)" ]] || { echo "FATAL: tracked tree dirty"; exit 1; }
-test -f data/glove.6B.300d.txt || { echo "FATAL: real GloVe missing"; exit 1; }
+# ---- canonical real GloVe -------------------------------------------------
+# data/glove.*.txt is gitignored, so a DETACHED WORKTREE contains no GloVe and
+# the driver's default --glove-path ("data/glove.6B.300d.txt", relative to the
+# cwd) resolves to a missing file.  Point at the canonical copy in the main
+# checkout explicitly and verify it BEFORE any Python starts.  The file is
+# never copied into the worktree, and pseudo-vector fallback is never enabled.
+GLOVE=${L3_GLOVE:-/lustre/fswork/projects/rech/llg/uss35bp/lichtheim3/lichtheim3/data/glove.6B.300d.txt}
+GLOVE_SHA_EXPECTED=91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed
+[[ -f "$GLOVE" ]] || {
+    echo "FATAL: real GloVe not found at $GLOVE (set L3_GLOVE)"; exit 1; }
+GLOVE_SHA=$(sha256sum "$GLOVE" | cut -d' ' -f1)
+[[ "$GLOVE_SHA" == "$GLOVE_SHA_EXPECTED" ]] || {
+    echo "FATAL: GloVe sha256 $GLOVE_SHA != $GLOVE_SHA_EXPECTED"; exit 1; }
+echo "== real GloVe verified: $GLOVE"
+echo "== GloVe sha256: $GLOVE_SHA"
 [[ -n "${L3_EXPECTED_COMMIT:-}" ]] || { echo "FATAL: export L3_EXPECTED_COMMIT"; exit 1; }
 [[ "$HEAD" == "$L3_EXPECTED_COMMIT" ]] || { echo "FATAL: HEAD != L3_EXPECTED_COMMIT"; exit 1; }
 
@@ -249,6 +263,7 @@ srun python scripts/naming_comprehension/train_joint_scratch.py \
     --wm-hidden "$WM" --enc-hidden "$ENC" --dec-hidden "$DEC" \
     --device cuda --max-steps "$MAX_STEPS" \
     --lr-repetition "$LR_R" --lr-naming "$LR_N" --lr-comprehension "$LR_C" \
+    --glove-path "$GLOVE" \
     --full-eval-at "$FULL_EVAL_AT" \
     --eval-every "$EVAL_EVERY" --save-every "$SAVE_EVERY" --log-every 500 \
     --stop-at-ceiling --ceiling-consecutive-required "$CEILING_REQUIRED" \
