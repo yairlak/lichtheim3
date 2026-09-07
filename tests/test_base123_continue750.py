@@ -28,6 +28,8 @@ JOB = "scripts/cluster/jeanzay/final_base123_h512_continue750.slurm"
 PROD = "scripts/cluster/jeanzay/final_base123_production.slurm"
 DRIVER = "scripts/naming_comprehension/train_joint_scratch.py"
 BLOB_U500 = "e6c48ff8f4569c16af1773211d1d6a72d92307ea"
+# the driver blob that actually produced the completed u500 -> u750 leg
+BLOB_U750_LEG = "24742adf9f13c205673a3f8ff1f34bdce7a45e58"
 STOPPING_ONLY_IDENTS = ("consecutive_ceiling", "last_ceiling_step",
                         "ceiling_consecutive_required", "at_ceiling",
                         "CEILING_CONSECUTIVE_REQUIRED", "required",
@@ -146,11 +148,19 @@ def test_no_runtime_imported_file_changed_since_u500():
         assert critical in others, critical
 
 
-def test_launcher_pins_the_driver_blob_not_just_the_commit():
+def test_launcher_pins_the_driver_blob_of_its_completed_leg():
+    """The u500 -> u750 leg is COMPLETE and archived.  Its launcher pins the
+    driver blob that actually produced it, so re-running it against a later
+    driver is refused.  The pin is therefore a historical constant and must
+    NOT be bumped when the driver changes for a later experiment -- doing so
+    would misrepresent which code produced the archived runs."""
     t = script()
-    expected = git("hash-object", os.path.join(ROOT, DRIVER))
-    assert f"TRAIN_BLOB_EXPECTED={expected}" in t, \
-        "the launcher's blob pin is stale"
+    assert f"TRAIN_BLOB_EXPECTED={BLOB_U750_LEG}" in t
+    assert len(BLOB_U750_LEG) == 40
+    # it is deliberately allowed to differ from the current driver
+    current = git("hash-object", os.path.join(ROOT, DRIVER))
+    if current != BLOB_U750_LEG:
+        assert "TRAIN_BLOB_EXPECTED" in t, "the guard must still be present"
     assert "git rev-parse HEAD:scripts/naming_comprehension/train_joint_scratch.py" in t
     assert "L3_EXPECTED_COMMIT" in t
 

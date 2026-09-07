@@ -60,14 +60,25 @@ def num(v):
     return None if x != x else x
 
 
-def audit_dir(runs_root: str, seed: int, u: int, width: int) -> str:
-    return os.path.join(runs_root, f"final_base123_h{width}_s{seed}",
+DEFAULT_RUN_TEMPLATE = "final_base123_h{width}_s{seed}"
+
+
+def audit_dir(runs_root: str, seed: int, u: int, width: int,
+              template: str = DEFAULT_RUN_TEMPLATE) -> str:
+    """Directory of one run's audit output.
+
+    `template` may use {width}, {seed} and {u}, so the same analysis serves
+    the base123 lineage and the lrpilot branches.  It only selects WHICH runs
+    are read; every threshold and every rule below is untouched.
+    """
+    return os.path.join(runs_root, template.format(width=width, seed=seed, u=u),
                         f"error_audit_u{u}")
 
 
-def load(runs_root, seed, u, width, task):
+def load(runs_root, seed, u, width, task, template=DEFAULT_RUN_TEMPLATE):
     fname, _ = TASK_FILES[task]
-    rows = read(os.path.join(audit_dir(runs_root, seed, u, width), fname))
+    rows = read(os.path.join(audit_dir(runs_root, seed, u, width, template),
+                             fname))
     return {r["target_bank_index"]: r for r in rows}
 
 
@@ -187,6 +198,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--runs-root", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--width", type=int, default=512)
+    ap.add_argument("--run-template", default=DEFAULT_RUN_TEMPLATE,
+                    help="run-id template; may use {width}, {seed}, {u}. "
+                         "Selects which runs are read and NOTHING else -- "
+                         "every trigger threshold is unchanged. e.g. "
+                         "'final_lrpilot1200_chigh_h512_s{seed}'")
+    ap.add_argument("--run-template-by-u", default=None,
+                    help="optional JSON {u: template} when different "
+                         "milestones live in different run directories, e.g. "
+                         "the shared u850 ancestor vs the u1200 arms")
     ap.add_argument("--seeds", default="19,20,21,22")
     ap.add_argument("--milestones", default="500,600,750",
                     help="u values with an error_audit_u<U> directory")
@@ -204,7 +224,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     os.makedirs(args.out_dir, exist_ok=True)
     W = args.width
 
-    data = {t: {u: {s: load(args.runs_root, s, u, W, t) for s in seeds}
+    by_u = json.loads(args.run_template_by_u) if args.run_template_by_u else {}
+    tmpl = {u: by_u.get(str(u), by_u.get(u, args.run_template)) for u in us}
+    print("[persist] run templates: "
+          + ", ".join(f"u{u} -> {tmpl[u]}" for u in us))
+    data = {t: {u: {s: load(args.runs_root, s, u, W, t, tmpl[u])
+                    for s in seeds}
                 for u in us} for t in TASK_FILES}
     missing = [(t, u, s) for t in TASK_FILES for u in us for s in seeds
                if not data[t][u][s]]
@@ -214,6 +239,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     report: dict = {"runs_root": os.path.abspath(args.runs_root),
                     "width": W, "seeds": seeds, "milestones": us,
+                    "run_templates": {str(u): tmpl[u] for u in us},
                     "population": {k: v[1] for k, v in TASK_FILES.items()}}
 
     # ---- 1. per-seed description at each milestone ----------------------

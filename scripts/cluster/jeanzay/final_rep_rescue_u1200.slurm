@@ -50,12 +50,12 @@
 # That is correct and intended; comparing them at a common step would be the
 # error this design exists to avoid.
 #
-# CO-VARYING FACTOR, STATED HONESTLY: the dorsal pseudoword pool rides every
-# R step inside the same backward (pool:R = 1:1 by construction), so the
-# rescue also receives twice the pool updates.  The treatment is therefore
-# "repetition + its attached pool rehearsal", not repetition in isolation.
-# Separating them would require breaking the historical pool coupling, which
-# would be a second factor.
+# TREATMENT, STATED ACCURATELY: this is INCREASED REPETITION-TASK REHEARSAL,
+# INCLUDING ITS ATTACHED DORSAL POOL AUXILIARY -- not lexical repetition
+# alone.  The pool rides every R step inside the same backward (pool:R = 1:1
+# by construction), so the rescue receives twice the pool updates too.  That
+# coupling is historical and is deliberately NOT decoupled; decoupling would
+# itself be a second factor.
 #
 # NO DRIVER CHANGE.  The FINAL-9P schedule machinery already expresses this:
 # 123 -> 223 is a declarable phase transition (summed <-> interleaved is
@@ -95,7 +95,7 @@ test -f data/glove.6B.300d.txt || { echo "FATAL: real GloVe missing"; exit 1; }
 [[ -n "${L3_EXPECTED_COMMIT:-}" ]] || { echo "FATAL: export L3_EXPECTED_COMMIT"; exit 1; }
 [[ "$HEAD" == "$L3_EXPECTED_COMMIT" ]] || { echo "FATAL: HEAD != L3_EXPECTED_COMMIT"; exit 1; }
 
-TRAIN_BLOB_EXPECTED=24742adf9f13c205673a3f8ff1f34bdce7a45e58
+TRAIN_BLOB_EXPECTED=95295d63560ae4c235a6beee8dfb47166f4ed30d
 GOT_BLOB=$(git rev-parse HEAD:scripts/naming_comprehension/train_joint_scratch.py)
 [[ "$GOT_BLOB" == "$TRAIN_BLOB_EXPECTED" ]] || {
     echo "FATAL: driver blob $GOT_BLOB != expected $TRAIN_BLOB_EXPECTED"; exit 1; }
@@ -114,12 +114,21 @@ SOURCE_STEP=3333600                      # u1200 of the C-HIGH arm
 DCYCLES=92600                            # 200 control-u worth of macro-cycles
 MS_CYCLES=11575                          # paired milestone spacing (25 control-u)
 
+# BOTH arms re-anchor the macro-cycle at the branch step.  The rescue would
+# re-anchor anyway because its schedule changes; the control must be told to,
+# via --reanchor-schedule, or it would keep its historical cycle numbering
+# (cycle index 555,600 at the branch) while the rescue starts at 0.  That
+# difference in cycle ORIGIN changes the deterministic task ORDER and is a
+# nuisance factor unrelated to the treatment -- it is measurable: without the
+# flag the control's weights differ from the re-anchored control's.  With it,
+# both arms begin post-branch cycle index 0 under the same schedule seed, so
+# the ONLY remaining difference is the macro-cycle COMPOSITION.
 if [[ "$ARM" == "123" ]]; then
     SCHEDULE=interleaved_123; CS=6; RUN_ARM=rescue123
-    PHASE=()                              # same schedule: nothing is declared
+    PHASE=(--reanchor-schedule --phase-transition)   # declared no-op re-anchor
 else
     SCHEDULE=interleaved_223; CS=7; RUN_ARM=rescue223
-    PHASE=(--phase-transition)            # 1:2:3 -> 2:2:3, anchored here
+    PHASE=(--phase-transition)            # 1:2:3 -> 2:2:3, re-anchors itself
 fi
 
 MAX_STEPS=$(( SOURCE_STEP + CS * DCYCLES ))
@@ -220,8 +229,8 @@ if [[ -z "${OWN_LATEST:-}" ]]; then
     RESUME_FROM="$SOURCE_CKPT"
     EXTRA=("${PHASE[@]}")
     echo "== first launch: branching the shared C-HIGH u1200 state"
-    [[ ${#PHASE[@]} -eq 0 ]] && echo "== control: same schedule, nothing declared" \
-        || echo "== rescue: declaring interleaved_123 -> interleaved_223, anchored at $SOURCE_STEP"
+    echo "== declaring schedule=$SCHEDULE re-anchored at $SOURCE_STEP"
+    echo "   (both arms start post-branch macro-cycle index 0)"
 else
     OWN_STEP=$(basename "$OWN_LATEST" .pt); OWN_STEP=$((10#${OWN_STEP#step_}))
     if (( OWN_STEP >= MAX_STEPS )); then

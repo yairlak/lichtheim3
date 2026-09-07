@@ -776,7 +776,8 @@ class JointScratchTrainer:
                  dec_weight: Optional[float] = None,
                  wm_hidden: int = CANONICAL_HIDDEN,
                  enc_hidden: int = CANONICAL_HIDDEN,
-                 dec_hidden: int = CANONICAL_HIDDEN) -> None:
+                 dec_hidden: int = CANONICAL_HIDDEN,
+                 reanchor_schedule: bool = False) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -804,6 +805,12 @@ class JointScratchTrainer:
         # what makes the order well defined and exactly resumable across a
         # change of cycle length.
         self.schedule_anchor_step = 0
+        # Opt-in: on resume, restart the macro-cycle numbering at the branch
+        # step even when the schedule itself is unchanged.  Needed only to
+        # remove the cycle-origin nuisance factor when a control arm must be
+        # matched to a treatment arm that re-anchors because ITS schedule
+        # changed.  Default False, so every existing run is unaffected.
+        self.reanchor_schedule = bool(reanchor_schedule)
         if schedule != SUMMED_SCHEDULE and not (
                 self.retrieval_enabled and self.naming_enabled):
             # An interleaved cycle emits N and C steps by construction, so a
@@ -1878,6 +1885,13 @@ class JointScratchTrainer:
                 and list(ck_ratio) != list(self.ratio or [])):
             raise RuntimeError(
                 f"checkpoint schedule_ratio {ck_ratio} != {self.ratio}")
+        # An explicit re-anchor restarts the deterministic cycle index, which
+        # changes the TASK ORDER even though the ratio is untouched.  That is
+        # a scientific change, so it is declared like any other.
+        ck_anchor = int(ckpt.get("schedule_anchor_step", 0))
+        if (self.reanchor_schedule and "schedule" not in changed
+                and ck_anchor != int(ckpt["global_step"])):
+            changed.append("schedule_anchor")
         ck_widths = ckpt.get("widths")
         if ck_widths is not None and dict(ck_widths) != self.widths:
             raise RuntimeError(
@@ -1945,10 +1959,13 @@ class JointScratchTrainer:
                 "new_schedule": self.schedule,
                 "old_schedule_ratio": (list(ck_ratio) if ck_ratio else None),
                 "new_schedule_ratio": (list(self.ratio) if self.ratio else None),
-                "schedule_anchor_step": (int(ckpt["global_step"])
-                                         if "schedule" in changed
-                                         else int(ckpt.get(
-                                             "schedule_anchor_step", 0))),
+                "schedule_anchor_step": (
+                    int(ckpt["global_step"])
+                    if ("schedule" in changed or "schedule_anchor" in changed)
+                    else ck_anchor),
+                "old_schedule_anchor_step": ck_anchor,
+                "reanchored": int("schedule_anchor" in changed
+                                  or "schedule" in changed),
                 "moment_initialization": (
                     (MOMENT_INIT_CLONE_GROUPED
                      if self.optimizer_policy == OPT_POLICY_GROUPED_RN_C
@@ -2010,8 +2027,9 @@ class JointScratchTrainer:
         # other resume carries the stored anchor forward, so the task order is
         # reproduced exactly and a requeue cannot shift it.
         self.schedule_anchor_step = (
-            int(ckpt["global_step"]) if "schedule" in changed
-            else int(ckpt.get("schedule_anchor_step", 0)))
+            int(ckpt["global_step"])
+            if ("schedule" in changed or "schedule_anchor" in changed)
+            else ck_anchor)
         # The ceiling streak is state, not a derived quantity: a requeue must
         # not silently restart it and turn one lucky evaluation into a stop.
         self.consecutive_ceiling = int(ckpt.get("consecutive_ceiling", 0))
@@ -2234,6 +2252,12 @@ def build_parser() -> argparse.ArgumentParser:
                         "objective. Omitted keeps the canonical 0.5, so every "
                         "earlier run is unaffected; FINAL-8P uses 2.0. "
                         "Changing it on resume is a phase transition.")
+    p.add_argument("--reanchor-schedule", action="store_true",
+                   help="on resume, restart macro-cycle numbering at the "
+                        "branch step even if the schedule is unchanged; "
+                        "requires --phase-transition.  Used to give a control "
+                        "arm the same cycle origin as a treatment arm that "
+                        "re-anchors because its ratio changed.")
     p.add_argument("--ceiling-consecutive-required", type=int,
                    default=CEILING_CONSECUTIVE_REQUIRED,
                    help="consecutive DISTINCT scheduled full evaluations at "
@@ -2362,7 +2386,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         optimizer_policy=args.optimizer_policy,
         dec_weight=args.dec_weight,
         wm_hidden=args.wm_hidden, enc_hidden=args.enc_hidden,
-        dec_hidden=args.dec_hidden)
+        dec_hidden=args.dec_hidden,
+        reanchor_schedule=args.reanchor_schedule)
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)

@@ -128,12 +128,14 @@ def branched(tmp_path):
                         "--phase-transition"]) == 0
     src = ck(out, "src", 24)
     assert load(src)["global_step"] % 6 == 0
-    # control: same schedule, nothing declared.  rescue: 123 -> 223.
+    # BOTH arms re-anchor at the branch: the control is told to explicitly,
+    # the rescue does so because its schedule changes.
     assert main(BASE + ["--seed", "19", "--out-dir", out, "--run-id", "a123",
                         "--schedule", "interleaved_123",
-                        "--max-steps", "24 ".strip() and str(24 + 6 * 5),
+                        "--max-steps", str(24 + 6 * 5),
                         "--save-every", str(24 + 6 * 5),
-                        "--resume", src]) == 0
+                        "--resume", src, "--reanchor-schedule",
+                        "--phase-transition"]) == 0
     assert main(BASE + ["--seed", "19", "--out-dir", out, "--run-id", "b223",
                         "--schedule", "interleaved_223",
                         "--max-steps", str(24 + 7 * 5),
@@ -181,16 +183,22 @@ def test_rescue_anchors_the_new_schedule_at_the_branch(branched):
     out, src = branched
     step = load(src)["global_step"]
     b = load(ck(out, "b223", 24 + 7 * 5))
-    assert b["schedule_anchor_step"] == step, \
-        "the 2:2:3 cycle index must restart at the branch"
     a = load(ck(out, "a123", 24 + 6 * 5))
-    assert a["schedule_anchor_step"] == 0, "the control must not re-anchor"
+    # THE ANCHOR CONFOUND FIX: both arms share the same schedule origin
+    assert a["schedule_anchor_step"] == b["schedule_anchor_step"] == step, \
+        "both arms must start post-branch macro-cycle index 0"
+    assert a["schedule_seed"] == b["schedule_seed"]
     rec = b["phase_transitions"][-1]
     assert rec["changed"] == ["schedule"]
     assert rec["old_schedule"] == INTERLEAVED_123
     assert rec["new_schedule"] == INTERLEAVED_223
     assert rec["moment_initialization"] == "unchanged"
-    assert len(a["phase_transitions"]) == len(b["phase_transitions"]) - 1
+    arec = a["phase_transitions"][-1]
+    assert arec["changed"] == ["schedule_anchor"]
+    assert arec["old_schedule"] == arec["new_schedule"] == INTERLEAVED_123
+    assert arec["old_schedule_ratio"] == arec["new_schedule_ratio"] == [1, 2, 3]
+    assert arec["reanchored"] == 1 and rec["reanchored"] == 1
+    assert arec["moment_initialization"] == "unchanged"
 
 
 def test_branch_preserves_moments_rng_and_cursors(branched):
@@ -275,8 +283,9 @@ def test_training_job_derives_per_arm_steps_from_the_cycle_length():
     assert "MAX_STEPS=$(( SOURCE_STEP + CS * DCYCLES ))" in t
     assert "S=$(( SOURCE_STEP + CS * MS_CYCLES * K ))" in t
     assert "SAVE_EVERY=$(( CS * MS_CYCLES ))" in t
-    # the control declares nothing; only the rescue declares the transition
-    assert "PHASE=()" in t and "PHASE=(--phase-transition)" in t
+    # both arms declare; only the control needs the explicit re-anchor
+    assert "PHASE=(--reanchor-schedule --phase-transition)" in t
+    assert "PHASE=(--phase-transition)" in t
 
 
 def test_training_job_holds_the_lrs_identical_and_changes_nothing_else():
@@ -346,3 +355,98 @@ def test_paired_report_thresholds_are_the_preregistered_ones():
     assert m.SRC_STEP == SRC_STEP
     assert m.milestone_steps("123") == CTRL_MS
     assert m.milestone_steps("223") == RESC_MS
+
+
+# ==========================  the anchor confound and its removal  ==========
+
+def _src(out):
+    assert main(BASE + ["--seed", "19", "--out-dir", out, "--run-id", "s",
+                        "--schedule", "interleaved_123", "--max-steps", "24",
+                        "--save-every", "24", "--phase-transition"]) == 0
+    return ck(out, "s", 24)
+
+
+def _cont(out, rid, src, extra):
+    assert main(BASE + ["--seed", "19", "--out-dir", out, "--run-id", rid,
+                        "--schedule", "interleaved_123", "--max-steps", "54",
+                        "--save-every", "54", "--resume", src] + extra) == 0
+    return load(ck(out, rid, 54))
+
+
+def test_the_anchor_confound_was_real(tmp_path):
+    """Without the fix the control keeps its historical cycle numbering while
+    the rescue restarts at 0, which changes the deterministic task ORDER.
+    Demonstrate that this is a real difference, not a bookkeeping detail."""
+    out = str(tmp_path / "runs")
+    src = _src(out)
+    assert load(src)["schedule_anchor_step"] == 0
+    assert load(src)["global_step"] % 6 == 0
+    old = _cont(out, "old", src, [])
+    new = _cont(out, "new", src, ["--reanchor-schedule", "--phase-transition"])
+    assert old["schedule_anchor_step"] == 0
+    assert new["schedule_anchor_step"] == 24
+    so, sn = old["model_state_dict"], new["model_state_dict"]
+    assert [k for k in so if not torch.equal(so[k], sn[k])], \
+        "the cycle origin must genuinely affect the trajectory"
+
+
+def test_nuisance_control_two_reanchored_123_arms_are_identical(tmp_path):
+    """With both arms re-anchored and the SAME ratio, they must be bitwise
+    identical from the branch -- so any later difference is attributable to
+    the ratio alone."""
+    out = str(tmp_path / "runs")
+    src = _src(out)
+    a = _cont(out, "c1", src, ["--reanchor-schedule", "--phase-transition"])
+    b = _cont(out, "c2", src, ["--reanchor-schedule", "--phase-transition"])
+    sa, sb = a["model_state_dict"], b["model_state_dict"]
+    assert not [k for k in sa if not torch.equal(sa[k], sb[k])]
+    oa, ob = a["optimizer_state_dict"]["state"], b["optimizer_state_dict"]["state"]
+    for i in oa:
+        for m in ("exp_avg", "exp_avg_sq"):
+            assert torch.equal(oa[i][m], ob[i][m])
+    assert a["cursors"] == b["cursors"]
+    assert a["schedule_anchor_step"] == b["schedule_anchor_step"] == 24
+    assert torch.equal(a["rng_states"]["torch"], b["rng_states"]["torch"])
+
+
+def test_reanchor_requires_declaration_and_is_a_no_op_by_default(tmp_path):
+    out = str(tmp_path / "runs")
+    src = _src(out)
+    with pytest.raises(RuntimeError, match="PHASE TRANSITION"):
+        main(BASE + ["--seed", "19", "--out-dir", out, "--run-id", "bad",
+                     "--schedule", "interleaved_123", "--max-steps", "54",
+                     "--save-every", "54", "--resume", src,
+                     "--reanchor-schedule"])
+    # omitting the flag leaves every pre-existing run untouched
+    plain = _cont(out, "plain", src, [])
+    assert plain["schedule_anchor_step"] == 0
+    assert plain["phase_transitions"] == []
+
+
+def test_launcher_reanchors_both_arms():
+    t = script()
+    assert "PHASE=(--reanchor-schedule --phase-transition)" in t
+    assert "PHASE=(--phase-transition)" in t
+    assert "both arms start post-branch macro-cycle index 0" in t
+    assert "both arms begin post-branch cycle index 0" in t
+    assert "TRAIN_BLOB_EXPECTED=95295d63560ae4c235a6beee8dfb47166f4ed30d" in t
+    assert "INCLUDING ITS ATTACHED DORSAL POOL AUXILIARY" in t
+
+
+def test_persistence_report_accepts_lrpilot_run_ids():
+    from scripts.naming_comprehension import base123_persistence_report as m
+    assert m.DEFAULT_RUN_TEMPLATE == "final_base123_h{width}_s{seed}"
+    d = m.audit_dir("/R", 19, 1200, 512,
+                    "final_lrpilot1200_chigh_h512_s{seed}")
+    assert d == "/R/final_lrpilot1200_chigh_h512_s19/error_audit_u1200"
+    d = m.audit_dir("/R", 22, 850, 512, "final_lrpilot_3e5_h512_s{seed}")
+    assert d == "/R/final_lrpilot_3e5_h512_s22/error_audit_u850"
+    # default behaviour is unchanged
+    assert m.audit_dir("/R", 19, 500, 512) == \
+        "/R/final_base123_h512_s19/error_audit_u500"
+    # and NO threshold moved
+    assert m.MARGIN_EPS == 0.01
+    import inspect
+    src = inspect.getsource(m.switch_trigger)
+    assert ">= 0.85" in src and ">= 0.80" in src
+    assert "0.90" in src and "0.50" in src
