@@ -40,7 +40,8 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from scripts.naming_comprehension.train_joint_scratch import (           # noqa: E402
-    FREE_AR_MAX_STEPS, NAMING_MAX_STEPS, JointScratchTrainer, build_batch,
+    FREE_AR_MAX_STEPS, LR_POLICY_TASK, NAMING_MAX_STEPS, OPT_POLICY_SHARED,
+    JointScratchTrainer, build_batch,
 )
 
 MARGIN_EPS = 0.01
@@ -84,6 +85,18 @@ def build(ckpt_path: str, device: str, *, max_words: int = 30000,
           require_subset_hash: bool = True):
     ck = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     w = ck["widths"]
+    # RECONSTRUCT THE CHECKPOINT'S OWN SCIENTIFIC CONFIGURATION.  The audit
+    # previously built the trainer with the driver defaults, so a checkpoint
+    # trained under a task-specific LR policy was compared against the
+    # historical two-stage one and the resume guard correctly refused it.
+    # The fix is to mirror what the checkpoint actually stores, so `changed`
+    # is EMPTY and no phase transition is involved: --phase-transition is
+    # never passed, and the driver's safety checks are satisfied rather than
+    # weakened.
+    pol = ck.get("lr_policy") or {}
+    task_lrs = ({k: float(pol[k])
+                 for k in ("repetition", "naming", "comprehension")}
+                if pol.get("kind") == LR_POLICY_TASK else None)
     tr = JointScratchTrainer(
         regime=ck["regime"], seed=ck["seed"], device=device,
         max_words=max_words,
@@ -94,8 +107,20 @@ def build(ckpt_path: str, device: str, *, max_words: int = 30000,
         allow_glove_fallback=allow_glove_fallback,
         require_subset_hash=require_subset_hash, glove_path=glove_path,
         schedule=ck["schedule"], wm_hidden=w["wm_hidden"],
-        enc_hidden=w["ltm_enc_hidden"], dec_hidden=w["ltm_dec_hidden"])
+        enc_hidden=w["ltm_enc_hidden"], dec_hidden=w["ltm_dec_hidden"],
+        task_lrs=task_lrs,
+        optimizer_policy=ck.get("optimizer_policy", OPT_POLICY_SHARED),
+        dec_weight=ck.get("dec_weight"),
+        c_align_weight=float(ck.get("c_align_weight") or 0.0))
+    # allow_phase_transition stays False: a mismatch must still be an error.
+    assert tr.allow_phase_transition is False
     tr.load_state_dict(ck)
+    if dict(tr.lr_policy) != dict(ck["lr_policy"]):
+        raise RuntimeError(
+            f"reconstructed lr_policy {dict(tr.lr_policy)} != checkpoint "
+            f"{dict(ck['lr_policy'])}")
+    if not tr.phase_transitions == list(ck.get("phase_transitions", [])):
+        raise RuntimeError("the audit introduced a phase transition")
     tr.model.eval()
     return tr, ck
 
@@ -325,6 +350,10 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if not args.ckpt:
         ap.error("--ckpt is required unless --compare is used")
+    def _fingerprint(model):
+        return {n: p.detach().clone().cpu()
+                for n, p in model.named_parameters()}
+
     tr, ck = build(args.ckpt, args.device, max_words=args.max_words,
                    dorsal_pool_size=args.dorsal_pool_size,
                    batch_size=args.batch_size, glove_path=args.glove_path,
@@ -335,6 +364,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     print(f"[err-audit] {args.ckpt}")
     print(f"[err-audit] widths {ck['widths']} seed {ck['seed']} "
           f"step {step} (u={u:.1f})")
+    before = _fingerprint(tr.model)
     tasks = args.tasks.split(",")
     summary = {"checkpoint": os.path.abspath(args.ckpt), "step": step,
                "u": round(u, 4), "seed": ck["seed"], "widths": ck["widths"],
@@ -373,6 +403,20 @@ def main(argv: Optional[List[str]] = None) -> int:
         summary["rep_error_rows"] = len(rows)
         summary["rep_convention_disagreements"] = sum(
             1 for r in rows if r["convention_disagrees"] == 1)
+    # READ-ONLY PROOF: no optimizer step can have run.
+    now = dict(tr.model.named_parameters())
+    moved = [n for n, ref in before.items()
+             if not torch.equal(now[n].detach().cpu(), ref)]
+    if moved:
+        raise RuntimeError(
+            f"AUDIT MUTATED THE MODEL: {moved[:8]} -- this must never happen")
+    print(f"[err-audit] read-only verified: all {len(before)} parameter "
+          f"tensors bitwise unchanged")
+    summary["read_only_verified"] = True
+    summary["lr_policy"] = dict(ck["lr_policy"])
+    summary["optimizer_policy"] = ck.get("optimizer_policy")
+    summary["phase_transitions_in_checkpoint"] = len(
+        ck.get("phase_transitions") or [])
     p = os.path.join(args.out_dir, "error_summary.json")
     json.dump(summary, open(p, "w"), indent=1, default=str)
     print(f"[err-audit] wrote {p}")

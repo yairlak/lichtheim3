@@ -523,3 +523,90 @@ def test_preflight_rejects_missing_and_wrong_sha(tmp_path):
     r = subprocess.run([sys.executable, script_path, "--glove-path", str(bad),
                         "--quick"], capture_output=True, text=True, cwd=ROOT)
     assert r.returncode == 1 and "sha256" in r.stderr
+
+
+# =============  audit reconstructs each checkpoint's own configuration  =====
+
+def _audit(ckpt, out):
+    from scripts.naming_comprehension.base123_error_audit import main as amain
+    return amain(["--ckpt", ckpt, "--out-dir", out, "--max-words", "400",
+                  "--dorsal-pool-size", "32", "--batch-size", "8",
+                  "--glove-path", "tests/_no_such_glove_file.txt",
+                  "--allow-glove-fallback", "--no-subset-hash-check"])
+
+
+def _chain(out, rid, lrs):
+    """A source, then a checkpoint under the given task LR policy."""
+    assert main(BASE[:-6] + ["--seed", "19", "--out-dir", out,
+                             "--run-id", "pre0", "--schedule",
+                             "interleaved_123", "--max-steps", "12",
+                             "--save-every", "12"]) == 0
+    argv = BASE[:-6] + ["--seed", "19", "--out-dir", out, "--run-id", rid,
+                        "--schedule", "interleaved_123", "--max-steps", "24",
+                        "--save-every", "24",
+                        "--resume", ck(out, "pre0", 12)]
+    if lrs:
+        argv += ["--lr-repetition", lrs[0], "--lr-naming", lrs[1],
+                 "--lr-comprehension", lrs[2], "--phase-transition"]
+    assert main(argv) == 0
+    return ck(out, rid, 24)
+
+
+@pytest.mark.parametrize("lrs,kind", [
+    (("3e-5", "3e-5", "1e-4"), "task_specific"),     # C-HIGH family
+    (("3e-5", "3e-5", "3e-5"), "task_specific"),     # ALL-3e-5 family
+    (None, "two_stage_rep_cursor"),                  # historical family
+])
+def test_audit_reconstructs_the_checkpoint_lr_policy_exactly(tmp_path, lrs,
+                                                             kind):
+    """The failure of job 1859047: the audit rebuilt the trainer with the
+    driver defaults, so a task-specific checkpoint was compared against the
+    two-stage policy and correctly refused."""
+    from scripts.naming_comprehension.base123_error_audit import build
+    out = str(tmp_path / "runs")
+    src = _chain(out, "r", lrs)
+    stored = load(src)["lr_policy"]
+    assert stored["kind"] == kind
+    tr, ckd = build(src, "cpu", max_words=400, dorsal_pool_size=32,
+                    batch_size=8,
+                    glove_path="tests/_no_such_glove_file.txt",
+                    allow_glove_fallback=True, require_subset_hash=False)
+    assert dict(tr.lr_policy) == dict(stored), "policy must match exactly"
+    # no artificial transition, and the guard was NOT relaxed
+    assert tr.allow_phase_transition is False
+    assert tr.phase_transitions == list(ckd.get("phase_transitions", []))
+
+
+def test_audit_is_read_only_and_takes_no_optimizer_step(tmp_path):
+    out = str(tmp_path / "runs")
+    src = _chain(out, "r", ("3e-5", "3e-5", "1e-4"))
+    before = load(src)["model_state_dict"]
+    adir = str(tmp_path / "audit")
+    assert _audit(src, adir) == 0
+    after = load(src)["model_state_dict"]
+    assert not [k for k in before if not torch.equal(before[k], after[k])], \
+        "the source checkpoint file must be untouched"
+    summary = json.load(open(os.path.join(adir, "error_summary.json")))
+    assert summary["read_only_verified"] is True
+    assert summary["lr_policy"]["comprehension"] == 1e-4
+    # the audit module must never reach a training/update path
+    import inspect
+    from scripts.naming_comprehension import base123_error_audit as m
+    # executable lines only: the module legitimately DISCUSSES these in its
+    # comments, but must never execute them
+    src_txt = "\n".join(l for l in inspect.getsource(m).splitlines()
+                        if l.strip() and not l.lstrip().startswith("#"))
+    for forbidden in ("train_step", "optim.step", ".backward(", "zero_grad",
+                      "--phase-transition", "allow_phase_transition=True"):
+        assert forbidden not in src_txt, forbidden
+
+
+def test_audit_launcher_passes_no_phase_transition_and_verifies_glove():
+    t = script(AUDIT)
+    ex = "\n".join(l for l in t.splitlines()
+                   if l.strip() and not l.lstrip().startswith("#"))
+    assert "--phase-transition" not in ex
+    assert "--allow-glove-fallback" not in ex
+    assert '--glove-path "$GLOVE"' in ex
+    assert "--lr-repetition" not in ex, \
+        "the audit must read the policy from the checkpoint, not be told it"
