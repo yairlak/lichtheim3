@@ -288,20 +288,42 @@ def main(argv: Optional[List[str]] = None) -> int:
                 del ck
         write_tsv(os.path.join(a.out_dir, "lr_policy_proof.tsv"), policy)
         if policy:
+            # Invariants that must hold across EVERY run, seeds included.
             for f, label in (("schedule", "schedule"),
                              ("schedule_ratio", "ratio"),
-                             ("schedule_seed", "schedule seed"),
                              ("schedule_anchor_step", "schedule anchor"),
                              ("optimizer_policy", "optimizer policy"),
+                             ("widths", "widths"),
                              ("lr_repetition", "R lr"), ("lr_naming", "N lr")):
                 vals = {json.dumps(p[f], sort_keys=True) for p in policy}
                 print(f"[canneal] {label} across all arms: "
                       + ("IDENTICAL " + vals.pop() if len(vals) == 1
                          else f"DIFFERS {sorted(vals)}  <-- confound"))
-            wid = {json.dumps(p["widths"], sort_keys=True) for p in policy}
-            print("[canneal] widths across all arms: "
-                  + ("IDENTICAL " + wid.pop() if len(wid) == 1
-                     else f"DIFFERS {sorted(wid)}  <-- confound"))
+            # schedule_seed is seed*1000003 + 4, so it is SUPPOSED to differ
+            # between seeds.  The invariant is within-seed: for one seed, all
+            # three arms must draw the same task order.  Comparing it across
+            # seeds -- which an earlier version of this report did -- reports
+            # a confound that does not exist.
+            sched = []
+            for s in SEEDS:
+                rec = {"seed": s}
+                vals = []
+                for arm in ARMS:
+                    hit = [p for p in policy if p["arm"] == arm and p["seed"] == s]
+                    v = hit[0]["schedule_seed"] if hit else None
+                    rec[f"schedule_seed_{arm}"] = v
+                    vals.append(v)
+                present = [v for v in vals if v is not None]
+                rec["n_arms_present"] = len(present)
+                rec["MATCHED"] = int(bool(present) and len(set(present)) == 1)
+                sched.append(rec)
+            write_tsv(os.path.join(a.out_dir, "schedule_seed_proof.tsv"), sched)
+            unmatched = [r["seed"] for r in sched if not r["MATCHED"]]
+            print("[canneal] schedule seed WITHIN each seed across arms: "
+                  + ("IDENTICAL in every seed" if not unmatched
+                     else f"DIFFERS for seeds {unmatched}  <-- confound"))
+            print("[canneal]   (across different seeds it is expected to "
+                  "differ: schedule_seed = seed*1000003 + 4)")
             miss = [(p["arm"], p["seed"]) for p in policy
                     if not p["lr_c_matches_arm"]]
             print(f"[canneal] comprehension LR matches its arm: "
