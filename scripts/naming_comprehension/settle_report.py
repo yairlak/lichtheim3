@@ -313,8 +313,13 @@ def main(argv: Optional[List[str]] = None) -> int:
                    "milestones": ",".join(map(str, smooth_ms)),
                    "dC_last4_per_seed": per,
                    "dC_last4_mean": round(st.mean(d), 3),
+                   "dC_last4_sd": round(st.stdev(d), 3) if len(d) > 1 else 0.0,
                    "better_seeds": sum(1 for x in d if x < 0),
                    "n_seeds": len(d),
+                   # PREREGISTERED missing-run policy: the formal decision
+                   # needs ALL FOUR paired seeds.  A smaller denominator is
+                   # descriptive only and can never certify a "3/4" winner.
+                   "formal_decision_evaluable": int(len(d) == 4),
                    "canneal_u1400_dC": CANNEAL_U1400_DC[arm]}
             rec["sign_flipped_vs_u1400"] = int(rec["dC_last4_mean"] < 0
                                                < CANNEAL_U1400_DC[arm])
@@ -324,11 +329,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"[settle] PRIMARY (smoothed, milestones {smooth_ms}):")
         for rec in smoothed:
             print(f"    C LR {rec['lr_c']:g}: last-4 mean dC "
-                  f"{rec['dC_last4_mean']:+.3f} "
-                  f"(better {rec['better_seeds']}/{rec['n_seeds']}); at u1400 "
+                  f"{rec['dC_last4_mean']:+.3f} (sd {rec['dC_last4_sd']:.3f}, "
+                  f"better {rec['better_seeds']}/{rec['n_seeds']}); at u1400 "
                   f"the SAME treatment gave {rec['canneal_u1400_dC']:+.2f} -> "
                   + ("SIGN FLIPPED: settle supported"
                      if rec["sign_flipped_vs_u1400"] else "sign NOT flipped"))
+            if not rec["formal_decision_evaluable"]:
+                print(f"    C LR {rec['lr_c']:g}: only {rec['n_seeds']}/4 "
+                      "paired seeds -> FORMAL_PREREGISTERED_WINNER = "
+                      "INCOMPLETE_FOR_PREREGISTERED_DECISION "
+                      "(descriptive numbers above are NOT a formal result)")
 
     # ---- variance: does the low step size collapse the fluctuation? ------
     var_ms = common2[-8:]

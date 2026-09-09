@@ -362,3 +362,6 @@ def test_report_survives_a_run_that_never_started(tmp_path):
     sm = {r["arm"]: r for r in g["settle_primary_smoothed"]}
     assert sm["5e5"]["n_seeds"] == "3"
     assert sm["3e5"]["n_seeds"] == "4"
+    # preregistered missing-run policy: 3/4 seeds is descriptive only
+    assert sm["5e5"]["formal_decision_evaluable"] == "0"
+    assert sm["3e5"]["formal_decision_evaluable"] == "1"
