@@ -3,6 +3,19 @@
 **Date: 2026-09-09.** Recorded, committed and pushed **before** the SETTLE
 experiment was submitted and before any u3000 → u3600 milestone existed.
 
+**Amendment 1 (2026-09-09, pre-submission, no data exist).** The structural
+equivalence band is a FIXED tolerance of 1.0 strict-C error, not a
+noise-dependent `max(1.0, paired_sd)` band: an across-seed SD measures
+heterogeneity, not equivalence, and a large `paired_sd` could have labelled a
+materially worse treatment "approximately equal to control". `paired_sd` is
+still reported but defines nothing. The decision branches are restated in
+fully mechanical form with a NO_CLEAR_DECISION catch-all, and
+`settle_report.py` now computes the branch itself — no informal judgment.
+Primary rule, sign-flip rule, ceiling rule, guards, missing-run policy, arms,
+parents, horizon, schedule, seeds, cadence, optimizer, architecture and the
+launcher are unchanged (launcher blob `f6619714…`, driver blob `95295d63…`,
+both byte-identical to the previously frozen versions).
+
 This memo is a record, not an instrument. It changes no training code, no
 launcher, no hyperparameter, no threshold, no checkpoint and no experimental
 design. The strict ceiling / streak criterion is unchanged: **5 consecutive
@@ -164,10 +177,18 @@ variance_ratio(settle) = variability(settle) / variability(ctrl)
 **STRUCTURAL_TAIL_SUPPORTED** (frozen tail) holds for a settle arm iff **all**
 of:
 
-1. it is **not** an eligible winner;
-2. |paired_mean| ≤ max(1.0, paired_sd)  — "approximately matches control";
-3. variance_ratio ≤ 0.5;
-4. guards pass and all four paired seeds are available.
+1. all four paired seeds are present;
+2. it is **not** an eligible primary winner;
+3. all preregistered R/N guards pass;
+4. **|paired_mean| ≤ 1.0 strict-C error** — a FIXED preregistered scientific
+   tolerance. `paired_sd` is reported but does NOT define the equivalence
+   band (Amendment 1);
+5. variance_ratio ≤ 0.5;
+6. C remains > 0: the arm's mean over seeds of `last4_mean_C` is > 0.
+
+If both settle arms satisfy the structural criterion, the arm with the lower
+variance_ratio is designated; a tie (difference ≤ 0.05) designates the
+higher-LR arm.
 
 ## GUARDS
 
@@ -181,25 +202,54 @@ of:
   independently justified threshold exists).
 - **Ceiling:** unchanged (5 consecutive distinct full evals at 0/0/0/0).
 
-## DECISION BRANCHES (frozen; evaluated in this order)
+## DECISION BRANCHES (frozen, mechanical, evaluated strictly in this order)
 
-1. **CEILING_CONFIRMED** — the driver's own 5-evaluation streak fires in any
-   run: stop further optimization of that seed/model; the multi-seed /
-   final-replication decision is taken separately.
-2. **STATE_DEPENDENT_SETTLING_SUPPORTED** — an eligible winner exists (its
-   paired_mean < 0 where CANNEAL's was > 0). Then decide whether to extend
-   the winner toward the strict ceiling from its trajectory and guards.
-3. **STRUCTURAL_TAIL_SUPPORTED** — no eligible winner, but a settle arm meets
-   the frozen structural criterion. Then run the read-only residual audit on
-   the settled state and re-evaluate the **existing** hard-tail trigger before
-   any targeted intervention. No new criterion may replace it.
-4. **STATE_DEPENDENT_SETTLING_REJECTED** — both settle arms have
-   paired_mean > 0 and neither meets the structural criterion (the u1400
-   result reproduced at u3000). Do not continue lower-LR settling by inertia.
-5. **MIXED_SETTLE_THEN_AUDIT** — annotation on branch 2 or 3: the selected
-   arm's mean-of-seed last-window ratio over u3550 → u3600 is ≥ 0.98 while
-   its last-4 mean C > 0 (material decrease that stalls above zero): audit
-   the settled state before further training.
+`settle_report.py` computes the branch itself from the definitions below and
+writes it to `settle_decision.json`; no informal judgment enters the reporter.
+
+**Precondition.** If either settle arm lacks all four paired seeds (or any of
+its last-4 / last-8 common-milestone statistics is not computable), the
+formal outcome is **INCOMPLETE_FOR_PREREGISTERED_DECISION** and no branch
+below is evaluated. The failed run may be resumed from its own checkpoint;
+the decision waits for it.
+
+1. **CEILING_CONFIRMED** — the maximum ceiling streak observed in ANY run is
+   ≥ 5 (the driver's own 0/0/0/0 streak rule). Stop further optimization of
+   that seed/model pending the predefined multi-seed / final-replication
+   decision.
+2. **STATE_DEPENDENT_SETTLING_SUPPORTED** — an eligible primary winner exists
+   (primary rule above) **and** its paired_mean < 0 < the corresponding
+   CANNEAL u1400 delta (the sign flip; with CANNEAL at +7.75 / +10.5 this is
+   implied by eligibility and is asserted explicitly anyway). Then decide
+   whether to extend the winner toward the strict ceiling from trajectory
+   and guards.
+3. **STRUCTURAL_TAIL_SUPPORTED** — no eligible winner, and ≥ 1 settle arm
+   meets the six-condition structural criterion above. Then run the
+   read-only residual audit on the settled state and re-evaluate the
+   **existing** hard-tail trigger before any targeted intervention. No new
+   criterion may replace it.
+4. **STATE_DEPENDENT_SETTLING_REJECTED** — no eligible winner, no structural
+   arm, **and BOTH settle arms have paired_mean > +1.0** (worse than control
+   beyond the fixed equivalence tolerance — the u1400 result reproduced at
+   u3000). Do not continue lower-LR settling by inertia.
+5. **MIXED_SETTLE_THEN_AUDIT** — none of 1–4, and **≥ 1 settle arm has
+   paired_mean ≤ +1.0** (at-least-equivalent or better on the smoothed mean
+   but failing eligibility — e.g. < 3/4 seeds or a guard — and failing the
+   variance-collapse test). Audit the settled state before further training.
+6. **NO_CLEAR_DECISION** — none of the above fires. Guaranteed catch-all;
+   no training decision is taken from this experiment.
+
+**Exhaustiveness.** For complete runs, branches 4 and 5 partition the
+complement of 1–3 exactly: after 1–3 fail, each settle arm has a computable
+paired_mean, and "both > +1.0" (branch 4) versus "at least one ≤ +1.0"
+(branch 5) are logical complements. Branch 6 therefore fires only for
+degenerate data (and INCOMPLETE precedes everything); every complete-run
+outcome maps to exactly one branch.
+
+**Annotation (not a branch): STALLED_ABOVE_ZERO** — recorded alongside
+branch 2 or 3 when the selected arm's mean-of-seed last-window ratio over
+u3550 → u3600 is ≥ 0.98 while its last-4 mean C > 0; the settled state is
+audited before further training in that case too.
 
 Any later deviation from these rules must be recorded as a deviation, with
 its reason, and must not be presented as the original plan.

@@ -373,6 +373,134 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"(ratio vs ctrl {v['C_sd_ratio_vs_ctrl']})  "
                   f"R SD {v['R_sd_mean']:.3f}")
 
+    # ---- PREREGISTERED MECHANICAL DECISION (memo Amendment 1) ------------
+    # Every complete-run outcome maps to exactly one branch; no judgment
+    # call is made here.  Priority: INCOMPLETE precondition, then
+    # CEILING > SUPPORTED > STRUCTURAL > REJECTED > MIXED > NO_CLEAR.
+    def last4(arm, s, key):
+        v = [r[key] for r in rows if r["arm"] == arm and r["seed"] == s
+             and r["milestone"] in smooth_ms]
+        return st.mean(v) if len(v) == 4 else None
+
+    def arm_last4(arm, key):
+        v = [last4(arm, s, key) for s in SEEDS]
+        v = [x for x in v if x is not None]
+        return st.mean(v) if v else None
+
+    def guards_for(arm):
+        n = arm_last4(arm, "naming_errors")
+        rc, rc0 = arm_last4(arm, "rep_canonical_errors"), \
+            arm_last4("ctrl", "rep_canonical_errors")
+        rf, rf0 = arm_last4(arm, "rep_freear_errors"), \
+            arm_last4("ctrl", "rep_freear_errors")
+        g = {"naming_last4_mean": None if n is None else round(n, 4),
+             "naming_ok": n is not None and n < 0.25,
+             "rep_canonical_excess": None if None in (rc, rc0)
+             else round(rc - rc0, 4),
+             "rep_canonical_ok": None not in (rc, rc0) and rc - rc0 <= 2,
+             "rep_freear_excess": None if None in (rf, rf0)
+             else round(rf - rf0, 4),
+             "rep_freear_ok": None not in (rf, rf0) and rf - rf0 <= 2}
+        g["all_ok"] = bool(g["naming_ok"] and g["rep_canonical_ok"]
+                           and g["rep_freear_ok"])
+        return g
+
+    sm_by = {r["arm"]: r for r in smoothed}
+    vr_by = {v["arm"]: v.get("C_sd_ratio_vs_ctrl") for v in variance}
+    max_streak = max((r.get("ceiling_streak", 0) for r in rows), default=0)
+    complete = (len(smooth_ms) == 4 and len(var_ms) == 8
+                and all(arm in sm_by
+                        and sm_by[arm]["formal_decision_evaluable"]
+                        for arm in ("5e5", "3e5"))
+                and {v["arm"] for v in variance} == set(ARMS))
+    detail = {"complete": bool(complete), "max_ceiling_streak": max_streak,
+              "arms": {}}
+    branch = None
+    if not complete:
+        branch = "INCOMPLETE_FOR_PREREGISTERED_DECISION"
+    else:
+        for arm in ("5e5", "3e5"):
+            rec, g = sm_by[arm], guards_for(arm)
+            pm = rec["dC_last4_mean"]
+            eligible = (pm < 0 and rec["better_seeds"] >= 3 and g["all_ok"])
+            structural = (not eligible and g["all_ok"] and abs(pm) <= 1.0
+                          and vr_by.get(arm) is not None
+                          and vr_by[arm] <= 0.5
+                          and (arm_last4(arm, "comp_top1_errors") or 0) > 0)
+            detail["arms"][arm] = {
+                "paired_mean": pm, "paired_sd": rec["dC_last4_sd"],
+                "better_seeds": rec["better_seeds"],
+                "variance_ratio": vr_by.get(arm), "guards": g,
+                "eligible_primary_winner": bool(eligible),
+                "structural_candidate": bool(structural),
+                "sign_flipped_vs_u1400": rec["sign_flipped_vs_u1400"]}
+        el = [x for x in ("5e5", "3e5")
+              if detail["arms"][x]["eligible_primary_winner"]]
+        stc = [x for x in ("5e5", "3e5")
+               if detail["arms"][x]["structural_candidate"]]
+        winner = None
+        if len(el) == 2:
+            d5, d3 = (detail["arms"]["5e5"]["paired_mean"],
+                      detail["arms"]["3e5"]["paired_mean"])
+            winner = "5e5" if abs(d5 - d3) <= 1.0 else min(el, key=lambda x:
+                detail["arms"][x]["paired_mean"])
+        elif el:
+            winner = el[0]
+        pm5 = detail["arms"]["5e5"]["paired_mean"]
+        pm3 = detail["arms"]["3e5"]["paired_mean"]
+        if max_streak >= 5:
+            branch = "CEILING_CONFIRMED"
+        elif winner:
+            assert detail["arms"][winner]["sign_flipped_vs_u1400"], \
+                "eligible winner without sign flip is impossible given " \
+                "CANNEAL's positive deltas"
+            branch = "STATE_DEPENDENT_SETTLING_SUPPORTED"
+            detail["winner"] = winner
+        elif stc:
+            if len(stc) == 2:
+                v5, v3 = vr_by["5e5"], vr_by["3e5"]
+                pick = "5e5" if abs(v5 - v3) <= 0.05 else min(
+                    stc, key=lambda x: vr_by[x])
+            else:
+                pick = stc[0]
+            branch = "STRUCTURAL_TAIL_SUPPORTED"
+            detail["structural_arm"] = pick
+        elif pm5 > 1.0 and pm3 > 1.0:
+            branch = "STATE_DEPENDENT_SETTLING_REJECTED"
+        elif min(pm5, pm3) <= 1.0:
+            branch = "MIXED_SETTLE_THEN_AUDIT"
+        else:
+            branch = "NO_CLEAR_DECISION"
+        # annotation: material decrease that stalls above zero
+        sel = detail.get("winner") or detail.get("structural_arm")
+        if sel and len(smooth_ms) >= 3:
+            m_prev, m_last = smooth_ms[-3], smooth_ms[-1]   # 50u window
+            ratios = []
+            for s in SEEDS:
+                e0 = [r["comp_top1_errors"] for r in rows
+                      if r["arm"] == sel and r["seed"] == s
+                      and r["milestone"] == m_prev]
+                e1 = [r["comp_top1_errors"] for r in rows
+                      if r["arm"] == sel and r["seed"] == s
+                      and r["milestone"] == m_last]
+                if e0 and e1 and e0[0] > 0:
+                    ratios.append(e1[0] / e0[0])
+            stall = (bool(ratios) and st.mean(ratios) >= 0.98
+                     and (arm_last4(sel, "comp_top1_errors") or 0) > 0)
+            detail["stalled_above_zero"] = bool(stall)
+            if ratios:
+                detail["last_window_ratio"] = round(st.mean(ratios), 6)
+    detail["branch"] = branch
+    json.dump(detail, open(os.path.join(a.out_dir, "settle_decision.json"),
+                           "w"), indent=1)
+    print(f"[settle] PREREGISTERED_BRANCH = {branch}"
+          + (f"  (winner {detail.get('winner')})" if detail.get("winner")
+             else "")
+          + (f"  (structural arm {detail.get('structural_arm')})"
+             if detail.get("structural_arm") else "")
+          + ("  [STALLED_ABOVE_ZERO]" if detail.get("stalled_above_zero")
+             else ""))
+
     # ---- the primary question: does C reach zero? ------------------------
     czero = [{"arm": r["arm"], "seed": r["seed"], "milestone": r["milestone"],
               "u": r["u"], "global_step": r["global_step"],
@@ -502,6 +630,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                "source_step": SRC_STEP, "end_step": END_STEP,
                "n_milestones": N_MILESTONES,
                "paired_at_milestone": last,
+               "preregistered_branch": branch,
                "primary_smoothed": smoothed,
                "variance": variance,
                "canneal_u1400_reference_dC": CANNEAL_U1400_DC,

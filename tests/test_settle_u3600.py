@@ -365,3 +365,105 @@ def test_report_survives_a_run_that_never_started(tmp_path):
     # preregistered missing-run policy: 3/4 seeds is descriptive only
     assert sm["5e5"]["formal_decision_evaluable"] == "0"
     assert sm["3e5"]["formal_decision_evaluable"] == "1"
+
+
+# ==================  5. the mechanical preregistered decision (Amend. 1)  ==
+
+def _decision(runs, out):
+    from scripts.naming_comprehension import settle_report as m
+    assert m.main(["--runs-root", runs, "--out-dir", out]) == 0
+    return json.load(open(os.path.join(out, "settle_decision.json")))
+
+
+def test_branch_supported_when_a_settle_arm_wins(tmp_path):
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    _fixture(runs, lambda arm, s, k:
+             {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3))
+    d = _decision(runs, out)
+    assert d["complete"] is True
+    assert d["branch"] == "STATE_DEPENDENT_SETTLING_SUPPORTED"
+    assert d["winner"] == "3e5"          # lower paired_mean, gap > 1.0
+    assert d["arms"]["3e5"]["eligible_primary_winner"] is True
+    assert d["arms"]["3e5"]["sign_flipped_vs_u1400"] == 1
+    assert d["arms"]["3e5"]["guards"]["all_ok"] is True
+
+
+def test_branch_structural_fixed_tolerance_not_paired_sd(tmp_path):
+    """Same mean as control, collapsed variance: the FIXED |pm| <= 1.0 band
+    plus variance_ratio <= 0.5, never a paired_sd-widened band."""
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    def ce(arm, s, k):
+        jitter = {"ctrl": 6, "5e5": 3, "3e5": 0}[arm]
+        return 37 + (jitter if k % 2 else -jitter)
+    _fixture(runs, ce)
+    d = _decision(runs, out)
+    assert d["branch"] == "STRUCTURAL_TAIL_SUPPORTED"
+    assert d["structural_arm"] == "3e5"  # lower variance_ratio
+    a = d["arms"]["3e5"]
+    assert abs(a["paired_mean"]) <= 1.0
+    assert a["variance_ratio"] <= 0.5
+    assert a["eligible_primary_winner"] is False
+
+
+def test_branch_rejected_when_both_arms_materially_worse(tmp_path):
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    _fixture(runs, lambda arm, s, k:
+             {"ctrl": 37, "5e5": 44, "3e5": 47}[arm] + (k % 3))
+    d = _decision(runs, out)
+    assert d["branch"] == "STATE_DEPENDENT_SETTLING_REJECTED"
+    assert d["arms"]["5e5"]["paired_mean"] > 1.0
+    assert d["arms"]["3e5"]["paired_mean"] > 1.0
+
+
+def test_branch_mixed_is_reachable_not_shadowed(tmp_path):
+    """One arm clearly better on the mean but only 2/4 seeds and no variance
+    collapse; the other materially worse.  Branch 4 must NOT swallow it."""
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    def ce(arm, s, k):
+        base = 37 + (k % 3)
+        if arm == "ctrl":
+            return base
+        if arm == "5e5":
+            return base - 8 if s in (19, 20) else base + 2   # pm = -3, 2/4
+        return base + 5                                       # pm = +5
+    _fixture(runs, ce)
+    d = _decision(runs, out)
+    a = d["arms"]["5e5"]
+    assert a["paired_mean"] == -3.0 and a["better_seeds"] == 2
+    assert a["eligible_primary_winner"] is False
+    assert a["structural_candidate"] is False    # |pm| > 1.0
+    assert d["branch"] == "MIXED_SETTLE_THEN_AUDIT"
+
+
+def test_branch_ceiling_outranks_everything(tmp_path):
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    def ce(arm, s, k):
+        if arm == "3e5" and k >= 20:
+            return 0                              # 5-eval 0/0/0/0 streak
+        return {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3)
+    _fixture(runs, ce)
+    d = _decision(runs, out)
+    assert d["max_ceiling_streak"] >= 5
+    assert d["branch"] == "CEILING_CONFIRMED"
+
+
+def test_branch_incomplete_precedes_all_branches(tmp_path):
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    _fixture(runs, lambda arm, s, k:
+             {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3))
+    os.remove(os.path.join(runs, "final_settle_5e5_h512_s21", "metrics.tsv"))
+    d = _decision(runs, out)
+    assert d["complete"] is False
+    assert d["branch"] == "INCOMPLETE_FOR_PREREGISTERED_DECISION"
+    assert "winner" not in d
+
+
+def test_branches_partition_every_complete_outcome():
+    """Exhaustiveness at the logic level: after CEILING/SUPPORTED/STRUCTURAL
+    fail, 'both pm > 1.0' and 'min pm <= 1.0' are complements, so
+    NO_CLEAR_DECISION is unreachable for complete numeric data."""
+    for pm5 in (-5.0, -1.0, 0.0, 1.0, 1.01, 7.0):
+        for pm3 in (-5.0, -1.0, 0.0, 1.0, 1.01, 7.0):
+            rejected = pm5 > 1.0 and pm3 > 1.0
+            mixed = min(pm5, pm3) <= 1.0
+            assert rejected != mixed
