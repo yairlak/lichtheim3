@@ -11,16 +11,77 @@ materially worse treatment "approximately equal to control". `paired_sd` is
 still reported but defines nothing. The decision branches are restated in
 fully mechanical form with a NO_CLEAR_DECISION catch-all, and
 `settle_report.py` now computes the branch itself — no informal judgment.
-Primary rule, sign-flip rule, ceiling rule, guards, missing-run policy, arms,
-parents, horizon, schedule, seeds, cadence, optimizer, architecture and the
-launcher are unchanged (launcher blob `f6619714…`, driver blob `95295d63…`,
-both byte-identical to the previously frozen versions).
+Amendment 1 concerned the **structural rule only**.
+
+**Amendment 2 (2026-09-09, pre-submission, no data exist).** Concerns
+**ceiling / stopping semantics only**. The previous single requirement of
+five consecutive perfect full-lexicon evaluations conflated the *existence*
+of an exact-ceiling checkpoint with the *persistence* of the ceiling under
+continued training. Three distinct concepts are frozen:
+
+- **CEILING_HIT** — ONE scheduled full-lexicon evaluation on one run with
+  simultaneously R canonical = 0, R free-AR = 0, N free-AR = 0 and C strict
+  top-1 = 0. An existence proof for that exact checkpoint (which is written
+  at that exact step — see CHECKPOINT PRESERVATION below). Not a stopping
+  event: streak = 1, evaluation continues at the next scheduled 25u full
+  evaluation. If that next evaluation fails, the streak resets to 0; the hit
+  remains historically recorded.
+- **CEILING_CONFIRMED** — TWO CONSECUTIVE scheduled full-lexicon 0/0/0/0
+  evaluations on the SAME run, i.e. persistence through one additional 25u
+  interval (~69,450 optimizer steps). **This is the official stopping /
+  certification criterion for an individual training run**
+  (`--ceiling-consecutive-required 2`; the driver is unchanged — the
+  threshold was always a CLI parameter).
+- **CEILING_STABILITY_5** — five consecutive 0/0/0/0 evaluations. Reported
+  as a HIGH-STABILITY DIAGNOSTIC only; not required for CEILING_CONFIRMED
+  and not a stopping criterion.
+
+The four component metrics remain exact and full-lexicon — nothing is
+weakened. A deterministic exhaustive 0/0/0/0 evaluation is already an
+existence proof; the second consecutive one guards against an isolated
+transient; five would demand a 100u stability property that is not the
+stated primary objective. Longer-term robustness is instead tested by
+freezing the successful recipe/checkpoint and later performing a clean
+from-scratch replication on independent seeds — **whose standard is NOT
+defined here**: once the first CEILING_CONFIRMED model exists, the final
+replication protocol will be preregistered separately.
+
+Decision-tree consequence: the highest-priority branch is now
+`CEILING_CONFIRMED iff max ceiling streak ≥ 2 in any run`, and it is
+evaluated **ahead of the completeness precondition** — a run that stops
+early on a confirmed ceiling leaves its later milestones missing by design,
+and that must not bury the confirmation under INCOMPLETE. A single
+unconfirmed CEILING_HIT does **not** shadow the tree: the normal branches
+proceed, with `any_ceiling_hit`, `max_ceiling_streak` and `any_stability_5`
+reported alongside. All other rules of this memo (primary, sign flip,
+structural band, variance criterion, missing-run policy, guards, branch
+ordering below ceiling, parents, arms, seeds, schedule, horizon, cadence,
+optimizer, architecture, data, τ, loss definitions) are unchanged.
+
+Both amendments were committed and pushed **before any SETTLE submission and
+before any SETTLE result existed**. Driver blob `95295d63…` byte-identical
+throughout; the launcher changes only its `CEILING_REQUIRED` value (5 → 2)
+and the corresponding comments.
+
+**CHECKPOINT PRESERVATION (verified in the driver, blob `95295d63…`).** The
+streak is counted exclusively in the scheduled full-evaluation branch
+(`if trainer.global_step in full_eval_steps:`), never on dev evaluations and
+never on sparse save events; in this experiment every full-evaluation step
+is also a multiple of `SAVE_EVERY = 69,450`, and the milestone checkpoint is
+written unconditionally at that same global step, AFTER the streak
+accounting. Every CEILING_HIT therefore has its exact evaluated model state
+checkpointed — global step, task cursors, exposures, LR policy, RNG states,
+population hashes and provenance are all carried in the checkpoint — and a
+confirmed run preserves both the first-hit and the confirming checkpoints.
+No save-cadence change was needed.
 
 This memo is a record, not an instrument. It changes no training code, no
 launcher, no hyperparameter, no threshold, no checkpoint and no experimental
-design. The strict ceiling / streak criterion is unchanged: **5 consecutive
-distinct scheduled full-lexicon evaluations at R canonical = 0, R free-AR = 0,
-N free-AR = 0 and C strict top-1 = 0.**
+design. Ceiling semantics follow **Amendment 2** above: CEILING_HIT (one
+scheduled full-lexicon 0/0/0/0 evaluation, existence proof), CEILING_CONFIRMED
+(**two consecutive** such evaluations — the stopping / certification
+criterion), and CEILING_STABILITY_5 (five consecutive — stability diagnostic
+only). The four component metrics are exact and full-lexicon throughout.
 
 At the time of writing:
 
@@ -200,7 +261,7 @@ higher-LR arm.
 - **LTM:** reported as a scientific secondary metric only. The expected LTM
   recovery in the settle arms is **not** a pass/fail requirement (no
   independently justified threshold exists).
-- **Ceiling:** unchanged (5 consecutive distinct full evals at 0/0/0/0).
+- **Ceiling:** per Amendment 2 — CEILING_CONFIRMED = 2 consecutive distinct scheduled full-lexicon evaluations at 0/0/0/0 (the stopping criterion); a single hit is recorded, never stops, never shadows; 5 consecutive reported as a stability diagnostic only.
 
 ## DECISION BRANCHES (frozen, mechanical, evaluated strictly in this order)
 
@@ -214,9 +275,13 @@ below is evaluated. The failed run may be resumed from its own checkpoint;
 the decision waits for it.
 
 1. **CEILING_CONFIRMED** — the maximum ceiling streak observed in ANY run is
-   ≥ 5 (the driver's own 0/0/0/0 streak rule). Stop further optimization of
-   that seed/model pending the predefined multi-seed / final-replication
-   decision.
+   **≥ 2** (Amendment 2: two consecutive scheduled full-lexicon 0/0/0/0
+   evaluations on the same run). Evaluated AHEAD of the completeness
+   precondition, because a confirmed run stops early by design. Stop further
+   optimization of that seed/model pending the separately preregistered
+   multi-seed / final-replication decision. `any_ceiling_hit`,
+   `max_ceiling_streak` and `any_stability_5` are always reported; a single
+   unconfirmed hit does not shadow the tree.
 2. **STATE_DEPENDENT_SETTLING_SUPPORTED** — an eligible primary winner exists
    (primary rule above) **and** its paired_mean < 0 < the corresponding
    CANNEAL u1400 delta (the sign flip; with CANNEAL at +7.75 / +10.5 this is

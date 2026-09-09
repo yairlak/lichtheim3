@@ -204,7 +204,7 @@ def test_job_lowers_c_and_holds_everything_else():
                       "--allow-glove-fallback", "margin", "hard_negative",
                       "curriculum", "1.5e-4", "2e-4", "1e-5,"):
         assert forbidden not in ex, forbidden
-    assert "CEILING_REQUIRED=5" in t
+    assert "CEILING_REQUIRED=2" in t   # Amendment 2: confirmed = 2 consecutive
     assert "EVAL_EVERY=13890" in t and "SAVE_EVERY=69450" in t
     assert "--ceiling-consecutive-required" in ex and "--stop-at-ceiling" in ex
 
@@ -435,16 +435,77 @@ def test_branch_mixed_is_reachable_not_shadowed(tmp_path):
     assert d["branch"] == "MIXED_SETTLE_THEN_AUDIT"
 
 
-def test_branch_ceiling_outranks_everything(tmp_path):
+def test_branch_ceiling_confirmed_by_exactly_two_consecutive_zeros(tmp_path):
+    """Amendment 2: TWO consecutive 0/0/0/0 full evaluations confirm and
+    outrank everything, even an eligible settle winner."""
     runs, out = str(tmp_path / "r"), str(tmp_path / "o")
     def ce(arm, s, k):
-        if arm == "3e5" and k >= 20:
-            return 0                              # 5-eval 0/0/0/0 streak
+        if arm == "3e5" and s == 19 and k in (23, 24):
+            return 0                              # exactly two consecutive
         return {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3)
     _fixture(runs, ce)
     d = _decision(runs, out)
-    assert d["max_ceiling_streak"] >= 5
+    assert d["any_ceiling_hit"] is True
+    assert d["max_ceiling_streak"] == 2
+    assert d["ceiling_confirmed"] is True
+    assert d["any_stability_5"] is False
     assert d["branch"] == "CEILING_CONFIRMED"
+    assert d["confirmed_runs"] == [["3e5", 19]]
+    assert d["first_confirmation"][3] == SRC_STEP + MS_STEP * 24
+
+
+def test_single_unconfirmed_hit_does_not_shadow_the_tree(tmp_path):
+    """One isolated perfect evaluation is a recorded CEILING_HIT, never a
+    stop, never a branch: the normal scientific tree proceeds."""
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    def ce(arm, s, k):
+        if arm == "3e5" and s == 19 and k == 10:
+            return 0                              # isolated hit, then resets
+        return {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3)
+    _fixture(runs, ce)
+    d = _decision(runs, out)
+    assert d["any_ceiling_hit"] is True
+    assert d["max_ceiling_streak"] == 1
+    assert d["ceiling_confirmed"] is False
+    assert d["branch"] == "STATE_DEPENDENT_SETTLING_SUPPORTED"
+    assert d["winner"] == "3e5"
+
+
+def test_confirmed_early_stop_beats_incomplete(tmp_path):
+    """A run that stops on a confirmed ceiling leaves later milestones
+    missing BY DESIGN; the confirmation must not be buried under
+    INCOMPLETE_FOR_PREREGISTERED_DECISION."""
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    def ce(arm, s, k):
+        if arm == "3e5" and s == 19 and k in (1, 2):
+            return 0                              # confirmed at k=2 ...
+        return {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3)
+    _fixture(runs, ce)
+    # ... then the run stopped after k=2: even the deepest-common fallback
+    # cannot build a 4-milestone smoothed primary from 2 milestones
+    q = os.path.join(runs, "final_settle_3e5_h512_s19", "metrics.tsv")
+    kept = [r for r in csv.DictReader(open(q), delimiter="	")
+            if int(r["step"]) <= SRC_STEP + MS_STEP * 2]
+    with open(q, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(kept[0]), delimiter="	")
+        w.writeheader(); [w.writerow(r) for r in kept]
+    d = _decision(runs, out)
+    assert d["complete"] is False
+    assert d["branch"] == "CEILING_CONFIRMED"
+    assert d["confirmed_runs"] == [["3e5", 19]]
+
+
+def test_stability_5_is_reported_but_not_required(tmp_path):
+    runs, out = str(tmp_path / "r"), str(tmp_path / "o")
+    def ce(arm, s, k):
+        if arm == "3e5" and s == 19 and k >= 19:
+            return 0                              # streak reaches 6
+        return {"ctrl": 37, "5e5": 30, "3e5": 24}[arm] + (k % 3)
+    _fixture(runs, ce)
+    d = _decision(runs, out)
+    assert d["branch"] == "CEILING_CONFIRMED"
+    assert d["any_stability_5"] is True
+    assert d["max_ceiling_streak"] == 6
 
 
 def test_branch_incomplete_precedes_all_branches(tmp_path):

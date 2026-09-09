@@ -74,8 +74,9 @@
 # and every moment (never reset), RNG, all four cursors, R LR 3e-5, N LR
 # 3e-5, lambda_C .087, lambda_N 1.0, tau .10, every R loss weight, dec .5,
 # c_align 0, the dorsal pool riding every R step, wm128/enc512/dec512, batch
-# 64, wd 1e-5, clip 1.0, populations and hashes, teacher forcing, evaluation
-# definitions, and the committed 5-milestone strict ceiling rule.
+# 64, wd 1e-5, clip 1.0, populations and hashes, teacher forcing, and every
+# evaluation definition.  Ceiling semantics follow Amendment 2 of the frozen
+# decision memo: stop on TWO consecutive full-lexicon 0/0/0/0 evaluations.
 #
 # No loss, architecture, sampler, curriculum, hard-negative, margin or
 # task-ratio change appears anywhere.
@@ -138,7 +139,13 @@ for K in $(seq 1 24); do
 done
 EVAL_EVERY=13890                         # dev cadence, unchanged
 SAVE_EVERY=69450                         # every milestone is a multiple
-CEILING_REQUIRED=5                       # committed rule, unchanged
+# Amendment 2 (pre-result): CEILING_CONFIRMED = TWO consecutive scheduled
+# full-lexicon 0/0/0/0 evaluations (one 25u persistence interval).  A single
+# perfect evaluation is a CEILING_HIT (existence proof; its checkpoint is
+# written at that exact step) but does not stop the run.  Five consecutive
+# remains reported as a stability diagnostic only.  The four component
+# metrics are unchanged and exact.
+CEILING_REQUIRED=2                       # confirmed-ceiling stop threshold
 
 RUNS=${L3_RUNS:-/lustre/fsn1/projects/rech/llg/uss35bp/lichtheim3_runs}
 PARENT_RUN_ID="final_chigh_ctrl_u3000_h512_s${SEED}"

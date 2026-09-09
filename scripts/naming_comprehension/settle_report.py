@@ -407,16 +407,37 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     sm_by = {r["arm"]: r for r in smoothed}
     vr_by = {v["arm"]: v.get("C_sd_ratio_vs_ctrl") for v in variance}
+    # Amendment 2 ceiling semantics.  CEILING_HIT = one scheduled full-lexicon
+    # 0/0/0/0 evaluation (existence proof; its checkpoint is written at that
+    # exact step).  CEILING_CONFIRMED = TWO consecutive such evaluations on
+    # the same run -- the stopping/certification criterion.  Five consecutive
+    # is reported as a stability diagnostic only.  A single unconfirmed hit
+    # must NOT shadow the scientific decision tree.
     max_streak = max((r.get("ceiling_streak", 0) for r in rows), default=0)
+    any_hit = any(r.get("at_ceiling") for r in rows)
     complete = (len(smooth_ms) == 4 and len(var_ms) == 8
                 and all(arm in sm_by
                         and sm_by[arm]["formal_decision_evaluable"]
                         for arm in ("5e5", "3e5"))
                 and {v["arm"] for v in variance} == set(ARMS))
-    detail = {"complete": bool(complete), "max_ceiling_streak": max_streak,
+    detail = {"complete": bool(complete),
+              "any_ceiling_hit": bool(any_hit),
+              "max_ceiling_streak": max_streak,
+              "any_stability_5": bool(max_streak >= 5),
+              "ceiling_confirmed": bool(max_streak >= 2),
               "arms": {}}
     branch = None
-    if not complete:
+    if max_streak >= 2:
+        # Highest priority, and deliberately AHEAD of the completeness gate:
+        # a run that stops early on a confirmed ceiling leaves its later
+        # milestones missing by design, and that must not bury the
+        # confirmation under INCOMPLETE.
+        branch = "CEILING_CONFIRMED"
+        hits = [(r["arm"], r["seed"], r["milestone"], r["global_step"])
+                for r in rows if r.get("ceiling_streak", 0) >= 2]
+        detail["confirmed_runs"] = sorted({(a, s) for a, s, _, _ in hits})
+        detail["first_confirmation"] = min(hits, key=lambda h: h[3])
+    elif not complete:
         branch = "INCOMPLETE_FOR_PREREGISTERED_DECISION"
     else:
         for arm in ("5e5", "3e5"):
@@ -448,9 +469,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             winner = el[0]
         pm5 = detail["arms"]["5e5"]["paired_mean"]
         pm3 = detail["arms"]["3e5"]["paired_mean"]
-        if max_streak >= 5:
-            branch = "CEILING_CONFIRMED"
-        elif winner:
+        # (ceiling was already handled above with highest priority; an
+        # unconfirmed single hit reaches here and follows the normal tree)
+        if winner:
             assert detail["arms"][winner]["sign_flipped_vs_u1400"], \
                 "eligible winner without sign flip is impossible given " \
                 "CANNEAL's positive deltas"
@@ -631,6 +652,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                "n_milestones": N_MILESTONES,
                "paired_at_milestone": last,
                "preregistered_branch": branch,
+               "any_ceiling_hit": detail["any_ceiling_hit"],
+               "max_ceiling_streak": detail["max_ceiling_streak"],
+               "any_stability_5": detail["any_stability_5"],
                "primary_smoothed": smoothed,
                "variance": variance,
                "canneal_u1400_reference_dC": CANNEAL_U1400_DC,
