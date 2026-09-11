@@ -326,3 +326,102 @@ def test_no_autoresearch_or_scheduler_dependency():
     body = re.sub(r'forbidden = \([^)]*\)', '', src, flags=re.S)
     for bad in ("arctl", "registry", "enablement"):
         assert bad not in body, bad
+
+
+# ===================================================== Amendment V3.1 tests
+from scripts.naming_comprehension.constrained_coexistence_v3 import (  # noqa: E402
+    FEAS_TOL_RAW, feasibility_threshold,
+)
+
+
+# V3.1-1 -- margin exactly gamma passes
+def test_margin_exactly_gamma_is_feasible():
+    assert GAMMA_RAW >= feasibility_threshold()
+
+
+# V3.1-2 -- the observed roundoff deficit passes
+def test_observed_roundoff_deficit_passes():
+    observed = 0.00099998011995872105          # measured seed-19 witness
+    assert GAMMA_RAW - observed == pytest.approx(1.988e-08, rel=0.05)
+    assert observed >= feasibility_threshold()
+    assert (GAMMA_RAW - 2e-8) >= feasibility_threshold()
+
+
+# V3.1-3 -- a deficit an order of magnitude larger than the tolerance fails
+def test_deficit_larger_than_tolerance_fails():
+    assert (GAMMA_RAW - 2e-7) < feasibility_threshold()
+    assert (GAMMA_RAW - 1e-5) < feasibility_threshold()
+
+
+# V3.1-4 -- a genuine strict error can NEVER pass on the tolerance
+@pytest.mark.parametrize("m", [0.0, -1e-12, -1e-6, -0.001, -0.5, -3.58])
+def test_strict_errors_can_never_pass_on_tolerance(m):
+    assert m < feasibility_threshold()
+    # and the acceptance threshold is four orders of magnitude above zero
+    assert feasibility_threshold() / GAMMA_RAW == pytest.approx(1 - 1e-4, rel=1e-9)
+
+
+# V3.1-5 -- gamma itself is untouched
+def test_gamma_raw_still_exactly_1e_3():
+    assert GAMMA_RAW == 1e-3
+    assert FEAS_TOL_RAW == 1e-7
+    assert FEAS_TOL_RAW / GAMMA_RAW == pytest.approx(1e-4, rel=1e-12)
+
+
+# V3.1-6 -- the tolerance is used ONLY for termination / feasibility, never in the QP
+def test_tolerance_not_used_in_qp_construction():
+    import re
+    src = _src_code_only()
+    # strip full-line and trailing comments so this checks CODE, not prose
+    code = "\n".join(re.sub(r"#.*$", "", ln) for ln in src.split("\n"))
+    # right-hand sides must still target the full gamma
+    assert "GAMMA_RAW - ds[k] @ s0[keys[k][0]]" in code
+    qp = code.split("def run_arm")[1].split("W = theta")[0]
+    assert "FEAS_TOL_RAW" not in qp, "FEAS_TOL_RAW must not appear in QP assembly code"
+    # the QP right-hand side must use the untouched gamma, not the threshold
+    assert "feasibility_threshold()" not in qp.split("r = torch.stack")[1][:200]
+    # exactly one definition of the threshold, used for the violation set
+    assert src.count("def feasibility_threshold") == 1
+    assert "viol = (worst < feasibility_threshold())" in src
+
+
+# V3.1-7 -- official C verification remains mandatory and unmodified
+def test_official_c_verification_still_required():
+    src = _src_code_only()
+    assert "def comprehension_metrics" not in src
+    from scripts.naming_comprehension.frozen_head_probe import official_strict_errors
+    assert callable(official_strict_errors)
+
+
+# V3.1-8 -- objective and active-set construction unchanged by the amendment
+@pytest.mark.parametrize("arm", ARMS)
+def test_objective_and_gram_unchanged_by_amendment(arm):
+    phi, A, X_all, Xc = _sys(seed=21)
+    z0 = torch.randn(X_all.shape[0], A.shape[0],
+                     generator=torch.Generator().manual_seed(99))
+    Dsq = (1 - torch.tanh(z0) ** 2) ** 2
+    mt = Metric(arm, A, Xc, Dsq_mean=Dsq.mean(0), X_all=X_all, Dsq=Dsq)
+    th = torch.randn(A.shape[1], X_all.shape[1])
+    s = X_all @ th.t()
+    expect = {"I": (s ** 2).sum(1).mean(),
+              "Jz": ((s @ A.t()) ** 2).sum(1).mean(),
+              "Jlinh0": ((Dsq.sqrt() * (s @ A.t())) ** 2).sum(1).mean()}[arm]
+    assert torch.allclose((th * mt.H(th)).sum(), expect, rtol=1e-10)
+
+
+# V3.1-9 -- the seed-19 numerical state now terminates instead of spinning
+def test_seed19_numerical_state_terminates():
+    worst = torch.full((27981,), 0.5)
+    worst[:19] = 0.00099998011995872105        # the measured active-constraint value
+    viol = (worst < feasibility_threshold()).nonzero().flatten()
+    assert viol.numel() == 0, "converged seed-19 state must terminate, not re-flag"
+    # under the pre-fix predicate it would have re-flagged all 19 forever
+    assert int((worst < GAMMA_RAW).sum()) == 19
+
+
+# V3.1-10 -- a genuinely infeasible state still fails
+def test_genuinely_infeasible_state_still_fails():
+    worst = torch.full((100,), 0.5)
+    worst[7] = -0.02                            # a real strict error
+    viol = (worst < feasibility_threshold()).nonzero().flatten()
+    assert viol.tolist() == [7]

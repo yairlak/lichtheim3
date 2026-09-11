@@ -59,6 +59,13 @@ if ROOT not in sys.path:
 
 # ---------------------------------------------------------- frozen constants
 GAMMA_RAW = 1e-3
+# Amendment V3.1 (commit 274002762a73f3f8a867558a03c9fc20b1c71584): a SOLVER
+# TERMINATION TOLERANCE ONLY.  The scientific constraint remains exactly
+# d^T s >= GAMMA_RAW.  It is 5x the observed 1.99e-08 roundoff deficit and
+# 1e-4 of gamma, so it cannot admit a genuine strict error (margin <= 0 lies
+# four orders of magnitude outside the acceptance threshold).  The solved QP
+# -- r_k, Gram, objective, dual, active-set construction -- is unchanged.
+FEAS_TOL_RAW = 1e-7
 TOP_V = 3
 K_MAX = 20_000
 MAX_ROUNDS = 30
@@ -74,6 +81,17 @@ PREREG_COMMIT = "fb634bec7f1490be588a17ab3a12f0531b7ea749"
 def augment(phi: torch.Tensor) -> torch.Tensor:
     """x_i = [phi_i ; 1]."""
     return torch.cat([phi, torch.ones(phi.shape[0], 1, dtype=phi.dtype)], dim=1)
+
+
+def feasibility_threshold() -> float:
+    """The ONE coherent numerical-feasibility threshold (Amendment V3.1).
+
+    An item counts as numerically feasible when its worst raw margin is
+    >= GAMMA_RAW - FEAS_TOL_RAW.  This is the only tolerance in the solver and
+    is used identically for the violation set and for termination.  It never
+    changes the QP, and it can never admit a strict error (margin <= 0).
+    """
+    return GAMMA_RAW - FEAS_TOL_RAW
 
 
 def constraint_value(theta: torch.Tensor, d: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
@@ -264,14 +282,14 @@ def run_arm(seed: int, arm: str, blob: dict, A: torch.Tensor, c: torch.Tensor,
     for rnd in range(1, MAX_ROUNDS + 1):
         t0 = time.time()
         worst, cand, _ = margins_and_worst(theta, X_all, s0, bn, tgt)
-        viol = (worst < GAMMA_RAW).nonzero().flatten()
+        viol = (worst < feasibility_threshold()).nonzero().flatten()
         log: dict = {}
         if viol.numel() == 0:
             trace.append({"round": rnd, "violating_items": 0,
                           "active": len(act), "min_raw_margin": float(worst.min()),
                           "objective": float((theta * metric.H(theta)).sum()),
                           "new_constraints": 0, "wall_s": round(time.time() - t0, 2)})
-            status = "CONSTRAINTS_SATISFIED"
+            status = "CONSTRAINTS_SATISFIED"   # margin >= GAMMA_RAW - FEAS_TOL_RAW
             break
         before = len(act)
         for i in viol.tolist():
