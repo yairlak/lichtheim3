@@ -28,8 +28,10 @@ Every constant here is COPIED from the executable evidence listed in the
 preregistration; the tests assert them against the driver's own arithmetic
 and against the archived provenance of the seed-19/20 witness lineage.
 """
+
 from __future__ import annotations
 
+import shlex
 import argparse
 import csv
 import hashlib
@@ -517,7 +519,7 @@ def main(argv=None) -> int:
         print(f"V7_LEG={d['leg']}")
         print(f"V7_RESUME_STEP={'' if d['resume'] is None else d['resume']}")
         print(f"V7_MAX_STEPS={d['max_steps']}")
-        print(f"V7_FLAGS={' '.join(d['flags'])}")
+        print(f"V7_FLAGS={shlex.quote(' '.join(d['flags']))}")
         print(f"V7_DECLARE={int(d['declare'])}")
         print(f"V7_REANCHOR={int(d['reanchor'])}")
         return 0
