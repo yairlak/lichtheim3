@@ -107,7 +107,10 @@ against a forward-hook implementation is pinned by
 * **canonical forced-length AR** — the convention behind every historical `rep_canonical_*` number,
   so our numbers are comparable to the frozen record;
 * **genuine free-AR** — one global cap, no use of the target length, so over-generation and
-  non-termination count as errors.
+  non-termination count as errors. The cap is **imported from the historical evaluator**
+  (`train_joint_scratch.FREE_AR_MAX_STEPS == 12`), never restated, so the diagnostic cannot drift
+  from the frozen free-AR convention. Pinned by
+  `test_free_ar_cap_matches_the_historical_evaluator`.
 
 Each route decodes on **its own prefix**. `fixed05` is re-decoded, never reconstructed from stored
 per-route predictions (audit §4, caveat 3).
@@ -162,8 +165,9 @@ Because `g` is a **strictly monotone** function of `c_LTM` (σ is monotone, α >
 are rank-identical: any rank statistic on `g` equals the same statistic on `c_LTM`. So AUROC(`g`)
 **is** AUROC(`c_LTM`), exactly.
 
-This must be stated wherever the AUROC is reported. A high AUROC would mean *ventral confidence
-predicts which route is right*; it would **not** mean the gate arbitrates. The distinction is the
+This must be stated wherever the AUROC is reported. A significant effect would mean *ventral
+confidence is informative about ventral failure*; it would **not** mean the gate arbitrates between
+routes, and it would not be evidence about relative route competence. The distinction is the
 scientific content of Experiment 1 and the recap must not blur it.
 
 ### 6.6 Source vs repaired — outcome E
@@ -195,9 +199,12 @@ new GO decision (§11). This sentence is to be reproduced verbatim in the recap.
   reported but are *not* the test — the items are paired.
 * **Breakdown:** the same 2×2 within each route-competence category of §6.1, and by frequency
   quintile and length (both computed on the frozen lexicon metadata).
-* **Reported metrics:** R canonical, genuine free-AR, and — where the evaluator supports it on these
-  states — the Naming and Comprehension contract metrics, so that a repetition-local gain that costs
-  C or N cannot be reported as a clean win.
+* **Reported metrics:** R canonical and genuine free-AR on the FULL/gated route. **Naming,
+  Comprehension and the isolated WM/LTM routes are NOT re-evaluated under `fixed05`**: none of them
+  constructs a gate, so the intervention is **mathematically inert** for all four
+  (`CODE_AUDIT_GATE.md` §13). They are recorded once as *invariants*, with effect exactly zero.
+  Re-running them would spend compute to re-derive an identity and would invite reporting a
+  by-construction null as an empirical finding.
 * **Multiplicity:** the primary test is the overall McNemar per state per convention (8 × 2 = 16
   planned tests). Holm correction across those 16. Every category/quintile breakdown is explicitly
   **descriptive** and carries no p-value.
@@ -205,14 +212,28 @@ new GO decision (§11). This sentence is to be reproduced verbatim in the recap.
 ### 7.2 The interpretive caveat that must travel with the result
 The training objective included `λ_gate · (mean(g) − 0.5)²` with `usage_prior = 0.5`
 (`CODE_AUDIT_GATE.md` §8): the model was optimised under mild pressure **toward** the symmetry that
-`fixed05` imposes, and the deployed mean `g` is already ≈ 0.52. So:
+`fixed05` imposes. So:
 
-> A null or near-null result for `fixed05` is **weaker evidence against adaptive routing than it
-> appears**, because the network was trained not to depend on asymmetry, and because the intervention
-> moves `g` by only ~0.02 on average.
+> A null or near-null result for `fixed05` is **weaker evidence against confidence-driven weighting
+> than it appears**, because the network was trained not to depend on asymmetry.
 
-This must be stated in the recap **whatever the outcome**, including if the outcome is "0.5/0.5 is
-indistinguishable". It is the single most likely way this experiment could be over-read.
+**What must NOT be said.** The intervention must not be described as a "~0.02 perturbation". The only
+established fact is that the historical **position-weighted** mean gate is 0.517–0.521, so replacing
+it with a constant 0.5 moves that **signed mean** by about 0.02. That says nothing about item-level
+`|g − 0.5|`, about the variance or shape of the `g` distribution, or about the per-item effect on the
+logits, which is
+
+```
+Δlogits_i = (0.5 − g_i) · (ltm_logits_i − wm_logits_i)
+```
+
+— a **product**, which can be far from small wherever the two routes disagree, even when `g_i ≈ 0.5`.
+The magnitude of the intervention is therefore an **open empirical question**, resolved by the
+item-level distribution that Experiment 1 produces, not by the recorded mean.
+
+The training-pressure caveat must be stated in the recap **whatever the outcome**, including if the
+outcome is "0.5/0.5 is behaviourally equivalent". It is the single most likely way this experiment
+could be over-read.
 
 ## 8. Secondary descriptive diagnostics
 `g` vs lexical frequency · `g` vs length · `g` vs route correctness · the global `g` distribution
@@ -249,16 +270,36 @@ lesioning V2 each require a **new GO decision**.
 ## 12. Outcome mapping — fixed before results
 From the brief §8. Mapping is declared now so that no result can be retro-fitted.
 
-| Outcome | Declared if |
-|---|---|
-| **A** adaptive routing has causal value | AUROC ≥ 0.65 with CI excluding 0.5 **and** `fixed05` loses items concentrated in `WM_ONLY`/`LTM_ONLY` |
-| **B** learned routing unnecessary at inference | McNemar not significant after Holm **and** \|Δ accuracy\| < 0.002 on every metric |
-| **C** the gate is an architectural suspect | `fixed05` significantly improves FULL **and** does not degrade isolated-route or C/N behaviour |
-| **D** the problem is upstream of the gate | both conditions show the same ventral deficit (isolated LTM ≈ 0.876–0.892 unchanged) and `fixed05` does not move it |
-| **E** repair changes the mechanism | source→repaired gate change is **material** by the §6.6 threshold |
+The **numeric criteria are unchanged** wherever they remain mathematically meaningful. Only the
+interpretation **labels** change, to match what the criteria can actually support.
 
-Outcomes are **not** mutually exclusive: D can and likely will co-occur with B or C, since isolated
-LTM is ~0.88 in every state before anything is intervened on. If the data fit none of these, that is
+| Outcome | Label (corrected) | Declared if |
+|---|---|---|
+| **A** | **confidence-driven weighting is informative and causally load-bearing for intact repetition inference** | the H1′ effect is strong in the predicted direction (AUROC ≤ 0.35, CI excluding 0.5) **and** `fixed05` loses items concentrated in the competence cells |
+| **B** | **confidence-driven weighting is dispensable for intact repetition inference: fixed 0.5 is behaviourally equivalent** | McNemar not significant after Holm **and** \|Δ accuracy\| < 0.002 on FULL/gated repetition |
+| **C** | ~~the gate is an architectural suspect~~ — **UNREACHABLE BY CONSTRUCTION ON THESE STATES** | *(non-operative; see below)* |
+| **D** | the problem is upstream of the gate | both conditions show the same ventral deficit (isolated LTM ≈ 0.876–0.892 unchanged) and `fixed05` does not move it |
+| **E** | repair changes the mechanism | source→repaired gate change is **material** by the §6.6 threshold |
+
+Neither A nor B is a claim about *adaptive routing*. The gate is not adaptive
+(`CODE_AUDIT_GATE.md` §5); what is at stake is whether a **fixed, confidence-driven** weighting is
+load-bearing at inference.
+
+**Outcome C is UNREACHABLE BY CONSTRUCTION on these states**, for three independent reasons:
+1. FULL/gated repetition is already **exact (0 errors)** in all eight states, so `fixed05` cannot
+   improve it — there is nothing above exact;
+2. Comprehension, Naming and the isolated WM/LTM routes **do not depend on the repetition gate**
+   (`CODE_AUDIT_GATE.md` §13), so the "does not degrade" half of the old criterion is true by
+   construction and carries no evidential weight;
+3. consequently no combination of measurements on these states can satisfy the old criterion in an
+   informative way.
+
+Its original criterion text is retained above **as historical record only** and is **non-operative**.
+C must not be declared. If the gate is to be put under suspicion, that requires different states or a
+different experiment, and a new GO decision.
+
+Outcomes are **not** mutually exclusive: D can and likely will co-occur with B, since isolated LTM is
+~0.88 in every state before anything is intervened on. If the data fit none of these, that is
 reported as a sixth, named outcome rather than forced into the nearest box (brief §8).
 
 ## 13. Execution
@@ -278,8 +319,12 @@ Outputs, all reproducible from `figure_source_data/`:
 
 **Cost note.** Eight states × 29,571 items × 4 routes × 2 conventions, on CPU. The runner takes
 `--state-id` and `--limit` and writes one shard per state, so it can be executed incrementally and
-resumed. A `--smoke` path (200 items, one state) validates the full pipeline end to end in under a
-minute and must be run and inspected before the full pass.
+resumed. A `--smoke` path (**400 items, one state** — `SMOKE_DEFAULT_LIMIT = 400`) validates the
+full pipeline end to end and must be run and inspected before the full pass. **Smoke output is
+quarantined:** every smoke artifact is written under `_smoke_not_results/` with a `_SMOKE_TEST_ONLY`
+marker, and `assert_quarantined` hard-stops if a smoke invocation would ever resolve to a
+full-result path. Pinned by `test_smoke_output_is_quarantined`. Smoke artifacts are never
+scientific results.
 
 ## 14. Amendments
 
@@ -288,7 +333,7 @@ minute and must be run and inspected before the full pass.
 **What was known when this amendment was made.** Only the FROZEN Phase-8 battery JSONs — the same
 `rep_canonical_wm_errors` / `rep_canonical_ltm_errors` fields already tabulated in
 `checkpoint_manifest.tsv`. **No Experiment-1 or Experiment-2 result existed.** The smoke run
-(200 items, `W3_SRC`) had been executed to validate the pipeline; its numbers are not used here and
+(400 items, `W3_SRC`) had been executed to validate the pipeline; its numbers are not used here and
 are not a result. This amendment is derivable from the frozen record alone.
 
 **The finding.** The dorsal route is at or within two items of ceiling on the repetition population
@@ -320,17 +365,35 @@ ventral route also gets right (~26,200) and those it does not (~3,200–3,700). 
 correct" almost always means "only the dorsal route is correct". Any dual-route interpretation of
 these states must start from that fact.
 
-**Reformulated primary hypothesis — the only competence contrast the data support:**
+**Replacement diagnostic — a DIFFERENT question, not a restatement of H1:**
 
-> **H1′ (directional, preregistered as of this amendment):**
-> `median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)`
+> **H1′ — VENTRAL CONFIDENCE CALIBRATION DIAGNOSTIC** (directional, preregistered as of this
+> amendment):
 >
-> i.e. does the gate assign **less** ventral weight to exactly those items the ventral route
-> actually fails?
+> **Question.** Given that the dorsal route is almost always correct, does ventral lexical
+> confidence — and therefore `g` — *decrease* on items for which the ventral route is wrong,
+> compared with items for which the ventral route is correct?
+>
+> **Statistic.** `median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)`.
 
-H1′ is the same scientific question — does effective route weighting track relative route competence
-— restricted to the contrast that exists. It is well powered on both sides (≈ 3,200 vs ≈ 26,200), so
-the §6.4 rule is satisfied comfortably rather than marginally.
+**H1′ is not H1 restricted; it is a different question.** H1 asked about *relative route competence*
+— a comparison between two routes. H1′ can only ask about *ventral self-knowledge*, because the
+dorsal side of the comparison is constant (correct almost everywhere). Confirming H1′ licenses
+exactly one interpretation:
+
+> **ventral confidence is informative about ventral failure.**
+
+It does **not** license either of:
+
+> ~~the gate tracks relative route competence~~
+> ~~the gate arbitrates between routes~~
+
+Both are excluded structurally, not merely unproven: the gate is blind to dorsal-exclusive parameters
+and dorsal activations (`CODE_AUDIT_GATE.md` §5), and `g` is rank-identical to `c_LTM`, so H1′ is a
+statement about a ventral confidence signal and nothing else. The recap must use the calibration
+wording.
+
+H1′ is well powered on both sides (≈ 3,200 vs ≈ 26,200), so the §6.4 rule is satisfied comfortably.
 
 **Statistics for H1′** are unchanged from §6.3, with `WM_ONLY_CORRECT` as the positive class and the
 sign of the expected effect reversed: AUROC **< 0.5** (equivalently Cliff's δ < 0) is the direction
@@ -339,8 +402,9 @@ the bootstrap CI, and the median difference. The §6.5 mediation caveat applies 
 full force: `g` is rank-identical to `c_LTM`, so a confirmed H1′ means **ventral confidence is
 informative about ventral failure**, not that the gate arbitrates.
 
-H1 is retained in the output schema and will be reported as
-`STRUCTURALLY_EMPTY — n(LTM_ONLY_CORRECT) <= 2`, never silently dropped.
+H1 is retained in the record and in the output schema, and is reported as
+**`STRUCTURALLY_UNTESTABLE — n(LTM_ONLY_CORRECT) <= 2`**, never silently dropped and never
+represented as having been answered by H1′.
 
 **Consequence for Experiment 2.** FULL is at **0 errors in every state**, so `errors_recovered` is
 necessarily 0 and the intervention can only *lose* items. The §7.1 2×2 degenerates to a one-sided
@@ -351,9 +415,162 @@ The informative quantity is `errors_gained` and its distribution across competen
 frequency and length.
 
 **Consequence for outcome mapping (§12).** Outcome **C** ("`fixed05` significantly improves FULL")
-is **unreachable on repetition** for these states, since FULL is already exact. C could only be
-declared on the C/N contract metrics or on the isolated-route batteries. Outcome **A**'s first clause
-is re-expressed against H1′ (AUROC ≤ 0.35 with CI excluding 0.5, i.e. a strong effect in the
+is **unreachable on repetition** for these states, since FULL is already exact. Outcome **A**'s first
+clause is re-expressed against H1′ (AUROC ≤ 0.35 with CI excluding 0.5, i.e. a strong effect in the
 predicted direction). Outcomes B, D and E are unaffected.
 
+> *Superseded in part by AMENDMENT 2:* the suggestion here that C "could only be declared on the C/N
+> contract metrics or on the isolated-route batteries" is **withdrawn**. Those quantities do not
+> depend on the repetition gate at all, so they cannot support outcome C either. C is
+> **UNREACHABLE BY CONSTRUCTION** and non-operative.
+
 *No other section of this contract is changed by this amendment.*
+
+---
+
+### AMENDMENT 2 — 2026-09-15 — independent forensic review corrections
+
+**Trigger.** CENTRAL STEERING review of an independent Fable audit of this package.
+
+**Timing and epistemic position — stated explicitly.**
+
+* These corrections were made **BEFORE any execution of Experiment 1 or Experiment 2.**
+* `FULL_EXPERIMENT_EXECUTED = NO` at the time of this amendment and at the time of its commit.
+* The **only** data seen when these corrections were made were:
+  1. **frozen Phase-8 metrics** (battery JSONs, `PHASE08_SOURCE_OF_TRUTH.md`, checkpoint configs), and
+  2. **quarantined smoke output** (400 items, one state, `W3_SRC`, `TEST_ONLY`).
+* **No full experimental result existed, and none was consulted.** Nothing in this amendment is
+  responsive to an outcome.
+
+**What the independent review CONFIRMED** (unchanged, no correction needed): gate equation and
+orientation; gate has no trainable parameters; gate blind to dorsal-exclusive parameters and
+activations; `fixed05` algebra; route isolation; the Phase-8 repaired `gate_mean` instrumentation
+defect; checkpoint provenance; V7 and pre-existing scientific artifacts untouched.
+
+#### 1. Interpretation labels that CHANGED
+
+| Item | Before | After |
+|---|---|---|
+| Outcome **A** | "adaptive routing has causal value" | "**confidence-driven weighting is informative and causally load-bearing for intact repetition inference**" |
+| Outcome **B** | "learned routing unnecessary at inference" | "**confidence-driven weighting is dispensable for intact repetition inference: fixed 0.5 is behaviourally equivalent**" |
+| Outcome **C** | "the gate is an architectural suspect" | **UNREACHABLE BY CONSTRUCTION ON THESE STATES** — non-operative; original criterion retained as historical record only |
+| **H1** | `STRUCTURALLY_EMPTY` | **`STRUCTURALLY_UNTESTABLE`**, retained in the record, never represented as answered by H1′ |
+| **H1′** | described as "the same scientific question" as H1 | **VENTRAL CONFIDENCE CALIBRATION DIAGNOSTIC** — a *different* question (§below) |
+| gate range | "the gate cannot saturate" | **asymmetric attainable range** (§below) |
+| `fixed05` magnitude | "a ~0.02 perturbation" | **an open empirical question**; only the *signed position-weighted mean* is known to move by ≈ 0.02 |
+| route structure | "the mature states are not dual-route"; "the dorsal route carries everything" | "**the dorsal route is nearly sufficient for exact canonical repetition, whereas the ventral route is not**" |
+| LTM-exclusive tensors | 20 | **16** (verified at the checkpoints' own config) |
+
+#### 2. Mathematical criteria that did NOT change
+
+Explicitly preserved, unchanged, and still frozen:
+
+* the §6.4 power rule (`min n ≥ 30` per cell);
+* Cliff's δ, AUROC, the `δ = 2·AUROC − 1` identity assertion;
+* bootstrap: 10,000 resamples, stratified, `seed = 20260915`;
+* exact paired McNemar on discordant pairs, Holm across the 16 planned tests;
+* the §6.6 materiality thresholds for outcome E (mean |Δg| > 0.01, or category AUROC shift > 0.05);
+* outcome **A**'s numeric clause (AUROC ≤ 0.35 with CI excluding 0.5) and outcome **B**'s
+  (|Δ accuracy| < 0.002, McNemar not significant after Holm);
+* H1′'s statistic and predicted direction;
+* the item population, its order, and the four witness pairs.
+
+Only labels, interpretations and implementation guards changed. **No numeric threshold was moved.**
+
+#### 3. Asymmetric attainable gate range
+
+The blanket claim "the gate cannot saturate" is **withdrawn**. At `α = 2.0`, `gate_threshold = 0.7`,
+with cosine confidence in [−1, 1]:
+
+* **ventral weight `g ∈ [0.0323, 0.6457]`**
+* **dorsal weight `1 − g ∈ [0.3543, 0.9677]`**
+
+Therefore:
+
+* **strong dorsal commitment IS possible** — up to ≈ **29.9 : 1** dorsal-to-ventral;
+* **strong ventral commitment IS structurally impossible** — at most ≈ **1.82 : 1**
+  ventral-to-dorsal.
+
+The finding is the **asymmetry of the attainable range**, not an absence of saturation.
+
+#### 4. H1′ reinterpreted as ventral-confidence calibration
+
+H1′ is **not** H1 restricted to a smaller sample. H1 compared *two routes*; H1′ cannot, because the
+dorsal side is constant (correct almost everywhere). H1′ asks:
+
+> given that the dorsal route is almost always correct, does ventral lexical confidence — and hence
+> `g` — decrease on items for which the ventral route is wrong, compared with items for which it is
+> correct?
+
+Statistic unchanged: `median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)`.
+
+Licensed interpretation: **ventral confidence is informative about ventral failure.**
+Excluded interpretations: *the gate tracks relative route competence*; *the gate arbitrates between
+routes*. Both are excluded structurally, not merely unproven.
+
+#### 5. Naming / Comprehension invariance
+
+Traced through the canonical evaluators (`CODE_AUDIT_GATE.md` §13): Comprehension is
+`encode → ŝ → cosine retrieval`; Naming is `ltm.decode_from_s_hat → motor`; the isolated routes
+bypass the gate by construction. **None constructs a gate.**
+
+Therefore `fixed05` has **mathematically zero** effect on Comprehension, Naming, isolated WM-only and
+isolated LTM-only performance. §7.1 no longer evaluates them under the intervention; they are
+recorded once as invariants. No redundant evaluation that cannot change is added.
+
+#### 6. Free-AR cap alignment
+
+The diagnostic free-AR evaluator previously used a local `max_steps = 24`, against the historical
+`FREE_AR_MAX_STEPS = 12`. A different cap changes what counts as non-termination and would have made
+the diagnostic free-AR numbers non-comparable with the frozen record.
+
+Corrected by **importing the historical constant directly** rather than restating it, so the two can
+never drift. The historical evaluator is **not modified**. Pinned by
+`test_free_ar_cap_matches_the_historical_evaluator`.
+
+#### 7. Smoke-output isolation
+
+Smoke artifacts could previously land on the same shard filenames as a full run. Corrected:
+
+* all smoke output goes under `_smoke_not_results/`, with a `_SMOKE_TEST_ONLY` marker;
+* `assert_quarantined` **hard-stops** if a smoke invocation would resolve to a full-result path, or
+  if a smoke summary would be written without the marker;
+* the smoke item count is now stated consistently as **400** everywhere
+  (`SMOKE_DEFAULT_LIMIT = 400`), matching the archived artifact.
+
+Pinned by `test_smoke_output_is_quarantined` and `test_smoke_default_limit_is_documented_value`.
+
+#### 8. Two named gate means
+
+The new package never reports an unqualified `gate_mean`. Experiment 1 reports **two distinct,
+explicitly named** quantities:
+
+* **`gate_mean_item_level`** — one `g` per item, averaged over items. The gate is word-level, so this
+  is the scientifically meaningful statistic.
+* **`gate_mean_position_weighted_historical`** — a reconstruction of the historical convention, which
+  flattens the gate over `(B, S, 1)` *including padding positions*, weighting each item by its
+  batch's padded decoder width. Reported **only** for reconciliation with the frozen Phase-8 column,
+  and explicitly batching-dependent.
+
+Pinned by `test_two_gate_means_are_named_and_distinct`.
+
+#### 9. Shared-parameter caveat recorded precisely
+
+The gate is blind to dorsal-**exclusive** parameters and dorsal activations. It is **not** blind to
+`phon_embed.weight`, which the two routes share and which dorsal training can move. The routes also
+share the downstream `motor.proj` readout. Functional route isolation therefore means **isolated
+premotor contribution into a shared readout**, not anatomically independent subnetworks.
+
+#### 10. Provenance precision
+
+`CANONICAL AUTHORITY NAME` and `LOCAL ARCHIVE PATH` are now distinguished rather than conflated, and
+the meeting notes are recorded as an **external input** with their measured hash and an explicit
+`NOT PRESENT` for any in-repository path. `checkpoint_manifest.tsv` now carries
+`canonical_archived_path` alongside `historical_recorded_path` and the verifying `sha256`. **No
+historical JSON was rewritten.**
+
+**AMENDMENT 1 is preserved above in full. Nothing in it is erased; where AMENDMENT 2 supersedes part
+of it, the superseding note is inline and marked.**
+
+*No numeric criterion, item population, checkpoint, model file, gate parameter, loss, training code
+or historical artifact was changed by this amendment.*

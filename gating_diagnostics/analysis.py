@@ -93,7 +93,13 @@ def spearman(x: Sequence[float], y: Sequence[float]) -> Dict[str, Optional[float
     a, b = np.asarray(x, float), np.asarray(y, float)
     ok = np.isfinite(a) & np.isfinite(b)
     if ok.sum() < 3:
-        return {"rho": None, "p": None, "n": int(ok.sum())}
+        return {"rho": None, "p": None, "n": int(ok.sum()), "note": "n < 3"}
+    # A constant input has no defined rank correlation.  This is a real case on
+    # the frozen population (e.g. `is_word`, which is constant by construction),
+    # so it is reported as undefined rather than as a warning-laden NaN.
+    if np.unique(a[ok]).size < 2 or np.unique(b[ok]).size < 2:
+        return {"rho": None, "p": None, "n": int(ok.sum()),
+                "note": "undefined: one input is constant"}
     r = stats.spearmanr(a[ok], b[ok])
     return {"rho": float(r.statistic), "p": float(r.pvalue), "n": int(ok.sum())}
 
@@ -137,8 +143,32 @@ def summarize_state(rows: List[dict], seed: int) -> dict:
     g = [r["gate"] for r in rows]
     conventions = ["canonical"] + (["freear"] if "freear_full_exact" in rows[0] else [])
 
+    # Two DISTINCT quantities, deliberately named so neither can be mistaken
+    # for the other.  The historical Phase-8 column is the second one, and it is
+    # batching-dependent; the first is the scientifically meaningful statistic
+    # because the gate is word-level (one g per item).
+    w = np.asarray([r.get("batch_dec_width", 1) for r in rows], float)
+    gv = np.asarray(g, float)
+    gate_means = {
+        "gate_mean_item_level": float(gv.mean()),
+        "gate_mean_item_level_definition":
+            "one g per item, averaged over items; the gate is word-level so "
+            "this is the unambiguous statistic",
+        "gate_mean_position_weighted_historical": float((gv * w).sum() / w.sum()),
+        "gate_mean_position_weighted_historical_definition":
+            "reconstruction of the historical convention, which flattens the "
+            "gate over (B, S, 1) INCLUDING padding positions, so each item is "
+            "weighted by its batch's padded decoder width; reported only for "
+            "reconciliation with the frozen Phase-8 column, and dependent on "
+            "batch composition",
+        "position_weight_batch_dec_width": {"mean": float(w.mean()),
+                                            "min": float(w.min()),
+                                            "max": float(w.max())},
+    }
+
     out: dict = {
         "n_items": len(rows),
+        "gate_means": gate_means,
         "gate": describe(g),
         "gate_attainable_range": {"lo": GATE_RANGE[0], "hi": GATE_RANGE[1]},
         "gate_frac_above_half": float(np.mean(np.asarray(g) > 0.5)),
@@ -178,8 +208,10 @@ def summarize_state(rows: List[dict], seed: int) -> dict:
         med_pos = float(np.median(pos)) if pos else None
         med_neg = float(np.median(neg)) if neg else None
         out["experiment1"][conv] = {
-            "status": ("STRUCTURALLY_EMPTY — n(LTM_ONLY_CORRECT) <= 2 because the "
-                       "dorsal route is at ceiling; see contract AMENDMENT 1"
+            "status": ("STRUCTURALLY_UNTESTABLE — n(LTM_ONLY_CORRECT) <= 2 because "
+                       "the dorsal route is nearly sufficient for exact canonical "
+                       "repetition; see contract AMENDMENT 1. NOT answered by H1', "
+                       "which is a different question (AMENDMENT 2)."
                        if len(pos) < MIN_N_PER_CELL else "TESTED"),
             "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
             "n_ltm_only": len(pos), "n_wm_only": len(neg),
@@ -199,11 +231,13 @@ def summarize_state(rows: List[dict], seed: int) -> dict:
                      "arbitrates (contract 6.5)"),
         }
 
-    # ---- EXPERIMENT 1', reformulated primary: WM_ONLY vs BOTH (AMENDMENT 1) ----
-    # The dorsal route is at ceiling, so LTM_ONLY_CORRECT is empty by construction
-    # and the only competence contrast the data support is "items the ventral route
-    # fails" vs "items it does not".  Predicted direction: LOWER g for WM_ONLY,
-    # hence AUROC < 0.5 and delta < 0.
+    # ---- H1': VENTRAL CONFIDENCE CALIBRATION DIAGNOSTIC (AMENDMENT 1 + 2) ----
+    # NOT a restatement of H1.  H1 asked about RELATIVE ROUTE COMPETENCE; that is
+    # structurally untestable here because the dorsal route is nearly sufficient
+    # for exact canonical repetition, leaving n(LTM_ONLY_CORRECT) <= 2.  H1' asks
+    # a different question: given that the dorsal route is almost always correct,
+    # does ventral confidence DECREASE on items the ventral route gets wrong?
+    # Predicted direction: LOWER g for WM_ONLY, hence AUROC < 0.5 and delta < 0.
     out["experiment1_prime"] = {}
     for conv in conventions:
         c = _cells(rows, conv)
@@ -216,6 +250,13 @@ def summarize_state(rows: List[dict], seed: int) -> dict:
         med_pos = float(np.median(pos)) if pos else None
         med_neg = float(np.median(neg)) if neg else None
         out["experiment1_prime"][conv] = {
+            "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+            "question": ("given that the dorsal route is almost always correct, does "
+                         "ventral lexical confidence / g decrease on items for which "
+                         "the ventral route is wrong, compared with items for which "
+                         "it is correct?"),
+            "is_not": ("a test of whether the gate tracks relative route competence, "
+                       "nor of whether the gate arbitrates between routes"),
             "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
             "predicted_direction": "auroc < 0.5 (delta < 0)",
             "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
@@ -229,11 +270,18 @@ def summarize_state(rows: List[dict], seed: int) -> dict:
             "auroc": a, "cliffs_delta": d,
             "direction_as_predicted": (None if a is None else bool(a < 0.5)),
             "ci95": bootstrap_ci(pos, neg, seed) if powered else None,
-            "note": ("g is rank-identical to lexical_confidence, so a confirmed H1' "
-                     "means VENTRAL CONFIDENCE IS INFORMATIVE ABOUT VENTRAL FAILURE, "
-                     "not that the gate arbitrates between routes (contract 6.5). "
-                     "The gate is bit-invariant to every dorsal parameter "
-                     "(CODE_AUDIT_GATE.md CLAIM 5)."),
+            "licensed_interpretation":
+                "ventral confidence is informative about ventral failure",
+            "excluded_interpretations": [
+                "the gate tracks relative route competence",
+                "the gate arbitrates between routes",
+            ],
+            "note": ("g is rank-identical to lexical_confidence, so this statistic is "
+                     "identically the same statistic on c_LTM (contract 6.5). The gate "
+                     "is blind to dorsal-EXCLUSIVE parameters and dorsal activations "
+                     "(CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the "
+                     "motor projection is shared, so route isolation means isolated "
+                     "premotor contribution into a shared readout."),
         }
 
     # ---- EXPERIMENT 2: forced 0.5/0.5, paired item by item (§7.1) ----

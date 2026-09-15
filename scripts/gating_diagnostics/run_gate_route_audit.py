@@ -33,7 +33,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from gating_diagnostics import ROUTES, collect_item_level          # noqa: E402
+from gating_diagnostics import (                                   # noqa: E402
+    ROUTES, HISTORICAL_FREE_AR_MAX_STEPS, collect_item_level)
 from gating_diagnostics.analysis import summarize_state            # noqa: E402
 
 REPO = "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3"
@@ -42,6 +43,43 @@ DEFAULT_MANIFEST = os.path.join(
     ROOT, "paper_programme", "gating_route_diagnostics", "checkpoint_manifest.tsv")
 DEFAULT_OUT = os.path.join(ROOT, "paper_programme", "gating_route_diagnostics")
 BOOTSTRAP_SEED = 20260915          # frozen in the contract, §6.3
+
+# Smoke output isolation.  A smoke invocation must NEVER be able to land on a
+# full-result path: smoke artifacts are not evidence, and a shard silently
+# overwritten by a 400-item validation run would be indistinguishable from a
+# real one after the fact.  Everything smoke writes goes under SMOKE_DIR, with
+# a TEST_ONLY suffix, and `assert_quarantined` hard-stops otherwise.
+SMOKE_DIR = "_smoke_not_results"
+FULL_SHARD_DIR = "figure_source_data"
+SMOKE_SUFFIX = "_SMOKE_TEST_ONLY"
+SMOKE_DEFAULT_LIMIT = 400          # the count actually used by the archived smoke artifact
+
+
+def resolve_outputs(out_dir: str, state_id: str, smoke: bool) -> tuple:
+    """Where shards and the summary go.  Smoke never shares a path with a full run."""
+    if smoke:
+        base = os.path.join(out_dir, SMOKE_DIR)
+        return (os.path.join(base, FULL_SHARD_DIR),
+                os.path.join(base, f"summary_metrics_{state_id}{SMOKE_SUFFIX}.json"))
+    shard_dir = os.path.join(out_dir, FULL_SHARD_DIR)
+    name = ("summary_metrics.json" if state_id == "ALL"
+            else f"summary_metrics_{state_id}.json")
+    return shard_dir, os.path.join(out_dir, name)
+
+
+def assert_quarantined(path: str, out_dir: str, smoke: bool) -> None:
+    """Hard-stop if a smoke invocation would write outside the quarantine."""
+    if not smoke:
+        return
+    base = os.path.realpath(os.path.join(out_dir, SMOKE_DIR))
+    target = os.path.realpath(path)
+    if not (target == base or target.startswith(base + os.sep)):
+        raise RuntimeError(
+            f"HARD STOP: smoke run would write outside {SMOKE_DIR}/: {target}. "
+            "Smoke artifacts are never results and must stay quarantined.")
+    if SMOKE_SUFFIX not in os.path.basename(target) and target.endswith(".json"):
+        raise RuntimeError(
+            f"HARD STOP: smoke summary must carry the {SMOKE_SUFFIX} marker: {target}")
 
 
 def sha256_file(path: str) -> str:
@@ -115,7 +153,8 @@ def assert_determinism(model, tr, device: str, n: int = 64) -> float:
 
 
 def run_state(row: dict, out_dir: str, device: str, limit: Optional[int],
-              batch_size: int, free_ar: bool) -> dict:
+              batch_size: int, free_ar: bool, shard_dir: str,
+              smoke: bool = False) -> dict:
     sid = row["state_id"]
     print(f"\n=== {sid} [{row['arm']}] {row['witness_label']} ===", flush=True)
     tr, model, prov, before, ckpt = build_state(row, device)
@@ -146,9 +185,11 @@ def run_state(row: dict, out_dir: str, device: str, limit: Optional[int],
         raise RuntimeError(f"HARD STOP: source checkpoint mutated: {ckpt}")
     prov["source_unchanged"] = True
 
-    shard_dir = os.path.join(out_dir, "figure_source_data")
+    assert_quarantined(shard_dir, out_dir, smoke)
     os.makedirs(shard_dir, exist_ok=True)
-    shard = os.path.join(shard_dir, f"item_level_{sid}.tsv")
+    shard = os.path.join(shard_dir,
+                         f"item_level_{sid}{SMOKE_SUFFIX if smoke else ''}.tsv")
+    assert_quarantined(shard, out_dir, smoke)
     with open(shard, "w", newline="") as f:
         wr = csv.DictWriter(f, fieldnames=list(rows[0].keys()), delimiter="\t")
         wr.writeheader()
@@ -180,7 +221,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     a = ap.parse_args(argv)
 
     if a.smoke:
-        a.limit = a.limit or 200
+        a.limit = a.limit or SMOKE_DEFAULT_LIMIT
         if a.state_id == "ALL":
             a.state_id = "W3_SRC"
 
@@ -192,25 +233,31 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 2
 
     os.makedirs(a.out_dir, exist_ok=True)
+    shard_dir, out = resolve_outputs(a.out_dir, a.state_id, bool(a.smoke))
+    assert_quarantined(shard_dir, a.out_dir, bool(a.smoke))
+    assert_quarantined(out, a.out_dir, bool(a.smoke))
+
     summaries: Dict[str, dict] = {}
     for row in states:
         summaries[row["state_id"]] = run_state(
-            row, a.out_dir, a.device, a.limit, a.batch_size, not a.no_free_ar)
+            row, a.out_dir, a.device, a.limit, a.batch_size, not a.no_free_ar,
+            shard_dir=shard_dir, smoke=bool(a.smoke))
 
-    name = "summary_metrics.json" if (a.state_id == "ALL" and not a.smoke) \
-        else f"summary_metrics_{a.state_id}{'_smoke' if a.smoke else ''}.json"
-    out = os.path.join(a.out_dir, name)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w") as f:
         json.dump({
             "contract": "paper_programme/gating_route_diagnostics/EXPERIMENT_CONTRACT.md",
             "bootstrap_seed": BOOTSTRAP_SEED,
             "smoke": bool(a.smoke),
+            "TEST_ONLY": bool(a.smoke),
             "limit": a.limit,
+            "free_ar_max_steps": HISTORICAL_FREE_AR_MAX_STEPS,
             "states": summaries,
         }, f, indent=1)
     print(f"\nwrote {out}")
     if a.smoke:
-        print("\nSMOKE RUN — NOT A RESULT. Inspect, then run the full pass.")
+        print(f"\nSMOKE RUN — TEST_ONLY, NOT A RESULT. Quarantined under "
+              f"{SMOKE_DIR}/. Inspect, then run the full pass.")
     return 0
 
 

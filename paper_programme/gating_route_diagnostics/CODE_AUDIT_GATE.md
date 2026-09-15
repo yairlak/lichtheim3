@@ -20,10 +20,10 @@ Six findings, each verified numerically (§6), not inferred from documentation:
 |---|---|---|
 | **A1** | The gate has **no learnable parameters**. `g` is a fixed sigmoid of one scalar. | "Learned gate" is a misnomer. The only learning that reaches `g` is inside the ventral encoder that produces `s_hat`. |
 | **A2** | The gate reads **only** `c_LTM = max_i cos(ŝ, bank_i)`. It is **exactly invariant** to every dorsal parameter. | The gate is **structurally incapable** of tracking *relative* route competence. It can only track *absolute ventral lexical confidence*. |
-| **A3** | With the cohort's `α=2.0, τ=0.7`, `g` is confined to **[0.032, 0.646]** and `g>0.5` requires `c_LTM>0.7`. | The gate can never hand the ventral route more than ~1.8:1. Full ventral commitment is unreachable by construction. |
+| **A3** | With the cohort's `α=2.0, τ=0.7`, the attainable range is **asymmetric**: ventral weight `g ∈ [0.0323, 0.6457]`, dorsal weight `1−g ∈ [0.3543, 0.9677]`. | **Strong dorsal commitment is possible (up to ≈ 29.9 : 1 dorsal-to-ventral); strong ventral commitment is structurally impossible (at most ≈ 1.82 : 1 ventral-to-dorsal).** The asymmetry, not an absence of commitment, is the finding. |
 | **A4** | Measured `gate_mean` on all four Phase-8 witnesses is **0.517–0.521**. | The deployed gate already sits within ~2 points of symmetric fusion. The 0.5/0.5 intervention is a *small* perturbation, not a regime change. |
 | **A5** | `motor` is a single affine map and the blend weights sum to 1, so **fusion on premotor ≡ fusion on logits, exactly**. | The forced-0.5 intervention needs **no model modification**: it is a read-only recombination of tensors `forward()` already returns. |
-| **A6** | The Phase-8 `gate_mean` recorded for *repaired* witnesses is actually the **source** model's gate (instrumentation defect in a diagnostic-only field). | **Gate behaviour after Arm-A repair has never been measured.** Interpretation-space outcome E is currently untested, not tested-and-negative. |
+| **A6** | The Phase-8 `gate_mean` recorded for *repaired* witnesses is actually the **source** model's gate (instrumentation defect in a diagnostic-only field). It is additionally a *position-weighted* mean, not an item-level one. | **Gate behaviour after Arm-A repair has never been measured.** Interpretation-space outcome E is currently untested, not tested-and-negative. |
 
 ---
 
@@ -106,10 +106,20 @@ reports `max|diff| = 0.000e+00` for forced `g=0`/`g=1` against the isolated rout
 
 Caveats:
 
-1. **Isolation is functional, not anatomical.** The routes share `phon_embed.weight` — verified to be
-   the *only* shared parameter tensor (10 WM-exclusive tensors, 20 LTM-exclusive). "WM-only" means
-   "without the ventral premotor contribution", not "without anything the ventral route influenced
-   during training".
+1. **Isolation is functional, not anatomical.** Two distinct sharing facts, both verified:
+   * `phon_embed.weight` is the **only shared *parameter* tensor** reachable under both
+     `model.wm` and `model.ltm` (**10 WM-exclusive tensors, 16 LTM-exclusive**, at the
+     checkpoints' own config: `wm.hidden=128`, `ltm.enc_hidden=dec_hidden=512`,
+     `ltm_encoder_mode="unigru_last_hidden"`). It is shared, and **dorsal training can move it**,
+     so it is a channel by which dorsal learning reaches `ŝ` — and hence the gate — indirectly.
+   * The routes also share the **downstream motor projection** `motor.proj`
+     (`models/dual_route.py:88-90`): `wm_logits`, `ltm_logits` and `logits` are all read out
+     through the same `nn.Linear`.
+
+   Therefore **functional route isolation means "isolated premotor contribution into a shared
+   readout", not "anatomically independent subnetworks"**. The §5 blindness result is correspondingly
+   precise: the gate is blind to dorsal-**exclusive** parameters and dorsal activations. It is not a
+   claim that dorsal training can never influence the gate, because `phon_embed.weight` is shared.
 2. **Isolation is a gate ablation, not a lesion.** It sets the mixing weight to an endpoint; it does
    not damage a route. Phase 8's `SCIENTIFIC_LESION_READINESS=NOT_ESTABLISHED` is unaffected.
 3. **Trajectory divergence under free-AR is real and intended.** Under teacher forcing all routes see
@@ -120,7 +130,7 @@ Caveats:
    prefix, which is the correct definition of route isolation but means Experiment 2's forced-0.5
    condition must be **re-decoded**, never reconstructed from stored per-route predictions.
 
-## 5. The gate cannot see the dorsal route — the decisive structural result
+## 5. The gate cannot see the dorsal route's state — the decisive structural result
 
 The brief's first scientific question is whether the gate tracks **relative** route competence.
 At the level of code the answer is already determined:
@@ -130,6 +140,11 @@ No term in that expression depends on any dorsal quantity.
 
 **Verified:** perturbing **all ten WM-exclusive parameter tensors** by `N(0, 0.5²)` moves `wm_logits`
 by `max|Δ| = 1.03e+01` and moves the gate by `max|Δ| = 0.000e+00` exactly. See §6, CLAIM 5.
+
+Stated precisely: the gate is blind to **dorsal-exclusive parameters and dorsal activations**. It is
+**not** blind to `phon_embed.weight`, which the two routes share and which dorsal training can move
+(§4, caveat 1). The blindness is to the dorsal route's *state and competence at inference*, which is
+what matters for the adaptive-routing question.
 
 Therefore any *apparent* item-level relationship between `g` and relative route competence must be
 **entirely mediated by `c_LTM`** — i.e. it can only arise if ventral lexical confidence happens to
@@ -156,19 +171,33 @@ transcript is in `figure_source_data/gate_algebra_verification.txt`).
 | 5 | `g` invariant to WM-exclusive parameter perturbation | max\|Δ\| = **0.000e+00** (`wm_logits` moved 1.03e+01) |
 | 6 | attainable range of `g` at `α=2.0, τ=0.7` | see table below |
 
-### Attainable gate range (cohort setting `α=2.0`, `τ=0.7`)
+### Attainable gate range (cohort setting `α=2.0`, `τ=0.7`) — **asymmetric**
 
 | `c_LTM` | −1.00 | 0.00 | 0.30 | 0.50 | **0.70** | 0.90 | 1.00 |
 |---|---|---|---|---|---|---|---|
-| `g` | 0.0323 | 0.1978 | 0.3100 | 0.4013 | **0.5000** | 0.5987 | **0.6457** |
+| ventral weight `g` | **0.0323** | 0.1978 | 0.3100 | 0.4013 | **0.5000** | 0.5987 | **0.6457** |
+| dorsal weight `1−g` | **0.9677** | 0.8022 | 0.6900 | 0.5987 | **0.5000** | 0.4013 | **0.3543** |
 
-Since `c_LTM` is a cosine similarity, `g ≤ σ(2·0.3) = 0.6457` is a **hard ceiling**. The ventral route
-can never receive more than 64.6 % of the blend. The dorsal route can be suppressed to at most
-35.4 %. Saturation toward the lexicon is not merely unobserved — it is unreachable.
+Since `c_LTM` is a cosine similarity bounded in [−1, 1]:
 
-Louis raised in the 14 Sep meeting (§9 of the notes) the concern that the gate might "saturate too
-easily towards one route". Under the cohort's own hyperparameters the opposite holds: it **cannot
-saturate at all**, and it operates in a band of width ~0.61 centred well below full commitment.
+* **ventral weight `g ∈ [0.0323, 0.6457]`**
+* **dorsal weight `1−g ∈ [0.3543, 0.9677]`**
+
+The two extrema are therefore **not symmetric**:
+
+| extreme | route-weight ratio | attainable? |
+|---|---|---|
+| maximum dorsal commitment (`c_LTM = −1`) | ≈ **29.9 : 1** dorsal : ventral | **yes** |
+| maximum ventral commitment (`c_LTM = +1`) | ≈ **1.82 : 1** ventral : dorsal | **yes, but this is the ceiling** |
+
+So: **strong dorsal commitment is structurally possible; strong ventral commitment is structurally
+impossible.** The ventral route can never receive more than 64.6 % of the blend, and the dorsal route
+can never be suppressed below 35.4 %.
+
+This refines — and partly inverts — the concern raised in the 14 Sep meeting (§9 of the notes) that
+the gate might "saturate too easily towards one route". Under the cohort's own hyperparameters the
+gate *can* saturate toward the **dorsal** route but *cannot* saturate toward the **ventral** one. The
+correct statement is about **asymmetry of the attainable range**, not about an absence of saturation.
 
 ## 7. Empirically measured gate values on the Phase-8 cohort
 
@@ -183,10 +212,30 @@ From the frozen Phase-8 battery JSONs (`gate_mean` over the full 29,571-item rep
 
 Two things follow.
 
-**(a) The deployed gate is already almost symmetric.** Mean `g ≈ 0.52` across all four mature states.
-Averaged over items, the model is running at very nearly 0.5/0.5 fusion already. Whether that hides a
-wide bimodal item-level distribution or a narrow unimodal one is **unknown** — only the mean was ever
-recorded — and is the first thing Experiment 1 must establish.
+**(a) The deployed gate's *recorded mean* is close to 0.5 — and that is all that is established.**
+The frozen values are **position-weighted** means (the historical statistic flattens the gate over
+`(B, S, 1)` including padding columns, so each item is weighted by its batch's padded decoder width).
+They sit at 0.517–0.521, so **replacing the gate by a constant 0.5 changes that signed mean by about
+0.02.**
+
+That statement must not be inflated into "the intervention is a ~0.02 perturbation". A near-0.5 mean
+says nothing about:
+
+* the item-level mean `|g − 0.5|` (a symmetric spread around 0.5 has a small signed mean and a large
+  mean absolute deviation);
+* the variance or shape of the item-level `g` distribution (bimodal vs narrow unimodal);
+* the per-item effect on the logits.
+
+The per-item logit change under the intervention is exactly
+
+```
+Δlogits_i = (0.5 − g_i) · (ltm_logits_i − wm_logits_i)
+```
+
+which is a **product**. It can be large wherever the two routes disagree strongly, even when
+`g_i ≈ 0.5`, and it is not bounded by the mean gate offset. Only the item-level distribution — which
+was **never recorded**, since only the mean was — can say how large the intervention actually is.
+Establishing that distribution is the first thing Experiment 1 must do.
 
 **(b) Finding A6: those repaired numbers are not the repaired model's gate.**
 
@@ -282,9 +331,18 @@ table would silently mix a frozen population with an unfrozen one.
 ## 11. What must NOT be concluded from this audit
 
 * Not that the gate is useless. A fixed confidence-based mixer can still be functionally valuable;
-  §5 says only that it cannot be *adaptive to the dorsal route*.
-* Not that 0.5/0.5 will be equivalent. Mean `g ≈ 0.52` constrains the *average*; item-level variance
-  in `g` is unmeasured and could still be doing work on exactly the items that matter.
+  §5 says only that it cannot be *adaptive to the dorsal route's inference-time state*.
+* Not that the gate "cannot saturate". It **can** saturate toward the dorsal route (down to
+  `g = 0.0323`, ≈ 29.9 : 1) and **cannot** toward the ventral route (up to `g = 0.6457`,
+  ≈ 1.82 : 1). The finding is the **asymmetry** (§6, CLAIM 6).
+* Not that `fixed05` is a "small" or "~0.02" perturbation. What is established is only that the
+  *recorded position-weighted mean* moves by ≈ 0.02. The per-item logit change is
+  `(0.5 − g_i)·(ltm_logits_i − wm_logits_i)`, a product that can be large wherever the routes
+  disagree (§7a).
+* Not that 0.5/0.5 will be behaviourally equivalent. The item-level `g` distribution is unmeasured
+  and could still be doing work on exactly the items that matter.
+* Not that the two routes are anatomically independent. They share `phon_embed.weight` **and** the
+  `motor.proj` readout (§4, caveat 1).
 * Not that Phase 8 is wrong. One diagnostic column was mis-sourced; every frozen scientific metric
   stands.
 * Not that `α`/`τ` should change. They are frozen inputs here (§9 STOP condition).
@@ -298,6 +356,46 @@ table would silently mix a frozen population with an unfrozen one.
 | Free-AR forced-0.5 cannot be reconstructed from stored per-route predictions | Contract mandates re-decoding (§4 caveat 3) |
 | Historical `gate_mean` is source-sourced | Recompute both members of every pair; never reuse the column (§7) |
 | Pseudoword assets outside the freeze | Provenance-gated secondary battery (§10) |
+
+## 13. Naming and Comprehension do not involve the gate
+
+Traced through the canonical evaluators. Neither task constructs a gate, so the `fixed05`
+intervention is **mathematically inert** for both.
+
+**Comprehension** (`train_tasks.evaluate_comprehension_subset:1091-1126`):
+```
+encode_all -> s_hat -> comprehension_metrics (cosine retrieval against the bank)
+```
+No decoder, no premotor, no gate, no `motor`. C is a property of `ŝ` alone.
+
+**Naming** (`train_tasks.evaluate_naming:668-711` → `frozen_probe.semantic_greedy_decode:158-198`):
+```
+raw GloVe sem -> ltm.decode_from_s_hat -> motor -> argmax
+```
+The gate module is never called; only the ventral decoder and the shared readout are used.
+
+**Isolated routes** likewise bypass the gate by construction (§4).
+
+Consequences, all of which are *invariances* rather than predictions:
+
+| quantity | effect of forcing `g ≡ 0.5` |
+|---|---|
+| Comprehension (strict C) | **exactly zero** |
+| Naming (exact match) | **exactly zero** |
+| isolated WM-only repetition | **exactly zero** |
+| isolated LTM-only repetition | **exactly zero** |
+| FULL/gated repetition | the only quantity that can move |
+
+Therefore the experiment contract must **not** evaluate C, N or the isolated routes under `fixed05`
+as if they could change: doing so would spend compute to re-derive a mathematical identity and would
+invite reporting a null as though it were an empirical finding. They are recorded once, as
+invariants, and the intervention is assessed on FULL/gated repetition alone.
+
+This also constrains the outcome space: an outcome of the form "`fixed05` improves FULL **without**
+degrading C/N or the isolated routes" cannot be evidence about the gate, because the second half of
+that conjunction is true by construction.
+
+---
 
 ---
 

@@ -10,13 +10,14 @@ through a forward hook that is removed on exit (`forced_gate`).  The two paths
 are independent and are cross-checked against each other in the test suite.
 """
 from .gate_probe import (
-    ROUTES, CompetenceCategory, forced_gate, fixed_mix_logits,
-    capture_gate_field, ar_decode_forced_length, ar_decode_free,
-    competence_category, collect_item_level,
+    ROUTES, HISTORICAL_FREE_AR_MAX_STEPS, CompetenceCategory, forced_gate,
+    fixed_mix_logits, capture_gate_field, ar_decode_forced_length,
+    ar_decode_free, competence_category, collect_item_level,
 )
 
 __all__ = [
-    "ROUTES", "CompetenceCategory", "forced_gate", "fixed_mix_logits",
-    "capture_gate_field", "ar_decode_forced_length", "ar_decode_free",
-    "competence_category", "collect_item_level",
+    "ROUTES", "HISTORICAL_FREE_AR_MAX_STEPS", "CompetenceCategory",
+    "forced_gate", "fixed_mix_logits", "capture_gate_field",
+    "ar_decode_forced_length", "ar_decode_free", "competence_category",
+    "collect_item_level",
 ]

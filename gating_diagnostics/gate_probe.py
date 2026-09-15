@@ -30,6 +30,13 @@ from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 import torch
 
+# The genuine free-AR global cap is NOT restated here: it is imported from the
+# historical evaluator so the diagnostic can never silently drift from it.
+# `Trainer.free_ar_repetition` uses exactly this constant.
+from scripts.naming_comprehension.train_joint_scratch import (  # noqa: E402
+    FREE_AR_MAX_STEPS as HISTORICAL_FREE_AR_MAX_STEPS,
+)
+
 # The native gate, the two isolated routes, and the preregistered intervention.
 # "fixed05" is the ONLY intervention in this workstream: no other ratio is
 # searched (workstream brief §7).
@@ -190,12 +197,19 @@ def ar_decode_forced_length(model, vocab, forms: Sequence[Sequence[int]],
 @torch.no_grad()
 def ar_decode_free(model, vocab, forms: Sequence[Sequence[int]], device: str,
                    routes: Sequence[str] = ROUTES,
-                   max_steps: int = 24) -> Dict[str, List[List[int]]]:
+                   max_steps: int = HISTORICAL_FREE_AR_MAX_STEPS,
+                   ) -> Dict[str, List[List[int]]]:
     """GENUINE free-AR decode: one global cap, no use of the target length.
 
-    Mirrors `Trainer.free_ar_repetition`.  Over-generation and non-termination
-    count as errors, which the forced-length convention cannot see.  Reported
-    ALONGSIDE the canonical metric; neither replaces the other.
+    Mirrors `Trainer.free_ar_repetition`, INCLUDING its global cap, which is
+    imported rather than restated (`HISTORICAL_FREE_AR_MAX_STEPS` == 12).  A
+    different cap would change what counts as non-termination and would make
+    these numbers non-comparable with the frozen free-AR record, so the
+    equality is pinned by a test.
+
+    Over-generation and non-termination count as errors, which the forced-length
+    convention cannot see.  Reported ALONGSIDE the canonical metric; neither
+    replaces the other.
     """
     n = len(forms)
     max_enc = max(len(f) for f in forms) + 1
@@ -260,12 +274,19 @@ def collect_item_level(model, vocab, entries, indices: Sequence[int], device: st
             from evaluate.hooks import make_batch
             b = make_batch([list(f) for f in forms], vocab, device)
             field = capture_gate_field(model, b["enc_in"], b["enc_mask"], vocab.bos_id)
+            # The historical `gate_statistics` flattens the gate over (B, S, 1),
+            # INCLUDING padding positions, so each item is counted once per
+            # decoder column of its batch.  Recording that width per item is
+            # what lets `analysis` reconstruct the historical position-weighted
+            # mean exactly, alongside the unambiguous item-level mean.
+            dec_width = int(b["dec_in"].shape[1])
 
             for j, (i, e, form) in enumerate(zip(idx, items, forms)):
                 tgt = list(form)
                 row = {
                     "item_index": int(i),
                     "word": e.word,
+                    "batch_dec_width": dec_width,
                     "rank": int(getattr(e, "rank", 0)),
                     "target_phonemes": " ".join(vocab.itos[p] for p in tgt),
                     "length": len(tgt),
