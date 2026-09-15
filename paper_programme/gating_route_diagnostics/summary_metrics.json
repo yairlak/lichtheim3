@@ -1,0 +1,5466 @@
+{
+ "contract": "paper_programme/gating_route_diagnostics/EXPERIMENT_CONTRACT.md",
+ "bootstrap_seed": 20260915,
+ "smoke": false,
+ "TEST_ONLY": false,
+ "limit": null,
+ "free_ar_max_steps": 12,
+ "states": {
+  "W1_SRC": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5197919608472645,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5197919608472645,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5197919608472645,
+    "sd": 0.02953406468070418,
+    "median": 0.5219049453735352,
+    "q25": 0.5015946626663208,
+    "q75": 0.5400750637054443,
+    "min": 0.36664053797721863,
+    "max": 0.5995659828186035
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7657164113489567,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7397119696333146,
+    "sd": 0.05933779344553671,
+    "median": 0.7438379526138306,
+    "q25": 0.7031893730163574,
+    "q75": 0.7803223729133606,
+    "min": 0.4266718924045563,
+    "max": 0.9018284678459167
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.45370960692317786,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2909704383872902,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999761005,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.17165398927851863,
+     "p": 2.4996874578455924e-194,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.49908649285389844,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 26186,
+     "gate": {
+      "n": 26186,
+      "mean": 0.52095548576402,
+      "sd": 0.029793779032590284,
+      "median": 0.5231219530105591,
+      "q25": 0.5025308579206467,
+      "q75": 0.5417067408561707,
+      "min": 0.36664053797721863,
+      "max": 0.5995659828186035
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3385,
+     "gate": {
+      "n": 3385,
+      "mean": 0.5107910558339236,
+      "sd": 0.025724988833654303,
+      "median": 0.5139002203941345,
+      "q25": 0.49593260884284973,
+      "q75": 0.5288904309272766,
+      "min": 0.37513792514801025,
+      "max": 0.5784881114959717
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3385,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5139002203941345,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3385,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5139002203941345,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26186,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3385,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26186,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3385,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.8855297419769369,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.8855297419769369,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3385,
+     "n_both": 26186,
+     "powered": true,
+     "median_gate_wm_only": 0.5139002203941345,
+     "median_gate_both": 0.5231219530105591,
+     "median_difference": -0.00922173261642456,
+     "auroc": 0.3947026673515373,
+     "cliffs_delta": -0.2105946652969254,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.3856856445160352,
+      "auroc_hi": 0.4037023711803335,
+      "delta_lo": -0.22862871096792958,
+      "delta_hi": -0.19259525763933305,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3385,
+     "n_both": 26186,
+     "powered": true,
+     "median_gate_wm_only": 0.5139002203941345,
+     "median_gate_both": 0.5231219530105591,
+     "median_difference": -0.00922173261642456,
+     "auroc": 0.3947026673515373,
+     "cliffs_delta": -0.2105946652969254,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.3856856445160352,
+      "auroc_hi": 0.4037023711803335,
+      "delta_lo": -0.22862871096792958,
+      "delta_hi": -0.19259525763933305,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W1_SRC",
+    "arm": "SOURCE_PRE_REPAIR",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/settle_u3600_20260910/runs/final_settle_ctrl_h512_s20/checkpoints/step_10000800.pt",
+    "checkpoint_sha256": "17f1f2ee96bdd2bdc92adcc459ad68032755e361a1da66e0466f5fb142a3221f",
+    "global_step": 10000800,
+    "seed": 20,
+    "source_u": 3600,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": null,
+    "head_sha256": null,
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T19:12:58.406817+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W1_SRC.tsv",
+   "item_level_shard_sha256": "acef4fc91bfbec1ce378873dafa8be63a2e1b5b85a495f3e6f334398ab460494"
+  },
+  "W1_REP": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5196779133378905,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5196779133378905,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5196779133378905,
+    "sd": 0.02953020877392052,
+    "median": 0.5218479633331299,
+    "q25": 0.5015222132205963,
+    "q75": 0.5399742126464844,
+    "min": 0.36672574281692505,
+    "max": 0.5990999937057495
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7646004531466639,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7394824031320795,
+    "sd": 0.059329138141751656,
+    "median": 0.7437238097190857,
+    "q25": 0.7030443847179413,
+    "q75": 0.7801194190979004,
+    "min": 0.42685532569885254,
+    "max": 0.9008582234382629
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.4529426678986125,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2926443574341976,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999748241,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.17112781114512496,
+     "p": 3.911578774463557e-193,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.5009521187914658,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 26169,
+     "gate": {
+      "n": 26169,
+      "mean": 0.5208462175825855,
+      "sd": 0.0297896612515399,
+      "median": 0.5230162739753723,
+      "q25": 0.5024862885475159,
+      "q75": 0.5416103005409241,
+      "min": 0.36672574281692505,
+      "max": 0.5990999937057495
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3402,
+     "gate": {
+      "n": 3402,
+      "mean": 0.5106910368595173,
+      "sd": 0.02574063525908797,
+      "median": 0.513839602470398,
+      "q25": 0.495857909321785,
+      "q75": 0.5287332087755203,
+      "min": 0.37486347556114197,
+      "max": 0.5897166132926941
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3402,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.513839602470398,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3402,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.513839602470398,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26169,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3402,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26169,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3402,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.88495485441818,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.88495485441818,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3402,
+     "n_both": 26169,
+     "powered": true,
+     "median_gate_wm_only": 0.513839602470398,
+     "median_gate_both": 0.5230162739753723,
+     "median_difference": -0.009176671504974365,
+     "auroc": 0.39472938516654366,
+     "cliffs_delta": -0.2105412296669127,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38576946788847216,
+      "auroc_hi": 0.40353142705525824,
+      "delta_lo": -0.22846106422305568,
+      "delta_hi": -0.19293714588948352,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3402,
+     "n_both": 26169,
+     "powered": true,
+     "median_gate_wm_only": 0.513839602470398,
+     "median_gate_both": 0.5230162739753723,
+     "median_difference": -0.009176671504974365,
+     "auroc": 0.39472938516654366,
+     "cliffs_delta": -0.2105412296669127,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38576946788847216,
+      "auroc_hi": 0.40353142705525824,
+      "delta_lo": -0.22846106422305568,
+      "delta_hi": -0.19293714588948352,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W1_REP",
+    "arm": "POST_REPAIR_WITNESS",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/settle_u3600_20260910/runs/final_settle_ctrl_h512_s20/checkpoints/step_10000800.pt",
+    "checkpoint_sha256": "17f1f2ee96bdd2bdc92adcc459ad68032755e361a1da66e0466f5fb142a3221f",
+    "global_step": 10000800,
+    "seed": 20,
+    "source_u": 3600,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/ceiling_assembly_v5_20260912/runs/seed20_A/head_first_c0.pt",
+    "head_sha256": "9b34c995ed48ae819697eb6206d0bb61cf3d60795e978bc8e4c4e577ef2fe337",
+    "head_label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+    "head_arm": "A",
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T19:23:04.402623+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W1_REP.tsv",
+   "item_level_shard_sha256": "fc36d4eb8bab4389934f4e62fba600b65e7b5e5fdefc756265be29f4497a379f"
+  },
+  "W2_SRC": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5189159914046443,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5189159914046443,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5189159914046443,
+    "sd": 0.029788261758612364,
+    "median": 0.5204631090164185,
+    "q25": 0.5002522766590118,
+    "q75": 0.539717048406601,
+    "min": 0.3781816363334656,
+    "max": 0.6023314595222473
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7528998004802002,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7379576722849396,
+    "sd": 0.05984300519707402,
+    "median": 0.7409490346908569,
+    "q25": 0.7005045711994171,
+    "q75": 0.7796017825603485,
+    "min": 0.4513632655143738,
+    "max": 0.9075945615768433
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.4647687645133308,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.28070020000128637,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999719238,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.16846860661458768,
+     "p": 3.712407562616851e-187,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.511196802668017,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 26148,
+     "gate": {
+      "n": 26148,
+      "mean": 0.5201605340576745,
+      "sd": 0.02999663043350729,
+      "median": 0.5218293368816376,
+      "q25": 0.5012413710355759,
+      "q75": 0.5412430465221405,
+      "min": 0.3859230875968933,
+      "max": 0.6023314595222473
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3421,
+     "gate": {
+      "n": 3421,
+      "mean": 0.5093951668003365,
+      "sd": 0.02627177732499602,
+      "median": 0.5125545859336853,
+      "q25": 0.49418801069259644,
+      "q75": 0.5278832316398621,
+      "min": 0.3781816363334656,
+      "max": 0.5821360349655151
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 2,
+     "gate": {
+      "n": 2,
+      "mean": 0.5331358313560486,
+      "sd": 0.011626713923912249,
+      "median": 0.5331358313560486,
+      "q25": 0.5290251672267914,
+      "q75": 0.5372464954853058,
+      "min": 0.5249145030975342,
+      "max": 0.541357159614563
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3421,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5125545859336853,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3421,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5125545859336853,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26148,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3421,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 2,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26148,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3421,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 2,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 0.999932366169558,
+     "ltm": 0.8842446991985391,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 0.999932366169558,
+     "ltm": 0.8842446991985391,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3421,
+     "n_both": 26148,
+     "powered": true,
+     "median_gate_wm_only": 0.5125545859336853,
+     "median_gate_both": 0.5218293368816376,
+     "median_difference": -0.00927475094795227,
+     "auroc": 0.3915793318602802,
+     "cliffs_delta": -0.21684133627943958,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38263260057526965,
+      "auroc_hi": 0.400764097389192,
+      "delta_lo": -0.2347347988494607,
+      "delta_hi": -0.198471805221616,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3421,
+     "n_both": 26148,
+     "powered": true,
+     "median_gate_wm_only": 0.5125545859336853,
+     "median_gate_both": 0.5218293368816376,
+     "median_difference": -0.00927475094795227,
+     "auroc": 0.3915793318602802,
+     "cliffs_delta": -0.21684133627943958,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38263260057526965,
+      "auroc_hi": 0.400764097389192,
+      "delta_lo": -0.2347347988494607,
+      "delta_hi": -0.198471805221616,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W2_SRC",
+    "arm": "SOURCE_PRE_REPAIR",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_seed21_u3400_20260912/source/step_09445200.pt",
+    "checkpoint_sha256": "f2b9f2ea098613859b6ef1c9839e28c135b4d921d675901b96ecf01d5d74cd6c",
+    "global_step": 9445200,
+    "seed": 21,
+    "source_u": 3400,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": null,
+    "head_sha256": null,
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T19:33:05.409810+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W2_SRC.tsv",
+   "item_level_shard_sha256": "1f360a140df6042ab726efe3c18040750d4df0887381af7e9a67e30fd8ed5937"
+  },
+  "W2_REP": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5188282517419169,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5188282517419169,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5188282517419169,
+    "sd": 0.029751473737564014,
+    "median": 0.5204311609268188,
+    "q25": 0.5002159774303436,
+    "q75": 0.5396332144737244,
+    "min": 0.37815001606941223,
+    "max": 0.601039707660675
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7516823915322445,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.737780791618428,
+    "sd": 0.05976734399994847,
+    "median": 0.7408850789070129,
+    "q25": 0.7004318833351135,
+    "q75": 0.7794331014156342,
+    "min": 0.4512960910797119,
+    "max": 0.904899537563324
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.4640846072605712,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2819710891373654,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999754041,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.16787177081898377,
+     "p": 7.89992698392364e-186,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.5132688664148356,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 26140,
+     "gate": {
+      "n": 26140,
+      "mean": 0.5200551760201246,
+      "sd": 0.029971137357600486,
+      "median": 0.5217643976211548,
+      "q25": 0.5011267066001892,
+      "q75": 0.5411136597394943,
+      "min": 0.38661718368530273,
+      "max": 0.601039707660675
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3429,
+     "gate": {
+      "n": 3429,
+      "mean": 0.5094668448892617,
+      "sd": 0.02620296443325797,
+      "median": 0.5125927329063416,
+      "q25": 0.49434223771095276,
+      "q75": 0.5279156565666199,
+      "min": 0.37815001606941223,
+      "max": 0.5821995139122009
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 2,
+     "gate": {
+      "n": 2,
+      "mean": 0.5330599844455719,
+      "sd": 0.011337375808884963,
+      "median": 0.5330599844455719,
+      "q25": 0.5290516167879105,
+      "q75": 0.5370683521032333,
+      "min": 0.525043249130249,
+      "max": 0.5410767197608948
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3429,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5125927329063416,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3429,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5125927329063416,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26140,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3429,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 2,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26140,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3429,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 2,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 0.999932366169558,
+     "ltm": 0.8839741638767712,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 0.999932366169558,
+     "ltm": 0.8839741638767712,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3429,
+     "n_both": 26140,
+     "powered": true,
+     "median_gate_wm_only": 0.5125927329063416,
+     "median_gate_both": 0.5217643976211548,
+     "median_difference": -0.009171664714813232,
+     "auroc": 0.3928453257612117,
+     "cliffs_delta": -0.21430934847757654,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38404295992505527,
+      "auroc_hi": 0.40189426011719204,
+      "delta_lo": -0.23191408014988946,
+      "delta_hi": -0.19621147976561593,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3429,
+     "n_both": 26140,
+     "powered": true,
+     "median_gate_wm_only": 0.5125927329063416,
+     "median_gate_both": 0.5217643976211548,
+     "median_difference": -0.009171664714813232,
+     "auroc": 0.3928453257612117,
+     "cliffs_delta": -0.21430934847757654,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38404295992505527,
+      "auroc_hi": 0.40189426011719204,
+      "delta_lo": -0.23191408014988946,
+      "delta_hi": -0.19621147976561593,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W2_REP",
+    "arm": "POST_REPAIR_WITNESS",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_seed21_u3400_20260912/source/step_09445200.pt",
+    "checkpoint_sha256": "f2b9f2ea098613859b6ef1c9839e28c135b4d921d675901b96ecf01d5d74cd6c",
+    "global_step": 9445200,
+    "seed": 21,
+    "source_u": 3400,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/ceiling_assembly_v5_seed21_20260912/runs/head_first_c0.pt",
+    "head_sha256": "bd420b28b6c34354b1aa0c0bb3fc8576cf961037c042eb439a0e7ec7a1894df0",
+    "head_label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+    "head_arm": "A",
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T19:43:07.992187+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W2_REP.tsv",
+   "item_level_shard_sha256": "bed828fa175bc2426fcc59c27ee87db9ad2d02f2da21f502bf06bcb20a14ffb5"
+  },
+  "W3_SRC": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5212951566446888,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5212951566446888,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5212951566446888,
+    "sd": 0.029772343185598647,
+    "median": 0.5232917666435242,
+    "q25": 0.5030500292778015,
+    "q75": 0.5421444475650787,
+    "min": 0.34970587491989136,
+    "max": 0.6049028635025024
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7788035575394813,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7427342633819528,
+    "sd": 0.05983008030935152,
+    "median": 0.746617317199707,
+    "q25": 0.7061001360416412,
+    "q75": 0.7844893038272858,
+    "min": 0.38983380794525146,
+    "max": 0.912968099117279
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.4604605709333567,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2951743179049672,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999764484,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.1650943839594463,
+     "p": 1.0279139425786363e-179,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.49831883851306674,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 26372,
+     "gate": {
+      "n": 26372,
+      "mean": 0.5224440360166913,
+      "sd": 0.02986230162884019,
+      "median": 0.5245823264122009,
+      "q25": 0.5038026720285416,
+      "q75": 0.5435783416032791,
+      "min": 0.3507079780101776,
+      "max": 0.6049028635025024
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3199,
+     "gate": {
+      "n": 3199,
+      "mean": 0.511823994782091,
+      "sd": 0.02723631212547181,
+      "median": 0.5150725245475769,
+      "q25": 0.49769391119480133,
+      "q75": 0.5299234092235565,
+      "min": 0.34970587491989136,
+      "max": 0.5794843435287476
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3199,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5150725245475769,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3199,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5150725245475769,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26372,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3199,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26372,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3199,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.8918196882080417,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.8918196882080417,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3199,
+     "n_both": 26372,
+     "powered": true,
+     "median_gate_wm_only": 0.5150725245475769,
+     "median_gate_both": 0.5245823264122009,
+     "median_difference": -0.009509801864624023,
+     "auroc": 0.39376551579542884,
+     "cliffs_delta": -0.2124689684091423,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38454124991518895,
+      "auroc_hi": 0.4029118347988316,
+      "delta_lo": -0.2309175001696221,
+      "delta_hi": -0.19417633040233684,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3199,
+     "n_both": 26372,
+     "powered": true,
+     "median_gate_wm_only": 0.5150725245475769,
+     "median_gate_both": 0.5245823264122009,
+     "median_difference": -0.009509801864624023,
+     "auroc": 0.39376551579542884,
+     "cliffs_delta": -0.2124689684091423,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38454124991518895,
+      "auroc_hi": 0.4029118347988316,
+      "delta_lo": -0.2309175001696221,
+      "delta_hi": -0.19417633040233684,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W3_SRC",
+    "arm": "SOURCE_PRE_REPAIR",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+    "checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+    "global_step": 10625850,
+    "seed": 19,
+    "source_u": 3825,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": null,
+    "head_sha256": null,
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T19:53:10.324789+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W3_SRC.tsv",
+   "item_level_shard_sha256": "3e16ef76f09f40f36bbbfaf571ebe6e2b66c838119df637a04a0844df016b012"
+  },
+  "W3_REP": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.521226452816037,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.521226452816037,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.521226452816037,
+    "sd": 0.029762718492456524,
+    "median": 0.5232589244842529,
+    "q25": 0.5029270350933075,
+    "q75": 0.5421033799648285,
+    "min": 0.35004299879074097,
+    "max": 0.603850245475769
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7790740928612492,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7425957924093112,
+    "sd": 0.05981000694577476,
+    "median": 0.7465513944625854,
+    "q25": 0.7058540880680084,
+    "q75": 0.7844066023826599,
+    "min": 0.3905748724937439,
+    "max": 0.9107670187950134
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.45979295453748387,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2961231794652536,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999754041,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.16438556275843258,
+     "p": 3.5907702718421726e-178,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.4998732374265179,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 26378,
+     "gate": {
+      "n": 26378,
+      "mean": 0.5223724364825381,
+      "sd": 0.02986586841464897,
+      "median": 0.5245709717273712,
+      "q25": 0.503741905093193,
+      "q75": 0.5434844344854355,
+      "min": 0.3507065773010254,
+      "max": 0.603850245475769
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3193,
+     "gate": {
+      "n": 3193,
+      "mean": 0.511759256713636,
+      "sd": 0.027106500912290162,
+      "median": 0.5148983597755432,
+      "q25": 0.49764376878738403,
+      "q75": 0.5297680497169495,
+      "min": 0.35004299879074097,
+      "max": 0.5795049667358398
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3193,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5148983597755432,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3193,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5148983597755432,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26378,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3193,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 26378,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3193,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.8920225896993677,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 1.0,
+     "ltm": 0.8920225896993677,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3193,
+     "n_both": 26378,
+     "powered": true,
+     "median_gate_wm_only": 0.5148983597755432,
+     "median_gate_both": 0.5245709717273712,
+     "median_difference": -0.009672611951828003,
+     "auroc": 0.39336435256468055,
+     "cliffs_delta": -0.2132712948706389,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.3841729751790663,
+      "auroc_hi": 0.40257340360197763,
+      "delta_lo": -0.23165404964186742,
+      "delta_hi": -0.19485319279604474,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3193,
+     "n_both": 26378,
+     "powered": true,
+     "median_gate_wm_only": 0.5148983597755432,
+     "median_gate_both": 0.5245709717273712,
+     "median_difference": -0.009672611951828003,
+     "auroc": 0.39336435256468055,
+     "cliffs_delta": -0.2132712948706389,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.3841729751790663,
+      "auroc_hi": 0.40257340360197763,
+      "delta_lo": -0.23165404964186742,
+      "delta_hi": -0.19485319279604474,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W3_REP",
+    "arm": "POST_REPAIR_WITNESS",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+    "checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+    "global_step": 10625850,
+    "seed": 19,
+    "source_u": 3825,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/arm_a/head_first_c0.pt",
+    "head_sha256": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc",
+    "head_label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+    "head_arm": "A",
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T20:03:11.238168+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W3_REP.tsv",
+   "item_level_shard_sha256": "db6bd92ad77aa5b8f80430ce394ebd6dd25f832f42e9a07a1eff30957e0b1303"
+  },
+  "W4_SRC": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5170737785698173,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5170737785698173,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5170737785698173,
+    "sd": 0.030248942011721774,
+    "median": 0.5188890099525452,
+    "q25": 0.4983123242855072,
+    "q75": 0.5378217995166779,
+    "min": 0.34535080194473267,
+    "max": 0.6021569967269897
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7332183558215819,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7342557957475466,
+    "sd": 0.060770503360445594,
+    "median": 0.7377960085868835,
+    "q25": 0.6966246068477631,
+    "q75": 0.7757883369922638,
+    "min": 0.38023054599761963,
+    "max": 0.9072303771972656
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.4608178490133538,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2783689174363688,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999784207,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.1760885610856512,
+     "p": 1.501846279382003e-204,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.518539292917146,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 25924,
+     "gate": {
+      "n": 25924,
+      "mean": 0.5183654295358462,
+      "sd": 0.030521064979747718,
+      "median": 0.5201623737812042,
+      "q25": 0.4991716369986534,
+      "q75": 0.5396983325481415,
+      "min": 0.36341744661331177,
+      "max": 0.6021569967269897
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3646,
+     "gate": {
+      "n": 3646,
+      "mean": 0.5078822782961013,
+      "sd": 0.026482291792261515,
+      "median": 0.5113895833492279,
+      "q25": 0.4936169236898422,
+      "q75": 0.5258964449167252,
+      "min": 0.34535080194473267,
+      "max": 0.578713059425354
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 1,
+     "gate": {
+      "n": 1,
+      "mean": 0.5445241332054138,
+      "sd": 0.0,
+      "median": 0.5445241332054138,
+      "q25": 0.5445241332054138,
+      "q75": 0.5445241332054138,
+      "min": 0.5445241332054138,
+      "max": 0.5445241332054138
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3646,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5113895833492279,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3646,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5113895833492279,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 25924,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3646,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 1,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 25924,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3646,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 1,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 0.999966183084779,
+     "ltm": 0.8766697101890366,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 0.999966183084779,
+     "ltm": 0.8766697101890366,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3646,
+     "n_both": 25924,
+     "powered": true,
+     "median_gate_wm_only": 0.5113895833492279,
+     "median_gate_both": 0.5201623737812042,
+     "median_difference": -0.008772790431976318,
+     "auroc": 0.3965759008377837,
+     "cliffs_delta": -0.20684819832443258,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.3880755264047497,
+      "auroc_hi": 0.4052004715903181,
+      "delta_lo": -0.22384894719050064,
+      "delta_hi": -0.18959905681936384,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3646,
+     "n_both": 25924,
+     "powered": true,
+     "median_gate_wm_only": 0.5113895833492279,
+     "median_gate_both": 0.5201623737812042,
+     "median_difference": -0.008772790431976318,
+     "auroc": 0.3965759008377837,
+     "cliffs_delta": -0.20684819832443258,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.3880755264047497,
+      "auroc_hi": 0.4052004715903181,
+      "delta_lo": -0.22384894719050064,
+      "delta_hi": -0.18959905681936384,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W4_SRC",
+    "arm": "SOURCE_PRE_REPAIR",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+    "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+    "global_step": 8445120,
+    "seed": 20,
+    "source_u": 3040,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": null,
+    "head_sha256": null,
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T20:13:13.613478+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W4_SRC.tsv",
+   "item_level_shard_sha256": "1c0ddd58939526af5bd51040bda2f69eba2f537cd24c7133d2ef0f05a9f5ed57"
+  },
+  "W4_REP": {
+   "n_items": 29571,
+   "gate_means": {
+    "gate_mean_item_level": 0.5169562425086837,
+    "gate_mean_item_level_definition": "one g per item, averaged over items; the gate is word-level so this is the unambiguous statistic",
+    "gate_mean_position_weighted_historical": 0.5169562425086837,
+    "gate_mean_position_weighted_historical_definition": "reconstruction of the historical convention, which flattens the gate over (B, S, 1) INCLUDING padding positions, so each item is weighted by its batch's padded decoder width; reported only for reconciliation with the frozen Phase-8 column, and dependent on batch composition",
+    "position_weight_batch_dec_width": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0
+    }
+   },
+   "gate": {
+    "n": 29571,
+    "mean": 0.5169562425086837,
+    "sd": 0.03024176872488125,
+    "median": 0.5188192129135132,
+    "q25": 0.49819983541965485,
+    "q75": 0.5376873910427094,
+    "min": 0.3454253673553467,
+    "max": 0.602225124835968
+   },
+   "gate_attainable_range": {
+    "lo": 0.0323,
+    "hi": 0.6457
+   },
+   "gate_frac_above_half": 0.7321700314497311,
+   "lexical_confidence": {
+    "n": 29571,
+    "mean": 0.7340193042099317,
+    "sd": 0.06075510043431087,
+    "median": 0.7376561164855957,
+    "q25": 0.6963996291160583,
+    "q75": 0.7755179703235626,
+    "min": 0.38039547204971313,
+    "max": 0.9073725342750549
+   },
+   "covariates_spearman_vs_gate": {
+    "zipf_approx": {
+     "rho": 0.46014165345619357,
+     "p": 0.0,
+     "n": 29571
+    },
+    "length": {
+     "rho": 0.2800826755319602,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_confidence": {
+     "rho": 0.9999999999744762,
+     "p": 0.0,
+     "n": 29571
+    },
+    "lexical_margin": {
+     "rho": -0.17569014903946803,
+     "p": 1.2771250554503802e-203,
+     "n": 29571
+    },
+    "lexical_density": {
+     "rho": -0.520392506079513,
+     "p": 0.0,
+     "n": 29571
+    }
+   },
+   "competence": {
+    "BOTH_CORRECT": {
+     "n": 25909,
+     "gate": {
+      "n": 25909,
+      "mean": 0.5182600118214964,
+      "sd": 0.03049940453782498,
+      "median": 0.5201277136802673,
+      "q25": 0.4990621507167816,
+      "q75": 0.5395290851593018,
+      "min": 0.3631824553012848,
+      "max": 0.602225124835968
+     }
+    },
+    "WM_ONLY_CORRECT": {
+     "n": 3661,
+     "gate": {
+      "n": 3661,
+      "mean": 0.5077218527075568,
+      "sd": 0.026584746935057687,
+      "median": 0.5112863183021545,
+      "q25": 0.49311313033103943,
+      "q75": 0.5256901979446411,
+      "min": 0.3454253673553467,
+      "max": 0.5787369608879089
+     }
+    },
+    "LTM_ONLY_CORRECT": {
+     "n": 0,
+     "gate": {
+      "n": 0,
+      "mean": null,
+      "sd": null,
+      "median": null,
+      "q25": null,
+      "q75": null,
+      "min": null,
+      "max": null
+     }
+    },
+    "NEITHER_CORRECT": {
+     "n": 1,
+     "gate": {
+      "n": 1,
+      "mean": 0.544698178768158,
+      "sd": 0.0,
+      "median": 0.544698178768158,
+      "q25": 0.544698178768158,
+      "q75": 0.544698178768158,
+      "min": 0.544698178768158,
+      "max": 0.544698178768158
+     }
+    }
+   },
+   "experiment1": {
+    "canonical": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3661,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5112863183021545,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    },
+    "freear": {
+     "status": "STRUCTURALLY_UNTESTABLE \u2014 n(LTM_ONLY_CORRECT) <= 2 because the dorsal route is nearly sufficient for exact canonical repetition; see contract AMENDMENT 1. NOT answered by H1', which is a different question (AMENDMENT 2).",
+     "hypothesis": "median g(LTM_ONLY_CORRECT) > median g(WM_ONLY_CORRECT)",
+     "n_ltm_only": 0,
+     "n_wm_only": 3661,
+     "powered": false,
+     "power_rule": "both cells must have n >= 30 (contract 6.4)",
+     "median_gate_ltm_only": null,
+     "median_gate_wm_only": 0.5112863183021545,
+     "median_difference": null,
+     "auroc": null,
+     "cliffs_delta": null,
+     "ci95": null,
+     "note": "UNDERPOWERED: distributions and counts only, no effect size (contract 6.4)"
+    }
+   },
+   "experiment2": {
+    "canonical": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 25909,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3661,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 1,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    },
+    "freear": {
+     "overall": {
+      "unchanged_correct": 29571,
+      "errors_gained": 0,
+      "errors_recovered": 0,
+      "unchanged_wrong": 0,
+      "n_discordant": 0,
+      "net_change_in_correct": 0,
+      "acc_native": 1.0,
+      "acc_fixed05": 1.0,
+      "p_exact_mcnemar": null,
+      "test": "exact binomial on discordant pairs (two-sided)"
+     },
+     "by_competence_category": {
+      "BOTH_CORRECT": {
+       "unchanged_correct": 25909,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "WM_ONLY_CORRECT": {
+       "unchanged_correct": 3661,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "NEITHER_CORRECT": {
+       "unchanged_correct": 1,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_frequency_quintile_descriptive": {
+      "Q1": {
+       "unchanged_correct": 5786,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q2": {
+       "unchanged_correct": 5960,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q3": {
+       "unchanged_correct": 5915,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q4": {
+       "unchanged_correct": 5979,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "Q5": {
+       "unchanged_correct": 5931,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "by_length_descriptive": {
+      "2": {
+       "unchanged_correct": 456,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "3": {
+       "unchanged_correct": 2428,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "4": {
+       "unchanged_correct": 4415,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "5": {
+       "unchanged_correct": 5561,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "6": {
+       "unchanged_correct": 5758,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "7": {
+       "unchanged_correct": 4726,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "8": {
+       "unchanged_correct": 3755,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      },
+      "9": {
+       "unchanged_correct": 2472,
+       "errors_gained": 0,
+       "errors_recovered": 0,
+       "unchanged_wrong": 0,
+       "n_discordant": 0,
+       "net_change_in_correct": 0,
+       "acc_native": 1.0,
+       "acc_fixed05": 1.0,
+       "p_exact_mcnemar": null,
+       "test": "exact binomial on discordant pairs (two-sided)"
+      }
+     },
+     "intervention_note": "INFERENCE INTERVENTION ONLY. This does NOT establish how a fixed-fusion model would learn from scratch (contract 7). Training included lambda_gate*(mean(g)-0.5)^2 with usage_prior=0.5, so the model was optimised under mild pressure toward the symmetry this intervention imposes (contract 7.2)."
+    }
+   },
+   "route_accuracy": {
+    "canonical": {
+     "full": 1.0,
+     "wm": 0.999966183084779,
+     "ltm": 0.8761624564607217,
+     "fixed05": 1.0
+    },
+    "freear": {
+     "full": 1.0,
+     "wm": 0.999966183084779,
+     "ltm": 0.8761624564607217,
+     "fixed05": 1.0
+    }
+   },
+   "experiment1_prime": {
+    "canonical": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3661,
+     "n_both": 25909,
+     "powered": true,
+     "median_gate_wm_only": 0.5112863183021545,
+     "median_gate_both": 0.5201277136802673,
+     "median_difference": -0.008841395378112793,
+     "auroc": 0.396320188548053,
+     "cliffs_delta": -0.20735962290389398,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38777451178614575,
+      "auroc_hi": 0.40501636843296085,
+      "delta_lo": -0.2244509764277085,
+      "delta_hi": -0.1899672631340783,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    },
+    "freear": {
+     "diagnostic": "VENTRAL_CONFIDENCE_CALIBRATION",
+     "question": "given that the dorsal route is almost always correct, does ventral lexical confidence / g decrease on items for which the ventral route is wrong, compared with items for which it is correct?",
+     "is_not": "a test of whether the gate tracks relative route competence, nor of whether the gate arbitrates between routes",
+     "hypothesis": "median g(WM_ONLY_CORRECT) < median g(BOTH_CORRECT)",
+     "predicted_direction": "auroc < 0.5 (delta < 0)",
+     "positive_class": "WM_ONLY_CORRECT (ventral route fails)",
+     "negative_class": "BOTH_CORRECT (ventral route succeeds)",
+     "n_wm_only": 3661,
+     "n_both": 25909,
+     "powered": true,
+     "median_gate_wm_only": 0.5112863183021545,
+     "median_gate_both": 0.5201277136802673,
+     "median_difference": -0.008841395378112793,
+     "auroc": 0.396320188548053,
+     "cliffs_delta": -0.20735962290389398,
+     "direction_as_predicted": true,
+     "ci95": {
+      "auroc_lo": 0.38777451178614575,
+      "auroc_hi": 0.40501636843296085,
+      "delta_lo": -0.2244509764277085,
+      "delta_hi": -0.1899672631340783,
+      "n_boot": 10000,
+      "seed": 20260915
+     },
+     "licensed_interpretation": "ventral confidence is informative about ventral failure",
+     "excluded_interpretations": [
+      "the gate tracks relative route competence",
+      "the gate arbitrates between routes"
+     ],
+     "note": "g is rank-identical to lexical_confidence, so this statistic is identically the same statistic on c_LTM (contract 6.5). The gate is blind to dorsal-EXCLUSIVE parameters and dorsal activations (CODE_AUDIT_GATE.md CLAIM 5); phon_embed.weight is shared and the motor projection is shared, so route isolation means isolated premotor contribution into a shared readout."
+    }
+   },
+   "provenance": {
+    "state_id": "W4_REP",
+    "arm": "POST_REPAIR_WITNESS",
+    "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+    "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+    "global_step": 8445120,
+    "seed": 20,
+    "source_u": 3040,
+    "gating_config": {
+     "alpha": 2.0,
+     "usage_prior": 0.5,
+     "gate_threshold": 0.7
+    },
+    "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "head": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/prospective_rn_detector_v6_completion_20260912/seed20_u3040/arm_a/head_first_c0.pt",
+    "head_sha256": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03",
+    "head_label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+    "head_arm": "A",
+    "repetition_population_n": 29571,
+    "evaluated_n": 29571,
+    "item_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+    "routes": [
+     "full",
+     "wm",
+     "ltm",
+     "fixed05"
+    ],
+    "free_ar": true,
+    "determinism_max_gate_dev": 0.0,
+    "torch": "2.12.1",
+    "run_utc": "2026-09-15T20:23:16.164556+00:00",
+    "source_unchanged": true
+   },
+   "item_level_shard": "figure_source_data/item_level_W4_REP.tsv",
+   "item_level_shard_sha256": "34b281734ffdb9698c9cd03283594fe9deb395b2de2fd6c93fe93bcba354bbf4"
+  }
+ }
+}
