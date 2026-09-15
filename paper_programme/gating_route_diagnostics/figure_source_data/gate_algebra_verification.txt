@@ -1,0 +1,23 @@
+gate hyperparameters: alpha=2.0, tau=0.7  (cohort 93a577f setting)
+gate learnable parameters: 0
+
+CLAIM 1  g*ltm_logits+(1-g)*wm_logits  vs  logits      max|d| = 1.639e-07
+CLAIM 2a route_logits('wm')   vs  wm_logits            max|d| = 0.000e+00
+CLAIM 2b route_logits('ltm')  vs  ltm_logits           max|d| = 0.000e+00
+CLAIM 3  forced-0.5 mix computable post hoc: shape (7, 5, 42)
+CLAIM 4  gate constant across decoder steps            max|d| = 0.000e+00
+CLAIM 5  shared parameter tensors: ['phon_embed.weight']
+         perturbed 10 WM-exclusive tensors
+         gate                                          max|d| = 0.000e+00
+         LTM confidence                                max|d| = 0.000e+00
+         wm_logits (sanity: must be large)             max|d| = 1.030e+01
+
+CLAIM 6  attainable g = sigmoid(2.0*(c-0.7)) for cosine c in [-1,1]:
+         c=-1.00 -> g=0.0323
+         c=+0.00 -> g=0.1978
+         c=+0.30 -> g=0.3100
+         c=+0.50 -> g=0.4013
+         c=+0.70 -> g=0.5000
+         c=+0.90 -> g=0.5987
+         c=+1.00 -> g=0.6457
+         HARD CEILING on ventral weight: g <= 0.6457
