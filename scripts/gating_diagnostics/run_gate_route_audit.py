@@ -15,6 +15,11 @@ produced here is therefore the same object the frozen witness metrics describe.
 Usage:
     python3 scripts/gating_diagnostics/run_gate_route_audit.py --smoke
     python3 scripts/gating_diagnostics/run_gate_route_audit.py --state-id ALL
+
+`--limit` truncates the population and is reserved for quarantined smoke/test
+use: it is REFUSED without `--smoke`, because a truncated pass is a diagnostic,
+never a scientific result.  Full scientific execution always uses the complete
+canonical repetition population.
 """
 from __future__ import annotations
 
@@ -65,6 +70,29 @@ def resolve_outputs(out_dir: str, state_id: str, smoke: bool) -> tuple:
     name = ("summary_metrics.json" if state_id == "ALL"
             else f"summary_metrics_{state_id}.json")
     return shard_dir, os.path.join(out_dir, name)
+
+
+def assert_full_population(limit: Optional[int], smoke: bool) -> None:
+    """Hard-stop a truncated run that would write to full-result paths.
+
+    `--limit` truncates the evaluated population.  A truncated pass is a
+    diagnostic, never a scientific result: the contract fixes the item set as
+    the complete canonical repetition population (§4), and the paired
+    item-by-item comparisons and power rule are defined over it.  Allowing
+    `--limit` without `--smoke` would silently write a partial-population shard
+    to `figure_source_data/` and a partial `summary_metrics.json`, which would
+    be indistinguishable from a full result after the fact.
+
+    `--limit` is therefore reserved for quarantined smoke/test use.
+    """
+    if limit is not None and not smoke:
+        raise RuntimeError(
+            f"HARD STOP: --limit {limit} without --smoke. A truncated run is not a "
+            "scientific result and must not write to full-result paths. Full "
+            "execution uses the complete canonical population (EXPERIMENT_CONTRACT.md "
+            "§4); --limit is reserved for quarantined smoke/test use. Re-run with "
+            "--smoke to write under _smoke_not_results/, or drop --limit for the "
+            "full pass.")
 
 
 def assert_quarantined(path: str, out_dir: str, smoke: bool) -> None:
@@ -212,13 +240,21 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--state-id", default="ALL",
                     help="a state_id from the manifest, or ALL")
     ap.add_argument("--limit", type=int, default=None,
-                    help="evaluate only the first N items (diagnostic runs)")
+                    help="evaluate only the first N items. QUARANTINED USE ONLY: "
+                         "requires --smoke. A truncated run is not a scientific "
+                         "result and is refused if it would write to full-result paths.")
     ap.add_argument("--batch-size", type=int, default=256)
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--no-free-ar", action="store_true")
     ap.add_argument("--smoke", action="store_true",
                     help="200 items on one state; validates the pipeline end to end")
     a = ap.parse_args(argv)
+
+    # Execution safety: refuse a truncated run that would land on full-result
+    # paths.  Checked BEFORE the smoke default is applied, so that `--smoke`
+    # supplying its own limit is unaffected and only a user-supplied `--limit`
+    # without `--smoke` is refused.
+    assert_full_population(a.limit, bool(a.smoke))
 
     if a.smoke:
         a.limit = a.limit or SMOKE_DEFAULT_LIMIT

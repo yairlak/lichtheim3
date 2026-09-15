@@ -21,7 +21,7 @@ Six findings, each verified numerically (§6), not inferred from documentation:
 | **A1** | The gate has **no learnable parameters**. `g` is a fixed sigmoid of one scalar. | "Learned gate" is a misnomer. The only learning that reaches `g` is inside the ventral encoder that produces `s_hat`. |
 | **A2** | The gate reads **only** `c_LTM = max_i cos(ŝ, bank_i)`. It is **exactly invariant** to every dorsal parameter. | The gate is **structurally incapable** of tracking *relative* route competence. It can only track *absolute ventral lexical confidence*. |
 | **A3** | With the cohort's `α=2.0, τ=0.7`, the attainable range is **asymmetric**: ventral weight `g ∈ [0.0323, 0.6457]`, dorsal weight `1−g ∈ [0.3543, 0.9677]`. | **Strong dorsal commitment is possible (up to ≈ 29.9 : 1 dorsal-to-ventral); strong ventral commitment is structurally impossible (at most ≈ 1.82 : 1 ventral-to-dorsal).** The asymmetry, not an absence of commitment, is the finding. |
-| **A4** | Measured `gate_mean` on all four Phase-8 witnesses is **0.517–0.521**. | The deployed gate already sits within ~2 points of symmetric fusion. The 0.5/0.5 intervention is a *small* perturbation, not a regime change. |
+| **A4** | The historical **position-weighted signed mean** gate on all four Phase-8 witnesses is **0.517–0.521**. | Setting `g ≡ 0.5` therefore changes that **signed mean** by about **0.02**. The **item-level** and **logit-level** magnitude of the intervention remain **unmeasured** (only the mean was ever recorded), so no claim about how large the intervention is may be made from this row. |
 | **A5** | `motor` is a single affine map and the blend weights sum to 1, so **fusion on premotor ≡ fusion on logits, exactly**. | The forced-0.5 intervention needs **no model modification**: it is a read-only recombination of tensors `forward()` already returns. |
 | **A6** | The Phase-8 `gate_mean` recorded for *repaired* witnesses is actually the **source** model's gate (instrumentation defect in a diagnostic-only field). It is additionally a *position-weighted* mean, not an item-level one. | **Gate behaviour after Arm-A repair has never been measured.** Interpretation-space outcome E is currently untested, not tested-and-negative. |
 
@@ -277,18 +277,25 @@ def gate_regularizer(gate, usage_prior):
 
 with `LossConfig.gate = 0.05` and `GatingConfig.usage_prior = 0.5` (confirmed present in all four
 checkpoint configs). Gradients flow through `g` into `c_LTM` into the ventral encoder, actively
-pulling the **mean** gate toward 0.5. The observed `gate_mean ≈ 0.52` is therefore partly a
-*trained-for* outcome, not purely an emergent one.
+pulling the **mean** gate toward 0.5. The recorded position-weighted signed mean of ≈ 0.52 is
+therefore partly a *trained-for* outcome, not purely an emergent one.
 
 This matters for interpreting Experiment 2: the network was optimised under a mild pressure toward
-the very symmetry that the 0.5/0.5 intervention imposes. Finding that 0.5/0.5 changes little would be
-**weaker evidence against adaptive routing than it first appears**, because the training objective
-already discouraged strong asymmetry. This must be stated in the recap regardless of outcome.
+the very symmetry that the 0.5/0.5 intervention imposes. Finding that 0.5/0.5 changes little would
+therefore be **weaker evidence that confidence-driven weighting is functionally necessary than it
+first appears**, because the training objective already discouraged strong asymmetry in the mean.
+This must be stated in the recap regardless of outcome.
+
+Note that this concerns the **mean** only. The regularizer penalises `(mean(g) − 0.5)²`, which
+constrains no item-level quantity: a widely dispersed `g` with mean 0.5 incurs zero penalty. It
+therefore says nothing about the item-level or logit-level magnitude of the intervention, which
+remains unmeasured (§7a).
 
 Note also `L_wm` (`λ_wm = 0.5`): a dedicated WM-only repetition CE. Both routes are trained to be
 independently competent at repetition, which is why `BOTH_CORRECT` is expected to dominate and why
-the discriminative categories (`WM_ONLY_CORRECT`, `LTM_ONLY_CORRECT`) may be small. Sample counts are
-a primary reportable, not a footnote.
+the discriminative categories may be small — `LTM_ONLY_CORRECT` turns out to be bounded above by 2
+on these states (`EXPERIMENT_CONTRACT.md` AMENDMENT 1). Sample counts are a primary reportable, not
+a footnote.
 
 ## 9. Unused signals
 

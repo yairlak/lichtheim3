@@ -320,11 +320,25 @@ Outputs, all reproducible from `figure_source_data/`:
 **Cost note.** Eight states × 29,571 items × 4 routes × 2 conventions, on CPU. The runner takes
 `--state-id` and `--limit` and writes one shard per state, so it can be executed incrementally and
 resumed. A `--smoke` path (**400 items, one state** — `SMOKE_DEFAULT_LIMIT = 400`) validates the
-full pipeline end to end and must be run and inspected before the full pass. **Smoke output is
-quarantined:** every smoke artifact is written under `_smoke_not_results/` with a `_SMOKE_TEST_ONLY`
-marker, and `assert_quarantined` hard-stops if a smoke invocation would ever resolve to a
-full-result path. Pinned by `test_smoke_output_is_quarantined`. Smoke artifacts are never
-scientific results.
+full pipeline end to end and must be run and inspected before the full pass.
+
+**Two execution-safety guards, both enforced in code and both pinned by tests:**
+
+1. **Smoke output is quarantined.** Every smoke artifact is written under `_smoke_not_results/`
+   with a `_SMOKE_TEST_ONLY` marker, and `assert_quarantined` hard-stops if a smoke invocation would
+   ever resolve to a full-result path or omit the marker.
+   Pinned by `test_smoke_output_is_quarantined`.
+
+2. **A truncated run cannot masquerade as a result.** `--limit` truncates the evaluated population,
+   so `assert_full_population` **hard-stops on `--limit` without `--smoke`**. Full scientific
+   execution always uses the **complete canonical repetition population** (§4) — the paired
+   item-by-item comparisons and the §6.4 power rule are defined over it, and a partial-population
+   shard written into `figure_source_data/` would be indistinguishable from a full result after the
+   fact. `--limit` is reserved for quarantined smoke/test use.
+   Pinned by `test_limit_without_smoke_is_refused` and
+   `test_limit_guard_is_wired_into_main_before_any_write`.
+
+Smoke and truncated artifacts are never scientific results.
 
 ## 14. Amendments
 

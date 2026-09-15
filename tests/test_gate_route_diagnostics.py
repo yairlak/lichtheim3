@@ -360,3 +360,58 @@ def test_naming_and_comprehension_never_touch_the_gate():
         src = inspect.getsource(fn)
         assert "gate" not in src, f"{fn.__name__} unexpectedly references the gate"
         assert 'route="full"' not in src and "route='full'" not in src
+
+
+def test_limit_without_smoke_is_refused():
+    """Final freeze guard: a truncated run must never reach full-result paths.
+
+    `--limit` truncates the evaluated population.  The contract fixes the item
+    set as the complete canonical repetition population (§4), and the paired
+    item-by-item comparisons and the power rule are defined over it, so a
+    truncated pass is a diagnostic and never a scientific result.  Without this
+    guard, `--limit 500` alone would write a partial-population shard into
+    `figure_source_data/` and a partial `summary_metrics.json`, indistinguishable
+    from a full result after the fact.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_runner3", "scripts/gating_diagnostics/run_gate_route_audit.py")
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+
+    # refused: a truncated run that is not marked smoke
+    for bad_limit in (1, 200, 400, 29_570):
+        with pytest.raises(RuntimeError, match="HARD STOP"):
+            runner.assert_full_population(bad_limit, smoke=False)
+
+    # allowed: smoke runs may truncate (they are quarantined)
+    runner.assert_full_population(400, smoke=True)
+    runner.assert_full_population(None, smoke=True)
+    # allowed: the full pass sets no limit
+    runner.assert_full_population(None, smoke=False)
+
+
+def test_limit_guard_is_wired_into_main_before_any_write(monkeypatch, tmp_path):
+    """The guard must fire from the CLI, not merely exist as a function."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_runner4", "scripts/gating_diagnostics/run_gate_route_audit.py")
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+
+    # If the guard were missing, main() would proceed to load the manifest and
+    # build a model.  Make that impossible to do silently: any such attempt
+    # raises a distinguishable error.
+    def _boom(*a, **k):
+        raise AssertionError("main() proceeded past the --limit guard")
+
+    monkeypatch.setattr(runner, "load_manifest", _boom)
+    monkeypatch.setattr(runner, "run_state", _boom)
+
+    with pytest.raises(RuntimeError, match="HARD STOP"):
+        runner.main(["--limit", "500", "--out-dir", str(tmp_path)])
+
+    # nothing was written
+    assert not list(tmp_path.iterdir())
