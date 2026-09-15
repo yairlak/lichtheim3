@@ -1,0 +1,175 @@
+{
+  "schema": "gxlr_conditions.frozen/v1",
+  "workstream": "POST_STAGE / PAPER_PROGRAMME — GATE x LESION / RECOVERY",
+  "contract": "paper_programme/gate_x_lesion_recovery/GATE_X_LESION_EXPERIMENT_CONTRACT.md",
+  "status": "DESIGN_FROZEN_NOT_EXECUTED",
+  "go_for_scientific_execution": false,
+
+  "inherits": {
+    "gating_experiment_commit": "f43ccd0971387ccfce006ddb0d6f985f1ee73441",
+    "gating_results_commit": "993f2e73ecd0b9de2c3318255afbaa159948b09a",
+    "gating_manifest_blob": "e5f0bb4fa68ebe1b200a3fcabe3544ebbff5483b",
+    "historical_lesion_commit": "3af0ef9c00df5aba8200d56f566bb957d084109c"
+  },
+
+  "states": [
+    {
+      "gxlr_label": "GXLR_W3_REP",
+      "state_id": "W3_REP",
+      "witness_label": "V6_seed19_u3825",
+      "arm": "POST_REPAIR_WITNESS",
+      "state_kind": "RECONSTRUCTION_RECIPE_base_plus_head",
+      "base_artifact_path": "probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+      "base_artifact_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+      "applies_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/arm_a/head_first_c0.pt",
+      "applies_head_sha256": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc",
+      "head_localizer": "frozen_head_probe._isolated_model(tr, \"p_last_hinge\", head[\"state\"]); head[\"state\"] keys must equal {2.weight, 2.bias}",
+      "state_sha256": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "intact_authoritative_null": {
+        "canonical": {"native_vs_fixed05_discordant": 0, "full_errors": 0, "wm_errors": 0, "ltm_errors": 3193},
+        "freear":    {"native_vs_fixed05_discordant": 0, "full_errors": 0, "wm_errors": 0, "ltm_errors": 3193}
+      }
+    },
+    {
+      "gxlr_label": "GXLR_W4_REP",
+      "state_id": "W4_REP",
+      "witness_label": "V6_seed20_u3040",
+      "arm": "POST_REPAIR_WITNESS",
+      "state_kind": "RECONSTRUCTION_RECIPE_base_plus_head",
+      "base_artifact_path": "probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+      "base_artifact_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+      "applies_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed20_u3040/arm_a/head_first_c0.pt",
+      "applies_head_sha256": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03",
+      "head_localizer": "frozen_head_probe._isolated_model(tr, \"p_last_hinge\", head[\"state\"]); head[\"state\"] keys must equal {2.weight, 2.bias}",
+      "state_sha256": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6",
+      "ltm_encoder_mode": "unigru_last_hidden",
+      "intact_authoritative_null": {
+        "canonical": {"native_vs_fixed05_discordant": 0, "full_errors": 0, "wm_errors": 1, "ltm_errors": 3662},
+        "freear":    {"native_vs_fixed05_discordant": 0, "full_errors": 0, "wm_errors": 1, "ltm_errors": 3662}
+      }
+    }
+  ],
+
+  "grid": {
+    "routes": ["wm_encoder_state", "ltm_encoder_state"],
+    "route_families": {"dorsal": "wm_encoder_state", "ventral": "ltm_encoder_state"},
+    "lambdas": [0.25, 0.5, 1.0],
+    "severity_labels": {"0.25": "LOW", "0.5": "MODERATE", "1.0": "HIGH"},
+    "lesion_seeds": [0, 1, 2, 3],
+    "fusion_conditions": ["NATIVE", "FIXED05"],
+    "decoding_conventions": ["CANONICAL", "FREE_AR"],
+    "intact_control_lambda": 0.0,
+    "population_n": 29571,
+    "population_description": "all canonical real words, full and untruncated",
+    "item_order_sha256_prefix": "ab2b193f98eee7fb"
+  },
+
+  "sd_normalization": {
+    "resolved_from": "3af0ef9c00df5aba8200d56f566bb957d084109c",
+    "SD_DEFINITION": "torch.Tensor.std() of the flattened, pooled intact activations at the site; the 'std' column, NOT 'rms'",
+    "SD_AXES": "all axes pooled (batch pooled with hidden); no dim= argument; unitwise statistics not retained",
+    "SD_DDOF": 1,
+    "SD_POPULATION": "deterministic_sample(range(len(entries)), n=2048, seed=7), returned sorted (ascending entry index), batch_size=256, one teacher-forced model(enc_in, enc_mask, dec_in) per batch",
+    "SD_TENSOR_SHAPE": "scalar — one float per (state, route); isotropic across hidden units",
+    "ZERO_SD_BEHAVIOR": "no special-casing; scale 0 yields amplitude 0, an exactly zero perturbation and no registered hook; draw short-circuits at amplitude == 0.0; no floor, no clamp, no exception",
+    "device": "cpu",
+    "dtype": "float32",
+    "measured_per_state": true,
+    "refit_forbidden": true
+  },
+
+  "noise": {
+    "base_distribution": "Uniform(-1, +1)",
+    "rng_identity_fields": ["state_sha256", "route", "lesion_seed", "item_id"],
+    "rng_identity_excludes": ["lambda", "fusion_condition", "decoding_convention", "batch_size", "batch_order"],
+    "item_id_definition": "canonical word string; unique across the population; stable under reordering",
+    "derivation": "sha256(b'GXLR-eps-v1|' + canonical_json(payload)) -> sha256 counter-mode byte stream -> big-endian uint32 -> x = u / 2**32 in [0,1) -> epsilon = 2x - 1",
+    "forbidden": ["python builtin hash()", "torch global RNG", "any per-batch sequential generator"],
+    "scaling": "eta(lambda) = epsilon * float32(lambda * SD)",
+    "operand_order": "epsilon * amplitude, matching historical draw_noise",
+    "nesting_tolerance": 0.0,
+    "nesting_tolerance_kind": "bitwise",
+    "nesting_tolerance_justification": "lambda in {0.25,0.50,1.00} are exact binary powers of two; scaling by a power of two is exact in IEEE-754 and commutes with round-to-nearest",
+    "timing": "per_item_frozen",
+    "site_slot": 1,
+    "site_slot_meaning": "nn.GRU h_n",
+    "site_shapes": {"wm_encoder_state": [1, "B", 128], "ltm_encoder_state": [1, "B", 512]},
+    "ltm_mode_guard": "refuse ltm_encoder_state unless ltm_encoder_mode == 'unigru_last_hidden' (slot 1 is discarded under bigru_masked_mean)"
+  },
+
+  "paired_test": {
+    "test": "exact McNemar (two-sided exact binomial on discordant pairs)",
+    "inherited_from": "gating_diagnostics/analysis.py::mcnemar",
+    "orientation": "a = NATIVE, b = FIXED05",
+    "errors_gained": "NATIVE correct and FIXED05 wrong",
+    "errors_recovered": "NATIVE wrong and FIXED05 correct",
+    "net_change_in_correct": "errors_recovered - errors_gained",
+    "sign_convention": "net_change_in_correct < 0 => NATIVE advantage; > 0 => FIXED05 advantage",
+    "alpha": 0.05
+  },
+
+  "diagnostic_validity": {
+    "evaluated_per": ["state", "route", "lambda", "lesion_seed", "convention"],
+    "not_inert": {
+      "criterion": "n_items_changed_vs_intact > 0 in at least one of {NATIVE, FIXED05, wm_only, ltm_only}",
+      "min_changed_items": 1
+    },
+    "not_saturated": {
+      "criterion": "the route family retains non-degenerate output",
+      "min_native_exact_match": 0.01,
+      "max_modal_prediction_share": 0.5
+    },
+    "seed_aggregation": {
+      "rule": "a (state, route, lambda, convention) cell is diagnostically valid iff at least 3 of its 4 lesion seeds are valid",
+      "min_valid_seeds": 3,
+      "n_seeds": 4
+    },
+    "reporting": "ALL diagnostically valid severities MUST be reported; none may be suppressed"
+  },
+
+  "robustness": {
+    "rule": "an effect at a (state, route, lambda, convention) cell is ROBUST iff at least 3 of 4 lesion seeds have p_exact_mcnemar < 0.05 with the SAME sign of net_change_in_correct, AND the seed-pooled exact McNemar is significant at 0.05 with that same sign",
+    "min_concordant_seeds": 3,
+    "alpha": 0.05,
+    "otherwise": "the cell's effect is NOT_ROBUST and contributes no sign"
+  },
+
+  "outcome_classification": {
+    "stages": ["CANONICAL", "FREE_AR", "JOINT"],
+    "stage_independence": "CANONICAL and FREE_AR are classified independently; neither may adjudicate, override or filter the other",
+    "letters": {
+      "A": "robust NATIVE advantage",
+      "B": "robust FIXED05 advantage",
+      "D": "robust null — no reliable NATIVE/FIXED05 difference",
+      "F_HETEROGENEOUS": "diagnostically valid severities disagree in sign"
+    },
+    "heterogeneity_veto": "A, B or D may NOT be declared for a route family / convention if another diagnostically valid severity in that same route family shows a robust opposite-signed NATIVE-vs-FIXED05 effect; such a case is OUTCOME_F_HETEROGENEOUS. The veto is checked BEFORE any letter is emitted and strictly dominates.",
+    "joint_rule": "if the CANONICAL and FREE_AR letters for a route family differ, JOINT_OUTCOME = F_HETEROGENEOUS and both stage letters are reported alongside it",
+    "no_retrospective_promotion": "no severity may be promoted retrospectively as 'the lesion result'; the reported unit is the SET of diagnostically valid severities and their signs",
+    "severity_selection": "no severity may be added, dropped or reweighted on the basis of NATIVE-vs-FIXED05 behaviour"
+  },
+
+  "output_namespaces": {
+    "scientific_execution": "paper_programme/gate_x_lesion_recovery/scientific_execution",
+    "scientific_execution_reserved_until_central_go": true,
+    "quarantine": "paper_programme/gate_x_lesion_recovery/NOT_SCIENTIFIC_RESULT",
+    "quarantine_marker_in_path": "NOT_SCIENTIFIC_RESULT",
+    "quarantine_filename_suffix": "_SMOKE_TEST_ONLY",
+    "namespaces_must_not_overlap": true
+  },
+
+  "prohibitions": [
+    "no training or fine-tuning",
+    "no recovery training",
+    "no semantic attractor",
+    "no Lesioning V2",
+    "no connectivity damage",
+    "no change to gate architecture, alpha, gate_threshold, or the fixed05 definition",
+    "no severity outside {0.25, 0.50, 1.00}",
+    "no severity chosen or dropped by NATIVE-vs-FIXED05 behaviour",
+    "no checkpoint substitution",
+    "no contact with V7 / Phase 9 scientific state",
+    "no mutation of 993f2e73ecd0b9de2c3318255afbaa159948b09a"
+  ]
+}
