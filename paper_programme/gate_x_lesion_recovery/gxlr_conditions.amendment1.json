@@ -1,0 +1,237 @@
+{
+  "schema": "gxlr_conditions.amendment/v1",
+  "amendment": 1,
+  "title": "CLOSURE PASS — O-1, FREE-AR, O-3, O-4, F-2, F-3, F-8",
+  "status": "PARTIAL — engineering facts frozen; two scientific decisions remain with CENTRAL",
+  "go_for_scientific_execution": false,
+  "execution_readiness": "BLOCKED_PENDING_CENTRAL_DECISION",
+
+  "supersedes": {
+    "file": "gxlr_conditions.frozen.json",
+    "sha256": "a4936db39aa22fb0eb2aebb716d62a3b4552983624177e7cdf5632d6fd6ccaaa",
+    "note": "The base file is NOT modified and keeps the SHA256 it had at DESIGN_FREEZE_COMMIT. This amendment supersedes exactly two of its sections, named below; every other section of the base file stands unchanged.",
+    "superseded_sections": ["diagnostic_validity", "robustness"],
+    "why": "The base file's diagnostic_validity and robustness blocks were the execution agent's own proposals, explicitly flagged in the previous handoff as O-3/O-4 open items requiring CENTRAL confirmation. They were never CENTRAL-frozen and must not be read as preregistration."
+  },
+
+  "base_commits": {
+    "design_freeze_commit": "545ea436fa8f33480d74185a48a61874c04a17eb",
+    "implementation_commit": "975560e6e2f1737f8915f56cf330223fd023be7c"
+  },
+
+  "O1_reconstructed_state_identity": {
+    "status": "RESOLVED",
+    "name": "RECONSTRUCTED_STATE_SHA256",
+    "definition": "sha256(\"gxlr-state-v1|\" + base_artifact_sha256 + \"|\" + applied_head_sha256), ASCII; both operands lowercase hex SHA256 of the two artifact FILES as pinned in the frozen GATING manifest; empty head operand when no head is applied",
+    "derivation_unchanged_from_implementation_commit": true,
+    "implementation": "gate_x_lesion/identity.py::reconstructed_state_sha256",
+    "verifier": "gate_x_lesion/identity.py::verify_manifest_state_identity",
+    "computed_before_any_lesion": true,
+    "hoisted_out_of_route_lambda_seed_loops": true,
+    "inputs": ["base_artifact_sha256", "applied_head_sha256"],
+    "provably_excluded_from_the_identity": [
+      "lambda", "NATIVE/FIXED05", "decoding convention", "autoregressive prefix",
+      "epsilon", "lesion tensor", "batch position", "batch size", "process identity",
+      "model weights", "activations", "item_id", "lesion_seed", "route"
+    ],
+    "hex_case_normalised": true,
+    "hex_case_note": "Input digests are lowercased before hashing, so two spellings of one digest map to ONE identity rather than to two different epsilon streams.",
+    "values": {
+      "GXLR_W3_REP": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
+      "GXLR_W4_REP": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6"
+    },
+    "correction_of_previous_wording": "The previous handoff's phrase 'changes every epsilon' meant that CHANGING THE COMPOSITION RULE would change every epsilon, i.e. the rule is consequential and should be confirmed. It did NOT mean the identity varies with epsilon. It cannot: the function takes exactly two file digests and no other parameter.",
+    "tests": [
+      "test_O1_identity_is_pure_function_of_two_digests",
+      "test_O1_identity_matches_frozen_manifest_and_prior_commit",
+      "test_O1_manifest_tamper_fails_closed",
+      "test_O1_identity_invariant_across_every_experimental_factor",
+      "test_O1_identity_cannot_be_affected_by_epsilon_or_lesion",
+      "test_O1_identity_stable_across_repeated_reconstruction"
+    ]
+  },
+
+  "free_ar_trajectory_independence": {
+    "status": "RESOLVED — verified, no implementation change required",
+    "claim": "NATIVE and FIXED05 follow genuinely independent autoregressive trajectories after divergence, while consuming an identical frozen per-item lesion tensor.",
+    "mechanism": "gating_diagnostics/gate_probe.py::ar_decode_free loops over routes OUTERMOST and initialises a fresh BOS-only `dec` per route, so each condition extends its own prefix from its own predictions. The lesion hook is on the ENCODER, whose inputs are (enc_in, enc_mask) only and are invariant to the decoder prefix, so the tensor cannot be redrawn by divergence or re-encoding.",
+    "verified_properties": {
+      "A_prefixes_differ_after_divergence": true,
+      "B_each_branch_consumes_its_own_previous_token": true,
+      "C_same_epsilon_and_same_eta_on_both_branches": true,
+      "D_no_redraw_on_divergence_or_reencoding": "hook.n_eta_builds == 1",
+      "E_genuine_free_ar_not_forced_length": "exercises ar_decode_free with the imported cap of 12"
+    },
+    "test": "test_FREEAR_forced_divergence_independent_trajectories",
+    "test_method": "Divergence is forced deterministically by stubbing only the blend output inside the test, so FIXED05 must pick a different token. The real free-AR loop, the real encoder and the real lesion hook run unmodified; FIXED05's shipped algebra is untouched."
+  },
+
+  "O3_diagnostic_validity": {
+    "status": "REQUIRES_CENTRAL_DECISION",
+    "accepted_rule": {
+      "block_grid": "2 checkpoints x 4 lesion seeds = 8 blocks",
+      "criterion_1": "targeted isolated route drops by >= 0.10 exact-match versus intact in at least 6 of 8 blocks",
+      "criterion_2": "untargeted isolated route unchanged within deterministic evaluator tolerance",
+      "criterion_3": "no shared downstream readout / checkpoint parameter mutated",
+      "criterion_4": "for dorsal perturbation, c_LTM and g unchanged within deterministic numerical tolerance; a violation is an IMPLEMENTATION FAILURE, not a result",
+      "never_depends_on_fusion_contrast": true
+    },
+    "resolved_from_prior_authority": {
+      "deterministic_tolerance": 0.0,
+      "deterministic_tolerance_kind": "bitwise",
+      "applies_to": ["criterion_2 route isolation", "criterion_4 c_LTM", "criterion_4 g"],
+      "sources": [
+        "gating EXPERIMENT_CONTRACT.md §5: 'A determinism check — re-run one batch, require bitwise equality — runs before the main pass and hard-stops on failure.'",
+        "scripts/gating_diagnostics/run_gate_route_audit.py:168-180 (assert_determinism) compares gate and exact-match columns with != and hard-stops",
+        "frozen summary_metrics.json: determinism_max_gate_dev == 0.0 in all 8 states"
+      ],
+      "empirically_reachable": "T8 measures dorsal max|dg| = 0.000e+00 and max|dc_LTM| = 0.000e+00 at every frozen severity"
+    },
+    "numerical_note": {
+      "issue": "Evaluating the >= 0.10 boundary on a difference of two separately-rounded accuracies puts representation error exactly on the decision boundary: 0.90 - 0.10 == 0.09999999999999998 and would spuriously fail.",
+      "resolution": "The targeted drop is computed from integer counts via ONE division when counts are available.",
+      "canonical_population_note": "On N = 29571 an exact tie is arithmetically impossible: 0.10 x 29571 = 2957.1 is not an integer."
+    },
+    "unresolved_requiring_central": {
+      "validity_convention_scope": {
+        "question": "Is route x severity validity computed ONCE from shared route diagnostics, or SEPARATELY per decoding convention?",
+        "why_open": "The accepted rule states the 8-block grid as 2 checkpoints x 4 lesion seeds and does not mention the decoding convention, yet isolated-route exact-match exists under BOTH canonical and free-AR.",
+        "allowed_values": ["shared", "per_convention"],
+        "default_taken": null
+      },
+      "implementation_failure_block_semantics": {
+        "question": "When criterion 3 or 4 is violated, what happens to the 8-block denominator?",
+        "allowed_values": [
+          "abort_run",
+          "exclude_block_and_shrink_denominator",
+          "exclude_block_keep_denominator"
+        ],
+        "default_taken": null
+      }
+    },
+    "fails_closed": "gate_x_lesion/validity.py::decide_route_severity_validity requires both fields explicitly and raises UnresolvedPolicyError on any other value; there are no defaults.",
+    "implementation": "gate_x_lesion/validity.py"
+  },
+
+  "O4_robustness": {
+    "status": "REQUIRES_CENTRAL_DECISION",
+    "frozen_rule": null,
+    "why_not_frozen": "No authority defines 'robust' for this workstream. The predecessor GATING workstream supplies primitives (exact paired McNemar on discordant pairs; Holm correction across the planned family; a materiality floor of |delta accuracy| = 0.002; a power floor of n >= 30 per cell; bootstrap 10000 at seed 20260915) but has NO severity axis, so it contains no rule for combining evidence across severities.",
+    "binding_constraint_from_prior_authority": {
+      "source": "gating EXPERIMENT_CONTRACT.md §9",
+      "text": "No cross-witness significance test. Four witnesses from three seeds of one historical cohort are not an independent population.",
+      "consequence": "Any candidate that POOLS W3 and W4 into a single significance test would violate frozen authority. Candidates must classify per witness and require agreement, or avoid significance testing entirely."
+    },
+    "note_on_O3": "The O-3 8-block count is a replication/diagnostic count, not a significance test, so it does not conflict with §9.",
+    "candidates_not_frozen": [
+      {
+        "id": "R1_per_witness_significance",
+        "rule": "Within EACH witness, >= 3 of its 4 lesion seeds significant at alpha = 0.05 by exact McNemar with the same sign of net_change_in_correct; both witnesses must agree on that sign.",
+        "conservative": "Moderately — requires agreement of both witnesses, never pools them.",
+        "uses_only_the_pre_frozen_8_blocks": true,
+        "introduces_arbitrary_effect_size_threshold": false,
+        "can_certify_tiny_numerical_deltas": "YES — this is its main weakness. On 29,571 paired items an exact McNemar is significant at discordance splits that are scientifically trivial."
+      },
+      {
+        "id": "R2_significance_plus_inherited_materiality",
+        "rule": "As R1, but a block counts only if |delta accuracy| >= 0.002.",
+        "conservative": "Most conservative of the three.",
+        "uses_only_the_pre_frozen_8_blocks": true,
+        "introduces_arbitrary_effect_size_threshold": false,
+        "threshold_provenance": "0.002 is NOT invented here: it is the |delta accuracy| floor already frozen in the GATING contract's outcome B (EXPERIMENT_CONTRACT.md:279,488).",
+        "can_certify_tiny_numerical_deltas": "No — excluded by construction."
+      },
+      {
+        "id": "R3_unanimous_sign_no_test",
+        "rule": "Robust iff every one of the 8 blocks has a non-zero net_change_in_correct and all 8 share one sign. No p-value anywhere.",
+        "conservative": "Moderate; 8/8 unanimity is demanding, but magnitude is unconstrained.",
+        "uses_only_the_pre_frozen_8_blocks": true,
+        "introduces_arbitrary_effect_size_threshold": false,
+        "cannot_conflict_with_gating_section_9": true,
+        "can_certify_tiny_numerical_deltas": "YES — a net of +/-1 item in each of the 8 blocks would qualify. It trades R1's sensitivity for unanimity, not for magnitude."
+      }
+    ],
+    "exact_decision_central_must_make": "Choose the operational definition of 'robust' for a route family x severity x decoding convention, given that (a) GATING §9 forbids pooling the two witnesses into one significance test, and (b) on 29,571 paired items statistical significance alone can certify scientifically trivial effects. Concretely: adopt R1, R2, R3, or supply another rule — and if a materiality floor is wanted, confirm whether the inherited 0.002 is the right one for a LESIONED regime rather than the intact regime it was set for.",
+    "fails_closed": "gate_x_lesion/outcomes.py exposes FROZEN_ROBUSTNESS_RULE = None and evaluate_severity requires an explicit robustness_rule argument with no default; passing none raises UnfrozenRobustnessError.",
+    "unchanged_by_this_amendment": [
+      "the heterogeneity veto (A/B/D prohibited when another diagnostically valid severity shows a robust opposite-signed effect => OUTCOME_F_HETEROGENEOUS)",
+      "CANONICAL and FREE_AR classify independently, JOINT only afterward",
+      "decoder-convention disagreement stays visible and forces a heterogeneous joint outcome",
+      "no retrospective promotion of a severity",
+      "all diagnostically valid severities must be reported"
+    ]
+  },
+
+  "F2_ventral_target_slot_hazard": {
+    "status": "REGISTERED",
+    "finding": "models/ltm_route.py:128-147 reads DIFFERENT nn.GRU output slots by encoder mode. Under ltm_encoder_mode='unigru_last_hidden' the module reads slot 1 (h_n) and pooled = h[-1]. Under 'bigru_masked_mean' it reads slot 0 (the sequence output) and DISCARDS h_n, so a slot-1 ventral lesion would be a SILENT NO-OP and would report a null that is an artefact of wiring, indistinguishable after the fact from a scientific null.",
+    "live_audited_mode_for_both_witnesses": "unigru_last_hidden",
+    "enc_layers": 1,
+    "bidirectional": false,
+    "site_shapes": {"wm_encoder_state": "(1, B, 128)", "ltm_encoder_state": "(1, B, 512)"},
+    "guard": "gate_x_lesion/targets.py::assert_site_compatible refuses ltm_encoder_state unless ltm_encoder_mode == 'unigru_last_hidden', and also refuses a non-GRU module, num_layers != 1, or a bidirectional encoder.",
+    "guard_invoked_by_runner_before_any_hook": true,
+    "no_generalisation": "The lesion target is deliberately NOT generalised to unsupported architectures.",
+    "tests": ["test_T9b_ventral_site_refuses_wrong_encoder_mode",
+              "test_F2_runner_asserts_architecture_before_ventral_hook"]
+  },
+
+  "F3_reconstructed_witnesses": {
+    "status": "REGISTERED",
+    "finding": "W3 and W4 are not standalone monolithic checkpoint files. Each is a base training checkpoint plus a specific repaired-head state, combined by a frozen reconstruction recipe.",
+    "localizer": "frozen_head_probe._isolated_model(tr, \"p_last_hinge\", head[\"state\"]); head[\"state\"] keys must equal {2.weight, 2.bias}",
+    "required_provenance_fields": [
+      "base_artifact_path", "base_artifact_sha256",
+      "applies_head_path", "applies_head_sha256",
+      "head_localizer", "state_kind", "reconstructed_state_sha256"
+    ],
+    "recorded_in": ["checkpoint_manifest.proposed.tsv",
+                    "scripts/gate_x_lesion/run_gate_x_lesion.py::run_state summary"],
+    "witnesses": {
+      "GXLR_W3_REP": {
+        "base_artifact_path": "probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+        "base_artifact_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+        "applies_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/arm_a/head_first_c0.pt",
+        "applies_head_sha256": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc",
+        "reconstructed_state_sha256": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1"
+      },
+      "GXLR_W4_REP": {
+        "base_artifact_path": "probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+        "base_artifact_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+        "applies_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed20_u3040/arm_a/head_first_c0.pt",
+        "applies_head_sha256": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03",
+        "reconstructed_state_sha256": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6"
+      }
+    },
+    "tests": ["test_T1_exact_checkpoint_hash_resolution",
+              "test_T1b_head_carries_exactly_the_final_layer",
+              "test_F3_manifest_records_full_reconstruction_recipe",
+              "test_F3_runner_summary_carries_provenance"]
+  },
+
+  "F8_scientific_batch_size": {
+    "status": "REGISTERED AND PINNED",
+    "scientific_batch_size": 256,
+    "rationale": "Both encoders pack their input (pack_padded_sequence, enforce_sorted=False), so the packed-GRU reduction order depends on batch composition. Measured on W3_REP against the frozen GATING shard: at batch 256, 0/2048 items differ and the gate is bitwise identical; at batch 512, 15/2048 items differ with max |dg| = 1.192e-07. No prediction changed at either batch size.",
+    "why_it_matters": "g and c_LTM are reported continuous measurements, so the batch size must be pinned for exact comparability with the frozen intact record.",
+    "does_not_affect_the_intervention": "epsilon is a pure per-item function and is batch-invariant by construction; the nested scaling is bitwise exact.",
+    "classification": "reproducibility freeze, NOT a new scientific hypothesis",
+    "enforcement": "scripts/gate_x_lesion/run_gate_x_lesion.py::assert_scientific_batch_size hard-stops in scientific mode on any value other than 256; quarantined smoke is exempt because it is not a result.",
+    "amendment_required_to_change": true,
+    "tests": ["test_F8_scientific_batch_size_pinned",
+              "test_F8_prepared_command_uses_the_pinned_batch_size"]
+  },
+
+  "unchanged_by_this_amendment": [
+    "lambda values {0.25, 0.50, 1.00}",
+    "lesion seeds {0, 1, 2, 3}",
+    "route targets {wm_encoder_state, ltm_encoder_state}",
+    "SD semantics (std, ddof=1, all axes pooled, 2048-item sorted sample at seed 7, scalar per state/route)",
+    "NATIVE and FIXED05 definitions",
+    "gate alpha = 2.0 and gate_threshold = 0.7",
+    "population of all 29,571 canonical real words",
+    "base-noise RNG identity and nested scaling",
+    "per_item_frozen timing",
+    "the outcome letters and the heterogeneity veto"
+  ]
+}
