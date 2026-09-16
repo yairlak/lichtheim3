@@ -43,6 +43,7 @@ if ROOT not in sys.path:
 
 from gate_x_lesion.evaluate import collect_item_level_lesioned        # noqa: E402
 from gate_x_lesion.hooks import lesioned_route, state_dict_sha256     # noqa: E402
+from gate_x_lesion.identity import verify_manifest_state_identity    # noqa: E402
 from gate_x_lesion.noise import EpsilonCache, FROZEN_LAMBDAS          # noqa: E402
 from gate_x_lesion.sd import measure_intact_sd                        # noqa: E402
 from gate_x_lesion.targets import FROZEN_ROUTES, assert_site_compatible  # noqa: E402
@@ -61,6 +62,14 @@ SMOKE_DEFAULT_LIMIT = 24
 SMOKE_DEFAULT_SEEDS = (0,)
 
 FROZEN_SEEDS = (0, 1, 2, 3)
+
+#: F-8 (closure pass §6).  Reproducibility freeze, not a scientific hypothesis.
+#: Both encoders pack their input, so the packed-GRU reduction order depends on batch
+#: composition: at batch 512 the GATE moves by 1-2 ulp on 15/2048 items (max 1.19e-07)
+#: while changing no prediction.  At 256 -- the value the frozen GATING record was
+#: produced with -- the gate is bitwise identical.  Scientific mode therefore fails
+#: closed on any other value, absent a formal CENTRAL amendment.
+SCIENTIFIC_BATCH_SIZE = 256
 
 QUARANTINE_BANNER = (
     "NOT_SCIENTIFIC_RESULT — quarantined implementation-validation output. This file "
@@ -94,6 +103,20 @@ def assert_execution_authorised(lambdas, smoke: bool, central_go: bool) -> None:
             "is SCIENTIFIC EXECUTION and requires CENTRAL final go/no-go. "
             "GO_FOR_SCIENTIFIC_EXECUTION = NO. Re-run with --smoke for quarantined "
             "validation, or with severity 0 for the authoritative intact null.")
+
+
+def assert_scientific_batch_size(batch_size: int, smoke: bool) -> None:
+    """F-8: scientific mode runs at batch 256 or not at all."""
+    if smoke:
+        return
+    if int(batch_size) != SCIENTIFIC_BATCH_SIZE:
+        raise RuntimeError(
+            f"HARD STOP: --batch-size {batch_size} in scientific mode. F-8 pins the "
+            f"scientific batch size at {SCIENTIFIC_BATCH_SIZE}, the value the frozen "
+            f"GATING record was produced with: both encoders pack their input, so a "
+            f"different batch size perturbs the packed-GRU reduction order and moves "
+            f"the reported gate by 1-2 ulp. Changing it requires a formal CENTRAL "
+            f"amendment, not a flag.")
 
 
 def assert_quarantined(path: str, smoke: bool) -> None:
@@ -135,12 +158,10 @@ def run_state(row: dict, *, device: str, limit: Optional[int], batch_size: int,
               "source_u": row["source_u"]}
     tr, model, prov, base_before, ckpt = build_state(legacy, device)
 
-    state_sha = row["state_sha256"]
-    recomputed = hashlib.sha256(
-        ("gxlr-state-v1|" + row["base_artifact_sha256"] + "|"
-         + row["applies_head_sha256"]).encode()).hexdigest()
-    if recomputed != state_sha:
-        raise RuntimeError(f"HARD STOP: composite state_sha256 mismatch for {sid}")
+    # O-1: RECONSTRUCTED_STATE_SHA256 -- resolved and verified BEFORE any lesion,
+    # and hoisted out of the route/lambda/seed loops.  A pure function of the two
+    # artifact file digests; no runtime state can reach it.
+    state_sha = verify_manifest_state_identity(row)
 
     for r in routes:
         assert_site_compatible(model, r)
@@ -220,8 +241,11 @@ def run_state(row: dict, *, device: str, limit: Optional[int], batch_size: int,
     summary = {
         "state_id": sid, "gxlr_label": label,
         "witness_label": row["witness_label"],
+        "reconstructed_state_sha256": state_sha,
         "state_sha256": state_sha,
+        "base_artifact_path": row["base_artifact_path"],
         "base_artifact_sha256": row["base_artifact_sha256"],
+        "applies_head_path": row["applies_head_path"],
         "applies_head_sha256": row["applies_head_sha256"],
         "state_kind": row["state_kind"],
         "head_localizer": row["head_localizer"],
@@ -340,6 +364,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     assert_full_population(a.limit, bool(a.smoke))
     assert_execution_authorised(lambdas, bool(a.smoke), bool(a.i_have_central_go))
+    assert_scientific_batch_size(a.batch_size, bool(a.smoke))
 
     if a.smoke:
         a.limit = a.limit or SMOKE_DEFAULT_LIMIT

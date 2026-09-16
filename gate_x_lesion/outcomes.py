@@ -24,7 +24,22 @@ Three rules do the real work, and each exists to block a specific way of over-cl
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, List, Optional, Sequence, Tuple
+
+
+class UnfrozenRobustnessError(RuntimeError):
+    """Raised when classification is attempted without a CENTRAL-frozen robustness rule.
+
+    O-4 is NOT determined by any frozen authority (closure pass, §5).  The predecessor
+    GATING workstream supplies the *primitives* — exact paired McNemar on discordant
+    pairs, Holm correction across the planned family, a materiality floor of
+    |Δ accuracy| = 0.002, a power floor of n >= 30 per cell — but it has **no severity
+    axis** and therefore no rule for combining evidence across severities, and its §9
+    explicitly forbids cross-witness significance testing.
+
+    Rather than let an unfrozen default masquerade as preregistration, every entry
+    point that needs "robust" requires the rule to be passed in explicitly.
+    """
 
 # ---------------------------------------------------------------- outcome letters
 
@@ -69,6 +84,12 @@ class SeedRecord:
     net_change_in_correct: int
     p_exact_mcnemar: Optional[float]
 
+    #: Which witness this block came from.  Required by any rule that must respect
+    #: GATING §9 (no cross-witness significance test) by classifying per witness.
+    state_id: Optional[str] = None
+    #: NATIVE minus FIXED05 accuracy for this block, for materiality-based rules.
+    delta_accuracy: float = 0.0
+
     def is_valid(self, *, min_changed_items: int = DEFAULT_MIN_CHANGED_ITEMS,
                  min_native_exact: float = DEFAULT_MIN_NATIVE_EXACT,
                  max_modal_share: float = DEFAULT_MAX_MODAL_SHARE) -> bool:
@@ -100,51 +121,155 @@ class SeverityVerdict:
     detail: str = ""
 
 
+@dataclass(frozen=True)
+class RobustnessDecision:
+    """What a robustness rule returns: is the effect robust, and with which sign."""
+    robust: bool
+    sign: int
+    detail: str = ""
+
+
+#: A robustness rule maps the blocks of one route x severity (plus optional pooled
+#: statistics) to a RobustnessDecision.  No rule is frozen; see CANDIDATE_ROBUSTNESS_RULES.
+RobustnessRule = Callable[..., RobustnessDecision]
+
+
 def evaluate_severity(records: Sequence[SeedRecord], *,
+                      robustness_rule: RobustnessRule,
                       pooled_p: Optional[float] = None,
                       pooled_net: Optional[int] = None,
-                      alpha: float = DEFAULT_ALPHA,
+                      diagnostically_valid: Optional[bool] = None,
                       min_valid_seeds: int = DEFAULT_MIN_VALID_SEEDS,
-                      min_concordant_seeds: int = DEFAULT_MIN_CONCORDANT_SEEDS,
                       **validity) -> SeverityVerdict:
-    """Roll one severity's lesion seeds up into a verdict (contract §7.4, robustness).
+    """Roll one severity's lesion blocks up into a verdict.
 
-    Validity: at least `min_valid_seeds` of the seeds are diagnostically valid.
-    Robustness: at least `min_concordant_seeds` seeds are significant at `alpha` with
-    the SAME sign, AND the seed-pooled test agrees in significance and sign.
+    `robustness_rule` is REQUIRED and has no default: O-4 is not frozen, and a default
+    here would be an unfrozen rule wearing preregistration's clothes.  Pass one of
+    `CANDIDATE_ROBUSTNESS_RULES` only for testing, or the CENTRAL-frozen rule once it
+    exists.
+
+    `diagnostically_valid` may be supplied directly from `gate_x_lesion.validity`
+    (the authoritative O-3 path).  The `min_valid_seeds` fallback is retained only for
+    synthetic tests of this function in isolation.
     """
     if not records:
         raise ValueError("evaluate_severity requires at least one SeedRecord")
+    if robustness_rule is None:
+        raise UnfrozenRobustnessError(
+            "no robustness rule supplied; O-4 is not frozen by any authority")
     lams = {r.lam for r in records}
     if len(lams) != 1:
         raise ValueError(f"records mix severities: {sorted(lams)}")
     lam = records[0].lam
 
     n_valid = sum(1 for r in records if r.is_valid(**validity))
-    valid = n_valid >= min_valid_seeds
+    valid = (bool(diagnostically_valid) if diagnostically_valid is not None
+             else n_valid >= min_valid_seeds)
 
-    signs = [r.sign(alpha=alpha) for r in records]
-    best_sign, best_n = SIGN_NONE, 0
-    for s in (SIGN_NATIVE_ADVANTAGE, SIGN_FIXED05_ADVANTAGE):
-        n = sum(1 for x in signs if x == s)
-        if n > best_n:
-            best_sign, best_n = s, n
-
-    robust = bool(valid and best_sign != SIGN_NONE and best_n >= min_concordant_seeds)
-    if robust and pooled_p is not None:
-        pooled_sign = (SIGN_NONE if pooled_p >= alpha or pooled_net is None
-                       else (SIGN_NATIVE_ADVANTAGE if pooled_net < 0
-                             else SIGN_FIXED05_ADVANTAGE if pooled_net > 0
-                             else SIGN_NONE))
-        if pooled_sign != best_sign:
-            robust = False
+    decision = robustness_rule(records, pooled_p=pooled_p, pooled_net=pooled_net)
+    robust = bool(valid and decision.robust)
 
     return SeverityVerdict(
         lam=lam, diagnostically_valid=valid, robust=robust,
-        sign=best_sign if robust else SIGN_NONE,
-        n_valid_seeds=n_valid, n_concordant_seeds=best_n,
-        detail=f"{n_valid}/{len(records)} seeds valid; "
-               f"{best_n}/{len(records)} concordant")
+        sign=decision.sign if robust else SIGN_NONE,
+        n_valid_seeds=n_valid,
+        n_concordant_seeds=sum(1 for r in records
+                               if r.sign(alpha=DEFAULT_ALPHA) == decision.sign),
+        detail=f"{n_valid}/{len(records)} seeds valid; {decision.detail}")
+
+
+# ------------------------------------------------- CANDIDATE robustness rules
+# NONE OF THESE IS FROZEN.  They exist so the pipeline can be exercised and so
+# CENTRAL has concrete, prospective options to choose between.  Selecting one is a
+# scientific decision reserved to CENTRAL (closure pass §5).
+
+def _sign_of(net: int) -> int:
+    return (SIGN_NATIVE_ADVANTAGE if net < 0
+            else SIGN_FIXED05_ADVANTAGE if net > 0 else SIGN_NONE)
+
+
+def candidate_R1_per_witness_significance(records, *, pooled_p=None, pooled_net=None,
+                                          alpha: float = DEFAULT_ALPHA,
+                                          min_seeds_per_witness: int = 3):
+    """CANDIDATE R1 — per-witness McNemar significance, unanimous across witnesses.
+
+    Within EACH witness, >= `min_seeds_per_witness` of its lesion seeds must be
+    significant at `alpha` with the same sign; both witnesses must agree on that sign.
+    Never pools witnesses into one test, so it respects GATING §9.
+
+    Weakness: on 29,571 paired items an exact McNemar is significant at discordance
+    splits that are scientifically trivial, so R1 can call a handful of items "robust".
+    """
+    by_state: Dict[object, List[SeedRecord]] = {}
+    for r in records:
+        by_state.setdefault(getattr(r, "state_id", None), []).append(r)
+
+    per_state_signs = []
+    for _sid, recs in by_state.items():
+        signs = [r.sign(alpha=alpha) for r in recs]
+        best, n = SIGN_NONE, 0
+        for s in (SIGN_NATIVE_ADVANTAGE, SIGN_FIXED05_ADVANTAGE):
+            k = sum(1 for x in signs if x == s)
+            if k > n:
+                best, n = s, k
+        per_state_signs.append(best if n >= min_seeds_per_witness else SIGN_NONE)
+
+    uniq = set(per_state_signs)
+    if len(uniq) == 1 and SIGN_NONE not in uniq:
+        s = per_state_signs[0]
+        return RobustnessDecision(True, s, f"R1: all {len(by_state)} witnesses agree (sign {s})")
+    return RobustnessDecision(False, SIGN_NONE,
+                              f"R1: witness signs {per_state_signs} not unanimous")
+
+
+def candidate_R2_significance_plus_inherited_materiality(
+        records, *, pooled_p=None, pooled_net=None, alpha: float = DEFAULT_ALPHA,
+        min_seeds_per_witness: int = 3, materiality: float = 0.002):
+    """CANDIDATE R2 — R1 plus the GATING materiality floor.
+
+    Identical to R1, except a block counts only if it also moves accuracy by at least
+    `materiality`. That number is NOT invented here: 0.002 is the |Δ accuracy| floor
+    already frozen in the GATING contract's outcome B
+    (`EXPERIMENT_CONTRACT.md:279,488`). Excludes statistically-significant-but-trivial
+    effects, which is R1's main failure mode.
+    """
+    kept = [r for r in records if abs(getattr(r, "delta_accuracy", 0.0)) >= materiality]
+    if not kept:
+        return RobustnessDecision(False, SIGN_NONE,
+                                  f"R2: no block reaches |Δacc| >= {materiality}")
+    d = candidate_R1_per_witness_significance(
+        kept, alpha=alpha, min_seeds_per_witness=min_seeds_per_witness)
+    return RobustnessDecision(d.robust, d.sign, f"R2({d.detail})")
+
+
+def candidate_R3_unanimous_sign_no_test(records, *, pooled_p=None, pooled_net=None):
+    """CANDIDATE R3 — unanimous sign across all 8 blocks, no significance test at all.
+
+    Robust iff every block's `net_change_in_correct` is non-zero and shares one sign.
+    Uses no p-value anywhere, so it cannot conflict with GATING §9; and it introduces
+    no effect-size threshold.
+
+    Weakness: a net of +/-1 item in each of the 8 blocks would qualify, so R3 can also
+    certify numerically tiny effects — it trades R1's sensitivity for unanimity, not
+    for magnitude.
+    """
+    signs = {_sign_of(r.net_change_in_correct) for r in records}
+    if len(signs) == 1 and SIGN_NONE not in signs:
+        s = signs.pop()
+        return RobustnessDecision(True, s, f"R3: all {len(records)} blocks sign {s}")
+    return RobustnessDecision(False, SIGN_NONE, f"R3: block signs {signs} not unanimous")
+
+
+CANDIDATE_ROBUSTNESS_RULES = {
+    "R1_per_witness_significance": candidate_R1_per_witness_significance,
+    "R2_significance_plus_inherited_materiality":
+        candidate_R2_significance_plus_inherited_materiality,
+    "R3_unanimous_sign_no_test": candidate_R3_unanimous_sign_no_test,
+}
+
+#: There is deliberately no FROZEN_ROBUSTNESS_RULE. Until CENTRAL selects one, any
+#: attempt to classify must pass a rule explicitly and label it as a candidate.
+FROZEN_ROBUSTNESS_RULE = None
 
 
 def classify_convention(verdicts: Sequence[SeverityVerdict]) -> Dict[str, object]:

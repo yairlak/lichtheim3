@@ -24,8 +24,11 @@
    "state_id": "W3_REP",
    "gxlr_label": "GXLR_W3_REP",
    "witness_label": "V6_seed19_u3825",
+   "reconstructed_state_sha256": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
    "state_sha256": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
+   "base_artifact_path": "probe_v6_completion_20260912/sources/s19_step_10625850.pt",
    "base_artifact_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+   "applies_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/arm_a/head_first_c0.pt",
    "applies_head_sha256": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc",
    "state_kind": "RECONSTRUCTION_RECIPE_base_plus_head",
    "head_localizer": "frozen_head_probe._isolated_model(tr, \"p_last_hinge\", head[\"state\"]); head[\"state\"] keys must equal {2.weight, 2.bias}",
@@ -91,7 +94,7 @@
     "lesion_seed": null,
     "site_sd_intact": 0.0,
     "n_items": 24,
-    "wall_seconds": 0.17,
+    "wall_seconds": 0.19,
     "canonical": {
      "acc_native": 1.0,
      "acc_fixed05": 1.0,
@@ -131,7 +134,7 @@
      "lesion_seed": 0,
      "site_sd_intact": 0.49011513590812683,
      "n_items": 24,
-     "wall_seconds": 0.21,
+     "wall_seconds": 0.17,
      "n_hook_calls": 31,
      "n_eta_builds": 1,
      "n_eps_computed": 24,
@@ -217,7 +220,7 @@
      "lesion_seed": 0,
      "site_sd_intact": 0.49011513590812683,
      "n_items": 24,
-     "wall_seconds": 0.2,
+     "wall_seconds": 0.21,
      "n_hook_calls": 31,
      "n_eta_builds": 1,
      "n_eps_computed": 24,
@@ -260,7 +263,7 @@
      "lesion_seed": 0,
      "site_sd_intact": 0.1728527694940567,
      "n_items": 24,
-     "wall_seconds": 0.21,
+     "wall_seconds": 0.22,
      "n_hook_calls": 32,
      "n_eta_builds": 1,
      "n_eps_computed": 24,
@@ -346,7 +349,7 @@
      "lesion_seed": 0,
      "site_sd_intact": 0.1728527694940567,
      "n_items": 24,
-     "wall_seconds": 0.21,
+     "wall_seconds": 0.22,
      "n_hook_calls": 33,
      "n_eta_builds": 1,
      "n_eps_computed": 24,
@@ -384,7 +387,7 @@
     }
    ],
    "torch": "2.12.1",
-   "run_utc": "2026-09-15T23:59:24.214420+00:00"
+   "run_utc": "2026-09-16T00:41:56.387136+00:00"
   }
  }
 }

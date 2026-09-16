@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion
+configfile: pytest.ini
+collected 51 items
+
+tests/test_gate_x_lesion.py ........................                     [ 47%]
+tests/test_gate_x_lesion_closure.py ...........................          [100%]
+
+======================== 51 passed in 474.98s (0:07:54) ========================
+
+[exited with code 0]

@@ -574,30 +574,56 @@ def test_T12e_convention_disagreement_yields_heterogeneous_joint():
     assert classify_joint(OUTCOME_D, OUTCOME_D)["joint_outcome"] == OUTCOME_D
 
 
-def test_T12f_severity_rollup_validity_and_robustness():
-    # 4 seeds, all significant, same sign -> robust
+def test_T12f_severity_rollup_requires_an_explicit_robustness_rule():
+    """CLOSURE PASS amendment to T12f.
+
+    This test previously exercised a robustness rule baked into `evaluate_severity`
+    (>= 3/4 seeds significant at alpha=0.05 plus a pooled check).  That rule was the
+    execution agent's own proposal, flagged in the previous handoff as open item O-4;
+    it was never frozen by CENTRAL.  Keeping it as a silent default made an unfrozen
+    criterion look like preregistration, so it was removed.
+
+    What is asserted now is the fail-closed behaviour plus the parts of the roll-up
+    that ARE authoritative: diagnostic validity.  The robustness candidates are
+    exercised in `tests/test_gate_x_lesion_closure.py::test_O4_*`, explicitly labelled
+    as candidates.
+    """
+    from gate_x_lesion.outcomes import (CANDIDATE_ROBUSTNESS_RULES,
+                                        FROZEN_ROBUSTNESS_RULE,
+                                        UnfrozenRobustnessError)
+
     recs = [_rec(0.25, s, net=-40, p=0.001) for s in range(4)]
-    v = evaluate_severity(recs, pooled_p=0.0005, pooled_net=-160)
+
+    # No rule is frozen, and none may be assumed.
+    assert FROZEN_ROBUSTNESS_RULE is None
+    with pytest.raises(TypeError):
+        evaluate_severity(recs, pooled_p=0.0005, pooled_net=-160)
+    with pytest.raises(UnfrozenRobustnessError):
+        evaluate_severity(recs, robustness_rule=None)
+
+    # With a CANDIDATE rule supplied explicitly, the roll-up works end to end.
+    R3 = CANDIDATE_ROBUSTNESS_RULES["R3_unanimous_sign_no_test"]
+    v = evaluate_severity(recs, robustness_rule=R3)
     assert v.diagnostically_valid and v.robust and v.sign == -1
 
-    # only 2 of 4 concordant -> not robust
-    recs = [_rec(0.25, 0, net=-40, p=0.001), _rec(0.25, 1, net=-40, p=0.001),
-            _rec(0.25, 2, net=5, p=0.9), _rec(0.25, 3, net=2, p=0.8)]
-    assert evaluate_severity(recs, pooled_p=0.001, pooled_net=-70).robust is False
+    mixed = [_rec(0.25, 0, net=-40, p=0.001), _rec(0.25, 1, net=-40, p=0.001),
+             _rec(0.25, 2, net=+5, p=0.9), _rec(0.25, 3, net=+2, p=0.8)]
+    assert evaluate_severity(mixed, robustness_rule=R3).robust is False
 
-    # pooled test disagrees in sign -> not robust
-    recs = [_rec(0.25, s, net=-40, p=0.001) for s in range(4)]
-    assert evaluate_severity(recs, pooled_p=0.001, pooled_net=+160).robust is False
+    # Diagnostic validity is independent of the robustness rule.
+    inert = [_rec(0.25, s, net=0, p=None, changed=0) for s in range(4)]
+    assert evaluate_severity(inert, robustness_rule=R3).diagnostically_valid is False
 
-    # inert (nothing changed) -> not diagnostically valid
-    recs = [_rec(0.25, s, net=0, p=None, changed=0) for s in range(4)]
-    assert evaluate_severity(recs).diagnostically_valid is False
+    saturated_acc = [_rec(0.25, s, net=-40, p=0.001, acc=0.001) for s in range(4)]
+    assert evaluate_severity(saturated_acc,
+                             robustness_rule=R3).diagnostically_valid is False
+    saturated_modal = [_rec(0.25, s, net=-40, p=0.001, modal=0.9) for s in range(4)]
+    assert evaluate_severity(saturated_modal,
+                             robustness_rule=R3).diagnostically_valid is False
 
-    # saturated (accuracy floor / degenerate modal output) -> not valid
-    recs = [_rec(0.25, s, net=-40, p=0.001, acc=0.001) for s in range(4)]
-    assert evaluate_severity(recs).diagnostically_valid is False
-    recs = [_rec(0.25, s, net=-40, p=0.001, modal=0.9) for s in range(4)]
-    assert evaluate_severity(recs).diagnostically_valid is False
+    # The authoritative O-3 path can override the local validity heuristic.
+    assert evaluate_severity(inert, robustness_rule=R3,
+                             diagnostically_valid=True).diagnostically_valid is True
 
 
 def test_T12g_no_retrospective_promotion_is_structural():
