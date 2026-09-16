@@ -1,0 +1,121 @@
+{
+ "config_version": "ventral-interface-frozen-config-v1",
+ "audited_base_commit": "79f4e5bd94a9c1f82594f4050028b39c220b82b0",
+ "repository_parent": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3",
+ "state_manifest": {
+  "path": "paper_programme/gating_route_diagnostics/checkpoint_manifest.tsv",
+  "git_blob": "e5f0bb4fa68ebe1b200a3fcabe3544ebbff5483b"
+ },
+ "composite_identity_method": "sha256(ASCII('gxlr-state-v1|' + base_sha256 + '|' + head_sha256)); head operand empty for SOURCE (gate_x_lesion.identity.reconstructed_state_sha256)",
+ "states": [
+  {
+   "state_id": "W3_SRC", "witness_id": "W3", "witness_label": "V6_seed19_u3825",
+   "source_or_repaired": "SOURCE", "seed": 19, "source_u": 3825, "global_step": 10625850,
+   "source_checkpoint_path": "probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+   "source_checkpoint_archival_copy": "archives/ventral_interface_sources_20260916/s19_u3825_step_10625850.pt",
+   "source_checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+   "repaired_head_path": null, "repaired_head_sha256": null,
+   "reconstructed_state_identity": "6d7282854323b810727cd9c0c90cace6dd8a54d306408cafaa8c40c5455d10a0",
+   "archived_reference_file": "archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/source_battery.json",
+   "archived_reference_file_sha256": "bd17c451439213ff619ce89fe37d15fda9ccdeb1cee2308dcda7632337e79b3f",
+   "archived": {"c_errors": 34, "naming_errors": 0, "rep_freear_ltm_errors": 3199, "rep_canonical_ltm_errors": 3199}
+  },
+  {
+   "state_id": "W3_REP", "witness_id": "W3", "witness_label": "V6_seed19_u3825",
+   "source_or_repaired": "POST_REPAIR", "seed": 19, "source_u": 3825, "global_step": 10625850,
+   "source_checkpoint_path": "probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+   "source_checkpoint_archival_copy": "archives/ventral_interface_sources_20260916/s19_u3825_step_10625850.pt",
+   "source_checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+   "repaired_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/arm_a/head_first_c0.pt",
+   "repaired_head_sha256": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc",
+   "reconstructed_state_identity": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
+   "archived_reference_file": "archives/prospective_rn_detector_v6_completion_20260912/seed19_u3825/repaired_battery.json",
+   "archived_reference_file_sha256": "babdea731e639806701ee501a735ba47976a3be1bdf520415a6bcbbe0611e71e",
+   "archived": {"c_errors": 0, "naming_errors": 0, "rep_freear_ltm_errors": 3193, "rep_canonical_ltm_errors": 3193}
+  },
+  {
+   "state_id": "W4_SRC", "witness_id": "W4", "witness_label": "V6_seed20_u3040",
+   "source_or_repaired": "SOURCE", "seed": 20, "source_u": 3040, "global_step": 8445120,
+   "source_checkpoint_path": "probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+   "source_checkpoint_archival_copy": "archives/ventral_interface_sources_20260916/s20_u3040_step_08445120.pt",
+   "source_checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+   "repaired_head_path": null, "repaired_head_sha256": null,
+   "reconstructed_state_identity": "32928707acc81af215faa829ad94bba566804982bc192bb5116ea32d43d56e29",
+   "archived_reference_file": "archives/prospective_rn_detector_v6_completion_20260912/seed20_u3040/source_battery.json",
+   "archived_reference_file_sha256": "0e8700c8232c65638cb8d533bee1cbb35401e96398e2818d39f557c120d4854e",
+   "archived": {"c_errors": 42, "naming_errors": 0, "rep_freear_ltm_errors": 3647, "rep_canonical_ltm_errors": 3647}
+  },
+  {
+   "state_id": "W4_REP", "witness_id": "W4", "witness_label": "V6_seed20_u3040",
+   "source_or_repaired": "POST_REPAIR", "seed": 20, "source_u": 3040, "global_step": 8445120,
+   "source_checkpoint_path": "probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+   "source_checkpoint_archival_copy": "archives/ventral_interface_sources_20260916/s20_u3040_step_08445120.pt",
+   "source_checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+   "repaired_head_path": "archives/prospective_rn_detector_v6_completion_20260912/seed20_u3040/arm_a/head_first_c0.pt",
+   "repaired_head_sha256": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03",
+   "reconstructed_state_identity": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6",
+   "archived_reference_file": "archives/prospective_rn_detector_v6_completion_20260912/seed20_u3040/repaired_battery.json",
+   "archived_reference_file_sha256": "35abca38d1145beda538da51c74410f016aa40cf81ff10689b771956e93a9801",
+   "archived": {"c_errors": 0, "naming_errors": 0, "rep_freear_ltm_errors": 3662, "rep_canonical_ltm_errors": 3662}
+  }
+ ],
+ "data": {
+  "glove_path_in_worktree": "data/glove.6B.300d.txt",
+  "glove_sha256": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed",
+  "lexicon_path": "data/lexicon_en_glove_covered.tsv",
+  "lexicon_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+  "bank_raw_tensor_sha256": "4658e11e6a8f60a468472cc3fa62e71064e33da6790f924cc3005e602762ddb4",
+  "n_lexical_rows": 29571,
+  "n_canonical_c_targets": 27981,
+  "canonical_c_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+  "entry_order_sha256": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+  "vocab_size": 42, "pad_id": 0, "bos_id": 1, "eos_id": 2,
+  "vocab_itos_sha256": "d88e9cc7dda9273f10f93c717e4e233835609d907cdd33a66bdfee0677099c8e",
+  "max_form_length": 9
+ },
+ "decoding": {
+  "route": "ltm",
+  "primary_convention": "freear",
+  "freear_max_steps": 12,
+  "canonical_readout": "greedy to batch max(len)+1 steps; per-item window len(form)+1; cut at first EOS",
+  "decode_batch": 256,
+  "retrieval_batch": 512,
+  "naming_validity_max_steps": 256,
+  "naming_validity_batch": 512
+ },
+ "tolerances": {
+  "s3_degenerate_norm": 1e-06,
+  "gate_d_cos_tol": 1e-06,
+  "gate_d_tie_tol": 1e-06,
+  "shat_live_vs_retrieval_max_abs_dev": 1e-05,
+  "encoder_step_max_abs_dev": 0.0,
+  "gate_b_max_abs_diff": 0.0
+ },
+ "code_closure": [
+  "models/dual_route.py", "models/ltm_route.py", "models/wm_route.py", "models/gating.py",
+  "models/motor.py", "models/__init__.py", "config.py", "losses.py",
+  "data/__init__.py", "data/lexicon.py", "data/phonemes.py", "data/lexicon_en_glove_covered.tsv",
+  "utils/__init__.py", "utils/seed.py", "utils/provenance.py",
+  "evaluate/__init__.py", "evaluate/hooks.py", "scripts/external_eval.py",
+  "scripts/evaluate_train_lexicon_ceiling.py",
+  "scripts/naming_comprehension/train_joint_scratch.py",
+  "scripts/naming_comprehension/train_tasks.py",
+  "scripts/naming_comprehension/train_multitask.py",
+  "scripts/naming_comprehension/aggregate_cohort.py",
+  "scripts/naming_comprehension/frozen_probe.py",
+  "scripts/naming_comprehension/frozen_head_probe.py",
+  "scripts/naming_comprehension/base123_error_audit.py",
+  "scripts/gating_diagnostics/run_gate_route_audit.py",
+  "gating_diagnostics/__init__.py", "gating_diagnostics/gate_probe.py",
+  "gating_diagnostics/analysis.py",
+  "gate_x_lesion/__init__.py", "gate_x_lesion/hooks.py", "gate_x_lesion/noise.py",
+  "gate_x_lesion/targets.py", "gate_x_lesion/identity.py",
+  "paper_programme/gating_route_diagnostics/checkpoint_manifest.tsv",
+  "ventral_interface/__init__.py", "ventral_interface/conditions.py",
+  "ventral_interface/injection.py", "ventral_interface/decode.py",
+  "ventral_interface/population.py", "ventral_interface/schema.py",
+  "ventral_interface/evaluate.py",
+  "scripts/ventral_interface/run_ventral_interface_factorization.py",
+  "tests/__init__.py", "tests/test_ventral_interface.py"
+ ]
+}

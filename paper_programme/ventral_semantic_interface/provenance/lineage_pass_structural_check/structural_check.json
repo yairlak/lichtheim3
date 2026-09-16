@@ -1,0 +1,520 @@
+{
+ "torch": "2.12.1",
+ "python": "3.11.15",
+ "glove": {
+  "link": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion/data/glove.6B.300d.txt",
+  "realpath": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/lichtheim3/data/glove.6B.300d.txt",
+  "bytes": 1037962819,
+  "sha256": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed"
+ },
+ "lexicon_en_glove_covered.tsv": {
+  "bytes": 825434,
+  "sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+ },
+ "lexicon_en.tsv": {
+  "bytes": 838758,
+  "sha256": "1aba9a2f972293f94626461454f0cbae709766108b6cbfe3b0495729896fd959"
+ },
+ "W3": {
+  "sha_before": {
+   "ckpt": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+   "head": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc"
+  },
+  "manifest_pair_same_base": true,
+  "ckpt_top_keys": [
+   "batch_in_rep_epoch",
+   "c_align_weight",
+   "comprehension_population_n",
+   "comprehension_population_name",
+   "comprehension_population_sha256",
+   "config",
+   "consecutive_ceiling",
+   "cursors",
+   "dec_weight",
+   "exposures",
+   "format",
+   "git",
+   "global_step",
+   "glove_fallback",
+   "glove_found",
+   "historical_fidelity",
+   "last_ceiling_step",
+   "lexicon_file_sha256",
+   "lexicon_path",
+   "lr",
+   "lr_boundary_steps",
+   "lr_phase",
+   "lr_policy",
+   "model_state_dict",
+   "naming_population_n",
+   "naming_population_name",
+   "naming_population_sha256",
+   "optimizer_bank_layout",
+   "optimizer_policy",
+   "optimizer_state_dict",
+   "parameter_census",
+   "phase_transitions",
+   "probe_indices",
+   "probe_note",
+   "regime",
+   "rep_epoch",
+   "resolved_settings",
+   "resume_provenance",
+   "rng_states",
+   "schedule",
+   "schedule_anchor_step",
+   "schedule_ratio",
+   "schedule_seed",
+   "seed",
+   "stream_seeds",
+   "subset_definition_sha256",
+   "subset_indices",
+   "subset_mode",
+   "widths"
+  ],
+  "ckpt_meta": {
+   "seed": 19,
+   "global_step": 10625850,
+   "regime": "j0",
+   "schedule": "interleaved_123",
+   "subset_mode": "final_full",
+   "lexicon_path": "data/lexicon_en_glove_covered.tsv",
+   "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+   "widths": {
+    "wm_hidden": 128,
+    "ltm_enc_hidden": 512,
+    "ltm_dec_hidden": 512
+   },
+   "comprehension_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+   "optimizer_policy": "shared_adamw",
+   "dec_weight": 0.5,
+   "c_align_weight": 0.0
+  },
+  "ckpt_config_ltm": {
+   "phon_embed_dim": 64,
+   "enc_hidden": 512,
+   "enc_layers": 1,
+   "dec_hidden": 512,
+   "bidirectional_encoder": false,
+   "ltm_encoder_mode": "unigru_last_hidden",
+   "ventral_noise": 0.0
+  },
+  "ckpt_config_wm": {
+   "hidden": 128,
+   "interference_noise": 0.0
+  },
+  "ckpt_config_gating": {
+   "alpha": 2.0,
+   "usage_prior": 0.5,
+   "gate_threshold": 0.7
+  },
+  "ckpt_config_data_semantic_dim": 300,
+  "ckpt_config_data_glove_path": "/lustre/fswork/projects/rech/llg/uss35bp/lichtheim3/lichtheim3/data/glove.6B.300d.txt",
+  "model_state_keys_in_ckpt": [
+   "model_state_dict"
+  ],
+  "head_top_keys": [
+   "arm",
+   "code_commit",
+   "code_dirty_paths",
+   "iterate",
+   "label",
+   "prereg_commit",
+   "seed",
+   "source_u",
+   "state",
+   "theta_float64",
+   "trainable",
+   "v4_impl_commit",
+   "v4_prereg_commit"
+  ],
+  "head_meta": {
+   "label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+   "trainable": [
+    "ltm.to_semantic.2.weight",
+    "ltm.to_semantic.2.bias"
+   ],
+   "theta_float64": "<tensor/dict>",
+   "seed": 19,
+   "arm": "A",
+   "source_u": 3825,
+   "prereg_commit": "86ea3d329245ae2f0314d5c1f99be9ab575c7816",
+   "v4_prereg_commit": "054633cdf173c27296bdbc406775329bd0bc38a4",
+   "v4_impl_commit": "3912d758e4864a2e8a297f38311c6162772562d8",
+   "code_commit": "78f550570b82b3230cb621d9d000600ed192eb74",
+   "code_dirty_paths": 0,
+   "iterate": 14
+  },
+  "head_state": {
+   "2.weight": [
+    [
+     300,
+     512
+    ],
+    "torch.float32"
+   ],
+   "2.bias": [
+    [
+     300
+    ],
+    "torch.float32"
+   ]
+  },
+  "head_keys_exact": true,
+  "n_params_tensors": 31,
+  "same_keyset": true,
+  "shapes_match": true,
+  "differing_tensors": [
+   "ltm.to_semantic.2.bias",
+   "ltm.to_semantic.2.weight"
+  ],
+  "head_equals_rep_param": true,
+  "group_identical": {
+   "ventral_decoder(sem_to_h0,decoder,dec_to_premotor)": true,
+   "ltm_encoder": true,
+   "to_semantic.0": true,
+   "dorsal_wm": true,
+   "gate": true,
+   "motor": true,
+   "phon_embed": true
+  },
+  "gate_param_tensors": [],
+  "semantic_bank_buffer_in_state_dict": false,
+  "semantic_bank_shape": [
+   29571,
+   300
+  ],
+  "semantic_bank_identical_src_rep": true,
+  "semantic_bank_row_norm_min_max": [
+   0.9999997615814209,
+   1.000000238418579
+  ],
+  "bank_raw_shape": [
+   29571,
+   300
+  ],
+  "bank_raw_sha256_tensor": "4658e11e6a8f60a468472cc3fa62e71064e33da6790f924cc3005e602762ddb4",
+  "bank_raw_norm_min_mean_max": [
+   2.610224485397339,
+   6.530660629272461,
+   14.011075973510742
+  ],
+  "bank_equals_normalize_bank_raw": true,
+  "src_to_semantic_2_weight_sha256_tensor": "2d8e278a5f7bd3bd9729ad4cf8d2f53d2321ee1f9bd179780dc310407d11ad24",
+  "src_to_semantic_2_bias_sha256_tensor": "39f7746013186a9b95958fba01c2fe1e4c14099167f4fe1a1baf063b3a09eeb4",
+  "src_sem_to_h0_weight_sha256_tensor": "461545f4067373a7f0bbfd9f867dbf8f54e3ab1c7f801f161594704272fc13ea",
+  "src_to_semantic_0_weight_sha256_tensor": "88f9f3ce8520b0f35d531a5088e60d85b200528aa51f07ba7446b42183cc975c",
+  "rep_to_semantic_2_weight_sha256_tensor": "e8f6f43bad574527fc63675434928d9c1d788b45f3872c73742158d5275f7578",
+  "live_trainer_model_untouched_by_isolation": true,
+  "n_entries": 29571,
+  "n_comp_idx": 27981,
+  "comp_hash": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+  "glove_found_fallback": [
+   29571,
+   0
+  ],
+  "max_form_len": 9,
+  "vocab": {
+   "size": 42,
+   "pad": 0,
+   "bos": 1,
+   "eos": 2,
+   "itos_sha256": "d88e9cc7dda9273f10f93c717e4e233835609d907cdd33a66bdfee0677099c8e"
+  },
+  "item_order_sha256_all_entries": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+  "lexicon_load_stats": {
+   "n_source_rows": "29571",
+   "n_entries_after_loading": "29571",
+   "n_filtered_unknown_phoneme": "0",
+   "n_filtered_length": "0",
+   "n_unique_loaded_words": "29571",
+   "n_glove_found": "29571",
+   "n_glove_fallback": "0",
+   "lexicon_file_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion/data/lexicon_en_glove_covered.tsv",
+   "glove_file_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion/data/glove.6B.300d.txt",
+   "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+  },
+  "prov_src": {
+   "global_step": 10625850,
+   "seed": 19,
+   "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+   "gating_config": {
+    "alpha": 2.0,
+    "usage_prior": 0.5,
+    "gate_threshold": 0.7
+   }
+  },
+  "prov_rep_head": {
+   "head_sha256": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc",
+   "head_label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+   "head_arm": "A"
+  },
+  "model_training_flag": [
+   false,
+   false
+  ],
+  "gxlr_state_v1": {
+   "SRC": "6d7282854323b810727cd9c0c90cace6dd8a54d306408cafaa8c40c5455d10a0",
+   "REP": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
+   "REP_from_live_hashes": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1",
+   "proposed_manifest_SRC": "6d7282854323b810727cd9c0c90cace6dd8a54d306408cafaa8c40c5455d10a0",
+   "proposed_manifest_REP": "9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1"
+  },
+  "sha_after": {
+   "ckpt": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+   "head": "8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc"
+  },
+  "unchanged": true
+ },
+ "W4": {
+  "sha_before": {
+   "ckpt": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+   "head": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03"
+  },
+  "manifest_pair_same_base": true,
+  "ckpt_top_keys": [
+   "batch_in_rep_epoch",
+   "c_align_weight",
+   "comprehension_population_n",
+   "comprehension_population_name",
+   "comprehension_population_sha256",
+   "config",
+   "consecutive_ceiling",
+   "cursors",
+   "dec_weight",
+   "exposures",
+   "format",
+   "git",
+   "global_step",
+   "glove_fallback",
+   "glove_found",
+   "historical_fidelity",
+   "last_ceiling_step",
+   "lexicon_file_sha256",
+   "lexicon_path",
+   "lr",
+   "lr_boundary_steps",
+   "lr_phase",
+   "lr_policy",
+   "model_state_dict",
+   "naming_population_n",
+   "naming_population_name",
+   "naming_population_sha256",
+   "optimizer_bank_layout",
+   "optimizer_policy",
+   "optimizer_state_dict",
+   "parameter_census",
+   "phase_transitions",
+   "probe_indices",
+   "probe_note",
+   "regime",
+   "rep_epoch",
+   "resolved_settings",
+   "resume_provenance",
+   "rng_states",
+   "schedule",
+   "schedule_anchor_step",
+   "schedule_ratio",
+   "schedule_seed",
+   "seed",
+   "stream_seeds",
+   "subset_definition_sha256",
+   "subset_indices",
+   "subset_mode",
+   "widths"
+  ],
+  "ckpt_meta": {
+   "seed": 20,
+   "global_step": 8445120,
+   "regime": "j0",
+   "schedule": "interleaved_123",
+   "subset_mode": "final_full",
+   "lexicon_path": "data/lexicon_en_glove_covered.tsv",
+   "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+   "widths": {
+    "wm_hidden": 128,
+    "ltm_enc_hidden": 512,
+    "ltm_dec_hidden": 512
+   },
+   "comprehension_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+   "optimizer_policy": "shared_adamw",
+   "dec_weight": 0.5,
+   "c_align_weight": 0.0
+  },
+  "ckpt_config_ltm": {
+   "phon_embed_dim": 64,
+   "enc_hidden": 512,
+   "enc_layers": 1,
+   "dec_hidden": 512,
+   "bidirectional_encoder": false,
+   "ltm_encoder_mode": "unigru_last_hidden",
+   "ventral_noise": 0.0
+  },
+  "ckpt_config_wm": {
+   "hidden": 128,
+   "interference_noise": 0.0
+  },
+  "ckpt_config_gating": {
+   "alpha": 2.0,
+   "usage_prior": 0.5,
+   "gate_threshold": 0.7
+  },
+  "ckpt_config_data_semantic_dim": 300,
+  "ckpt_config_data_glove_path": "/lustre/fswork/projects/rech/llg/uss35bp/lichtheim3/lichtheim3/data/glove.6B.300d.txt",
+  "model_state_keys_in_ckpt": [
+   "model_state_dict"
+  ],
+  "head_top_keys": [
+   "arm",
+   "code_commit",
+   "code_dirty_paths",
+   "iterate",
+   "label",
+   "prereg_commit",
+   "seed",
+   "source_u",
+   "state",
+   "theta_float64",
+   "trainable",
+   "v4_impl_commit",
+   "v4_prereg_commit"
+  ],
+  "head_meta": {
+   "label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+   "trainable": [
+    "ltm.to_semantic.2.weight",
+    "ltm.to_semantic.2.bias"
+   ],
+   "theta_float64": "<tensor/dict>",
+   "seed": 20,
+   "arm": "A",
+   "source_u": 3040,
+   "prereg_commit": "86ea3d329245ae2f0314d5c1f99be9ab575c7816",
+   "v4_prereg_commit": "054633cdf173c27296bdbc406775329bd0bc38a4",
+   "v4_impl_commit": "3912d758e4864a2e8a297f38311c6162772562d8",
+   "code_commit": "78f550570b82b3230cb621d9d000600ed192eb74",
+   "code_dirty_paths": 0,
+   "iterate": 25
+  },
+  "head_state": {
+   "2.weight": [
+    [
+     300,
+     512
+    ],
+    "torch.float32"
+   ],
+   "2.bias": [
+    [
+     300
+    ],
+    "torch.float32"
+   ]
+  },
+  "head_keys_exact": true,
+  "n_params_tensors": 31,
+  "same_keyset": true,
+  "shapes_match": true,
+  "differing_tensors": [
+   "ltm.to_semantic.2.bias",
+   "ltm.to_semantic.2.weight"
+  ],
+  "head_equals_rep_param": true,
+  "group_identical": {
+   "ventral_decoder(sem_to_h0,decoder,dec_to_premotor)": true,
+   "ltm_encoder": true,
+   "to_semantic.0": true,
+   "dorsal_wm": true,
+   "gate": true,
+   "motor": true,
+   "phon_embed": true
+  },
+  "gate_param_tensors": [],
+  "semantic_bank_buffer_in_state_dict": false,
+  "semantic_bank_shape": [
+   29571,
+   300
+  ],
+  "semantic_bank_identical_src_rep": true,
+  "semantic_bank_row_norm_min_max": [
+   0.9999997615814209,
+   1.000000238418579
+  ],
+  "bank_raw_shape": [
+   29571,
+   300
+  ],
+  "bank_raw_sha256_tensor": "4658e11e6a8f60a468472cc3fa62e71064e33da6790f924cc3005e602762ddb4",
+  "bank_raw_norm_min_mean_max": [
+   2.610224485397339,
+   6.530660629272461,
+   14.011075973510742
+  ],
+  "bank_equals_normalize_bank_raw": true,
+  "src_to_semantic_2_weight_sha256_tensor": "ccbb033d8dfcafddc8435fd836b7ae374906312e78bd99897e1e4078639a9d4f",
+  "src_to_semantic_2_bias_sha256_tensor": "9ab36b980cc77ee01d9163a4b457dc7d2e438536fc70b31d170c318711f87399",
+  "src_sem_to_h0_weight_sha256_tensor": "ab2eb905be3f8db3ac72cfecfd6d4e6495c3a212b5ad70b708b1df07b7dab63f",
+  "src_to_semantic_0_weight_sha256_tensor": "8d40e7cee4c6f4f8fb6e565fe358fd94ddc4ede798fb5add6a9b9b299fbb639f",
+  "rep_to_semantic_2_weight_sha256_tensor": "40ccef4c50a34448424d80a9cf0a52d30ef0d8c7aa1c94edd7d7ec56dfd8c963",
+  "live_trainer_model_untouched_by_isolation": true,
+  "n_entries": 29571,
+  "n_comp_idx": 27981,
+  "comp_hash": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+  "glove_found_fallback": [
+   29571,
+   0
+  ],
+  "max_form_len": 9,
+  "vocab": {
+   "size": 42,
+   "pad": 0,
+   "bos": 1,
+   "eos": 2,
+   "itos_sha256": "d88e9cc7dda9273f10f93c717e4e233835609d907cdd33a66bdfee0677099c8e"
+  },
+  "item_order_sha256_all_entries": "ab2b193f98eee7fb270c3e708753aab7c58d5f1d59f7597182cd0b0154c68b76",
+  "lexicon_load_stats": {
+   "n_source_rows": "29571",
+   "n_entries_after_loading": "29571",
+   "n_filtered_unknown_phoneme": "0",
+   "n_filtered_length": "0",
+   "n_unique_loaded_words": "29571",
+   "n_glove_found": "29571",
+   "n_glove_fallback": "0",
+   "lexicon_file_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion/data/lexicon_en_glove_covered.tsv",
+   "glove_file_path": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion/data/glove.6B.300d.txt",
+   "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+  },
+  "prov_src": {
+   "global_step": 8445120,
+   "seed": 20,
+   "lexicon_file_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+   "gating_config": {
+    "alpha": 2.0,
+    "usage_prior": 0.5,
+    "gate_threshold": 0.7
+   }
+  },
+  "prov_rep_head": {
+   "head_sha256": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03",
+   "head_label": "DERIVED_GRADIENT_TRAINING_DIAGNOSTIC/NOT_OFFICIAL_MODEL/NOT_TRAINED_BY_JOINT_DRIVER",
+   "head_arm": "A"
+  },
+  "model_training_flag": [
+   false,
+   false
+  ],
+  "gxlr_state_v1": {
+   "SRC": "32928707acc81af215faa829ad94bba566804982bc192bb5116ea32d43d56e29",
+   "REP": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6",
+   "REP_from_live_hashes": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6",
+   "proposed_manifest_SRC": "32928707acc81af215faa829ad94bba566804982bc192bb5116ea32d43d56e29",
+   "proposed_manifest_REP": "e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6"
+  },
+  "sha_after": {
+   "ckpt": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+   "head": "724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03"
+  },
+  "unchanged": true
+ }
+}
