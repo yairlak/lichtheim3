@@ -24,17 +24,13 @@ from gate_x_lesion.identity import (STATE_IDENTITY_DOMAIN,
                                     reconstructed_state_sha256,
                                     verify_manifest_state_identity)
 from gate_x_lesion.noise import EpsilonCache, FROZEN_LAMBDAS, base_epsilon, eta
-from gate_x_lesion.outcomes import (CANDIDATE_ROBUSTNESS_RULES,
-                                    FROZEN_ROBUSTNESS_RULE, OUTCOME_A, OUTCOME_B,
-                                    OUTCOME_F, SIGN_FIXED05_ADVANTAGE,
-                                    SIGN_NATIVE_ADVANTAGE, SeedRecord,
-                                    UnfrozenRobustnessError, evaluate_severity)
+from gate_x_lesion.outcomes import (FROZEN_ROBUSTNESS_RULE,
+                                    FROZEN_ROBUSTNESS_RULE_ID, OUTCOME_A,
+                                    OUTCOME_B, OUTCOME_F)
 from gate_x_lesion.sd import measure_intact_sd
 from gate_x_lesion.targets import assert_site_compatible
 from gate_x_lesion.validity import (DETERMINISTIC_TOLERANCE, MIN_BLOCKS_WITH_DROP,
-                                    N_BLOCKS, TARGETED_MIN_DROP, BlockObservation,
-                                    UnresolvedPolicyError,
-                                    decide_route_severity_validity)
+                                    N_BLOCKS, TARGETED_MIN_DROP, BlockObservation)
 from scripts.gate_x_lesion.run_gate_x_lesion import (SCIENTIFIC_BATCH_SIZE,
                                                      assert_scientific_batch_size)
 
@@ -43,8 +39,6 @@ OUT_BASE = os.path.join(ROOT, "paper_programme", "gate_x_lesion_recovery")
 MANIFEST = os.path.join(OUT_BASE, "checkpoint_manifest.proposed.tsv")
 
 SMOKE_N = 8
-POLICY = dict(validity_convention_scope="shared",
-              implementation_failure_block_semantics="abort_run")
 
 
 def _rows():
@@ -338,212 +332,44 @@ def test_F8_prepared_command_uses_the_pinned_batch_size():
     assert "--batch-size 256" in cmd
 
 
-# =========================================================  O-3 diagnostic validity
+# ==========================  O-3 / O-4 — SUPERSEDED BY THE FINAL RULE FREEZE
 
-def _block(state_id, seed, route="wm_encoder_state", lam=0.25, *, drop=0.20,
-           untargeted=0.0, shared_ok=True, d_c=0.0, d_g=0.0, conv="CANONICAL"):
-    return BlockObservation(
-        state_id=state_id, lesion_seed=seed, route=route, lam=lam, convention=conv,
-        targeted_exact_intact=0.90, targeted_exact_lesioned=0.90 - drop,
-        untargeted_max_abs_delta=untargeted, shared_params_unmutated=shared_ok,
-        max_abs_delta_c_ltm=d_c, max_abs_delta_gate=d_g)
+# The O-3 and O-4 sections that previously lived here asserted that those rules
+# were UNRESOLVED: that the two O-3 policy fields had no default and raised
+# `UnresolvedPolicyError`, and that `FROZEN_ROBUSTNESS_RULE` was None with only
+# candidate rules available.  CENTRAL has since issued the authoritative final
+# decision, so asserting the unresolved state would now assert something false.
+#
+# Those rules are tested in `tests/test_gate_x_lesion_final_rules.py`:
+#   O3_VALIDITY_CONVENTION_SCOPE = SHARED
+#   O3_IMPLEMENTATION_FAILURE_SEMANTICS = ABORT_RUN
+#   O4_ROBUSTNESS_RULE = REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST
+#
+# What remains here are the closure-pass findings that the final freeze did NOT
+# supersede: O-1 state identity, FREE-AR trajectory independence, F-2, F-3, F-8.
 
 
-def _grid(**kw):
-    return [_block(s, k, **kw) for s in ("W3_REP", "W4_REP") for k in range(4)]
+def test_O3_O4_are_now_frozen_not_open():
+    """Guard against the superseded API coming back."""
+    import gate_x_lesion.validity as V
+    assert V.VALIDITY_CONVENTION_SCOPE == "SHARED"
+    assert V.IMPLEMENTATION_FAILURE_SEMANTICS == "ABORT_RUN"
+    assert not hasattr(V, "UnresolvedPolicyError")
+    assert not hasattr(V, "decide_route_severity_validity")
+    assert FROZEN_ROBUSTNESS_RULE is not None
+    assert FROZEN_ROBUSTNESS_RULE_ID == \
+        "REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST"
 
 
-def test_O3_grid_and_tolerance_constants():
+def test_O3_grid_and_tolerance_constants_unchanged():
+    """The constants the closure pass pinned survive the final freeze."""
     assert N_BLOCKS == 8 and MIN_BLOCKS_WITH_DROP == 6
     assert TARGETED_MIN_DROP == 0.10
-    assert DETERMINISTIC_TOLERANCE == 0.0       # bitwise, from GATING §5
+    assert DETERMINISTIC_TOLERANCE == 0.0          # bitwise, from GATING §5
 
 
-def test_O3_policy_fields_have_no_default():
-    """The two unresolved O-3 fields cannot be silently guessed."""
-    with pytest.raises(TypeError):
-        decide_route_severity_validity(_grid())                # missing both
-    with pytest.raises(UnresolvedPolicyError):
-        decide_route_severity_validity(
-            _grid(), validity_convention_scope="whatever",
-            implementation_failure_block_semantics="abort_run")
-    with pytest.raises(UnresolvedPolicyError):
-        decide_route_severity_validity(
-            _grid(), validity_convention_scope="shared",
-            implementation_failure_block_semantics="guess")
-
-
-def test_O3_boundary_on_block_count():
-    # 6/8 -> valid; 5/8 -> invalid
-    for n_ok, expect in ((8, True), (6, True), (5, False), (0, False)):
-        blocks = [_block("W3_REP", k, drop=0.20 if k < n_ok else 0.01)
-                  for k in range(8)]
-        v = decide_route_severity_validity(blocks, **POLICY)
-        assert v.diagnostically_valid is expect, (n_ok, v.reason)
-        assert v.n_blocks_with_drop == n_ok
-
-
-def _count_block(state_id, seed, n_items, n_intact, n_lesioned):
-    return BlockObservation(
-        state_id=state_id, lesion_seed=seed, route="wm_encoder_state", lam=0.25,
-        convention="CANONICAL", targeted_exact_intact=n_intact / n_items,
-        targeted_exact_lesioned=n_lesioned / n_items, untargeted_max_abs_delta=0.0,
-        shared_params_unmutated=True, n_items=n_items,
-        n_correct_intact=n_intact, n_correct_lesioned=n_lesioned)
-
-
-def test_O3_boundary_on_drop_magnitude():
-    """The >= 0.10 boundary, evaluated the numerically correct way.
-
-    The drop must come from ONE division of an integer count difference. Deriving it
-    as the difference of two separately-rounded accuracies puts representation error
-    exactly on the decision boundary: 0.90 - 0.10 == 0.09999999999999998, which would
-    spuriously fail `>= 0.10`.
-    """
-    exact = [_count_block(s, k, 1000, 900, 800)          # drop == 0.100 exactly
-             for s in ("W3_REP", "W4_REP") for k in range(4)]
-    assert decide_route_severity_validity(exact, **POLICY).diagnostically_valid
-
-    just_under = [_count_block(s, k, 1000, 900, 801)     # drop == 0.099
-                  for s in ("W3_REP", "W4_REP") for k in range(4)]
-    assert not decide_route_severity_validity(just_under, **POLICY).diagnostically_valid
-
-    # the float-subtraction form is why counts are preferred
-    naive = BlockObservation(
-        state_id="W3_REP", lesion_seed=0, route="wm_encoder_state", lam=0.25,
-        convention="CANONICAL", targeted_exact_intact=0.9,
-        targeted_exact_lesioned=0.9 - 0.10, untargeted_max_abs_delta=0.0,
-        shared_params_unmutated=True)
-    assert naive.targeted_drop < TARGETED_MIN_DROP
-    assert _count_block("W3_REP", 0, 1000, 900, 800).targeted_drop >= TARGETED_MIN_DROP
-
-    # on the canonical population an exact tie cannot arise at all
-    assert abs(TARGETED_MIN_DROP * 29571 - round(TARGETED_MIN_DROP * 29571)) > 1e-9
-
-
-def test_O3_untargeted_route_must_be_bitwise_unchanged():
-    v = decide_route_severity_validity(_grid(untargeted=0.0), **POLICY)
-    assert v.diagnostically_valid
-    v = decide_route_severity_validity(_grid(untargeted=1e-9), **POLICY)
-    assert not v.diagnostically_valid
-    assert v.criterion_2_failures
-
-
-def test_O3_dorsal_gate_violation_is_an_implementation_failure():
-    """Criterion 4 binds dorsal only, and a violation aborts rather than returning a null."""
-    with pytest.raises(RuntimeError, match="implementation failure"):
-        decide_route_severity_validity(_grid(d_g=1e-9), **POLICY)
-    with pytest.raises(RuntimeError, match="implementation failure"):
-        decide_route_severity_validity(_grid(d_c=1e-9), **POLICY)
-    with pytest.raises(RuntimeError, match="implementation failure"):
-        decide_route_severity_validity(_grid(shared_ok=False), **POLICY)
-    # ventral: criterion 4 is vacuous, a moving gate is expected and allowed
-    v = decide_route_severity_validity(
-        _grid(route="ltm_encoder_state", d_g=0.5, d_c=0.3), **POLICY)
-    assert v.diagnostically_valid
-
-
-def test_O3_implementation_failure_denominator_semantics_differ():
-    """The three denominator policies are genuinely distinct — hence the open question."""
-    blocks = _grid()
-    blocks[0] = _block("W3_REP", 0, shared_ok=False)           # one failed block
-    with pytest.raises(RuntimeError):
-        decide_route_severity_validity(
-            blocks, validity_convention_scope="shared",
-            implementation_failure_block_semantics="abort_run")
-    v = decide_route_severity_validity(
-        blocks, validity_convention_scope="shared",
-        implementation_failure_block_semantics="exclude_block_and_shrink_denominator")
-    assert v.n_blocks_considered == 7 and v.n_blocks_with_drop == 7
-    assert v.implementation_failures            # recorded, never silently dropped
-
-
-def test_O3_validity_never_reads_the_fusion_contrast():
-    """No NATIVE/FIXED05 quantity is even representable in the validity input."""
+def test_O3_validity_still_never_reads_the_fusion_contrast():
     fields = set(BlockObservation.__dataclass_fields__)
-    for banned in ("native", "fixed05", "discordant", "errors_gained",
-                   "errors_recovered", "net_change_in_correct", "p_exact_mcnemar"):
+    for banned in ("native", "fixed05", "discordant", "delta_accuracy",
+                   "errors_gained", "errors_recovered", "mcnemar"):
         assert not any(banned in f for f in fields), banned
-
-
-# ==============================================================  O-4 robustness
-
-def _rec(state_id, seed, *, net, p, lam=0.25, dacc=0.01):
-    return SeedRecord(lam=lam, seed=seed, n_changed_vs_intact=100,
-                      native_exact_match=0.6, modal_prediction_share=0.1,
-                      net_change_in_correct=net, p_exact_mcnemar=p,
-                      state_id=state_id, delta_accuracy=dacc)
-
-
-def test_O4_no_rule_is_frozen():
-    assert FROZEN_ROBUSTNESS_RULE is None
-    assert set(CANDIDATE_ROBUSTNESS_RULES) == {
-        "R1_per_witness_significance",
-        "R2_significance_plus_inherited_materiality",
-        "R3_unanimous_sign_no_test"}
-
-
-def test_O4_classification_requires_an_explicit_rule():
-    recs = [_rec("W3_REP", k, net=-40, p=0.001) for k in range(4)]
-    with pytest.raises(TypeError):
-        evaluate_severity(recs)                       # no default rule exists
-    with pytest.raises(UnfrozenRobustnessError):
-        evaluate_severity(recs, robustness_rule=None)
-
-
-def test_O4_candidate_R1_positive_negative_and_noisy():
-    R1 = CANDIDATE_ROBUSTNESS_RULES["R1_per_witness_significance"]
-    both = lambda net, p: [_rec(s, k, net=net, p=p)
-                           for s in ("W3_REP", "W4_REP") for k in range(4)]
-    assert R1(both(-40, 0.001)).sign == SIGN_NATIVE_ADVANTAGE
-    assert R1(both(+40, 0.001)).sign == SIGN_FIXED05_ADVANTAGE
-    assert R1(both(-40, 0.90)).robust is False        # noisy: nothing significant
-    # one witness disagrees -> not robust (no cross-witness pooling, GATING §9)
-    mixed = ([_rec("W3_REP", k, net=-40, p=0.001) for k in range(4)]
-             + [_rec("W4_REP", k, net=+40, p=0.001) for k in range(4)])
-    assert R1(mixed).robust is False
-
-
-def test_O4_candidate_R2_applies_the_inherited_materiality_floor():
-    R1 = CANDIDATE_ROBUSTNESS_RULES["R1_per_witness_significance"]
-    R2 = CANDIDATE_ROBUSTNESS_RULES["R2_significance_plus_inherited_materiality"]
-    tiny = [_rec(s, k, net=-40, p=0.001, dacc=0.0001)
-            for s in ("W3_REP", "W4_REP") for k in range(4)]
-    assert R1(tiny).robust is True            # R1 certifies a trivial effect
-    assert R2(tiny).robust is False           # R2 rejects it at |Δacc| >= 0.002
-
-
-def test_O4_candidate_R3_needs_unanimous_nonzero_sign():
-    R3 = CANDIDATE_ROBUSTNESS_RULES["R3_unanimous_sign_no_test"]
-    assert R3([_rec("W3_REP", k, net=-5, p=None) for k in range(8)]).robust is True
-    assert R3([_rec("W3_REP", k, net=0, p=None) for k in range(8)]).robust is False
-    mixed = [_rec("W3_REP", k, net=(-5 if k else +5), p=None) for k in range(8)]
-    assert R3(mixed).robust is False
-
-
-def test_O4_veto_still_binds_under_any_candidate_rule():
-    """Whatever CENTRAL picks, opposite robust signs across severities give F."""
-    from gate_x_lesion.outcomes import classify_convention, SeverityVerdict
-    R1 = CANDIDATE_ROBUSTNESS_RULES["R1_per_witness_significance"]
-    verdicts = []
-    for lam, net in ((0.25, -40), (0.50, +40), (1.00, -40)):
-        recs = [_rec(s, k, net=net, p=0.001, lam=lam)
-                for s in ("W3_REP", "W4_REP") for k in range(4)]
-        verdicts.append(evaluate_severity(recs, robustness_rule=R1,
-                                          diagnostically_valid=True))
-    out = classify_convention(verdicts)
-    assert out["outcome"] == OUTCOME_F and out["veto_applied"] is True
-    assert out["valid_severities"] == [0.25, 0.50, 1.00]
-
-
-def test_O4_homogeneous_signs_give_A_or_B():
-    from gate_x_lesion.outcomes import classify_convention
-    R1 = CANDIDATE_ROBUSTNESS_RULES["R1_per_witness_significance"]
-    for net, expect in ((-40, OUTCOME_A), (+40, OUTCOME_B)):
-        verdicts = [
-            evaluate_severity(
-                [_rec(s, k, net=net, p=0.001, lam=lam)
-                 for s in ("W3_REP", "W4_REP") for k in range(4)],
-                robustness_rule=R1, diagnostically_valid=True)
-            for lam in FROZEN_LAMBDAS]
-        assert classify_convention(verdicts)["outcome"] == expect

@@ -555,6 +555,15 @@ def test_T12c_letters():
 
 
 def test_T12d_conventions_classify_independently():
+    """Updated for CENTRAL's final joint rule: disagreement -> MIXED_DECODING.
+
+    The intent of the original test is unchanged and still asserted: the two
+    conventions are classified independently and neither adjudicates the other.
+    Only the joint LABEL changed — CENTRAL final decision §2 replaced the previous
+    `F_HETEROGENEOUS` joint label with `MIXED_DECODING` for a material difference.
+    """
+    from gate_x_lesion.outcomes import JOINT_MIXED_DECODING
+
     fam = {
         "CANONICAL": [_verdict(l, sign=-1) for l in FROZEN_LAMBDAS],
         "FREE_AR": [_verdict(l, sign=+1) for l in FROZEN_LAMBDAS],
@@ -562,20 +571,40 @@ def test_T12d_conventions_classify_independently():
     out = classify_route_family(fam)
     assert out["stages"]["CANONICAL"]["outcome"] == OUTCOME_A
     assert out["stages"]["FREE_AR"]["outcome"] == OUTCOME_B
-    # neither adjudicated the other
-    assert out["joint"]["joint_outcome"] == OUTCOME_F
+    # neither adjudicated the other, and both stage letters stay visible
+    assert out["joint"]["joint_outcome"] == JOINT_MIXED_DECODING
+    assert out["joint"]["canonical"] == OUTCOME_A
+    assert out["joint"]["free_ar"] == OUTCOME_B
 
 
-def test_T12e_convention_disagreement_yields_heterogeneous_joint():
-    assert classify_joint(OUTCOME_A, OUTCOME_B)["joint_outcome"] == OUTCOME_F
-    assert classify_joint(OUTCOME_A, OUTCOME_D)["joint_outcome"] == OUTCOME_F
-    assert classify_joint(OUTCOME_F, OUTCOME_A)["joint_outcome"] == OUTCOME_F
-    assert classify_joint(OUTCOME_A, OUTCOME_A)["joint_outcome"] == OUTCOME_A
-    assert classify_joint(OUTCOME_D, OUTCOME_D)["joint_outcome"] == OUTCOME_D
+def test_T12e_convention_disagreement_stays_visible():
+    """CENTRAL final decision §2: same letter -> CONCORDANT_X; differ -> MIXED_DECODING."""
+    from gate_x_lesion.outcomes import JOINT_MIXED_DECODING, concordant
+
+    # any material difference, including one side being heterogeneous
+    assert classify_joint(OUTCOME_A, OUTCOME_B)["joint_outcome"] == JOINT_MIXED_DECODING
+    assert classify_joint(OUTCOME_A, OUTCOME_D)["joint_outcome"] == JOINT_MIXED_DECODING
+    assert classify_joint(OUTCOME_F, OUTCOME_A)["joint_outcome"] == JOINT_MIXED_DECODING
+    assert classify_joint(OUTCOME_A, OUTCOME_F)["joint_outcome"] == JOINT_MIXED_DECODING
+
+    # agreement is concordant, using the project's own (more specific) letters
+    assert classify_joint(OUTCOME_A, OUTCOME_A)["joint_outcome"] == concordant(OUTCOME_A)
+    assert classify_joint(OUTCOME_D, OUTCOME_D)["joint_outcome"] == concordant(OUTCOME_D)
+    assert classify_joint(OUTCOME_F, OUTCOME_F)["joint_outcome"] == concordant(OUTCOME_F)
+
+    # a favourable convention never overwrites a conflicting one
+    for a, b in ((OUTCOME_A, OUTCOME_F), (OUTCOME_F, OUTCOME_A)):
+        r = classify_joint(a, b)
+        assert r["canonical"] == a and r["free_ar"] == b
 
 
 def test_T12f_severity_rollup_requires_an_explicit_robustness_rule():
     """CLOSURE PASS amendment to T12f.
+
+    NOTE: superseded in part. CENTRAL has since frozen the O-4 rule; see
+    `tests/test_gate_x_lesion_final_rules.py`. What this test still pins is that
+    `evaluate_severity` accepts NO implicit default, so an unfrozen rule cannot
+    return by the back door.
 
     This test previously exercised a robustness rule baked into `evaluate_severity`
     (>= 3/4 seeds significant at alpha=0.05 plus a pooled check).  That rule was the
@@ -594,8 +623,9 @@ def test_T12f_severity_rollup_requires_an_explicit_robustness_rule():
 
     recs = [_rec(0.25, s, net=-40, p=0.001) for s in range(4)]
 
-    # No rule is frozen, and none may be assumed.
-    assert FROZEN_ROBUSTNESS_RULE is None
+    # CENTRAL has since frozen the rule; a rule must still be passed EXPLICITLY,
+    # so no unfrozen default can ever slip back in.
+    assert FROZEN_ROBUSTNESS_RULE is not None
     with pytest.raises(TypeError):
         evaluate_severity(recs, pooled_p=0.0005, pooled_net=-160)
     with pytest.raises(UnfrozenRobustnessError):

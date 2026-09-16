@@ -1,0 +1,223 @@
+{
+ "O3_shared_diagnostic_validity": {
+  "O3_IMPLEMENTATION_FAILURE_SEMANTICS": "ABORT_RUN",
+  "O3_VALIDITY_CONVENTION_SCOPE": "SHARED",
+  "decoder_convention_does_not_select_valid_severities": true,
+  "deterministic_tolerance": 0.0,
+  "deterministic_tolerance_kind": "bitwise",
+  "deterministic_tolerance_source": "gating EXPERIMENT_CONTRACT.md \u00a75; scripts/gating_diagnostics/run_gate_route_audit.py:168-180 (assert_determinism); frozen summary_metrics.json determinism_max_gate_dev == 0.0 in all 8 states",
+  "drop_boundary_note": "0.10 x 29571 = 2957.1; 2957 items fails and 2958 passes. The drop is one exact rational from integer counts, never a subtraction of two floating accuracies (which gives 0.09999999999999998 for a 900/1000 -> 800/1000 block and fails >= 0.10 spuriously).",
+  "drop_computed_from_integer_counts": true,
+  "failure_class_semantics": {
+   "IMPLEMENTATION_FAILURE": "a structural/wiring guarantee was violated; the scientific run ABORTS and no classification is emitted; never downgraded to an invalid severity",
+   "SCIENTIFIC_PERTURBATION_VALIDITY_FAILURE": "the >= 0.10 targeted-route criterion failed for THIS route x severity only; the severity is invalid, the reason is recorded, and the experiment CONTINUES"
+  },
+  "implementation": "gate_x_lesion/validity.py::decide_shared_validity",
+  "implementation_failures": [
+   "IMPLEMENTATION_FAILURE_SHARED_PARAM_MUTATED",
+   "IMPLEMENTATION_FAILURE_CHECKPOINT_NOT_RESTORED",
+   "IMPLEMENTATION_FAILURE_UNTARGETED_ROUTE_CHANGED",
+   "IMPLEMENTATION_FAILURE_DORSAL_GATE_NULL_VIOLATED",
+   "IMPLEMENTATION_FAILURE_LESION_TENSOR_MISMATCH"
+  ],
+  "min_blocks_with_drop": 6,
+  "must_hold_under_both_conventions": [
+   "CANONICAL",
+   "FREE_AR"
+  ],
+  "n_blocks": 8,
+  "n_lesion_seeds": 4,
+  "n_witnesses": 2,
+  "no_block_exclusion": true,
+  "no_denominator_shrinking": true,
+  "one_shared_label_per_route_severity": true,
+  "targeted_min_drop": 0.1,
+  "validity_never_reads_fusion_contrast": true,
+  "validity_reasons": [
+   "VALID",
+   "TARGET_ROUTE_DROP_FAILED_CANONICAL",
+   "TARGET_ROUTE_DROP_FAILED_FREE_AR",
+   "TARGET_ROUTE_DROP_FAILED_BOTH"
+  ]
+ },
+ "O4_robustness": {
+  "O4_ALPHA": "NOT_APPLICABLE",
+  "O4_MAGNITUDE_FLOOR": "0.002_ABSOLUTE_ACCURACY",
+  "O4_MULTIPLICITY": "NOT_APPLICABLE",
+  "O4_ROBUSTNESS_RULE": "REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST",
+  "O4_SEED_HANDLING": "REPLICATION_UNIT_4_LESION_SEEDS_WITHIN_EACH_WITNESS",
+  "O4_STATISTICAL_UNIT": "NONE",
+  "O4_TEST": "NONE",
+  "O4_WITNESS_HANDLING": "TWO_WITNESSES_MUST_SATISFY_RULE_INDEPENDENTLY",
+  "conditions": [
+   "both witnesses independently support the same direction",
+   "within each witness, >= 3/4 lesion seeds have Delta with that direction",
+   "within each witness, mean over exactly the 4 seeds has that direction and |mean| >= 0.002",
+   "no seed in either witness shows an opposite-signed effect with |Delta| >= 0.002",
+   "no pooling of W3 and W4 may rescue a failed witness-level rule",
+   "no item-level significance test",
+   "no seed-level significance test",
+   "no cross-witness significance test"
+  ],
+  "delta_definition": "Delta[w,s] = accuracy_native[w,s] - accuracy_fixed05[w,s]",
+  "delta_never_rounded_before_comparison": true,
+  "implementation": "gate_x_lesion/robustness.py::frozen_robustness (and ::frozen_robustness_from_counts, preferred)",
+  "integer_count_equivalence": {
+   "derivation": "0.002 x 29571 = 59.142 -> ceil 60 per seed; 0.002 x 4 x 29571 = 236.568 -> ceil 237 for the four-seed sum. CEILING, not rounding; thresholds are DERIVED from the 0.002 accuracy rule, never hard-coded.",
+   "four_seed_sum_threshold_items": 237,
+   "must_not_be_described_as_59_items": true,
+   "per_seed_threshold_items": 60,
+   "rule_is_accuracy_not_items": true
+  },
+  "materiality_floor": 0.002,
+  "materiality_is_prospective_not_empirically_derived": true,
+  "min_directional_seeds": 3,
+  "n_lesion_seeds": 4,
+  "n_witnesses": 2,
+  "sign_convention": {
+   "NEGATIVE": "Delta < 0 -> FIXED05 advantage -> outcome B",
+   "POSITIVE": "Delta > 0 -> NATIVE advantage -> outcome A",
+   "ZERO": "neutral; counts toward neither direction",
+   "warning": "This is the NEGATION of the legacy net_change_in_correct column (errors_recovered - errors_gained); the frozen rule never reads that column."
+  },
+  "verdicts": [
+   "ROBUST_POSITIVE",
+   "ROBUST_NEGATIVE",
+   "NOT_ROBUST"
+  ]
+ },
+ "O4_veto": {
+  "all_valid_severities_remain_visible": true,
+  "invalid_severity_cannot_veto": true,
+  "no_retrospective_promotion": true,
+  "non_robust_opposite_does_not_veto": true,
+  "only_valid_and_fully_robust_severities_contribute_a_direction": true,
+  "rule": "For a fixed route family and decoding convention: if one diagnostically valid severity supports a robust direction and another diagnostically valid severity satisfies the FULL ROBUST rule in the opposite direction, A/B/D may NOT be declared; the classification is OUTCOME_F_HETEROGENEOUS."
+ },
+ "authority": "CENTRAL STEERING, authoritative final rule decision",
+ "classification": {
+  "concordant_label_examples": {
+   "A": "CONCORDANT_A",
+   "B": "CONCORDANT_B",
+   "D": "CONCORDANT_D",
+   "F_HETEROGENEOUS": "CONCORDANT_F_HETEROGENEOUS"
+  },
+  "conventions_classified_independently_first": true,
+  "direction_to_letter": {
+   "NEGATIVE": "B",
+   "POSITIVE": "A"
+  },
+  "favourable_convention_never_overwrites_the_other": true,
+  "implementation": "gate_x_lesion/classify.py::classify_route_family",
+  "joint_concordant_prefix": "CONCORDANT_",
+  "joint_mixed_decoding": "MIXED_DECODING",
+  "joint_rule": "same classification X in both conventions -> CONCORDANT_X; they differ materially -> MIXED_DECODING",
+  "order": [
+   "CANONICAL",
+   "FREE_AR",
+   "JOINT"
+  ],
+  "outcome_letters": {
+   "A": "robust NATIVE advantage",
+   "B": "robust FIXED05 advantage",
+   "D": "robust null",
+   "F_HETEROGENEOUS": "valid severities robust in opposite directions",
+   "UNDETERMINED_NO_VALID_SEVERITY": "no diagnostically valid severity; a null was never tested"
+  }
+ },
+ "go_for_scientific_execution": false,
+ "lineage": {
+  "design_amendment_commit": "2a70f76b13a4d7909c56e8b15a0bf2f1942851ce",
+  "design_freeze_commit": "545ea436fa8f33480d74185a48a61874c04a17eb",
+  "implementation_amendment_commit": "4e65b14d6cfedb7eb73a9ff10d4a0869457c7e53",
+  "implementation_commit": "975560e6e2f1737f8915f56cf330223fd023be7c"
+ },
+ "no_canonical_non_zero_science_has_run": true,
+ "output_namespaces": {
+  "namespaces_must_not_overlap": true,
+  "quarantine": "NOT_SCIENTIFIC_RESULT",
+  "scientific_execution": "scientific_execution",
+  "scientific_execution_reserved_until_central_go": true
+ },
+ "prohibitions": [
+  "no training or fine-tuning",
+  "no recovery training",
+  "no semantic attractor",
+  "no Lesioning V2",
+  "no connectivity damage",
+  "no change to gate architecture, alpha, gate_threshold, or fixed05",
+  "no severity outside {0.25, 0.50, 1.00}",
+  "no severity chosen or dropped by NATIVE-vs-FIXED05 behaviour",
+  "no checkpoint substitution",
+  "no contact with V7 / Phase 9 state",
+  "no mutation of 993f2e73ecd0b9de2c3318255afbaa159948b09a",
+  "no significance test of any kind in the frozen robustness rule",
+  "no pooling of the two witnesses",
+  "no denominator shrinking or block exclusion",
+  "no classification after an implementation failure"
+ ],
+ "schema": "gxlr_conditions.final/v1",
+ "status": "FINAL_RULES_FROZEN_AWAITING_EXECUTION_GO",
+ "supersedes": {
+  "gxlr_conditions.amendment1.json": "O3_diagnostic_validity.unresolved_requiring_central, O4_robustness.candidates_not_frozen (candidates were never frozen; CENTRAL has now decided)",
+  "gxlr_conditions.frozen.json": "diagnostic_validity, robustness"
+ },
+ "title": "GATE x LESION / RECOVERY \u2014 FINAL FROZEN RULE SET",
+ "unchanged_experimental_design": {
+  "batch_size": 256,
+  "decoding_conventions": [
+   "CANONICAL",
+   "FREE_AR"
+  ],
+  "eps_domain": "GXLR-eps-v1|",
+  "fusion_conditions": [
+   "NATIVE",
+   "FIXED05"
+  ],
+  "gate": {
+   "alpha": 2.0,
+   "gate_threshold": 0.7
+  },
+  "lambdas": [
+   0.25,
+   0.5,
+   1.0
+  ],
+  "lesion_seeds": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "population_n": 29571,
+  "rng_identity_excludes": [
+   "lambda",
+   "lam",
+   "fusion",
+   "fusion_condition",
+   "convention",
+   "batch_size",
+   "batch_index"
+  ],
+  "rng_identity_fields": [
+   "state_sha256",
+   "route",
+   "lesion_seed",
+   "item_id"
+  ],
+  "routes": [
+   "wm_encoder_state",
+   "ltm_encoder_state"
+  ],
+  "sd": {
+   "batch_size": 256,
+   "ddof": 1,
+   "definition": "torch.Tensor.std() of flattened pooled intact activations (the 'std' column, NOT 'rms')",
+   "n_items": 2048,
+   "sample_seed": 7,
+   "shape": "scalar per (state, route)"
+  },
+  "state_identity_domain": "gxlr-state-v1|",
+  "timing": "per_item_frozen"
+ }
+}

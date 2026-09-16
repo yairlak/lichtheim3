@@ -1,0 +1,11 @@
+FINAL_CONTRACT_HASH OK  f2b3f561fff5caf321e7e00aa9c14408ff46cdd065ec52748b6f2f0cd01706ef
+collected 98 items
+
+tests/test_gate_x_lesion.py ........................                     [ 24%]
+tests/test_gate_x_lesion_closure.py ...............                      [ 39%]
+tests/test_gate_x_lesion_final_rules.py ................................ [ 72%]
+...........................                                              [100%]
+
+======================== 98 passed in 483.90s (0:08:03) ========================
+
+[exited with code 0]

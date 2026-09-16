@@ -55,6 +55,17 @@ LETTERS = (OUTCOME_A, OUTCOME_B, OUTCOME_D, OUTCOME_F)
 
 CONVENTIONS = ("CANONICAL", "FREE_AR")
 
+# --- JOINT classification labels (CENTRAL final decision, §2) ----------------
+#: Both conventions reached the same classification X -> CONCORDANT_X.  The
+#: per-convention letters remain the project's existing, more specific labels, so
+#: this is a prefix over the existing schema rather than a new one.
+JOINT_CONCORDANT_PREFIX = "CONCORDANT_"
+JOINT_MIXED_DECODING = "MIXED_DECODING"
+
+
+def concordant(letter: str) -> str:
+    return JOINT_CONCORDANT_PREFIX + letter
+
 #: Sign convention, inherited from `gating_diagnostics.analysis.mcnemar`:
 #: net_change_in_correct = errors_recovered - errors_gained, with a = NATIVE, b = FIXED05.
 SIGN_NATIVE_ADVANTAGE = -1
@@ -267,9 +278,25 @@ CANDIDATE_ROBUSTNESS_RULES = {
     "R3_unanimous_sign_no_test": candidate_R3_unanimous_sign_no_test,
 }
 
-#: There is deliberately no FROZEN_ROBUSTNESS_RULE. Until CENTRAL selects one, any
-#: attempt to classify must pass a rule explicitly and label it as a candidate.
-FROZEN_ROBUSTNESS_RULE = None
+# ----------------------------------------------- THE FROZEN ROBUSTNESS RULE
+# CENTRAL final decision:
+#   O4_ROBUSTNESS_RULE = REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST
+# Implemented verbatim in gate_x_lesion/robustness.py.  The candidates above are
+# retained only as the historical record of what was offered to CENTRAL; they are
+# NOT used by the frozen pipeline.
+
+def frozen_robustness_rule(deltas_by_witness):
+    """The authoritative O-4 rule. `{witness_id: [Delta per lesion seed]}`.
+
+    Delta = accuracy_native - accuracy_fixed05, so POSITIVE means NATIVE is
+    better (outcome A) and NEGATIVE means FIXED05 is better (outcome B).
+    """
+    from gate_x_lesion.robustness import frozen_robustness
+    return frozen_robustness(deltas_by_witness)
+
+
+FROZEN_ROBUSTNESS_RULE = frozen_robustness_rule
+FROZEN_ROBUSTNESS_RULE_ID = "REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST"
 
 
 def classify_convention(verdicts: Sequence[SeverityVerdict]) -> Dict[str, object]:
@@ -321,21 +348,31 @@ def classify_convention(verdicts: Sequence[SeverityVerdict]) -> Dict[str, object
 
 
 def classify_joint(canonical: str, free_ar: str) -> Dict[str, object]:
-    """Stage 3.  Runs only after both conventions are classified independently."""
+    """Stage 3. Runs ONLY after both conventions are classified independently.
+
+    CENTRAL final decision §2:
+      * both conventions reach the same classification X -> `CONCORDANT_X`;
+      * they differ materially -> `MIXED_DECODING`.
+
+    A favourable classification in one convention must never overwrite a
+    conflicting or heterogeneous classification in the other: `MIXED_DECODING`
+    is emitted whenever the two letters differ, including when one of them is
+    `F_HETEROGENEOUS`, and both stage letters stay visible in the result.
+    """
     for letter in (canonical, free_ar):
         if letter not in LETTERS + (OUTCOME_UNDETERMINED,):
             raise ValueError(f"unknown outcome {letter!r}")
 
-    if canonical == OUTCOME_F or free_ar == OUTCOME_F:
-        return {"joint_outcome": OUTCOME_F, "canonical": canonical, "free_ar": free_ar,
-                "reason": "a stage-level classification is heterogeneous"}
-    if canonical != free_ar:
-        return {"joint_outcome": OUTCOME_F, "canonical": canonical, "free_ar": free_ar,
-                "reason": "CANONICAL and FREE_AR disagree; the disagreement remains "
-                          "visible and forces a heterogeneous joint classification "
-                          "(contract §7.8)"}
-    return {"joint_outcome": canonical, "canonical": canonical, "free_ar": free_ar,
-            "reason": "both decoding conventions agree"}
+    if canonical == free_ar:
+        return {"joint_outcome": concordant(canonical),
+                "canonical": canonical, "free_ar": free_ar,
+                "reason": f"both decoding conventions classified {canonical}"}
+
+    return {"joint_outcome": JOINT_MIXED_DECODING,
+            "canonical": canonical, "free_ar": free_ar,
+            "reason": "CANONICAL and FREE_AR differ materially "
+                      f"({canonical} vs {free_ar}); neither may overwrite the "
+                      "other (CENTRAL final decision §2)"}
 
 
 def classify_route_family(by_convention: Dict[str, Sequence[SeverityVerdict]]

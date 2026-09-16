@@ -71,6 +71,10 @@ FROZEN_SEEDS = (0, 1, 2, 3)
 #: closed on any other value, absent a formal CENTRAL amendment.
 SCIENTIFIC_BATCH_SIZE = 256
 
+#: The frozen rule set's identity. Scientific execution must name it explicitly, so
+#: a run can never be launched against a contract the operator has not pinned.
+FINAL_CONTRACT_HASH_FILE = os.path.join(OUT_BASE, "FINAL_CONTRACT_HASH.txt")
+
 QUARANTINE_BANNER = (
     "NOT_SCIENTIFIC_RESULT — quarantined implementation-validation output. This file "
     "was produced on a deliberately non-canonical truncated subset to exercise the "
@@ -117,6 +121,40 @@ def assert_scientific_batch_size(batch_size: int, smoke: bool) -> None:
             f"different batch size perturbs the packed-GRU reduction order and moves "
             f"the reported gate by 1-2 ulp. Changing it requires a formal CENTRAL "
             f"amendment, not a flag.")
+
+
+def recorded_final_contract_hash() -> Optional[str]:
+    if not os.path.isfile(FINAL_CONTRACT_HASH_FILE):
+        return None
+    return open(FINAL_CONTRACT_HASH_FILE).read().strip().split()[0]
+
+
+def assert_final_contract_hash(supplied: Optional[str], smoke: bool) -> Optional[str]:
+    """Scientific mode must pin the frozen rule set by hash, and it must match.
+
+    Recomputed from the contract inputs at run time, so an edited rule file, an
+    edited manifest or a stale pin all fail closed before any model is loaded.
+    """
+    if smoke:
+        return None
+    from scripts.gate_x_lesion.compute_final_contract_hash import (
+        build_manifest, final_contract_hash)
+    actual = final_contract_hash(build_manifest())
+    recorded = recorded_final_contract_hash()
+    if recorded is not None and recorded != actual:
+        raise RuntimeError(
+            f"HARD STOP: the frozen contract has changed since it was recorded.\n"
+            f"  recorded   {recorded}\n  recomputed {actual}\n"
+            f"Re-freeze the contract via a formal amendment before executing.")
+    if supplied is None:
+        raise RuntimeError(
+            f"HARD STOP: scientific execution must pin the frozen rule set: pass "
+            f"--final-contract-hash {actual}")
+    if supplied != actual:
+        raise RuntimeError(
+            f"HARD STOP: --final-contract-hash {supplied} does not match the "
+            f"contract as it stands ({actual}).")
+    return actual
 
 
 def assert_quarantined(path: str, smoke: bool) -> None:
@@ -345,6 +383,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--no-free-ar", action="store_true")
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--final-contract-hash", default=None,
+                    help="FINAL_CONTRACT_HASH of the frozen rule set. Required for "
+                         "scientific execution; verified against a recomputation.")
     ap.add_argument("--i-have-central-go", action="store_true",
                     help="CENTRAL final go/no-go. Required for non-zero severity on "
                          "the full canonical population.")
@@ -365,6 +406,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     assert_full_population(a.limit, bool(a.smoke))
     assert_execution_authorised(lambdas, bool(a.smoke), bool(a.i_have_central_go))
     assert_scientific_batch_size(a.batch_size, bool(a.smoke))
+    contract_hash = assert_final_contract_hash(a.final_contract_hash, bool(a.smoke))
 
     if a.smoke:
         a.limit = a.limit or SMOKE_DEFAULT_LIMIT
@@ -398,6 +440,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         "contract": "paper_programme/gate_x_lesion_recovery/GATE_X_LESION_EXPERIMENT_CONTRACT.md",
         "conditions": "paper_programme/gate_x_lesion_recovery/gxlr_conditions.frozen.json",
         "conditions_sha256": sha256_file(CONDITIONS),
+        "FINAL_CONTRACT_HASH": contract_hash,
+        "final_rule_freeze": "paper_programme/gate_x_lesion_recovery/FINAL_RULE_FREEZE.md",
+        "final_conditions": "paper_programme/gate_x_lesion_recovery/gxlr_conditions.final.json",
         "smoke": bool(a.smoke),
         "TEST_ONLY": bool(a.smoke),
         "NOT_SCIENTIFIC_RESULT": bool(a.smoke),

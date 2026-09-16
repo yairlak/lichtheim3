@@ -1,5 +1,21 @@
 # CENTRAL FINAL EXECUTION READINESS HANDOFF
 
+> **SUPERSEDED IN PART — O-3 and O-4 are now DECIDED.**
+> CENTRAL has since issued the authoritative final rule decision. Sections B and C
+> below recorded O-3 and O-4 as *requiring* a CENTRAL decision; that decision has
+> been made and is frozen in **`FINAL_RULE_FREEZE.md`** and
+> **`gxlr_conditions.final.json`**, implemented in `gate_x_lesion/validity.py`,
+> `gate_x_lesion/robustness.py` and `gate_x_lesion/classify.py`.
+>
+> * `O3_VALIDITY_CONVENTION_SCOPE = SHARED`,
+>   `O3_IMPLEMENTATION_FAILURE_SEMANTICS = ABORT_RUN`
+> * `O4_ROBUSTNESS_RULE = REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST`
+>   — none of the candidate rules R1/R2/R3 offered below was adopted verbatim.
+> * `FINAL_CONTRACT_HASH = 1c051f1bc8d5265d9768462baca22bcd842f93cbb20a0836c4781d6ae746d701`
+>
+> This document is retained unmodified below as the record of what was open at the
+> time, and of the evidence on which the decision was taken.
+
 **Workstream:** `POST_STAGE / PAPER_PROGRAMME — GATE × LESION / RECOVERY`
 **Pass:** final targeted closure pass (no new science; closes pre-execution ambiguities only)
 **Branch / worktree:** `paper-programme/gate-x-lesion-recovery` · `wt-gate-x-lesion/`
@@ -151,12 +167,15 @@ No non-zero full-population lesion condition was rerun.
 ## G. FINAL STATUS
 
 ```
-EXECUTION_READINESS=BLOCKED_PENDING_CENTRAL_DECISION
+EXECUTION_READINESS=BLOCKED_PENDING_CENTRAL_DECISION   [status at the time of writing]
 ```
 
-All engineering and provenance ambiguities are closed. Execution remains blocked on exactly **two scientific decisions**, both of which would change reported outcomes if chosen after seeing data, and neither of which is determined by any frozen authority:
+**Superseded.** Both decisions have since been made by CENTRAL and frozen; see
+`FINAL_RULE_FREEZE.md`. The current status is:
 
-1. **O-3** — `validity_convention_scope` and `implementation_failure_block_semantics`;
-2. **O-4** — the operational definition of "robust".
-
-Once CENTRAL answers those, the remaining step is a final freeze commit and the go/no-go.
+```
+FINAL_DESIGN_DECISIONS_COMPLETE                = YES
+FINAL_RULE_IMPLEMENTATION_COMPLETE             = YES
+GO_FOR_SCIENTIFIC_EXECUTION                    = NO
+AWAITING_CENTRAL_FINAL_SCIENTIFIC_EXECUTION_GO = YES
+```

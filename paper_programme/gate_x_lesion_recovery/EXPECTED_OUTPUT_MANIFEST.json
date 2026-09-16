@@ -1,0 +1,257 @@
+{
+ "schema": "gxlr_expected_output_manifest/v1",
+ "title": "Artifacts a successful future GATE x LESION scientific run MUST emit",
+ "status": "SPECIFICATION_ONLY — no scientific run has occurred",
+ "fail_closed": true,
+ "fail_closed_semantics": "A run is INCOMPLETE and must not be reported if any required section or shard below is absent, or if any required field is null. Validation is performed by scripts/gate_x_lesion/validate_output_manifest.py, which exits non-zero on the first missing requirement.",
+ "output_root": "paper_programme/gate_x_lesion_recovery/scientific_execution",
+ "must_not_write_to": "paper_programme/gate_x_lesion_recovery/NOT_SCIENTIFIC_RESULT",
+
+ "required_shards": {
+  "summary": "scientific_execution/summary_ALL.json",
+  "item_level_pattern": "scientific_execution/item_level/item_level_{state_id}_{key}.tsv",
+  "item_level_keys": [
+   "intact",
+   "{route}_lam{lambda}_seed{seed}"
+  ],
+  "expected_item_level_count": 50,
+  "expected_item_level_count_derivation": "2 witnesses x (1 intact control + 2 routes x 3 lambdas x 4 lesion seeds) = 2 x 25 = 50",
+  "expected_rows_per_shard": 29571
+ },
+
+ "PROVENANCE": {
+  "required": true,
+  "fields": [
+   "FINAL_CONTRACT_HASH",
+   "final_contract_manifest_sha256",
+   "code_commit",
+   "reconstructed_state_sha256",
+   "base_artifact_path",
+   "base_artifact_sha256",
+   "applies_head_path",
+   "applies_head_sha256",
+   "head_localizer",
+   "state_kind",
+   "witness_id",
+   "gxlr_label",
+   "batch_size",
+   "routes",
+   "lambdas",
+   "lesion_seeds",
+   "decoding_conventions",
+   "fusion_conditions",
+   "population_n",
+   "item_order_sha256",
+   "sd_definition",
+   "sd_ddof",
+   "sd_n_items",
+   "sd_sample_seed",
+   "sd_batch_size",
+   "sd_value_per_route",
+   "rng_identity_fields",
+   "rng_identity_version",
+   "eps_domain",
+   "state_identity_domain",
+   "torch_version",
+   "ltm_encoder_mode",
+   "gating_config"
+  ],
+  "pinned_values": {
+   "batch_size": 256,
+   "population_n": 29571,
+   "routes": ["wm_encoder_state", "ltm_encoder_state"],
+   "lambdas": [0.25, 0.5, 1.0],
+   "lesion_seeds": [0, 1, 2, 3],
+   "decoding_conventions": ["CANONICAL", "FREE_AR"],
+   "fusion_conditions": ["NATIVE", "FIXED05"],
+   "rng_identity_fields": ["state_sha256", "route", "lesion_seed", "item_id"],
+   "sd_ddof": 1
+  }
+ },
+
+ "VALIDITY": {
+  "required": true,
+  "granularity": "one record per route x severity (SHARED across decoding conventions)",
+  "fields": [
+   "route",
+   "lambda",
+   "canonical_blocks",
+   "canonical_n_blocks_with_drop",
+   "canonical_passed",
+   "free_ar_blocks",
+   "free_ar_n_blocks_with_drop",
+   "free_ar_passed",
+   "shared_validity_label",
+   "validity_reason",
+   "structural_checks",
+   "implementation_failures"
+  ],
+  "block_record_fields": ["state_id", "lesion_seed", "n_items", "n_correct_intact", "n_correct_lesioned", "targeted_drop", "passed"],
+  "structural_checks": [
+   "shared_params_unmutated",
+   "checkpoint_identity_restored",
+   "untargeted_route_max_abs_delta",
+   "dorsal_max_abs_delta_c_ltm",
+   "dorsal_max_abs_delta_gate",
+   "matched_lesion_tensors_identical"
+  ],
+  "validity_reason_enum": [
+   "VALID",
+   "TARGET_ROUTE_DROP_FAILED_CANONICAL",
+   "TARGET_ROUTE_DROP_FAILED_FREE_AR",
+   "TARGET_ROUTE_DROP_FAILED_BOTH"
+  ],
+  "expected_records": 6,
+  "expected_records_derivation": "2 routes x 3 lambdas"
+ },
+
+ "RAW_PAIRED_RESULTS": {
+  "required": true,
+  "granularity": "witness x lesion_seed x route x lambda x decoding_convention",
+  "expected_records": 96,
+  "expected_records_derivation": "2 witnesses x 4 seeds x 2 routes x 3 lambdas x 2 conventions",
+  "fields": [
+   "state_id",
+   "lesion_seed",
+   "route",
+   "lambda",
+   "convention",
+   "n_items",
+   "n_correct_native",
+   "n_correct_fixed05",
+   "accuracy_native",
+   "accuracy_fixed05",
+   "delta",
+   "n_discordant_prediction",
+   "n_discordant_exact",
+   "errors_prevented_by_fixed05",
+   "errors_introduced_by_fixed05"
+  ],
+  "delta_definition": "delta = accuracy_native - accuracy_fixed05 (POSITIVE = NATIVE advantage)"
+ },
+
+ "ROUTE_DIAGNOSTICS": {
+  "required": true,
+  "granularity": "witness x lesion_seed x route x lambda x decoding_convention",
+  "fields": [
+   "acc_wm_isolated",
+   "acc_ltm_isolated",
+   "acc_wm_isolated_intact",
+   "acc_ltm_isolated_intact",
+   "c_LTM_mean",
+   "gate_mean",
+   "max_abs_delta_c_LTM",
+   "max_abs_delta_gate",
+   "untargeted_route_max_abs_delta",
+   "dorsal_structural_null_holds",
+   "ventral_reachability_holds"
+  ],
+  "required_null_checks": {
+   "dorsal_perturbation": "max_abs_delta_c_LTM == 0.0 and max_abs_delta_gate == 0.0 (bitwise); violation is an IMPLEMENTATION_FAILURE",
+   "untargeted_route": "untargeted_route_max_abs_delta == 0.0 (bitwise); violation is an IMPLEMENTATION_FAILURE"
+  }
+ },
+
+ "ROBUSTNESS": {
+  "required": true,
+  "granularity": "route x lambda x decoding_convention",
+  "per_witness_fields": [
+   "state_id",
+   "positive_seed_count",
+   "negative_seed_count",
+   "neutral_seed_count",
+   "mean_delta",
+   "material_reversal",
+   "direction",
+   "reason"
+  ],
+  "global_fields": [
+   "verdict",
+   "direction",
+   "reason"
+  ],
+  "verdict_enum": ["ROBUST_POSITIVE", "ROBUST_NEGATIVE", "NOT_ROBUST"],
+  "direction_enum": ["POSITIVE", "NEGATIVE", "NONE"],
+  "rule_id": "REPLICATED_SIGN_PLUS_MATERIALITY_NO_SIGNIFICANCE_TEST",
+  "must_not_contain": ["p_value", "alpha", "bootstrap_ci", "holm", "pooled_witness_mean", "pooled_seed_count"],
+  "materiality_floor": 0.002
+ },
+
+ "CLASSIFICATION": {
+  "required": true,
+  "granularity": "route family",
+  "fields": [
+   "route_family",
+   "CANONICAL_OUTCOME",
+   "FREE_AR_OUTCOME",
+   "JOINT_OUTCOME",
+   "canonical_valid_severities",
+   "canonical_directions",
+   "canonical_veto_applied",
+   "free_ar_valid_severities",
+   "free_ar_directions",
+   "free_ar_veto_applied",
+   "invalid_severities_with_reasons"
+  ],
+  "outcome_enum": ["A", "B", "D", "F_HETEROGENEOUS", "UNDETERMINED_NO_VALID_SEVERITY"],
+  "joint_enum": ["CONCORDANT_A", "CONCORDANT_B", "CONCORDANT_D", "CONCORDANT_F_HETEROGENEOUS", "MIXED_DECODING"],
+  "ordering_requirement": "CANONICAL_OUTCOME and FREE_AR_OUTCOME must be computed independently BEFORE JOINT_OUTCOME; a favourable convention never overwrites the other"
+ },
+
+ "ITEM_LEVEL_AUDIT": {
+  "required": true,
+  "fields": [
+   "item_index",
+   "word",
+   "target_phonemes",
+   "length",
+   "zipf_approx",
+   "gate",
+   "c_LTM",
+   "canonical_full_predicted",
+   "canonical_fixed05_predicted",
+   "canonical_wm_predicted",
+   "canonical_ltm_predicted",
+   "freear_full_predicted",
+   "freear_fixed05_predicted",
+   "freear_wm_predicted",
+   "freear_ltm_predicted",
+   "canonical_discordant_prediction",
+   "freear_discordant_prediction",
+   "canonical_trace_native",
+   "canonical_trace_fixed05",
+   "freear_trace_native",
+   "freear_trace_fixed05"
+  ],
+  "discordant_item_ids_required": true,
+  "trace_max_tokens": 12
+ },
+
+ "RUN_COMPLETION": {
+  "required": true,
+  "fields": [
+   "state_dict_sha256_before",
+   "state_dict_sha256_after",
+   "state_dict_unmutated",
+   "base_checkpoint_unmutated",
+   "applied_head_unmutated",
+   "implementation_failure_status",
+   "implementation_failures",
+   "all_required_shards_present",
+   "shard_sha256",
+   "expected_vs_actual_record_counts",
+   "final_contract_hash_reverified",
+   "completeness_validated"
+  ],
+  "required_values": {
+   "state_dict_unmutated": true,
+   "base_checkpoint_unmutated": true,
+   "applied_head_unmutated": true,
+   "implementation_failure_status": "NONE",
+   "all_required_shards_present": true,
+   "final_contract_hash_reverified": true,
+   "completeness_validated": true
+  },
+  "abort_semantics": "If implementation_failure_status != NONE the run is aborted and NO CLASSIFICATION section may be emitted."
+ }
+}
