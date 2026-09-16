@@ -1,0 +1,134 @@
+{
+ "all_pass": true,
+ "checks": {
+  "all_gates_pass": {
+   "detail": null,
+   "pass": true
+  },
+  "ar_columns_equal_frozen_schema": {
+   "detail": null,
+   "pass": true
+  },
+  "ar_prefix_correction_label": {
+   "detail": null,
+   "pass": true
+  },
+  "ar_rows_equal_native_freear_failures": {
+   "detail": 13701,
+   "pass": true
+  },
+  "contract_hash_unchanged": {
+   "detail": null,
+   "pass": true
+  },
+  "expected_files_exist": {
+   "detail": [],
+   "pass": true
+  },
+  "fig1_source_matches_summary": {
+   "detail": 0,
+   "pass": true
+  },
+  "fig2_source_matches_summary_and_partitions": {
+   "detail": 0,
+   "pass": true
+  },
+  "fig3_source_matches_summary": {
+   "detail": 0,
+   "pass": true
+  },
+  "fig4_source_matches_summary": {
+   "detail": 0,
+   "pass": true
+  },
+  "fig5_source_matches_summary": {
+   "detail": 0,
+   "pass": true
+  },
+  "freeze_SHA256SUMS_verifies": {
+   "detail": [],
+   "pass": true
+  },
+  "frozen_tracked_tree_byte_identical_to_freeze": {
+   "detail": null,
+   "pass": true
+  },
+  "head_descends_from_base": {
+   "detail": null,
+   "pass": true
+  },
+  "input_hashes_unchanged": {
+   "detail": {
+    "W3_REP": {
+     "archival": true,
+     "head": true,
+     "source": true
+    },
+    "W3_SRC": {
+     "archival": true,
+     "head": true,
+     "source": true
+    },
+    "W4_REP": {
+     "archival": true,
+     "head": true,
+     "source": true
+    },
+    "W4_SRC": {
+     "archival": true,
+     "head": true,
+     "source": true
+    }
+   },
+   "pass": true
+  },
+  "item_level_columns_equal_frozen_schema": {
+   "detail": null,
+   "pass": true
+  },
+  "item_level_each_state_all_items": {
+   "detail": null,
+   "pass": true
+  },
+  "item_level_no_empty_cells": {
+   "detail": null,
+   "pass": true
+  },
+  "item_level_rows_4x29571": {
+   "detail": 118284,
+   "pass": true
+  },
+  "item_level_state_item_unique": {
+   "detail": null,
+   "pass": true
+  },
+  "prefix_correction_file_matches_ar": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_contract_sha": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_git_head_is_freeze": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_internal_consistency": {
+   "detail": 0,
+   "pass": true
+  },
+  "summary_schema_version": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_strata_complete": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_top_level_keys": {
+   "detail": null,
+   "pass": true
+  }
+ }
+}

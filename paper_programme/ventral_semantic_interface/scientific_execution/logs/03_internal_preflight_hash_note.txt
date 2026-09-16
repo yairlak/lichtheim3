@@ -1,0 +1,6 @@
+Standalone preflight report sha256 : 379f5ed12507ae41af9bc198dc7197aacce193071d96f987c91d60bf1f17cbd4
+Preflight run inside --execute     : a4f683fdea60b92d7dcaee936122968ebd70ff2a4581601c5899b8b2d74fc239
+Cause (verified 2026-09-17 by a preflight-only re-run that imports ventral_interface.evaluate/schema first,
+exactly as run_execute does): runtime_loaded_modules additionally contains ventral_interface/evaluate.py
+(a frozen-closure file). Every other report key and the full closure SHA256 map are identical; the re-run
+reproduced a4f683fd... exactly. Not an integrity deviation. No scientific decode was performed by this check.

@@ -1,0 +1,3 @@
+witness	C_errors_SRC	C_errors_REP	C_WRONG_TO_CORRECT	C_CORRECT_TO_WRONG	native_failure_set_jaccard_freear	S3_rescue_set_jaccard_freear	cosine_target_shat_median_SRC	cosine_target_shat_median_REP	shat_norm_median_SRC	shat_norm_median_REP	native_freear_failures_cosine_target_median_SRC	native_freear_failures_cosine_target_median_REP
+W3	34	0	34	0	0.9625422168	0.7908045977	0.7435978055	0.7434561253	6.895910072	6.891786678	0.7296600938	0.7294595838
+W4	42	0	42	0	0.9444001064	0.7170474517	0.7349604368	0.734695673	7.459574455	7.452779735	0.7226644754	0.7223671377

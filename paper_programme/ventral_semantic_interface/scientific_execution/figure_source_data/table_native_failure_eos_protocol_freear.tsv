@@ -1,0 +1,5 @@
+state_id	n	eos_emitted	terminated_by_cap	eos_before_target_length	eos_after_target_length
+W3_SRC	3199	3198	1	1345	980
+W3_REP	3193	3192	1	1344	982
+W4_SRC	3647	3644	3	1400	1182
+W4_REP	3662	3659	3	1409	1186

@@ -1,0 +1,12 @@
+CMD=python3 scripts/ventral_interface/run_ventral_interface_factorization.py --execute --contract-sha256 a5ca7b83717b43ab77cedae0cd3e4bef17901ffff051f5ca90b9340b45bda5d3
+CWD=/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-interface
+HEAD=4ad20048e20da84b9f22a92965098b84c2bf7dd6
+START_UTC=2026-09-16T22:06:57Z
+/opt/homebrew/Caskroom/miniforge/base/envs/lichtheim3/bin/python3
+3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]
+torch 2.12.1
+macOS-14.2.1-arm64-arm-64bit
+threads 6
+Apple M2 Pro
+10
+17179869184

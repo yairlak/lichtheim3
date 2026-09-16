@@ -1,0 +1,9 @@
+state_id	convention	native_fail_S2_correct_S1_wrong	of_which_lexical_identity_wrong	of_which_retrieved_phonology_wrong	of_which_in_C_population	native_correct_S1_wrong	S1_regressions_lexical_identity_wrong	S1_regressions_retrieved_phonology_wrong	S1_regressions_in_C_population	S1_wrong_with_lexical_identity_correct
+W3_SRC	freear	4	4	4	4	38	38	38	30	0
+W3_SRC	canonical	4	4	4	4	38	38	38	30	0
+W3_REP	freear	0	0	0	0	0	0	0	0	0
+W3_REP	canonical	0	0	0	0	0	0	0	0	0
+W4_SRC	freear	5	5	5	5	46	46	46	37	0
+W4_SRC	canonical	5	5	5	5	46	46	46	37	0
+W4_REP	freear	0	0	0	0	0	0	0	0	0
+W4_REP	canonical	0	0	0	0	0	0	0	0	0
