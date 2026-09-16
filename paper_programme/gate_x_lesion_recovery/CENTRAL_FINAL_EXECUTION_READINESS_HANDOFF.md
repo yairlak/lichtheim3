@@ -128,8 +128,8 @@ Additional layered refusals verified from the CLI this pass: `--limit` without `
 |---|---|
 | `DESIGN_FREEZE_COMMIT` (original, untouched) | `545ea436fa8f33480d74185a48a61874c04a17eb` |
 | `IMPLEMENTATION_COMMIT` (original, untouched) | `975560e6e2f1737f8915f56cf330223fd023be7c` |
-| `DESIGN_AMENDMENT_COMMIT` | see §E of the final report |
-| `IMPLEMENTATION_AMENDMENT_COMMIT` | see §E of the final report |
+| `DESIGN_AMENDMENT_COMMIT` | `2a70f76b13a4d7909c56e8b15a0bf2f1942851ce` |
+| `IMPLEMENTATION_AMENDMENT_COMMIT` | `4e65b14d6cfedb7eb73a9ff10d4a0869457c7e53` |
 
 Neither original commit was rewritten, squashed or amended; both remain ancestors of HEAD.
 
@@ -137,10 +137,12 @@ Neither original commit was rewritten, squashed or amended; both remain ancestor
 
 ## F. TESTS
 
-Full results are reported in the final response. Summary:
+`python3 -m pytest tests/test_gate_x_lesion.py tests/test_gate_x_lesion_closure.py`
+→ **51 passed in 474.98s**. Summary:
 
 * **T1–T12** (original, 24 tests) — all still pass, including the **severity-0 authoritative null** on the full 29 571-item population, both states, both decoding conventions, **0 NATIVE-vs-FIXED05 discordant items**, bitwise-identical to the frozen GATING record.
 * **Closure tests** (27 tests) — O-1 (6), FREE-AR forced divergence (1), F-2 (1), F-3 (2), F-8 (2), O-3 boundary (8), O-4 candidates and veto (7).
+* **T12f reframed** — it previously asserted the robustness default that has now been removed; it asserts the fail-closed behaviour instead. This is the only original test whose body changed.
 
 No non-zero full-population lesion condition was rerun.
 
