@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /opt/homebrew/Caskroom/miniforge/base/envs/lichtheim3/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion
+configfile: pytest.ini
+collecting ... collected 24 items
+
+tests/test_gate_x_lesion.py::test_T1_exact_checkpoint_hash_resolution PASSED [  4%]
+tests/test_gate_x_lesion.py::test_T1b_head_carries_exactly_the_final_layer PASSED [  8%]
+tests/test_gate_x_lesion.py::test_T2_severity_zero_authoritative_null PASSED [ 12%]
+tests/test_gate_x_lesion.py::test_T3_base_noise_reproducible_in_process PASSED [ 16%]
+tests/test_gate_x_lesion.py::test_T3b_base_noise_reproducible_across_processes PASSED [ 20%]
+tests/test_gate_x_lesion.py::test_T3c_builtin_hash_is_not_used_for_rng_identity PASSED [ 25%]
+tests/test_gate_x_lesion.py::test_T4_lambda_excluded_from_rng_identity PASSED [ 29%]
+tests/test_gate_x_lesion.py::test_T5_nested_scaling_is_bitwise_exact PASSED [ 33%]
+tests/test_gate_x_lesion.py::test_T5b_zero_amplitude_is_exactly_zero PASSED [ 37%]
+tests/test_gate_x_lesion.py::test_T6_native_and_fixed05_consume_the_same_tensor PASSED [ 41%]
+tests/test_gate_x_lesion.py::test_T7_per_item_frozen_across_decoder_steps PASSED [ 45%]
+tests/test_gate_x_lesion.py::test_T8_dorsal_structural_null PASSED       [ 50%]
+tests/test_gate_x_lesion.py::test_T9_ventral_reachability_and_route_isolation PASSED [ 54%]
+tests/test_gate_x_lesion.py::test_T9b_ventral_site_refuses_wrong_encoder_mode PASSED [ 58%]
+tests/test_gate_x_lesion.py::test_T10_checkpoint_restoration PASSED      [ 62%]
+tests/test_gate_x_lesion.py::test_T11_quarantine_enforced PASSED         [ 66%]
+tests/test_gate_x_lesion.py::test_T11b_quarantined_artifacts_declare_themselves PASSED [ 70%]
+tests/test_gate_x_lesion.py::test_T12a_all_valid_severities_retained PASSED [ 75%]
+tests/test_gate_x_lesion.py::test_T12b_robust_opposite_signs_force_F_and_veto_ABD PASSED [ 79%]
+tests/test_gate_x_lesion.py::test_T12c_letters PASSED                    [ 83%]
+tests/test_gate_x_lesion.py::test_T12d_conventions_classify_independently PASSED [ 87%]
+tests/test_gate_x_lesion.py::test_T12e_convention_disagreement_yields_heterogeneous_joint PASSED [ 91%]
+tests/test_gate_x_lesion.py::test_T12f_severity_rollup_validity_and_robustness PASSED [ 95%]
+tests/test_gate_x_lesion.py::test_T12g_no_retrospective_promotion_is_structural PASSED [100%]
+
+======================== 24 passed in 419.60s (0:06:59) ========================
+
+[exited with code 0]
