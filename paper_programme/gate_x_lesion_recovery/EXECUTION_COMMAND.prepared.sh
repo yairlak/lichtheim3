@@ -15,6 +15,11 @@
 #  non-zero-severity population evaluated anywhere is a 24-item
 #  quarantined subset under NOT_SCIENTIFIC_RESULT/.
 #
+#  INTEGRATION REPAIR APPLIED: the runner now produces the full frozen
+#  eight-section output package by CALLING the frozen O-3 / O-4 / classifier
+#  modules, and the mandatory post-run validator can accept it.  The previous
+#  authorization (hash f2b3f561…) is VOID for this repaired runner.
+#
 #  The runner refuses on its own, before any model is loaded, if any of
 #  these is not satisfied — verified from the CLI:
 #    * --final-contract-hash absent or not matching a fresh recomputation
@@ -27,7 +32,7 @@
 #  FROZEN RULE SET
 #
 #    FINAL_CONTRACT_HASH
-#      f2b3f561fff5caf321e7e00aa9c14408ff46cdd065ec52748b6f2f0cd01706ef
+#      d5e9eb41adb1574b83ca9a308e976e8f324af93ba0f226ab38a53bda17eea4fd
 #    derivation: paper_programme/gate_x_lesion_recovery/FINAL_CONTRACT_MANIFEST.txt
 #                scripts/gate_x_lesion/compute_final_contract_hash.py
 #
@@ -115,10 +120,11 @@ python3 scripts/gate_x_lesion/run_gate_x_lesion.py \
     --lesion-seeds 0,1,2,3 \
     --batch-size 256 \
     --device cpu \
-    --final-contract-hash f2b3f561fff5caf321e7e00aa9c14408ff46cdd065ec52748b6f2f0cd01706ef \
+    --final-contract-hash d5e9eb41adb1574b83ca9a308e976e8f324af93ba0f226ab38a53bda17eea4fd \
     --i-have-central-go
 
-# Post-run completeness gate (fails closed on any missing shard or field):
+# Post-run completeness gate — MANDATORY before any interpretation.
+# Fails closed on any missing shard, section, field, count or pinned value:
 #   python3 scripts/gate_x_lesion/validate_output_manifest.py \
 #       paper_programme/gate_x_lesion_recovery/scientific_execution/summary_ALL.json
 

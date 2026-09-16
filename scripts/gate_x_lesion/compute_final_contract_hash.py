@@ -72,6 +72,8 @@ CONTRACT_INPUTS = [
     "gate_x_lesion/hooks.py",
     "gate_x_lesion/sd.py",
     "gate_x_lesion/evaluate.py",
+    # --- output producer (integration repair) ---
+    "gate_x_lesion/assemble.py",
     # --- expected-output contract ---
     f"{BASE}/EXPECTED_OUTPUT_MANIFEST.json",
     # --- execution script / version identity ---

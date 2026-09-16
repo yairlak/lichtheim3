@@ -1,0 +1,14 @@
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-gate-x-lesion
+configfile: pytest.ini
+collected 123 items
+
+tests/test_gate_x_lesion.py ........................                     [ 19%]
+tests/test_gate_x_lesion_closure.py ...............                      [ 31%]
+tests/test_gate_x_lesion_final_rules.py ................................ [ 57%]
+...........................                                              [ 79%]
+tests/test_gate_x_lesion_integration.py .........................        [100%]
+
+======================= 123 passed in 470.57s (0:07:50) ========================
+
+[exited with code 0]

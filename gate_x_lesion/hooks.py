@@ -58,10 +58,15 @@ class RouteNoiseHook:
         self._eta: Optional[torch.Tensor] = None
         self.n_calls = 0
         self.n_eta_builds = 0
+        #: Number of bind() calls. Exactly one eta build per bind is the invariant
+        #: that makes "NATIVE and FIXED05 receive identical matched lesion tensors"
+        #: a CHECKED structural fact rather than an assumed one.
+        self.n_binds = 0
 
     # -- batch binding -------------------------------------------------------
     def bind(self, item_ids: Sequence[str]) -> None:
         """Declare which items, in order, the next forward passes describe."""
+        self.n_binds += 1
         ids = [str(i) for i in item_ids]
         if ids != self._item_ids:
             self._item_ids = ids

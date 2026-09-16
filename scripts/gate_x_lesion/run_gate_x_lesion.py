@@ -41,10 +41,15 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from gate_x_lesion.assemble import build_summary                      # noqa: E402
 from gate_x_lesion.evaluate import collect_item_level_lesioned        # noqa: E402
 from gate_x_lesion.hooks import lesioned_route, state_dict_sha256     # noqa: E402
 from gate_x_lesion.identity import verify_manifest_state_identity    # noqa: E402
-from gate_x_lesion.noise import EpsilonCache, FROZEN_LAMBDAS          # noqa: E402
+from gate_x_lesion.noise import (EpsilonCache, EPS_DOMAIN,            # noqa: E402
+                                 FROZEN_LAMBDAS, IDENTITY_FIELDS)
+from gate_x_lesion.identity import STATE_IDENTITY_DOMAIN             # noqa: E402
+from gate_x_lesion.sd import (SD_BATCH_SIZE, SD_DDOF, SD_N_ITEMS,     # noqa: E402
+                              SD_SAMPLE_SEED)
 from gate_x_lesion.sd import measure_intact_sd                        # noqa: E402
 from gate_x_lesion.targets import FROZEN_ROUTES, assert_site_compatible  # noqa: E402
 from scripts.gating_diagnostics.run_gate_route_audit import (          # noqa: E402
@@ -59,9 +64,19 @@ QUARANTINE_DIR = "NOT_SCIENTIFIC_RESULT"
 SCIENTIFIC_DIR = "scientific_execution"
 SMOKE_SUFFIX = "_SMOKE_TEST_ONLY"
 SMOKE_DEFAULT_LIMIT = 24
-SMOKE_DEFAULT_SEEDS = (0,)
+#: Smoke covers the FULL frozen grid (2 witnesses x 4 lesion seeds x 2 routes x
+#: 3 lambdas x 2 conventions) on a deliberately tiny 24-item non-canonical
+#: population.  That way the quarantined run exercises exactly the scientific code
+#: path -- including the frozen O-3 8-block grid and the frozen O-4 two-witness /
+#: four-seed replication unit -- and NO rule has to be relaxed for smoke.
+SMOKE_DEFAULT_SEEDS = (0, 1, 2, 3)
 
 FROZEN_SEEDS = (0, 1, 2, 3)
+
+#: Frozen scientific expectations, mirrored from EXPECTED_OUTPUT_MANIFEST.json.
+SCIENTIFIC_EXPECTED_SHARDS = 50        # 2 witnesses x (1 intact + 2x3x4 lesion)
+SCIENTIFIC_EXPECTED_VALIDITY = 6       # 2 routes x 3 lambdas
+SCIENTIFIC_EXPECTED_PAIRED = 96        # 2 x 4 x 2 x 3 x 2
 
 #: F-8 (closure pass §6).  Reproducibility freeze, not a scientific hypothesis.
 #: Both encoders pack their input, so the packed-GRU reduction order depends on batch
@@ -84,6 +99,23 @@ QUARANTINE_BANNER = (
 
 
 # ------------------------------------------------------------------ safety gates
+
+def _git(*args) -> str:
+    import subprocess
+    try:
+        return subprocess.run(["git", "-C", ROOT, *args], capture_output=True,
+                              text=True, check=True).stdout.strip()
+    except Exception:
+        return "UNKNOWN"
+
+
+def _git_head() -> str:
+    return _git("rev-parse", "HEAD")
+
+
+def _git_branch() -> str:
+    return _git("rev-parse", "--abbrev-ref", "HEAD")
+
 
 def resolve_outputs(smoke: bool) -> str:
     return os.path.join(OUT_BASE, QUARANTINE_DIR if smoke else SCIENTIFIC_DIR)
@@ -228,6 +260,7 @@ def run_state(row: dict, *, device: str, limit: Optional[int], batch_size: int,
     print(f"  intact control: {len(intact_rows)} items in {intact_wall:.1f}s")
 
     cells: List[dict] = []
+    audit: List[dict] = []
     all_rows: Dict[str, List[dict]] = {"intact": intact_rows}
 
     for route in routes:
@@ -249,19 +282,29 @@ def run_state(row: dict, *, device: str, limit: Optional[int], batch_size: int,
                         intact_by_item=intact_by_item)
                 wall = time.perf_counter() - t0
                 h_after = state_dict_sha256(model)
-                if h_after != h_before:
-                    raise RuntimeError(
-                        f"HARD STOP: state_dict mutated by lesion context "
-                        f"{route} lam={lam} seed={seed}")
+                # Structural invariants recorded (not raised) so the frozen O-3
+                # module is the single place that decides ABORT semantics.
+                shared_ok = (h_after == h_before)
+                ckpt_ok = (sha256_file(ckpt) == base_before)
+                # Exactly one eta build per bound batch: a rebuild mid-batch would
+                # mean NATIVE and FIXED05 could see different matched tensors.
+                n_batches = -(-len(indices) // batch_size)
+                tensors_ok = (hook.n_eta_builds == min(n_batches, hook.n_binds)
+                              and hook.n_eta_builds == hook.n_binds)
 
                 key = f"{route}_lam{lam}_seed{seed}"
                 all_rows[key] = rows
+                audit.extend(collect_item_audit(rows, state_id=sid, route=route,
+                                                lam=lam, seed=seed))
                 cells.append(summarize_cell(rows, state_id=sid, route=route, lam=lam,
                                             seed=seed, sd=sd, wall=wall,
                                             n_hook_calls=hook.n_calls,
                                             n_eta_builds=hook.n_eta_builds,
                                             n_eps_computed=cache.n_computed,
-                                            n_eps_served=cache.n_served))
+                                            n_eps_served=cache.n_served,
+                                            shared_params_unmutated=shared_ok,
+                                            checkpoint_identity_restored=ckpt_ok,
+                                            matched_lesion_tensors_identical=tensors_ok))
                 c = cells[-1]
                 print(f"  {route:18s} lam={lam:<5} seed={seed}  "
                       f"disc_canon={c['canonical']['n_discordant_prediction']:<6} "
@@ -301,11 +344,13 @@ def run_state(row: dict, *, device: str, limit: Optional[int], batch_size: int,
                                          lam=0.0, seed=None, sd=0.0,
                                          wall=intact_wall),
         "cells": cells,
+        "applied_head_unmutated": sha256_file(
+            os.path.join(REPO, row["applies_head_path"])) == row["applies_head_sha256"],
         "torch": torch.__version__,
         "run_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
-    write_shards(all_rows, out_dir, sid, smoke)
-    return summary
+    shard_paths = write_shards(all_rows, out_dir, sid, smoke)
+    return summary, audit, shard_paths
 
 
 def summarize_cell(rows: List[dict], *, state_id: str, route: str, lam: float,
@@ -323,11 +368,24 @@ def summarize_cell(rows: List[dict], *, state_id: str, route: str, lam: float,
         prevented = sum(1 for r in rows if r[f"{conv}_error_prevented_by_fixed05"])
         preds = [r[f"{conv}_full_predicted"] for r in rows]
         modal = max((preds.count(p) for p in set(preds)), default=0)
+        n_wm = sum(r[f"{conv}_wm_exact"] for r in rows)
+        n_ltm = sum(r[f"{conv}_ltm_exact"] for r in rows)
         out[conv] = {
+            # Integer counts are the PREFERRED representation: the frozen rules
+            # consume them through exact rational arithmetic, so no accuracy
+            # boundary is decided by a float subtraction.
+            "n_correct_native": sum(nat),
+            "n_correct_fixed05": sum(fix),
+            "n_correct_wm_isolated": n_wm,
+            "n_correct_ltm_isolated": n_ltm,
+            "wm_changed_vs_intact": sum(
+                r.get(f"{conv}_wm_changed_vs_intact", 0) for r in rows),
+            "ltm_changed_vs_intact": sum(
+                r.get(f"{conv}_ltm_changed_vs_intact", 0) for r in rows),
             "acc_native": sum(nat) / len(nat),
             "acc_fixed05": sum(fix) / len(fix),
-            "acc_wm_isolated": sum(r[f"{conv}_wm_exact"] for r in rows) / len(rows),
-            "acc_ltm_isolated": sum(r[f"{conv}_ltm_exact"] for r in rows) / len(rows),
+            "acc_wm_isolated": n_wm / len(rows),
+            "acc_ltm_isolated": n_ltm / len(rows),
             "n_discordant_prediction": sum(r[f"{conv}_discordant_prediction"] for r in rows),
             "n_discordant_exact": sum(r[f"{conv}_discordant_exact"] for r in rows),
             "errors_introduced_by_fixed05": gained,
@@ -348,11 +406,37 @@ def summarize_cell(rows: List[dict], *, state_id: str, route: str, lam: float,
     return out
 
 
+def collect_item_audit(rows: List[dict], *, state_id: str, route: str, lam: float,
+                       seed) -> List[dict]:
+    """Preregistered discordant-item audit ONLY. No ranking, no selection."""
+    out: List[dict] = []
+    for r in rows:
+        for conv in ("canonical", "freear"):
+            if not r.get(f"{conv}_discordant_prediction"):
+                continue
+            out.append({
+                "state_id": state_id, "route": route, "lambda": float(lam),
+                "lesion_seed": seed, "convention": conv,
+                "item_index": r["item_index"], "word": r["word"],
+                "target_phonemes": r["target_phonemes"], "length": r["length"],
+                "zipf_approx": r["zipf_approx"],
+                "gate": r["gate"], "c_LTM": r["c_LTM"],
+                "native_predicted": r[f"{conv}_full_predicted"],
+                "fixed05_predicted": r[f"{conv}_fixed05_predicted"],
+                "native_exact": r[f"{conv}_full_exact"],
+                "fixed05_exact": r[f"{conv}_fixed05_exact"],
+                "trace_native": r.get(f"{conv}_trace_native", ""),
+                "trace_fixed05": r.get(f"{conv}_trace_fixed05", ""),
+            })
+    return out
+
+
 def write_shards(all_rows: Dict[str, List[dict]], out_dir: str, sid: str,
-                 smoke: bool) -> None:
+                 smoke: bool) -> List[str]:
     shard_dir = os.path.join(out_dir, "item_level")
     assert_quarantined(shard_dir, smoke)
     os.makedirs(shard_dir, exist_ok=True)
+    written: List[str] = []
     for key, rows in all_rows.items():
         name = f"item_level_{sid}_{key}{SMOKE_SUFFIX if smoke else ''}.tsv"
         p = os.path.join(shard_dir, name)
@@ -368,6 +452,8 @@ def write_shards(all_rows: Dict[str, List[dict]], out_dir: str, sid: str,
             w = csv.DictWriter(f, fieldnames=cols, delimiter="\t", extrasaction="ignore")
             w.writeheader()
             w.writerows(rows)
+        written.append(p)
+    return written
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -410,9 +496,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if a.smoke:
         a.limit = a.limit or SMOKE_DEFAULT_LIMIT
-        seeds = seeds if len(seeds) < len(FROZEN_SEEDS) else list(SMOKE_DEFAULT_SEEDS)
-        if a.state_id == "ALL":
-            a.state_id = "W3_REP"
+        seeds = list(SMOKE_DEFAULT_SEEDS)
+        # state_id stays ALL: both witnesses are needed for the frozen O-4 rule.
 
     rows = [r for r in load_manifest(a.manifest) if r["in_scope"] == "1"]
     states = rows if a.state_id == "ALL" else [r for r in rows
@@ -425,35 +510,90 @@ def main(argv: Optional[List[str]] = None) -> int:
     assert_quarantined(out_dir, bool(a.smoke))
     os.makedirs(out_dir, exist_ok=True)
 
-    summaries = {}
+    summaries, audit_all, shard_all = {}, [], []
     for row in states:
-        summaries[row["state_id"]] = run_state(
+        st, audit, shards = run_state(
             row, device=a.device, limit=a.limit, batch_size=a.batch_size,
             routes=routes, lambdas=lambdas, seeds=seeds,
             free_ar=not a.no_free_ar, out_dir=out_dir, smoke=bool(a.smoke))
+        summaries[row["state_id"]] = st
+        audit_all.extend(audit)
+        shard_all.extend(shards)
 
     name = (f"summary_{a.state_id}{SMOKE_SUFFIX}.json" if a.smoke
             else f"summary_{a.state_id}.json")
     out = os.path.join(out_dir, name)
     assert_quarantined(out, bool(a.smoke))
-    payload = {
-        "contract": "paper_programme/gate_x_lesion_recovery/GATE_X_LESION_EXPERIMENT_CONTRACT.md",
-        "conditions": "paper_programme/gate_x_lesion_recovery/gxlr_conditions.frozen.json",
-        "conditions_sha256": sha256_file(CONDITIONS),
-        "FINAL_CONTRACT_HASH": contract_hash,
-        "final_rule_freeze": "paper_programme/gate_x_lesion_recovery/FINAL_RULE_FREEZE.md",
-        "final_conditions": "paper_programme/gate_x_lesion_recovery/gxlr_conditions.final.json",
-        "smoke": bool(a.smoke),
-        "TEST_ONLY": bool(a.smoke),
-        "NOT_SCIENTIFIC_RESULT": bool(a.smoke),
-        "quarantine_notice": QUARANTINE_BANNER if a.smoke else None,
-        "limit": a.limit,
+
+    # ---- assemble the frozen eight-section package -------------------------
+    from scripts.gate_x_lesion.compute_final_contract_hash import (
+        HASH_OUT, MANIFEST_OUT, build_manifest, final_contract_hash)
+    manifest_text = build_manifest()
+    cfg = {
+        "final_contract_hash": contract_hash or final_contract_hash(manifest_text),
+        "final_contract_manifest_sha256": hashlib.sha256(
+            manifest_text.encode("utf-8")).hexdigest(),
+        "code_commit": _git_head(),
+        "branch": _git_branch(),
+        "runner_identity": "scripts/gate_x_lesion/run_gate_x_lesion.py",
+        "batch_size": a.batch_size,
+        "population_n": (list(summaries.values())[0]["repetition_population_n"]
+                         if not a.smoke else list(summaries.values())[0]["evaluated_n"]),
         "routes": routes, "lambdas": lambdas, "lesion_seeds": seeds,
-        "states": summaries,
+        "sd_definition": "torch.Tensor.std() of flattened pooled intact activations "
+                         "(the 'std' column, NOT 'rms')",
+        "sd_ddof": SD_DDOF, "sd_n_items": SD_N_ITEMS,
+        "sd_sample_seed": SD_SAMPLE_SEED, "sd_batch_size": SD_BATCH_SIZE,
+        "rng_identity_fields": list(IDENTITY_FIELDS),
+        "rng_identity_version": EPS_DOMAIN.decode("ascii"),
+        "eps_domain": EPS_DOMAIN.decode("ascii"),
+        "state_identity_domain": STATE_IDENTITY_DOMAIN,
+        "torch_version": torch.__version__,
     }
+    package = build_summary(
+        state_summaries=list(summaries.values()), audit_records=audit_all,
+        shard_paths=shard_all, cfg=cfg,
+        expected_shards=SCIENTIFIC_EXPECTED_SHARDS,
+        expected_validity=SCIENTIFIC_EXPECTED_VALIDITY,
+        expected_paired=SCIENTIFIC_EXPECTED_PAIRED,
+        shard_sha256={os.path.basename(p): sha256_file(p) for p in shard_all},
+        # ALWAYS strict: the full 2x4 block grid is mandatory and there is no
+        # denominator shrinking. Smoke covers the full grid at tiny N, so this is
+        # never relaxed -- not even for quarantined validation.
+        require_full_grid=True)
+
+    package["contract"] = "paper_programme/gate_x_lesion_recovery/FINAL_RULE_FREEZE.md"
+    package["conditions"] = "paper_programme/gate_x_lesion_recovery/gxlr_conditions.final.json"
+    package["conditions_sha256"] = sha256_file(CONDITIONS)
+    package["smoke"] = bool(a.smoke)
+    package["TEST_ONLY"] = bool(a.smoke)
+    package["NOT_SCIENTIFIC_RESULT"] = bool(a.smoke)
+    package["quarantine_notice"] = QUARANTINE_BANNER if a.smoke else None
+    if a.smoke:
+        # The summary is serialized with sort_keys=True for determinism, which would
+        # otherwise push "NOT_SCIENTIFIC_RESULT" past the head of the file. A key
+        # beginning with "!" (0x21) sorts before every section name, so a quarantined
+        # artifact still ANNOUNCES ITSELF in its first bytes.
+        package["!! NOT_SCIENTIFIC_RESULT !!"] = QUARANTINE_BANNER
+    package["limit"] = a.limit
+    package["run_utc"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Raw inputs to the assembler, retained so the eight-section package can be
+    # re-derived and audited without re-running the experiment. Not part of the
+    # frozen eight sections; the validator ignores extra keys.
+    package["_state_summaries"] = list(summaries.values())
+    package["_cfg"] = cfg
+
     with open(out, "w") as f:
-        json.dump(payload, f, indent=1)
+        json.dump(package, f, indent=1, sort_keys=True, default=str)
+
+    failed = package["RUN_COMPLETION"]["implementation_failure_status"] != "NONE"
     print(f"\nwrote {out}")
+    if failed:
+        print("\nHARD STOP: IMPLEMENTATION_FAILURE — scientific run aborted; "
+              "no classification emitted.", file=sys.stderr)
+        for m in package["RUN_COMPLETION"]["implementation_failures"]:
+            print(f"  {m}", file=sys.stderr)
+        return 3
     if a.smoke:
         print(f"\n*** {QUARANTINE_BANNER} ***")
     return 0

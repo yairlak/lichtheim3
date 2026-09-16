@@ -8,6 +8,8 @@ Nothing here executes science; it only inspects artifacts a run would have
 produced. It is exercised in tests against synthetic payloads.
 
     python3 scripts/gate_x_lesion/validate_output_manifest.py <summary.json>
+    python3 scripts/gate_x_lesion/validate_output_manifest.py <summary.json> \
+        <manifest.json> --test-only        # quarantined smoke fixture only
 """
 from __future__ import annotations
 
@@ -39,9 +41,29 @@ def _require(cond: bool, msg: str) -> None:
 
 
 def validate(summary: dict, manifest: Optional[dict] = None,
-             *, shard_paths: Optional[List[str]] = None) -> Dict[str, object]:
-    """Validate `summary`. Raises `OutputIncomplete` on the first failure."""
+             *, shard_paths: Optional[List[str]] = None,
+             expect_scientific: bool = True) -> Dict[str, object]:
+    """Validate `summary`. Raises `OutputIncomplete` on the first failure.
+
+    `expect_scientific` defaults to True and is NEVER relaxed for a real run: the
+    scientific path keeps every pinned value and count. A TEST_ONLY harness may
+    pass `expect_scientific=False` together with a strictly test-only `manifest`
+    fixture, which exercises this same code with smoke-scale counts. Quarantined
+    output can therefore never be accepted against the scientific manifest.
+    """
     m = manifest or load_manifest()
+
+    # Quarantined output may never masquerade as scientific output.
+    quarantined = bool(summary.get("TEST_ONLY")
+                       or summary.get("NOT_SCIENTIFIC_RESULT")
+                       or summary.get("smoke"))
+    if expect_scientific and quarantined:
+        raise OutputIncomplete(
+            "summary is marked TEST_ONLY / NOT_SCIENTIFIC_RESULT and cannot be "
+            "validated as scientific output")
+    if not expect_scientific and not quarantined:
+        raise OutputIncomplete(
+            "expect_scientific=False requires the summary to be marked TEST_ONLY")
 
     # --- every required section must be present ------------------------------
     for sec in SECTIONS:
@@ -140,17 +162,22 @@ def validate(summary: dict, manifest: Optional[dict] = None,
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    flags = {a for a in sys.argv[1:] if a.startswith("--")}
+    if len(args) not in (1, 2):
         print(__doc__)
         return 2
-    with open(sys.argv[1]) as f:
+    with open(args[0]) as f:
         summary = json.load(f)
+    man = load_manifest(args[1]) if len(args) == 2 else None
+    scientific = "--test-only" not in flags
     try:
-        validate(summary)
+        validate(summary, man, expect_scientific=scientific)
     except OutputIncomplete as e:
         print(f"HARD STOP: output incomplete — {e}", file=sys.stderr)
         return 1
-    print("output manifest validation PASSED")
+    print("output manifest validation PASSED"
+          + ("" if scientific else "  [TEST_ONLY fixture]"))
     return 0
 
 
