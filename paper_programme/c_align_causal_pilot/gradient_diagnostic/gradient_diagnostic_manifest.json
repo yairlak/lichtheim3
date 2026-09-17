@@ -1,0 +1,37 @@
+{
+ "code_sha256": {
+  "losses.py": "382eed2335ee2add7a00f6de9b73a788cdef5e94155ae1970e38bd5d7dcefd80",
+  "models/dual_route.py": "dfed9c0083d9b5ec88bec091fa71e74614faeb55b28ced344849ba51ad4425da",
+  "models/ltm_route.py": "49f8cd49b76413c6eb3040c3b90cada2c3e1e31fee842286867bcb8de73b0073",
+  "paper_programme/c_align_causal_pilot/C_ALIGN_GRADIENT_DIAGNOSTIC_CONTRACT.md": "58ffc34215890ebf113901585fe490e048de3246561d5313777ebe32bfa88cbe",
+  "scripts/c_align_design/c_align_gradient_diagnostic.py": "2842b4b7095d93a4c63a0edb323d9bf15f4731d1316effc2fa70cfbe96b20e78",
+  "scripts/gating_diagnostics/run_gate_route_audit.py": "79feb855d890e3c6a5681926b2ab851a807b6d0375f89757024247a55cc024ce",
+  "scripts/naming_comprehension/train_joint_scratch.py": "766244c1363d998f34fe3e4f725b57a9b3f95cf716876d71470d804cf962765c",
+  "scripts/naming_comprehension/train_tasks.py": "a867b6b5ec474fb79fcd18e769fa8d16d8bdc3de920f7704bfa9be2e7b907303"
+ },
+ "environment": {
+  "deterministic_algorithms": true,
+  "device": "cpu",
+  "python": "3.11.15",
+  "torch": "2.12.1"
+ },
+ "git_head": "8427d25f32d3ada689923fcc1ca5009444056980",
+ "inputs": {
+  "glove_sha256": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed",
+  "lexicon_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+ },
+ "optimizer_step_calls": 0,
+ "parameter_updates": 0,
+ "states": {
+  "W3_SRC": {
+   "composite": "6d7282854323b810727cd9c0c90cace6dd8a54d306408cafaa8c40c5455d10a0",
+   "params_sha256": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+   "source_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c"
+  },
+  "W4_SRC": {
+   "composite": "32928707acc81af215faa829ad94bba566804982bc192bb5116ea32d43d56e29",
+   "params_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+   "source_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3"
+  }
+ }
+}

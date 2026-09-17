@@ -1,0 +1,8 @@
+{
+ "sources": {
+  "s19_metrics.tsv": "844e70316ffbbc36dc489e7bae601319ebb9d10f72116ac8b1e8622b7be0aaa5",
+  "s20_metrics.tsv": "dec82aed4e0fc29f8a569fc6006b27c00a8b755a5e7d51b923fc4df4bbfa8075"
+ },
+ "source_dir": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_collect_20260912/",
+ "definition": "V6 prospective detector full-lexicon points every 13,890 steps (5u), 60 per seed; errors = round((1-rate)*29571) for repetition rates; lag k = points k*5u apart; derived for C_ALIGN_CAUSAL_PILOT_CONTRACT \u00a717.1 thresholds before any pilot"
+}

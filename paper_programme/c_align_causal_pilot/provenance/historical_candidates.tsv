@@ -1,0 +1,7 @@
+id	candidate	identity	objective	c_align_weight	schedule_task	architecture	classification
+C1	FINAL-2A final2a_calign_seed22_final_full	03ae097 / final2a_run.slurm / JZ job 1678465	0.087*retrieval + 1.0*alignment(raw GloVe) on C, summed J0	1.0	summed J0, from scratch, 324,100 steps	H128	EXACT_PRIOR_TEST (not decisive)
+C2	Phase-2 C0/C3 single-task	train_tasks.py; phase2b_c0/c3_flat_seed22	C0 alignment 1.0; C3 = C0 + 0.087 retrieval	1.0	comprehension-only warm-start from seed22/e140	H128	RELATED_BUT_NOT_EQUIVALENT
+C3	Phase-3A/3B/3C multitask	train_multitask.py; phase3a/3b/3c seed22	C3 on every C step, never toggled	1.0	interleaved 1:1:1 / 1:2:3 warm-start, subset 3,288	H128	RELATED_BUT_NOT_EQUIVALENT
+C4	Phase-4 factorial, FINAL-1, FINAL-3P..9E, base-123, V-series	223 checkpoints with key	0.087*retrieval only	0.0	various	H128/H512	NOT_RELEVANT
+C5	grad_interference_audit.py / audit_update_geometry.py	FINAL-1 / FINAL-4 R150	measurement only	n/a	no training	H128	NOT_RELEVANT
+C6	this workstream gradient diagnostic	8427d25f	read-only measurement	n/a	no training	H512	NOT_RELEVANT
