@@ -1,0 +1,739 @@
+{
+ "all_gates_pass": false,
+ "contract_sha256": "6edf8f8eaab3171ea2ab1570127ad91cc809f396fbdba437d10e7fb16f11683f",
+ "finished": "2026-09-17T23:50:06",
+ "gates": {
+  "V10_closed_artifacts": {
+   "packages": {
+    "directional_dose": {
+     "failed": 0,
+     "pass": true,
+     "verified": 33
+    },
+    "ventral_interface": {
+     "failed": 0,
+     "pass": true,
+     "verified": 37
+    }
+   },
+   "pass": true,
+   "sources": {
+    "W3_SRC": {
+     "expected": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+     "pass": true,
+     "sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c"
+    },
+    "W4_SRC": {
+     "expected": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+     "pass": true,
+     "sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3"
+    }
+   }
+  },
+  "V1_driver_amendment": {
+   "C_ALIGN_PILOT_FROM": 0.0,
+   "C_ALIGN_PILOT_TO": 0.1,
+   "behavioural_proof": "tests/test_c_align_pilot.py items 4,5,5b,6 (run by V2)",
+   "constructor_refuses_other_targets": true,
+   "declaration_flag": "--declare-c-align-transition",
+   "declaration_not_tied_to_allow_phase_transition": true,
+   "exception_pins_from_and_to": true,
+   "exception_requires_declaration": true,
+   "guards_present": {
+    "dec_weight": true,
+    "lr_policy": true,
+    "optimizer_policy": true,
+    "phase_transition_declaration": true,
+    "regime": true,
+    "schedule": true,
+    "schedule_anchor": true,
+    "seed": true,
+    "stream_seeds": true,
+    "subset_hash": true,
+    "subset_mode": true
+   },
+   "pass": true
+  },
+  "V2_toy_equivalence": {
+   "pass": true,
+   "pytest_returncode": 0,
+   "summary": "24 passed in 64.41s (0:01:04)"
+  },
+  "V3_V4_state_and_recipe": {
+   "arms": {
+    "W3_OFF": {
+     "V3_state_identity": {
+      "adam_steps_present": true,
+      "c_align_weight": 0.0,
+      "checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+      "cursors": {
+       "comprehension": 5312925,
+       "naming": 3541950,
+       "pool": 1770975,
+       "repetition": 1770975
+      },
+      "global_step": 10625850,
+      "has_single_shared_optimizer": true,
+      "n_optimizer_tensors": 29,
+      "optimizer_policy": "shared_adamw",
+      "optimizer_state_sha256": "86791e6e24298768fb9141a4984200c4b1907089e07e81a55e4a8999843fc9ad",
+      "params_state_dict_sha256": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+      "pass": true,
+      "rng_states_present": [
+       "cuda",
+       "numpy",
+       "python",
+       "torch"
+      ],
+      "schedule": "interleaved_123",
+      "schedule_anchor_step": 8334000,
+      "seed": 19
+     },
+     "V4_recipe": {
+      "c_align_weight_checkpoint": 0.0,
+      "c_align_weight_configured": 0.0,
+      "comprehension_population_n": 27981,
+      "comprehension_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+      "dec_weight": 0.5,
+      "declare_c_align_transition": false,
+      "lr_policy": {
+       "comprehension": 0.0001,
+       "kind": "task_specific",
+       "naming": 3e-05,
+       "repetition": 3e-05
+      },
+      "optimizer_policy": "shared_adamw",
+      "pass": true,
+      "reanchor_configured": false,
+      "regime": "j0",
+      "schedule": "interleaved_123",
+      "stop_at_ceiling_configured": false,
+      "subset_mode": "final_full",
+      "widths": {
+       "ltm_dec_hidden": 512,
+       "ltm_enc_hidden": 512,
+       "wm_hidden": 128
+      }
+     },
+     "config_sha256": "05c6fd4a29c417ba96c32d28a414e05e468f5a3ae151bae1872c9fddebe56e04"
+    },
+    "W3_ON": {
+     "V3_state_identity": {
+      "adam_steps_present": true,
+      "c_align_weight": 0.0,
+      "checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+      "cursors": {
+       "comprehension": 5312925,
+       "naming": 3541950,
+       "pool": 1770975,
+       "repetition": 1770975
+      },
+      "global_step": 10625850,
+      "has_single_shared_optimizer": true,
+      "n_optimizer_tensors": 29,
+      "optimizer_policy": "shared_adamw",
+      "optimizer_state_sha256": "86791e6e24298768fb9141a4984200c4b1907089e07e81a55e4a8999843fc9ad",
+      "params_state_dict_sha256": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+      "pass": true,
+      "rng_states_present": [
+       "cuda",
+       "numpy",
+       "python",
+       "torch"
+      ],
+      "schedule": "interleaved_123",
+      "schedule_anchor_step": 8334000,
+      "seed": 19
+     },
+     "V4_recipe": {
+      "c_align_weight_checkpoint": 0.0,
+      "c_align_weight_configured": 0.1,
+      "comprehension_population_n": 27981,
+      "comprehension_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+      "dec_weight": 0.5,
+      "declare_c_align_transition": true,
+      "lr_policy": {
+       "comprehension": 0.0001,
+       "kind": "task_specific",
+       "naming": 3e-05,
+       "repetition": 3e-05
+      },
+      "optimizer_policy": "shared_adamw",
+      "pass": true,
+      "reanchor_configured": false,
+      "regime": "j0",
+      "schedule": "interleaved_123",
+      "stop_at_ceiling_configured": false,
+      "subset_mode": "final_full",
+      "widths": {
+       "ltm_dec_hidden": 512,
+       "ltm_enc_hidden": 512,
+       "wm_hidden": 128
+      }
+     },
+     "config_sha256": "77b48a645d92312d95fc846dfcd02e27dc5fe396e36d0c29615cbbd6195be551"
+    },
+    "W4_OFF": {
+     "V3_state_identity": {
+      "adam_steps_present": true,
+      "c_align_weight": 0.0,
+      "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+      "cursors": {
+       "comprehension": 4222560,
+       "naming": 2815040,
+       "pool": 1407520,
+       "repetition": 1407520
+      },
+      "global_step": 8445120,
+      "has_single_shared_optimizer": true,
+      "n_optimizer_tensors": 29,
+      "optimizer_policy": "shared_adamw",
+      "optimizer_state_sha256": "77432134e128f9109ac30fa7b01ec903cf46e8dadebed55e55357a3dcaf09fd2",
+      "params_state_dict_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+      "pass": true,
+      "rng_states_present": [
+       "cuda",
+       "numpy",
+       "python",
+       "torch"
+      ],
+      "schedule": "interleaved_123",
+      "schedule_anchor_step": 8334000,
+      "seed": 20
+     },
+     "V4_recipe": {
+      "c_align_weight_checkpoint": 0.0,
+      "c_align_weight_configured": 0.0,
+      "comprehension_population_n": 27981,
+      "comprehension_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+      "dec_weight": 0.5,
+      "declare_c_align_transition": false,
+      "lr_policy": {
+       "comprehension": 0.0001,
+       "kind": "task_specific",
+       "naming": 3e-05,
+       "repetition": 3e-05
+      },
+      "optimizer_policy": "shared_adamw",
+      "pass": true,
+      "reanchor_configured": false,
+      "regime": "j0",
+      "schedule": "interleaved_123",
+      "stop_at_ceiling_configured": false,
+      "subset_mode": "final_full",
+      "widths": {
+       "ltm_dec_hidden": 512,
+       "ltm_enc_hidden": 512,
+       "wm_hidden": 128
+      }
+     },
+     "config_sha256": "33cf033992686d92a130a6453b2cb9351462da68bb9044b67e50f81c79ff5468"
+    },
+    "W4_ON": {
+     "V3_state_identity": {
+      "adam_steps_present": true,
+      "c_align_weight": 0.0,
+      "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+      "cursors": {
+       "comprehension": 4222560,
+       "naming": 2815040,
+       "pool": 1407520,
+       "repetition": 1407520
+      },
+      "global_step": 8445120,
+      "has_single_shared_optimizer": true,
+      "n_optimizer_tensors": 29,
+      "optimizer_policy": "shared_adamw",
+      "optimizer_state_sha256": "77432134e128f9109ac30fa7b01ec903cf46e8dadebed55e55357a3dcaf09fd2",
+      "params_state_dict_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+      "pass": true,
+      "rng_states_present": [
+       "cuda",
+       "numpy",
+       "python",
+       "torch"
+      ],
+      "schedule": "interleaved_123",
+      "schedule_anchor_step": 8334000,
+      "seed": 20
+     },
+     "V4_recipe": {
+      "c_align_weight_checkpoint": 0.0,
+      "c_align_weight_configured": 0.1,
+      "comprehension_population_n": 27981,
+      "comprehension_population_sha256": "10c2f06eda769bf620ca3dbb9889204e4431cac2bfe0d0f5dd37fa4df2bb9f50",
+      "dec_weight": 0.5,
+      "declare_c_align_transition": true,
+      "lr_policy": {
+       "comprehension": 0.0001,
+       "kind": "task_specific",
+       "naming": 3e-05,
+       "repetition": 3e-05
+      },
+      "optimizer_policy": "shared_adamw",
+      "pass": true,
+      "reanchor_configured": false,
+      "regime": "j0",
+      "schedule": "interleaved_123",
+      "stop_at_ceiling_configured": false,
+      "subset_mode": "final_full",
+      "widths": {
+       "ltm_dec_hidden": 512,
+       "ltm_enc_hidden": 512,
+       "wm_hidden": 128
+      }
+     },
+     "config_sha256": "84b15c84f8fbf6d7c273315c40d15d0b4f1c062d5090958cdf788c0f2b66d416"
+    }
+   },
+   "pass": true
+  },
+  "V5_determinism": {
+   "cublas_workspace_config": null,
+   "cuda_available": false,
+   "pass": false,
+   "reason": "the configured training device is CUDA but no CUDA device is visible in this environment",
+   "requested_device": "cuda",
+   "torch": "2.12.1"
+  },
+  "V6_expected_sequence": {
+   "note": "expected sequence only; the ACTUAL logged sequence is verified post-run and ON vs OFF within each pair",
+   "pairs": {
+    "W3": {
+     "cumulative_digest": "a91e72714c2d7d765cdd4b67a458e13c96d26eae60ec4e4538ed7220fdf7d230",
+     "cursors_unchanged": true,
+     "first_cycle_digest": "e36a320d61c92ac1796ce40cc9b59cc667fa006902bfc0adc9bc7c81342edbdc",
+     "last_cycle_digest": "1eb063de776f946089bee068eb837311d534ee5dc40d9c48d62c206afc282802",
+     "n_macro_cycles": 23150,
+     "n_steps": 138900,
+     "pass": true,
+     "source_sha256_unchanged": true,
+     "start_step": 10625850,
+     "task_counts": {
+      "comprehension": 69450,
+      "naming": 46300,
+      "repetition": 23150
+     }
+    },
+    "W4": {
+     "cumulative_digest": "f2e8f168f13f0cc9dc41730274546bcd4e09e74f455508f5b596ca844f46e061",
+     "cursors_unchanged": true,
+     "first_cycle_digest": "947346b76206073a9bfd9cd136eac61d85e7b4c47127735029b2f2b57cfbd23a",
+     "last_cycle_digest": "ee2047b4d65429b9f056f6acb94fd0f90cb6951c0eb701fa3bb9a943a37c41c4",
+     "n_macro_cycles": 23150,
+     "n_steps": 138900,
+     "pass": true,
+     "source_sha256_unchanged": true,
+     "start_step": 8445120,
+     "task_counts": {
+      "comprehension": 69450,
+      "naming": 46300,
+      "repetition": 23150
+     }
+    }
+   },
+   "pass": true
+  },
+  "V7_baseline": {
+   "arms": {
+    "W3_OFF": {
+     "S0_matches_global_ltm_freear": true,
+     "expected": {
+      "S0_canonical_errors": 3199,
+      "S0_freear_errors": 3199,
+      "S1c_canonical_errors": 42,
+      "S1c_freear_errors": 42,
+      "c_top1_errors": 34,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 0
+     },
+     "identical_within_pair": true,
+     "observed": {
+      "S0_canonical_errors": 3199,
+      "S0_freear_errors": 3199,
+      "S1c_canonical_errors": 42,
+      "S1c_freear_errors": 42,
+      "c_top1_errors": 34,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 0
+     },
+     "pair": "W3",
+     "pass": true
+    },
+    "W3_ON": {
+     "S0_matches_global_ltm_freear": true,
+     "expected": {
+      "S0_canonical_errors": 3199,
+      "S0_freear_errors": 3199,
+      "S1c_canonical_errors": 42,
+      "S1c_freear_errors": 42,
+      "c_top1_errors": 34,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 0
+     },
+     "identical_within_pair": true,
+     "observed": {
+      "S0_canonical_errors": 3199,
+      "S0_freear_errors": 3199,
+      "S1c_canonical_errors": 42,
+      "S1c_freear_errors": 42,
+      "c_top1_errors": 34,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 0
+     },
+     "pair": "W3",
+     "pass": true
+    },
+    "W4_OFF": {
+     "S0_matches_global_ltm_freear": true,
+     "expected": {
+      "S0_canonical_errors": 3647,
+      "S0_freear_errors": 3647,
+      "S1c_canonical_errors": 51,
+      "S1c_freear_errors": 51,
+      "c_top1_errors": 42,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 1
+     },
+     "identical_within_pair": true,
+     "observed": {
+      "S0_canonical_errors": 3647,
+      "S0_freear_errors": 3647,
+      "S1c_canonical_errors": 51,
+      "S1c_freear_errors": 51,
+      "c_top1_errors": 42,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 1
+     },
+     "pair": "W4",
+     "pass": true
+    },
+    "W4_ON": {
+     "S0_matches_global_ltm_freear": true,
+     "expected": {
+      "S0_canonical_errors": 3647,
+      "S0_freear_errors": 3647,
+      "S1c_canonical_errors": 51,
+      "S1c_freear_errors": 51,
+      "c_top1_errors": 42,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 1
+     },
+     "identical_within_pair": true,
+     "observed": {
+      "S0_canonical_errors": 3647,
+      "S0_freear_errors": 3647,
+      "S1c_canonical_errors": 51,
+      "S1c_freear_errors": 51,
+      "c_top1_errors": 42,
+      "full_rep_canonical_errors": 0,
+      "naming_strict_errors": 0,
+      "wm_canonical_errors": 1
+     },
+     "pair": "W4",
+     "pass": true
+    }
+   },
+   "pass": true
+  },
+  "V8_step_plan": {
+   "arms": {
+    "W3_OFF": {
+     "checkpoint_steps": [
+      10639740,
+      10653630,
+      10667520,
+      10681410,
+      10695300,
+      10709190,
+      10723080,
+      10736970,
+      10750860,
+      10764750
+     ],
+     "configured_steps": 138900,
+     "pass": true
+    },
+    "W3_ON": {
+     "checkpoint_steps": [
+      10639740,
+      10653630,
+      10667520,
+      10681410,
+      10695300,
+      10709190,
+      10723080,
+      10736970,
+      10750860,
+      10764750
+     ],
+     "configured_steps": 138900,
+     "pass": true
+    },
+    "W4_OFF": {
+     "checkpoint_steps": [
+      8459010,
+      8472900,
+      8486790,
+      8500680,
+      8514570,
+      8528460,
+      8542350,
+      8556240,
+      8570130,
+      8584020
+     ],
+     "configured_steps": 138900,
+     "pass": true
+    },
+    "W4_ON": {
+     "checkpoint_steps": [
+      8459010,
+      8472900,
+      8486790,
+      8500680,
+      8514570,
+      8528460,
+      8542350,
+      8556240,
+      8570130,
+      8584020
+     ],
+     "configured_steps": 138900,
+     "pass": true
+    }
+   },
+   "note": "configuration only; actual counts verified post-run",
+   "pass": true
+  },
+  "V9_evaluator_freeze": {
+   "evaluator_version": "c_align_pilot_evaluator_v1",
+   "file_sha256": {
+    "scripts/c_align_pilot/common.py": "ce2d68d70080954f994b185b6d5e2f671010797bf100a1a351709b7e0a679f07",
+    "scripts/c_align_pilot/evaluate_checkpoint.py": "36649847e4509b61ec89d288869cc40271379f3f2b552190eabc3e13a731e943",
+    "scripts/naming_comprehension/frozen_probe.py": "d4c7bb9289cef56d09d05b1cbcbd9b47f0fa32dda549b333d29d8a4753689d4f",
+    "scripts/naming_comprehension/train_tasks.py": "a867b6b5ec474fb79fcd18e769fa8d16d8bdc3de920f7704bfa9be2e7b907303",
+    "ventral_interface/conditions.py": "634bea5bdbc635f4488fda23f8af507ea88ab47625730c7eca7378d8c7108bec",
+    "ventral_interface/decode.py": "dec068e264f516d559bf6273922a022f66131d6a429aebc482b11bdc2fa3ea43",
+    "ventral_interface/injection.py": "e443411c7d002c0a62037e04a137dd876d3a4f522375c9ecd7800f1f2a1e4b7f"
+   },
+   "pass": true,
+   "pilot_checkpoints_exist_yet": false
+  },
+  "launcher_refusals": {
+   "W3_OFF": {
+    "arm": "W3_OFF",
+    "contract_sha256": "6edf8f8eaab3171ea2ab1570127ad91cc809f396fbdba437d10e7fb16f11683f",
+    "determinism": {
+     "cublas_workspace_config": null,
+     "cuda_available": false,
+     "pass": false,
+     "reason": "the configured training device is CUDA but no CUDA device is visible in this environment",
+     "requested_device": "cuda",
+     "torch": "2.12.1"
+    },
+    "factor_ok": true,
+    "head": "eda94861750b7a2344efc702d092d5df85bfd75f",
+    "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
+    "pass": false,
+    "refusals": [
+     "strict determinism unavailable: the configured training device is CUDA but no CUDA device is visible in this environment"
+    ],
+    "run_dir": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs/c_align_pilot_W3_OFF",
+    "runs_root": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs",
+    "source_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+    "state_identity": {
+     "adam_steps_present": true,
+     "c_align_weight": 0.0,
+     "checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+     "cursors": {
+      "comprehension": 5312925,
+      "naming": 3541950,
+      "pool": 1770975,
+      "repetition": 1770975
+     },
+     "global_step": 10625850,
+     "has_single_shared_optimizer": true,
+     "n_optimizer_tensors": 29,
+     "optimizer_policy": "shared_adamw",
+     "optimizer_state_sha256": "86791e6e24298768fb9141a4984200c4b1907089e07e81a55e4a8999843fc9ad",
+     "params_state_dict_sha256": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+     "pass": true,
+     "rng_states_present": [
+      "cuda",
+      "numpy",
+      "python",
+      "torch"
+     ],
+     "schedule": "interleaved_123",
+     "schedule_anchor_step": 8334000,
+     "seed": 19
+    },
+    "worktree_clean": true
+   },
+   "W3_ON": {
+    "arm": "W3_ON",
+    "contract_sha256": "6edf8f8eaab3171ea2ab1570127ad91cc809f396fbdba437d10e7fb16f11683f",
+    "determinism": {
+     "cublas_workspace_config": null,
+     "cuda_available": false,
+     "pass": false,
+     "reason": "the configured training device is CUDA but no CUDA device is visible in this environment",
+     "requested_device": "cuda",
+     "torch": "2.12.1"
+    },
+    "factor_ok": true,
+    "head": "eda94861750b7a2344efc702d092d5df85bfd75f",
+    "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
+    "pass": false,
+    "refusals": [
+     "strict determinism unavailable: the configured training device is CUDA but no CUDA device is visible in this environment"
+    ],
+    "run_dir": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs/c_align_pilot_W3_ON",
+    "runs_root": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs",
+    "source_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s19_step_10625850.pt",
+    "state_identity": {
+     "adam_steps_present": true,
+     "c_align_weight": 0.0,
+     "checkpoint_sha256": "a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c",
+     "cursors": {
+      "comprehension": 5312925,
+      "naming": 3541950,
+      "pool": 1770975,
+      "repetition": 1770975
+     },
+     "global_step": 10625850,
+     "has_single_shared_optimizer": true,
+     "n_optimizer_tensors": 29,
+     "optimizer_policy": "shared_adamw",
+     "optimizer_state_sha256": "86791e6e24298768fb9141a4984200c4b1907089e07e81a55e4a8999843fc9ad",
+     "params_state_dict_sha256": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+     "pass": true,
+     "rng_states_present": [
+      "cuda",
+      "numpy",
+      "python",
+      "torch"
+     ],
+     "schedule": "interleaved_123",
+     "schedule_anchor_step": 8334000,
+     "seed": 19
+    },
+    "worktree_clean": true
+   },
+   "W4_OFF": {
+    "arm": "W4_OFF",
+    "contract_sha256": "6edf8f8eaab3171ea2ab1570127ad91cc809f396fbdba437d10e7fb16f11683f",
+    "determinism": {
+     "cublas_workspace_config": null,
+     "cuda_available": false,
+     "pass": false,
+     "reason": "the configured training device is CUDA but no CUDA device is visible in this environment",
+     "requested_device": "cuda",
+     "torch": "2.12.1"
+    },
+    "factor_ok": true,
+    "head": "eda94861750b7a2344efc702d092d5df85bfd75f",
+    "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
+    "pass": false,
+    "refusals": [
+     "strict determinism unavailable: the configured training device is CUDA but no CUDA device is visible in this environment"
+    ],
+    "run_dir": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs/c_align_pilot_W4_OFF",
+    "runs_root": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs",
+    "source_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+    "state_identity": {
+     "adam_steps_present": true,
+     "c_align_weight": 0.0,
+     "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+     "cursors": {
+      "comprehension": 4222560,
+      "naming": 2815040,
+      "pool": 1407520,
+      "repetition": 1407520
+     },
+     "global_step": 8445120,
+     "has_single_shared_optimizer": true,
+     "n_optimizer_tensors": 29,
+     "optimizer_policy": "shared_adamw",
+     "optimizer_state_sha256": "77432134e128f9109ac30fa7b01ec903cf46e8dadebed55e55357a3dcaf09fd2",
+     "params_state_dict_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+     "pass": true,
+     "rng_states_present": [
+      "cuda",
+      "numpy",
+      "python",
+      "torch"
+     ],
+     "schedule": "interleaved_123",
+     "schedule_anchor_step": 8334000,
+     "seed": 20
+    },
+    "worktree_clean": true
+   },
+   "W4_ON": {
+    "arm": "W4_ON",
+    "contract_sha256": "6edf8f8eaab3171ea2ab1570127ad91cc809f396fbdba437d10e7fb16f11683f",
+    "determinism": {
+     "cublas_workspace_config": null,
+     "cuda_available": false,
+     "pass": false,
+     "reason": "the configured training device is CUDA but no CUDA device is visible in this environment",
+     "requested_device": "cuda",
+     "torch": "2.12.1"
+    },
+    "factor_ok": true,
+    "head": "eda94861750b7a2344efc702d092d5df85bfd75f",
+    "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
+    "pass": false,
+    "refusals": [
+     "strict determinism unavailable: the configured training device is CUDA but no CUDA device is visible in this environment"
+    ],
+    "run_dir": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs/c_align_pilot_W4_ON",
+    "runs_root": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/c_align_pilot_runs",
+    "source_checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+    "state_identity": {
+     "adam_steps_present": true,
+     "c_align_weight": 0.0,
+     "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+     "cursors": {
+      "comprehension": 4222560,
+      "naming": 2815040,
+      "pool": 1407520,
+      "repetition": 1407520
+     },
+     "global_step": 8445120,
+     "has_single_shared_optimizer": true,
+     "n_optimizer_tensors": 29,
+     "optimizer_policy": "shared_adamw",
+     "optimizer_state_sha256": "77432134e128f9109ac30fa7b01ec903cf46e8dadebed55e55357a3dcaf09fd2",
+     "params_state_dict_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+     "pass": true,
+     "rng_states_present": [
+      "cuda",
+      "numpy",
+      "python",
+      "torch"
+     ],
+     "schedule": "interleaved_123",
+     "schedule_anchor_step": 8334000,
+     "seed": 20
+    },
+    "worktree_clean": true
+   }
+  }
+ },
+ "head": "eda94861750b7a2344efc702d092d5df85bfd75f",
+ "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
+ "optimizer_step_calls": 0,
+ "preflight_version": "c_align_pilot_preflight_v1",
+ "started": "2026-09-17T23:47:17",
+ "worktree_clean": true
+}

@@ -1,0 +1,385 @@
+{
+ "L_C_align_unit_mean": 0.2765661254991162,
+ "L_C_retrieval_effective_mean": 0.30427114848120734,
+ "L_C_retrieval_raw_mean": 3.497369522772498,
+ "S0_canonical_errors": 3647,
+ "S0_freear_errors": 3647,
+ "S0_matches_global_ltm_canonical": true,
+ "S0_matches_global_ltm_freear": true,
+ "S0correct_to_S1c_wrong_canonical": 46,
+ "S0correct_to_S1c_wrong_freear": 46,
+ "S0wrong_to_S1c_correct_canonical": 3642,
+ "S0wrong_to_S1c_correct_freear": 3642,
+ "S1C_BOUND_DEGRADED_canonical": false,
+ "S1C_BOUND_DEGRADED_freear": false,
+ "S1c_canonical_errors": 51,
+ "S1c_freear_errors": 51,
+ "SMOKE_ONLY": false,
+ "c_align_weight": 0.0,
+ "c_top1_errors": 42,
+ "checkpoint": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/probe_v6_completion_20260912/sources/s20_step_08445120.pt",
+ "checkpoint_sha256": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+ "checkpoint_sha256_after": "0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3",
+ "cos_shat_target_mean_C_population": 0.7354142069816589,
+ "cos_shat_target_mean_all_rows": 0.7045508623123169,
+ "cos_shat_target_median_C_population": 0.7387820482254028,
+ "cos_shat_target_median_all_rows": 0.7349603176116943,
+ "cursors": {
+  "comprehension": 4222560,
+  "naming": 2815040,
+  "pool": 1407520,
+  "repetition": 1407520
+ },
+ "device": "cpu",
+ "evaluated_at": "2026-09-17T23:37:46",
+ "evaluator_version": "c_align_pilot_evaluator_v1",
+ "full_rep_canonical_errors": 0,
+ "full_rep_freear_errors": 0,
+ "gap_canonical": 3596,
+ "gap_freear": 3596,
+ "global_step": 8445120,
+ "homophone_retrievals_all_rows": 1581,
+ "label": "BASELINE_W4",
+ "lexical_identity_errors_C_population": 42,
+ "lexical_identity_errors_all_rows": 1632,
+ "ltm_canonical_errors": 3647,
+ "ltm_freear_errors": 3647,
+ "mse_shat_target_mean_C_population": 0.11980341374874115,
+ "mse_shat_target_mean_all_rows": 0.12834903597831726,
+ "n_c_batches": 438,
+ "n_comprehension_items": 27981,
+ "n_repetition_items": 29571,
+ "naming_strict_errors": 0,
+ "norm_ratio_mean_C_population": 1.2340601682662964,
+ "norm_ratio_mean_all_rows": 1.2269939184188843,
+ "norm_shat_mean_C_population": 7.913343906402588,
+ "norm_shat_mean_all_rows": 7.873873710632324,
+ "norm_target_mean_C_population": 6.527867317199707,
+ "norm_target_mean_all_rows": 6.530660629272461,
+ "params_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+ "params_sha256_after": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+ "phase_transitions": [
+  {
+   "bank_layout": null,
+   "changed": [
+    "lr_policy"
+   ],
+   "declared_at": "2026-09-06T20:50:10",
+   "exposures_at_transition": {
+    "comprehension": 2378.4246575342468,
+    "naming": 1500.0,
+    "pool": 5511.9047619047615,
+    "repetition": 750.0
+   },
+   "moment_initialization": "unchanged",
+   "new_commit": "8307c8b06a4e70f9a3c77e43c729fbc957568589",
+   "new_dec_weight": 0.5,
+   "new_lr_policy": {
+    "comprehension": 3e-05,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "new_optimizer_policy": "shared_adamw",
+   "new_schedule": "interleaved_123",
+   "new_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "old_dec_weight": 0.5,
+   "old_lr_policy": {
+    "boundary_rep_batches": 46300,
+    "kind": "two_stage_rep_cursor",
+    "stage1": 0.001,
+    "stage2": 0.0001
+   },
+   "old_optimizer_policy": "shared_adamw",
+   "old_schedule": "interleaved_123",
+   "old_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "schedule_anchor_step": 0,
+   "source_checkpoint": "step_02083500.pt",
+   "source_commit": "3712962f875195bd6c24396302f3117c1e2b7a82",
+   "transition_step": 2083500
+  },
+  {
+   "bank_layout": null,
+   "changed": [
+    "lr_policy"
+   ],
+   "declared_at": "2026-09-07T00:06:25",
+   "exposures_at_transition": {
+    "comprehension": 2695.5479452054797,
+    "naming": 1700.0,
+    "pool": 6246.825396825397,
+    "repetition": 850.0
+   },
+   "moment_initialization": "unchanged",
+   "new_commit": "ffa3659739732eac3bc9d161605804dc164a859c",
+   "new_dec_weight": 0.5,
+   "new_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "new_optimizer_policy": "shared_adamw",
+   "new_schedule": "interleaved_123",
+   "new_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "old_dec_weight": 0.5,
+   "old_lr_policy": {
+    "comprehension": 3e-05,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "old_optimizer_policy": "shared_adamw",
+   "old_schedule": "interleaved_123",
+   "old_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "schedule_anchor_step": 0,
+   "source_checkpoint": "step_02361300.pt",
+   "source_commit": "8307c8b06a4e70f9a3c77e43c729fbc957568589",
+   "transition_step": 2361300
+  },
+  {
+   "bank_layout": null,
+   "changed": [
+    "schedule_anchor"
+   ],
+   "declared_at": "2026-09-07T17:02:53",
+   "exposures_at_transition": {
+    "comprehension": 3805.4794520547944,
+    "naming": 2400.0,
+    "pool": 8819.047619047618,
+    "repetition": 1200.0
+   },
+   "moment_initialization": "unchanged",
+   "new_commit": "9eeccea3759c834d2bcfda881e27fd0260a940e8",
+   "new_dec_weight": 0.5,
+   "new_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "new_optimizer_policy": "shared_adamw",
+   "new_schedule": "interleaved_123",
+   "new_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "old_dec_weight": 0.5,
+   "old_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "old_optimizer_policy": "shared_adamw",
+   "old_schedule": "interleaved_123",
+   "old_schedule_anchor_step": 0,
+   "old_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "reanchored": 1,
+   "schedule_anchor_step": 3333600,
+   "source_checkpoint": "step_03333600.pt",
+   "source_commit": "ffa3659739732eac3bc9d161605804dc164a859c",
+   "transition_step": 3333600
+  },
+  {
+   "bank_layout": null,
+   "changed": [
+    "schedule_anchor"
+   ],
+   "declared_at": "2026-09-08T01:05:51",
+   "exposures_at_transition": {
+    "comprehension": 4439.726027397261,
+    "naming": 2800.0,
+    "pool": 10288.888888888889,
+    "repetition": 1400.0
+   },
+   "moment_initialization": "unchanged",
+   "new_commit": "6b102625adabc9ec35468f9bbc871e8172bb41e6",
+   "new_dec_weight": 0.5,
+   "new_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "new_optimizer_policy": "shared_adamw",
+   "new_schedule": "interleaved_123",
+   "new_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "old_dec_weight": 0.5,
+   "old_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "old_optimizer_policy": "shared_adamw",
+   "old_schedule": "interleaved_123",
+   "old_schedule_anchor_step": 3333600,
+   "old_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "reanchored": 1,
+   "schedule_anchor_step": 3889200,
+   "source_checkpoint": "step_03889200.pt",
+   "source_commit": "9eeccea3759c834d2bcfda881e27fd0260a940e8",
+   "transition_step": 3889200
+  },
+  {
+   "bank_layout": null,
+   "changed": [
+    "schedule_anchor"
+   ],
+   "declared_at": "2026-09-08T13:36:49",
+   "exposures_at_transition": {
+    "comprehension": 6342.465753424657,
+    "naming": 4000.0,
+    "pool": 14698.412698412698,
+    "repetition": 2000.0
+   },
+   "moment_initialization": "unchanged",
+   "new_commit": "82b4857897089607412e1505ff8517b1b6128eb5",
+   "new_dec_weight": 0.5,
+   "new_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "new_optimizer_policy": "shared_adamw",
+   "new_schedule": "interleaved_123",
+   "new_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "old_dec_weight": 0.5,
+   "old_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "old_optimizer_policy": "shared_adamw",
+   "old_schedule": "interleaved_123",
+   "old_schedule_anchor_step": 3889200,
+   "old_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "reanchored": 1,
+   "schedule_anchor_step": 5556000,
+   "source_checkpoint": "step_05556000.pt",
+   "source_commit": "6b102625adabc9ec35468f9bbc871e8172bb41e6",
+   "transition_step": 5556000
+  },
+  {
+   "bank_layout": null,
+   "changed": [
+    "schedule_anchor"
+   ],
+   "declared_at": "2026-09-12T02:03:57",
+   "exposures_at_transition": {
+    "comprehension": 9513.698630136987,
+    "naming": 6000.0,
+    "pool": 22047.619047619046,
+    "repetition": 3000.0
+   },
+   "moment_initialization": "unchanged",
+   "new_commit": "unknown",
+   "new_dec_weight": 0.5,
+   "new_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "new_optimizer_policy": "shared_adamw",
+   "new_schedule": "interleaved_123",
+   "new_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "old_dec_weight": 0.5,
+   "old_lr_policy": {
+    "comprehension": 0.0001,
+    "kind": "task_specific",
+    "naming": 3e-05,
+    "repetition": 3e-05
+   },
+   "old_optimizer_policy": "shared_adamw",
+   "old_schedule": "interleaved_123",
+   "old_schedule_anchor_step": 5556000,
+   "old_schedule_ratio": [
+    1,
+    2,
+    3
+   ],
+   "reanchored": 1,
+   "schedule_anchor_step": 8334000,
+   "source_checkpoint": "step_08334000.pt",
+   "source_commit": "82b4857897089607412e1505ff8517b1b6128eb5",
+   "transition_step": 8334000
+  }
+ ],
+ "phonology_correct_retrievals_all_rows": 29520,
+ "rate_full_comp_top1": 0.9984989814516994,
+ "rate_full_comp_top5": 0.9998570458525428,
+ "rate_full_naming_exact": 1.0,
+ "rate_full_naming_wer": 0.0,
+ "rate_full_rep_freear": 1.0,
+ "rate_full_rep_freear_ltm": 0.8766697101890366,
+ "rate_full_rep_freear_wm": 0.999966183084779,
+ "rate_full_rep_full": 1.0,
+ "rate_full_rep_ltm": 0.8766697101890366,
+ "rate_full_rep_wm": 0.999966183084779,
+ "rate_gate_frac_above_0.95": 0.0,
+ "rate_gate_frac_below_0.05": 0.0,
+ "rate_gate_mean": 0.517658531665802,
+ "rate_gate_p05": 0.46625301241874695,
+ "rate_gate_p95": 0.5643535256385803,
+ "rate_gate_std": 0.030004428699612617,
+ "read_only_ok": true,
+ "retrieval_margin_mean_C_population": 0.23117373575433509,
+ "retrieval_margin_mean_all_rows": 0.18906678352344347,
+ "retrieval_top1_cos_mean_C_population": 0.735443769667003,
+ "retrieval_top1_cos_mean_all_rows": 0.7342557957656874,
+ "schedule": "interleaved_123",
+ "schedule_anchor_step": 8334000,
+ "seed": 20,
+ "target_cos_mean_C_population": 0.7354142158325685,
+ "target_cos_mean_all_rows": 0.7045508351222828,
+ "target_rank_median_C_population": 1.0,
+ "target_rank_median_all_rows": 1.0,
+ "torch": "2.12.1",
+ "wm_canonical_errors": 1,
+ "wm_freear_errors": 1
+}

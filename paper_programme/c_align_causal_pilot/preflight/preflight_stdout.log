@@ -1,0 +1,10 @@
+V1_driver_amendment          PASS
+V2_toy_equivalence           PASS
+V3_V4_state_and_recipe       PASS
+V5_determinism               FAIL
+V6_expected_sequence         PASS
+V7_baseline                  PASS
+V8_step_plan                 PASS
+V9_evaluator_freeze          PASS
+V10_closed_artifacts         PASS
+ALL_GATES_PASS=False -> /Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/c_align_pilot_20260917/preflight/preflight_report.json
