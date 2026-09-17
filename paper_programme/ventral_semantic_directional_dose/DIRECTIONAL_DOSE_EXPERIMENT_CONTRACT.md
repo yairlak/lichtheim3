@@ -5,10 +5,11 @@ Design written 2026-09-17 · Amended 2026-09-17 per CENTRAL arbitration (§0).
 
 ## 1. STATUS
 
-CONTRACT_STATUS=AMENDED_PER_CENTRAL_NOT_YET_FROZEN
+CONTRACT_STATUS=FROZEN
 
-* This revision incorporates CENTRAL's binding amendments (§0). It is a **pre-implementation amendment**: no directional-dose code exists yet and no α condition has been decoded on any real state or item.
-* The status becomes `CONTRACT_STATUS=FROZEN` only at the implementation-freeze commit, together with hashed implementation, tests and config.
+* Frozen at the implementation-freeze commit, together with the hashed implementation, tests and config (`IMPLEMENTATION_MANIFEST.json`, `SHA256SUMS`).
+* Pre-implementation amendment commit (CENTRAL's binding amendments, §0): `1108ea6b8d35d6fed1c530d47153e5d828f20ffc`.
+* At freeze **no scientific α has been decoded** on any real state or item, and the real-state geometry preflight (§15b) has not yet been run. Only NON_SCIENTIFIC checks were run before freeze: synthetic and toy-model unit tests, and a mechanics smoke of α = 0 on 8 real W3_SRC items (booleans only).
 * Worktree / branch: `/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose` · `paper-programme/ventral-directional-dose-design`.
 * Lineage: design commit `0b758696a99577f9ead43b33c295522dc158dc98` → results commit `0f25b5b87efd8038dfc4c86b5ca2935bf7b178c7` → freeze commit `4ad20048e20da84b9f22a92965098b84c2bf7dd6`.
 
@@ -341,6 +342,24 @@ None of "train decoder on ŝ", "add cosine alignment", "add MSE alignment" or "t
 ### 17c. Yair flag bookkeeping (binding)
 
 `YAIR_FLAG_IDENTITY=SEMANTIC_ATTRACTOR_FLAG_CONFIRMED`: `semantic_attractor = True / False`, controlling a proposed recurrent semantic-refinement mechanism. Evidence is substantive but comes from paraphrased contemporary meeting notes; the exact wiring is unspecified. **The flag is not implemented and no attractor is implemented.**
+
+## 17d. Implementation binding (frozen with this contract)
+
+| component | path |
+|---|---|
+| package | `ventral_directional_dose/` (`__init__`, `dose_math`, `supplier`, `controls`, `evaluate`, `schema`) |
+| driver | `scripts/ventral_directional_dose/run_directional_dose.py` |
+| tests | `tests/test_ventral_directional_dose.py` (31 non-scientific tests) |
+| config | `paper_programme/ventral_semantic_directional_dose/ventral_directional_dose_frozen_config.json` |
+
+Implementation choices (not changes to the design):
+* **Supplier.** `DoseInjection` subclasses the frozen `SemanticInjection` and overrides only `_supply`. It is registered with the frozen `injected`, decoded with the frozen `decode_condition`, and guarded by the frozen `ventral_only`.
+* **α = 0 short-circuit.** Returns the live hook tensor object (`output.detach()`, the tensor S0 itself used) with no recast.
+* **ŝ source.** The preflight geometry ŝ is computed with the frozen `encode_all` at batch 256 (the decode batch shapes). The dose decodes use the live hook ŝ, and DOSE-J requires the two to agree.
+* **DOSE-F runtime evidence.** A forward pre-hook on `ltm.sem_to_h0` requires its input to be bitwise equal to the supplied vector on every call. The supplied vectors must also be bitwise identical between the free-AR and forced-length decodes of the same batch and α.
+* **`--execute` status check.** Requires exactly one status line, equal to `CONTRACT_STATUS=FROZEN`.
+* **Standalone `--preflight`.** Writes only to a new directory outside the worktree. `--execute` repeats the full preflight in-process for all four states and decodes no scientific α unless all states pass.
+* **Outputs.** Written to `paper_programme/ventral_semantic_directional_dose/scientific_execution/`: `item_level_directional_dose.tsv`, `summary_metrics_directional_dose.json`, `validity_gates_directional_dose.json`, `real_state_geometry_preflight.json`; `GATE_FAILURE.json` on any stop.
 
 ## 18. STOP CONDITIONS
 
