@@ -35,24 +35,56 @@ PAIR_SOURCE = {"W3": "W3_SRC", "W4": "W4_SRC"}
 
 
 def v1_driver_amendment() -> Dict[str, object]:
-    """The declaration permits exactly 0.0 -> 0.1 and relaxes nothing else."""
+    """The declaration permits exactly 0.0 -> 0.1 and relaxes nothing else.
+
+    Checked on CODE tokens, not on message prose: the guards' human-readable
+    strings are wrapped across source lines, so matching message text gives
+    false negatives.  The behavioural proof that each guard still raises lives
+    in tests/test_c_align_pilot.py (items 4, 5, 5b, 6), which V2 executes.
+    """
     import inspect
     from scripts.naming_comprehension import train_joint_scratch as T
     src = inspect.getsource(T.JointScratchTrainer.load_state_dict)
+    guards = {
+        "regime": 'ckpt["regime"] != self.regime',
+        "seed": 'int(ckpt["seed"]) != self.seed',
+        "subset_hash": 'ckpt["subset_definition_sha256"] != self.subset_hash',
+        "subset_mode": 'subset_mode',
+        "schedule": 'ck_sched != self.schedule',
+        "stream_seeds": "stream_seeds",
+        "schedule_anchor": "schedule_anchor",
+        "lr_policy": "ck_policy",
+        "dec_weight": "ck_dec",
+        "optimizer_policy": "ck_opt_policy",
+        "phase_transition_declaration": "allow_phase_transition",
+    }
+    present = {k: (v in src) for k, v in guards.items()}
+    # the declaration gates the C-objective exception and nothing else
+    exception_block = src.split("ck_calign = ")[1].split("ck_sched = ")[0]
     rep = {
         "C_ALIGN_PILOT_FROM": T.C_ALIGN_PILOT_FROM,
         "C_ALIGN_PILOT_TO": T.C_ALIGN_PILOT_TO,
         "declaration_flag": "--declare-c-align-transition",
-        "guard_mentions_declaration": "declare_c_align_transition" in src,
-        "other_guards_present": all(k in src for k in (
-            "checkpoint regime", "checkpoint seed", "subset hash",
-            "stream seeds", "PHASE TRANSITION")),
-        "no_blanket_bypass": "allow_phase_transition" not in src.split(
-            "c_align_transition")[0].split("ck_calign")[-1],
+        "guards_present": present,
+        "exception_requires_declaration":
+            "self.declare_c_align_transition" in exception_block,
+        "exception_pins_from_and_to": (
+            "ck_calign == C_ALIGN_PILOT_FROM" in exception_block
+            and "self.c_align_weight == C_ALIGN_PILOT_TO" in exception_block),
+        "declaration_not_tied_to_allow_phase_transition":
+            "allow_phase_transition" not in exception_block,
+        "constructor_refuses_other_targets": (
+            "declare_c_align_transition and (" in inspect.getsource(
+                T.JointScratchTrainer.__init__)),
+        "behavioural_proof": "tests/test_c_align_pilot.py items 4,5,5b,6 (run by V2)",
     }
     rep["pass"] = bool(
         rep["C_ALIGN_PILOT_FROM"] == 0.0 and rep["C_ALIGN_PILOT_TO"] == 0.1
-        and rep["guard_mentions_declaration"] and rep["other_guards_present"])
+        and all(present.values())
+        and rep["exception_requires_declaration"]
+        and rep["exception_pins_from_and_to"]
+        and rep["declaration_not_tied_to_allow_phase_transition"]
+        and rep["constructor_refuses_other_targets"])
     return rep
 
 
@@ -171,9 +203,19 @@ def v7_baseline(device: str, out_dir: str) -> Dict[str, object]:
         pair = str(cfg["pair"])
         src = os.path.join(os.path.dirname(ROOT), str(cfg["source_checkpoint"]))
         if pair not in cache:
-            rec = evaluate(src, f"BASELINE_{pair}", device)
-            json.dump(rec, open(os.path.join(out_dir, f"baseline_{pair}.json"), "w"),
-                      indent=1, sort_keys=True)
+            from scripts.c_align_pilot.evaluate_checkpoint import (
+                EVALUATOR_VERSION, sha256_file as _sha)
+            path = os.path.join(out_dir, f"baseline_{pair}.json")
+            prev = json.load(open(path)) if os.path.exists(path) else None
+            if (prev and prev.get("evaluator_version") == EVALUATOR_VERSION
+                    and prev.get("checkpoint_sha256") == _sha(src)
+                    and prev.get("params_sha256") == cfg["params_sha256"]
+                    and not prev.get("SMOKE_ONLY")):
+                prev["reused_from_cache"] = True     # same state, same evaluator
+                rec = prev
+            else:
+                rec = evaluate(src, f"BASELINE_{pair}", device)
+                json.dump(rec, open(path, "w"), indent=1, sort_keys=True)
             cache[pair] = rec
         rec = cache[pair]
         want = BASELINE[pair]

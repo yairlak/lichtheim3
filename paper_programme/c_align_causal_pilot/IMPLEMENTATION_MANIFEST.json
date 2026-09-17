@@ -1,4 +1,12 @@
 {
+ "amendments_after_first_freeze": [
+  {
+   "driver_changed": false,
+   "previous_implementation_digest": "a619669da78aad25999f4043fa1d7389dd143c9e703704fa5853488961422d6a",
+   "scientific_field_changed": false,
+   "what": "preflight V1 gate check corrected (matched wrapped message prose, never the code) and V7 baseline reuse when state+evaluator hashes are identical"
+  }
+ ],
  "arms": [
   "W3_OFF",
   "W3_ON",
@@ -36,10 +44,10 @@
   "paper_programme/c_align_causal_pilot/C_ALIGN_GRADIENT_DIAGNOSTIC_CONTRACT.md": "58ffc34215890ebf113901585fe490e048de3246561d5313777ebe32bfa88cbe",
   "paper_programme/c_align_causal_pilot/C_ALIGN_GRADIENT_DIAGNOSTIC_RESULTS.md": "61c5b42b67e12ffaa13d9840039cffdbd2ea2b28b3a7b60fa5b8f539f9eddde6",
   "paper_programme/c_align_causal_pilot/C_ALIGN_HISTORICAL_AUDIT.md": "b9a1da6688907b907353f5610262514c1bffc88142cdeee2671dbd43e1cfed47",
-  "paper_programme/c_align_causal_pilot/launch_configs/W3_OFF.json": "fc8fb83a2debda2255f832e80d84e61844d9cb1de3a0c80e67f87a91d8259f4f",
-  "paper_programme/c_align_causal_pilot/launch_configs/W3_ON.json": "e7683d58c728925aaec3842b2aeb8a5cbc4cc6ee5a6d57e8db3d244f8220aa8d",
-  "paper_programme/c_align_causal_pilot/launch_configs/W4_OFF.json": "5196785e2d3ee77cda4d02f9530a845277b7e1f2facfc6c6da90342ce7e175c2",
-  "paper_programme/c_align_causal_pilot/launch_configs/W4_ON.json": "363aee4a107e93a143d4c4a65ab24288a80f92451d26c4cb77190d05a725ef3c"
+  "paper_programme/c_align_causal_pilot/launch_configs/W3_OFF.json": "05c6fd4a29c417ba96c32d28a414e05e468f5a3ae151bae1872c9fddebe56e04",
+  "paper_programme/c_align_causal_pilot/launch_configs/W3_ON.json": "77b48a645d92312d95fc846dfcd02e27dc5fe396e36d0c29615cbbd6195be551",
+  "paper_programme/c_align_causal_pilot/launch_configs/W4_OFF.json": "33cf033992686d92a130a6453b2cb9351462da68bb9044b67e50f81c79ff5468",
+  "paper_programme/c_align_causal_pilot/launch_configs/W4_ON.json": "84b15c84f8fbf6d7c273315c40d15d0b4f1c062d5090958cdf788c0f2b66d416"
  },
  "driver_amendment": {
   "also_added": "per-macro-cycle task/batch digest logging (--batch-digest-path)",
@@ -71,13 +79,13 @@
   "W4_OFF",
   "W4_ON"
  ],
- "frozen_at": "2026-09-17T23:28:28",
- "implementation_digest": "a619669da78aad25999f4043fa1d7389dd143c9e703704fa5853488961422d6a",
+ "frozen_at": "2026-09-17T23:46:57",
+ "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
  "implementation_files": {
   "scripts/c_align_pilot/common.py": "ce2d68d70080954f994b185b6d5e2f671010797bf100a1a351709b7e0a679f07",
   "scripts/c_align_pilot/evaluate_checkpoint.py": "36649847e4509b61ec89d288869cc40271379f3f2b552190eabc3e13a731e943",
   "scripts/c_align_pilot/launch_pilot_arm.py": "80b22bc22304d5db12a73247dc4d4879551e33637e843c372a9568f01a4fb008",
-  "scripts/c_align_pilot/preflight.py": "f22fed882809bb0fa2f497c0e7e9a8931a9cfdbd960b3c523e46ef6378911d04",
+  "scripts/c_align_pilot/preflight.py": "2958e0117e62d099f06d45468bca44b2edf7640de798a41066299f627c2f2194",
   "scripts/naming_comprehension/train_joint_scratch.py": "f33d2a1b3a557fb0e06b5db3da4ce3e48fc82438d5c94238e5fbaa6ffac4c05d",
   "tests/test_c_align_pilot.py": "876cee081401af04b86d5f6ecfc4f1f8078a8ab63e55e8ebab0f8f47968d4159"
  },

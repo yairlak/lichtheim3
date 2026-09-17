@@ -35,12 +35,12 @@
  "frozen_by": "C_ALIGN_CAUSAL_PILOT_CONTRACT.md (CENTRAL-amended)",
  "glove_sha256": "91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed",
  "gpu_class": "V100",
- "implementation_digest": "a619669da78aad25999f4043fa1d7389dd143c9e703704fa5853488961422d6a",
+ "implementation_digest": "5c6ee74d921204aa6c4f81a49df94e042914be195c16a8115c55eb97d521db5d",
  "implementation_files": {
   "scripts/c_align_pilot/common.py": "ce2d68d70080954f994b185b6d5e2f671010797bf100a1a351709b7e0a679f07",
   "scripts/c_align_pilot/evaluate_checkpoint.py": "36649847e4509b61ec89d288869cc40271379f3f2b552190eabc3e13a731e943",
   "scripts/c_align_pilot/launch_pilot_arm.py": "80b22bc22304d5db12a73247dc4d4879551e33637e843c372a9568f01a4fb008",
-  "scripts/c_align_pilot/preflight.py": "f22fed882809bb0fa2f497c0e7e9a8931a9cfdbd960b3c523e46ef6378911d04",
+  "scripts/c_align_pilot/preflight.py": "2958e0117e62d099f06d45468bca44b2edf7640de798a41066299f627c2f2194",
   "scripts/naming_comprehension/train_joint_scratch.py": "f33d2a1b3a557fb0e06b5db3da4ce3e48fc82438d5c94238e5fbaa6ffac4c05d",
   "tests/test_c_align_pilot.py": "876cee081401af04b86d5f6ecfc4f1f8078a8ab63e55e8ebab0f8f47968d4159"
  },
