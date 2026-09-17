@@ -1,285 +1,349 @@
-# DIRECTIONAL_DOSE_EXPERIMENT_CONTRACT — LICHTHEIM3 VENTRAL SEMANTIC DIRECTIONAL DOSE (FROZEN DIAGNOSTIC DESIGN)
+# DIRECTIONAL_DOSE_EXPERIMENT_CONTRACT — LICHTHEIM3 VENTRAL SEMANTIC DIRECTIONAL DOSE (FROZEN DIAGNOSTIC)
 
-Programme: POST_STAGE / PAPER_PROGRAMME · Decision authority: CENTRAL STEERING · Written 2026-09-17.
+Programme: POST_STAGE / PAPER_PROGRAMME · Decision authority: CENTRAL STEERING
+Design written 2026-09-17 · Amended 2026-09-17 per CENTRAL arbitration (§0).
 
 ## 1. STATUS
 
-CONTRACT_STATUS=DESIGN_COMPLETE_NOT_EXECUTION_AUTHORIZED
+CONTRACT_STATUS=AMENDED_PER_CENTRAL_NOT_YET_FROZEN
 
-* This document is a **design**. No driver exists, no α condition has been computed on any real state or item, and no dose-response quantity has been observed.
-* Implementation and execution require an explicit CENTRAL authorization. At that point the contract must be re-frozen (hashed, `CONTRACT_STATUS=FROZEN`) together with its implementation, following the protocol of the closed ventral-interface diagnostic.
-* Design worktree / branch: `/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose` · `paper-programme/ventral-directional-dose-design`, created from `0f25b5b87efd8038dfc4c86b5ca2935bf7b178c7`.
+* This revision incorporates CENTRAL's binding amendments (§0). It is a **pre-implementation amendment**: no directional-dose code exists yet and no α condition has been decoded on any real state or item.
+* The status becomes `CONTRACT_STATUS=FROZEN` only at the implementation-freeze commit, together with hashed implementation, tests and config.
+* Worktree / branch: `/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose` · `paper-programme/ventral-directional-dose-design`.
+* Lineage: design commit `0b758696a99577f9ead43b33c295522dc158dc98` → results commit `0f25b5b87efd8038dfc4c86b5ca2935bf7b178c7` → freeze commit `4ad20048e20da84b9f22a92965098b84c2bf7dd6`.
+
+### §0. CENTRAL arbitration record (binding)
+
+```
+DIRECTIONAL_DOSE_CONTRACT_STATUS=ACCEPTED_WITH_MODIFICATION
+SLERP_STATUS=ACCEPTED_WITH_MODIFICATION
+NEAR_ANTIPODAL_POLICY=HARD_STOP
+TRAINING_SUPERVISION_AUDIT_STATUS=ACCEPTED_WITH_QUALIFICATION
+YAIR_FLAG_PROVENANCE_STATUS=ACCEPTED_WITH_QUALIFICATION
+YAIR_FLAG_IDENTITY=SEMANTIC_ATTRACTOR_FLAG_CONFIRMED
+GO_FOR_DIRECTIONAL_DOSE_IMPLEMENTATION=YES
+GO_FOR_DIRECTIONAL_DOSE_EXECUTION=YES
+GO_FOR_TRAINING=NO
+GO_FOR_ARCHITECTURE_CHANGE=NO
+```
+
+Amendments applied relative to the design commit (`0b758696…`):
+
+| id | design rule | amended rule |
+|---|---|---|
+| AM-1 | near-antipodal (sin θ ≤ 1e-6, d ≤ 0) → fixed basis great circle, α = 1 assigned u_p | **HARD STOP.** The basis fallback is removed; no scientific α decoding may begin. |
+| AM-2 | ZERO_SHAT (‖ŝ‖ ≤ 1e-6) → excluded from denominators, counted | **HARD STOP.** The preflight fails and execution does not begin. |
+| AM-3 | zero prototype → HARD STOP | unchanged (HARD STOP) |
+| AM-4 | near-collinear same direction → NLERP | accepted unchanged |
+| AM-5 | ordinary SLERP | accepted unchanged |
+| AM-6 | FALLBACK_CASES stratum | replaced by **NEAR_COLLINEAR_CASES**; no ZERO_SHAT or near-antipodal strata exist (both are hard stops) |
+| AM-7 | gates DOSE-A…J | amended wording (§15) plus hard-stop preconditions **NO_ZERO_SHAT, NO_ZERO_PROTOTYPE, NO_NEAR_ANTIPODAL** |
+| AM-8 | — | mandatory **real-state geometry preflight** (§15b) before any scientific α decode |
+| AM-9 | — | mandatory **α = 1 vs S1 vs S3 factorization** reporting (§16b) and the **T vs R steering question** (§16c) |
+| AM-10 | — | binding training-audit boundary (§17b) and Yair-flag bookkeeping (§17c) |
 
 ## 2. SCIENTIFIC QUESTION
 
 **How much directional movement of native ŝ toward its already-retrieved lexical prototype is required to recover ventral decoder compatibility?**
 
-The question is posed to discriminate, before CENTRAL chooses, between **T (training-only compatibility)** and **R (minimal semantic refinement)**. This contract makes no implementation decision.
+This steers CENTRAL's choice between **T (training-only compatibility)** and **R (minimal semantic refinement)**. The diagnostic implements neither.
 
-**Accepted prior localization** (CENTRAL, CLOSED_RESULT_SAFE): the dominant residual isolated-ventral repetition deficit lies at the encoder-produced ŝ → ventral-decoder interface. Lexical identity is already recoverable from ŝ for essentially all relevant failures. Replacing ŝ by the raw lexical prototype restores decoding, while replacing only its norm does not. A recurrent semantic attractor is **not** established as necessary.
+**Accepted prior localization** (CLOSED_RESULT_SAFE):
+* The dominant residual isolated-ventral repetition deficit lies at the encoder ŝ → ventral-decoder interface.
+* Lexical identity is recoverable from ŝ for essentially all relevant failures.
+* Raw-prototype substitution restores decoding; norm-only substitution does not.
+* A recurrent semantic attractor is **not** established as necessary.
 
 ## 3. IMMUTABLE PRIOR CONTROLS
 
-The closed diagnostic is reused **read-only**. Its outputs are never modified, regenerated or reinterpreted.
+Read-only; never modified, regenerated or redefined.
 
 | item | value |
 |---|---|
 | closed worktree / branch | `/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-interface` · `paper-programme/ventral-interface-diagnostic` |
-| frozen implementation commit | `4ad20048e20da84b9f22a92965098b84c2bf7dd6` |
-| results-only commit | `0f25b5b87efd8038dfc4c86b5ca2935bf7b178c7` |
+| closed freeze commit | `4ad20048e20da84b9f22a92965098b84c2bf7dd6` |
+| closed results commit | `0f25b5b87efd8038dfc4c86b5ca2935bf7b178c7` (the directional-dose branch descends from it, so identical tracked copies exist in this worktree) |
 | closed contract SHA256 | `a5ca7b83717b43ab77cedae0cd3e4bef17901ffff051f5ca90b9340b45bda5d3` |
 | `item_level_factorization.tsv` | `37f2fb170e53596067ad1bb8a64189dabec6d808fd31a1ffff942649de175663` |
 | `summary_metrics.json` | `455ccaf07bd7e2adb6047c24ac40667ba9b3e1256bdfeeb6772589b12b610c80` |
 | `ar_diagnostic_native_freear.tsv` | `75106959da8156131fc9f19d4d053b8307825dbcb7f0a45ead48a8eb15fdf027` |
-| closed results SHA256SUMS | `paper_programme/ventral_semantic_interface/scientific_execution/SHA256SUMS` (37 entries) |
+| closed SHA256SUMS | freeze manifest (17 entries) and results manifest (37 entries) |
 
-**Controls used by reference:**
-* **S0** (native ŝ; this is α = 0): native correctness per state × convention, taken from `S0_{freear,canonical}_exact_correct`.
-* **S1** (raw retrieved prototype: prototype direction **and** prototype norm): the full-prototype control, from `S1_*_exact_correct`.
-* **Previous S1 rescue** of item i in state × convention: `S0_{conv}_exact_correct == 0 ∧ S1_{conv}_exact_correct == 1`, read **only** from the immutable item-level file.
-* **S3** (native direction, prototype norm) and **S2** (raw true GloVe): reported alongside, unchanged.
+Controls by reference:
 
-## 4. AUTHORITATIVE STATES (exactly four; no other checkpoint, seed or state)
+| control | definition | reused field |
+|---|---|---|
+| **S0** | native ŝ (≡ α = 0) | `S0_{conv}_exact_correct`, `S0_{conv}_predicted_phonology` |
+| **S1** | RAW retrieved prototype: **prototype direction + prototype norm** | |
+| **S2** | RAW true GloVe | |
+| **S3** | **native direction + prototype norm** | |
+| **α = 1.00 (new)** | **prototype direction + NATIVE ŝ norm**; never labelled or substituted as S1 | |
+| **previous S1 rescue** (item i, state, convention) | `S0_{conv}_exact_correct == 0 ∧ S1_{conv}_exact_correct == 1`, read only from the immutable item-level file | |
 
-| state | witness | base SHA256 | Arm-A head SHA256 | reconstructed_state_identity |
-|---|---|---|---|---|
-| W3_SRC | V6 seed19 u3825 step 10625850 | `a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c` | NA | `6d7282854323b810727cd9c0c90cace6dd8a54d306408cafaa8c40c5455d10a0` |
-| W3_REP | same + Arm-A | same | `8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc` | `9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1` |
-| W4_SRC | V6 seed20 u3040 step 8445120 | `0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3` | NA | `32928707acc81af215faa829ad94bba566804982bc192bb5116ea32d43d56e29` |
-| W4_REP | same + Arm-A | same | `724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03` | `e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6` |
+## 4. AUTHORITATIVE STATES (exactly four)
 
-* **Reconstruction:** the unmodified `scripts/gating_diagnostics/run_gate_route_audit.build_state` (manifest blob `e5f0bb4fa68ebe1b200a3fcabe3544ebbff5483b`). Composite identity `sha256("gxlr-state-v1|"+base+"|"+head)`.
-* **Data:** lexicon `ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66`; GloVe file `91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed`; raw bank tensor `4658e11e6a8f60a468472cc3fa62e71064e33da6790f924cc3005e602762ddb4`; semantic bank = row-normalized raw bank (non-persistent buffer).
+| state | witness | base SHA256 | Arm-A head SHA256 | reconstructed_state_identity | closed params `state_dict` SHA256 |
+|---|---|---|---|---|---|
+| W3_SRC | V6 s19 u3825 step 10625850 | `a5f21de9edb4b2090cb144c666ca4bd8e1f0572333000facb13f6c51cfaad76c` | NA | `6d7282854323b810727cd9c0c90cace6dd8a54d306408cafaa8c40c5455d10a0` | `4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785` |
+| W3_REP | + Arm-A | same | `8865ba9539e4a445ffc8847a71be698779a98478aa5e6a1bce2393f3de7afcfc` | `9185aa5671e2ae3ab1e0860d52424b472f616d2515057d7ccbc6b383cf43dff1` | `c72b87d925bab8afc7690c18bea8f978736f9e3e91cdc8b17b5dcba37bae7bf2` |
+| W4_SRC | V6 s20 u3040 step 8445120 | `0657f41030e54eac11816116af6c76b66d597c393fc72579a3755401c9dc79f3` | NA | `32928707acc81af215faa829ad94bba566804982bc192bb5116ea32d43d56e29` | `004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974` |
+| W4_REP | + Arm-A | same | `724ed4c6a84fba07b6d9f11d535b8a0eb726daff21b9def9a5e60d9c7b972d03` | `e151b306f706e9db9828b3c9e742984a0ae836dbd97e73f86e4e2063bd7c5cd6` | `d11027323a71884775a64f29974ff8e4cfc5931b8cf531d32492330cc40e3008` |
+
+* Reconstruction: the unmodified `run_gate_route_audit.build_state` (manifest blob `e5f0bb4fa68ebe1b200a3fcabe3544ebbff5483b`).
+* Data: lexicon `ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66`; GloVe `91125602f730fea7ca768736c6f442e668b49db095682bf2aad375db061c21ed`; raw bank tensor `4658e11e6a8f60a468472cc3fa62e71064e33da6790f924cc3005e602762ddb4`.
+* No other seed, checkpoint, witness or repaired state.
 
 ## 5. POPULATION
 
-The population and identity contract are **identical** to the closed contract §3:
-* 29,571 lexical repetition rows (all evaluated);
+Identical to the closed contract §3:
+* 29,571 lexical repetition rows, all evaluated;
 * 27,981 canonical C targets;
 * 1,590 non-canonical homophone rows;
-* historical C correctness = exact lexical-row identity on P_C only (NA elsewhere);
-* `lexical_identity_correct` and `phonology_correct` exposed separately.
+* historical C correctness = exact lexical-row identity on P_C (NA elsewhere);
+* separate lexical-identity and phonology booleans.
 
-The **retrieved lexical row** for every item and state is the immutable `retrieved_index` of the closed item-level file (the frozen historical top-1 rule). It is not recomputed under a new definition; DOSE-J checks it against the frozen rule. Every item has a retrieved row, so "valid retrieved prototype" excludes only the degenerate cases of §9.
+The retrieved row is the **immutable** `retrieved_index`. DOSE-J independently recomputes it with the frozen rule (`frozen_probe.encode_all` + `comprehension_metrics`, batch 512). There is no new retrieval definition.
 
 ## 6. DIRECTIONAL INTERVENTION
 
-For item i in state x:
-
 ```
-ŝ        = the native encoder-produced semantic vector (the live to_semantic output, exactly as S0/S3 in the closed diagnostic)
-v        = bank_raw[retrieved_index_i]      (RAW / UNNORMALIZED GloVe row of the frozen top-1 lexical identity)
-u_s      = ŝ / ‖ŝ‖
-u_p      = v / ‖v‖
-u_α      = SLERP(u_s, u_p, α)               (§8, §9)
-s_α      = ‖ŝ‖ · u_α                        (NATIVE ŝ NORM PRESERVED; only direction changes)
+ŝ   = live native encoder output at model.ltm.to_semantic (the tensor S0 used)
+v   = bank_raw[retrieved_index_i]   (RAW, unnormalized)
+u_s = ŝ/‖ŝ‖,  u_p = v/‖v‖,  d = clip(u_s·u_p, −1, 1),  θ = arccos(d),  r = u_p − d·u_s,  norm_r = ‖r‖
+s_α = ‖ŝ‖ · u_α        (native norm preserved; direction only)
 ```
 
-**Explicit endpoint distinction:**
-
-| label | direction | norm | status |
-|---|---|---|---|
-| S0 (closed) = α 0 | native u_s | ‖ŝ‖ | immutable control |
-| S3 (closed) | native u_s | ‖v‖ | immutable control |
-| **α = 1.00 (this design)** | **prototype u_p** | **‖ŝ‖** | new dose endpoint — **NOT S1** |
-| S1 (closed) | prototype u_p | ‖v‖ | immutable control (raw prototype) |
-
-At α = 1.00 the raw prototype is **never** substituted. [STRUCTURAL_CODE_FACT] With S0, S3 and S1, the α = 1 endpoint completes a direction × norm arrangement of existing vectors. It is not a new scientific condition family, and no interpretation beyond §16 is attached to that arrangement.
-
-**Injection (future implementation constraint).**
-* The vector must enter through the same single forward hook on `model.ltm.to_semantic` used by the closed diagnostic, via a **new** supplier.
-* Frozen files of the closed implementation (`ventral_interface/*`, its driver, config and tests) must **not** be modified. New code must live in a separate package and import the frozen decode, injection and population functions.
+**Injection.**
+* A **new** supplier registered through the frozen `ventral_interface.injection.injected` context, on the **same** `model.ltm.to_semantic` forward hook, decoded by the frozen `ventral_interface.decode.decode_condition`.
+* The frozen `ventral_interface/` package, its driver, contract, config, tests and closed outputs are **not modified**.
+* The new code lives in `ventral_directional_dose/` and `scripts/ventral_directional_dose/`.
 
 ## 7. EXACT ALPHAS
 
-**α ∈ {0.25, 0.50, 0.75, 1.00}.** No other value is a scientific condition.
+**Scientific α ∈ {0.25, 0.50, 0.75, 1.00}.** No other value.
 
-α = 0 is **not** re-executed as a condition. S0 is taken from the immutable control. α = 0 appears only inside validity gate DOSE-B, through the frozen α = 0 short-circuit (§8).
+**α = 0 is not a scientific condition.**
+* It exists only for DOSE-B and short-circuits **exactly** to `s_0 := ŝ`: the original live tensor object is returned, with no recast or reconstruction.
+* In analyses, α = 0 is always read from the immutable S0 control.
 
-## 8. SLERP MATHEMATICS (ordinary case)
+## 8. SLERP MATHEMATICS
 
-All interpolation arithmetic uses **float64**. The result is cast once, deterministically, to the model semantic dtype (float32) immediately before it is returned by the hook.
+All interpolation arithmetic is float64, with exactly one deterministic cast to the model semantic dtype (float32).
+
+**ORDINARY** (`norm_r > 1e-6`):
 
 ```
-ns = ‖ŝ‖₂ (float64),  nv = ‖v‖₂ (float64)
-u_s = ŝ / ns,  u_p = v / nv
-d   = clip(u_s · u_p, −1, +1)
-θ   = arccos(d)
-r   = u_p − d · u_s                  (‖r‖ = sin θ; no division by sin θ)
-ORDINARY iff ‖r‖ > EPS_ORTHO
-q   = r / ‖r‖
-u_α = cos(αθ) · u_s + sin(αθ) · q
-u_α = u_α / ‖u_α‖                    (renormalisation; changes u_α by ≤ ~1e-16)
-s_α = cast_float32( ns · u_α )
+q = r / norm_r
+u_α = cos(αθ)·u_s + sin(αθ)·q
+u_α = u_α / ‖u_α‖
+s_α = cast_float32(‖ŝ‖ · u_α)
 ```
 
-* **α = 0 short-circuit (frozen):** `s_0 := ŝ` exactly (the input tensor, uncast), for every case. This avoids spurious last-bit float32 differences in the DOSE-B reproduction gate.
-* **α = 1:** no endpoint assignment in the ordinary and near-collinear cases, where the formula reaches u_p to within ~1e-15. There is an explicit endpoint assignment only in the near-antipodal case (§9C).
+**NEAR_COLLINEAR_NLERP** (`norm_r ≤ 1e-6 ∧ d > 0`):
+
+```
+w_α = (1−α)·u_s + α·u_p
+u_α = w_α / ‖w_α‖
+s_α = cast_float32(‖ŝ‖ · u_α)
+```
+
+**Hard stops:** see §9.
 
 **Frozen tolerances:**
 
-| name | value | use |
-|---|---|---|
-| EPS_NORM | 1e-6 (float64 ‖·‖₂) | zero-norm threshold, identical to the closed `S3_DEGENERATE_NORM` |
-| EPS_ORTHO | 1e-6 (float64 ‖r‖ = sin θ) | ordinary vs near-(anti)collinear |
-| TOL_NORM_REL | 1e-6 | DOSE-C: \|‖s_α‖ / ‖ŝ‖ − 1\| on the float32 vector (float64 norms) |
-| TOL_ENDPOINT_COS | 1e-6 | DOSE-D: 1 − cos(s_1, v) (float64 on float32 vector) |
-| TOL_ANGLE_RAD | 1e-6 | DOSE-E: \|∠(ŝ, s_α) − α·∠(ŝ, v)\|, angles by `atan2(‖a − (a·b)b‖, a·b)` on unit float64 vectors from the float32 values |
-| TOL_MONOTONE_RAD | 1e-9 | DOSE-E: ∠(ŝ, s_α) nondecreasing in α (ordinary items) |
+| name | value |
+|---|---|
+| EPS_NORM | 1e-6 |
+| EPS_ORTHO | 1e-6 |
+| TOL_NORM_REL | 1e-6 |
+| TOL_ENDPOINT_COS | 1e-6 |
+| TOL_ANGLE_RAD | 1e-6 |
+| TOL_MONOTONE_RAD | 1e-9 |
+| TOL_LIVE_SHAT | 1e-5 max abs, identical top-1 (closed SHAT rule) |
 
-**Numerical verification of the specification** (synthetic vectors only; no model, no real item). Script and output are outside git in `archives/ventral_directional_dose_design_20260917/`; hashes are in `provenance/DESIGN_PASS_EXTERNAL_ARTIFACTS.md`.
-* 20,000 random 300-d pairs spanning cos ∈ (−0.99, 0.999), with norms matching the observed ranges (ŝ 5–12, prototype 2.6–14), × 4 alphas: 80,000 ORDINARY evaluations.
-* Worst-case errors:
-  * norm relative error 4.4e-16 in float64, 1.2e-8 after the float32 cast;
-  * endpoint cosine deficit 5.6e-16 / 8.9e-16;
-  * angle error 3.0e-15 / 6.4e-9 rad;
-  * 0 monotonicity violations.
-* All frozen tolerances clear these errors by ≥ 2 orders of magnitude.
+Angles are computed as `atan2(‖a − (a·b)b‖, a·b)` on unit float64 vectors built from the float32 values. Synthetic verification of the design-pass formulas is recorded in `provenance/DESIGN_PASS_EXTERNAL_ARTIFACTS.md`.
 
-## 9. NUMERICAL FALLBACKS (deterministic, preregistered; chosen without inspecting any dose result)
+## 9. NUMERICAL HARD STOPS AND THE REMAINING FALLBACK (amended)
 
-Evaluated in this order for every item × α ≠ 0:
+| condition on any REAL item (any state) | action |
+|---|---|
+| `‖ŝ‖ ≤ 1e-6` (**ZERO_SHAT**) | **HARD STOP**: preflight fails; no scientific α decoding |
+| `‖v‖ ≤ 1e-6` (**ZERO_PROTOTYPE**) | **HARD STOP** |
+| `norm_r ≤ 1e-6 ∧ d ≤ 0` (**NEAR_ANTIPODAL**) | **HARD STOP**: no basis fallback, no exclusion, no special stratum |
+| `norm_r ≤ 1e-6 ∧ d > 0` | NEAR_COLLINEAR_NLERP (included in all denominators; also stratum NEAR_COLLINEAR_CASES) |
+| `norm_r > 1e-6` | ORDINARY |
 
-**A. Zero / effectively-zero norm**
-* **A1.** `ns ≤ EPS_NORM`: flag `ZERO_SHAT`. `s_α := ŝ` unchanged (decode stays defined), and the item is **excluded from every α denominator and transition count** in that state. The count is reported. This matches the closed S3 contract (0 degenerate ŝ occurred there).
-* **A2.** `nv ≤ EPS_NORM`: **HARD STOP**. This is impossible under the frozen bank (minimum raw row norm 2.61) and would indicate a corrupted bank or retrieval identity.
-
-**B. Near-collinear, same direction** (`‖r‖ ≤ EPS_ORTHO` and `d > 0`): normalized linear interpolation, flag `NEAR_COLLINEAR_NLERP`.
-
-```
-w_α = (1 − α)·u_s + α·u_p ;  u_α = w_α / ‖w_α‖ ;  s_α = cast(ns · u_α)
-```
-
-Here ‖w_α‖ ≥ cos(θ/2) ≈ 1, so it is always valid. At α = 1 this gives u_p exactly (w = u_p).
-
-**C. Near-antipodal** (`‖r‖ ≤ EPS_ORTHO` and `d ≤ 0`): ONE fixed great circle, flag `NEAR_ANTIPODAL_BASIS`.
-1. `k = argmin_k |u_s[k]|`, taking the **first index** on ties.
-2. `q0 = e_k − u_s[k]·u_s`; `q = q0 / ‖q0‖`. The orthogonal component r is *not* used here, because ‖r‖ ≤ EPS_ORTHO is numerically unusable by definition.
-3. `u_α = cos(αθ)·u_s + sin(αθ)·q`, with θ = arccos(d).
-4. **α = 1 endpoint assignment (prospective):** `u_1 := u_p`, flag `NEAR_ANTIPODAL_ENDPOINT_ASSIGNED`. The circle through q ends at −u_s, which may differ from u_p by up to ~EPS_ORTHO.
-
-The synthetic verification covered exact and near (1e-9-perturbed) same-direction and antipodal pairs: all outputs are finite, norms are preserved (≤ 2.2e-16), α = 1 reaches u_p (angle ≤ 1e-16), antipodal angles follow α·π exactly, the construction is deterministic, and zero ŝ and zero prototype behave as specified.
-
-**Reporting.** Every item × α carries `dose_case ∈ {ORDINARY, NEAR_COLLINEAR_NLERP, NEAR_ANTIPODAL_BASIS, NEAR_ANTIPODAL_ENDPOINT_ASSIGNED, ZERO_SHAT}`. Per state, counts per case are reported. Fallback items (B, C) are **included** in denominators and additionally reported as a separate stratum. DOSE-E angular checks apply to ORDINARY items and, for C, to the α-fraction of π.
+* The hard stops are evaluated over **all 4 × 29,571 real items** by the real-state geometry preflight (§15b), **before** any scientific α decode.
+* The supplier also raises on these conditions if ever reached at runtime.
+* `dose_case ∈ {ORDINARY, NEAR_COLLINEAR_NLERP}` only.
 
 ## 10. DECODING CONTRACT
 
-The contract is identical to closed contract §4, with no change:
-* isolated ventral route `route="ltm"` only, via the unmodified `gating_diagnostics.gate_probe.ar_decode_free` (cap `FREE_AR_MAX_STEPS = 12`, imported and asserted) and `ar_decode_forced_length`;
-* BOS id 1, greedy argmax (first index on ties), feedback of the argmaxed token, EOS id 2 with a cut at the first EOS;
-* free-AR breaks only when every row has emitted EOS; forced-length uses a per-item `len+1` window;
-* exact match means prediction == form;
-* decode batch 256 in bank order, CPU, float32, deterministic algorithms, `eval()`, inference mode;
-* no gate, no FULL fusion, no dorsal readout;
-* raw tokens recorded through the passive motor hook and checked against the historical return values.
+Identical to the closed contract §4:
+* isolated ventral route `ltm` only;
+* frozen `gate_probe.ar_decode_free` (cap 12, imported and asserted) and `ar_decode_forced_length`;
+* BOS 1, greedy argmax (first index on ties) with feedback, EOS 2 with a cut at the first EOS;
+* free-AR breaks only when every row has EOS; forced-length uses a per-item `len+1` window;
+* exact match = prediction == form;
+* decode batch 256 in bank order, CPU, float32, deterministic algorithms, `eval()`, inference mode, no optimizer and no backward;
+* passive motor-token recording checked against the historical returns;
+* no gate, no FULL fusion, no dorsal readout (frozen `ventral_only` guard).
 
 ## 11. PRIMARY / SECONDARY READOUTS
 
-* **PRIMARY:** genuine free-AR isolated ventral repetition.
-* **SECONDARY:** canonical forced-length isolated ventral repetition.
-* They are never pooled. Every quantity is reported per **state × α × convention**.
+PRIMARY: genuine free-AR isolated ventral repetition. SECONDARY: canonical forced-length. Never pooled.
 
-## 12. ITEM-LEVEL SCHEMA (`item_level_directional_dose.tsv`; one row per state × item; column order frozen at implementation freeze)
+## 12. ITEM-LEVEL SCHEMA (`item_level_directional_dose.tsv`; one row per state × item; exact column order frozen in `ventral_directional_dose/schema.py`)
 
-* **Identity, copied from the immutable file and verified equal:**
-  * state: `witness_id, state_id, source_or_repaired, seed, source_u, source_checkpoint_sha256, repaired_head_sha256, reconstructed_state_identity`
-  * item: `item_index, lexical_identity, canonical_C_index, canonical_C_identity, in_C_population, target_phonology, phoneme_length, homophone_group, homophone_group_size`
-  * retrieval: `retrieved_index, retrieved_lexical_identity, retrieved_phonology, C_contract_correct, lexical_identity_correct, phonology_correct`
-* **Immutable controls, copied:** `S0_{freear,canonical}_exact_correct`, `S1_{freear,canonical}_exact_correct`, `S2_{freear,canonical}_exact_correct`, `S3_{freear,canonical}_exact_correct`, and `prev_S1_rescue_{freear,canonical}` (defined in §3).
-* **Geometry (α-independent):** `shat_norm`, `retrieved_raw_glove_norm`, `cos_us_up` (= d, float64), `theta_rad`, `norm_r` (= sin θ), `dose_case_base` (ORDINARY / NEAR_COLLINEAR / NEAR_ANTIPODAL / ZERO_SHAT).
+* **Immutable identity and controls (copied and verified):**
+  * `witness_id, state_id, source_or_repaired, seed, source_u, source_checkpoint_sha256, repaired_head_sha256, reconstructed_state_identity`
+  * `item_index, lexical_identity, canonical_C_index, canonical_C_identity, in_C_population, target_phonology, phoneme_length, homophone_group, homophone_group_size`
+  * `retrieved_index, retrieved_lexical_identity, retrieved_phonology, C_contract_correct, lexical_identity_correct, phonology_correct`
+  * `S{0,1,2,3}_{freear,canonical}_exact_correct`, `prev_S1_rescue_{freear,canonical}`
+* **Base geometry (α-independent, float64 from the live float32 ŝ):** `shat_norm, retrieved_raw_glove_norm, cos_us_up, theta_rad, norm_r, dose_case, live_shat_vs_preflight_shat_max_abs_dev`
 * **Per α ∈ {a025, a050, a075, a100}:**
-  * vector checks: `{a}_dose_case`, `{a}_s_alpha_norm`, `{a}_norm_rel_err`, `{a}_cos_us_ualpha`, `{a}_cos_ualpha_up`, `{a}_angle_s_to_alpha_rad`, `{a}_angular_fraction` (= angle / θ; NA if θ ≤ EPS_ORTHO), `{a}_angle_err_rad`, `{a}_live_shat_vs_s0_max_abs_dev`;
-  * per convention c ∈ {freear, canonical}: `{a}_{c}_exact_correct`, `{a}_{c}_predicted_phonology`, `{a}_{c}_pred_length`, `{a}_{c}_eos_emitted`, `{a}_{c}_first_eos_step`, `{a}_{c}_eos_before_target_length`, `{a}_{c}_eos_after_target_length`, `{a}_{c}_terminated_by_cap` (freear; NA canonical), `{a}_{c}_first_divergence_step`, `{a}_{c}_transition_vs_S0` ∈ {WRONG_TO_CORRECT, CORRECT_TO_WRONG, CORRECT_TO_CORRECT, WRONG_TO_WRONG}, `{a}_{c}_recovers_prev_S1_rescue` (1/0 if `prev_S1_rescue`, else NA).
+  * vector checks: `{a}_s_alpha_norm, {a}_norm_rel_err, {a}_cos_us_ualpha, {a}_cos_ualpha_up, {a}_angle_from_native_rad, {a}_angular_fraction, {a}_angle_err_rad` (`angle_err` is NA for near-collinear items; `angular_fraction` is NA if θ ≤ 1e-6)
+  * per convention c: `{a}_{c}_exact_correct, {a}_{c}_predicted_phonology, {a}_{c}_pred_length, {a}_{c}_eos_emitted, {a}_{c}_first_eos_step, {a}_{c}_eos_before_target_length, {a}_{c}_eos_after_target_length, {a}_{c}_terminated_by_cap, {a}_{c}_first_divergence_step, {a}_{c}_transition_vs_S0, {a}_{c}_prev_S1_rescue, {a}_{c}_recovers_prev_S1_rescue`
 
-No metric may be added after results are seen.
+No metric may be added after results.
 
 ## 13. SUMMARY SCHEMA (`summary_metrics_directional_dose.json`)
 
-**Structure:** `results → state_id → convention → stratum → alpha (a025 … a100)`. Each leaf holds:
+**Structure:** `results → state → convention → stratum → {a025, a050, a075, a100}`. Each leaf holds:
 
 ```
 { denominator, exact_count, exact_proportion,
-  transitions_vs_S0: {WRONG_TO_CORRECT, CORRECT_TO_WRONG, CORRECT_TO_CORRECT, WRONG_TO_WRONG},
-  prev_S1_rescues_in_stratum, prev_S1_rescues_recovered, prev_S1_rescues_recovered_fraction,
+  WRONG_TO_CORRECT, CORRECT_TO_WRONG, CORRECT_TO_CORRECT, WRONG_TO_WRONG,
+  previous_S1_rescues, previous_S1_rescues_recovered, recovery_fraction,
   new_regressions (= CORRECT_TO_WRONG) }
 ```
 
-It also carries, per state × convention × stratum, the **immutable controls** S0/S1/S2/S3 exact counts, copied from the closed summary.
+Each stratum also carries `immutable_controls` = S0/S1/S2/S3 exact counts and the denominator, recomputed from the immutable item file.
 
-**Strata (frozen):**
+**Strata:**
 
 | stratum | definition |
 |---|---|
 | ALL_REPETITION_ITEMS | all 29,571 rows |
 | C_POPULATION | canonical C targets |
 | NONCANONICAL_HOMOPHONE_MEMBERS | the 1,590 non-canonical rows |
-| NATIVE_LTM_WRONG | S0 wrong (same convention) |
-| **C_CORRECT_AND_NATIVE_LTM_WRONG** | closed definition |
-| PREV_S1_RESCUES | S0 wrong ∧ S1 correct |
-| FALLBACK_CASES | dose_case ≠ ORDINARY at any α |
+| NATIVE_LTM_WRONG | S0 wrong, same convention |
+| C_CORRECT_AND_NATIVE_LTM_WRONG | closed definition |
+| PREV_S1_RESCUES | S0 wrong ∧ S1 correct, same convention |
+| NEAR_COLLINEAR_CASES | `dose_case == NEAR_COLLINEAR_NLERP` |
 
-Denominators exclude only ZERO_SHAT items.
-
-**Paired SOURCE / POST_REPAIR block** (`paired → witness → convention → alpha`):
-* SRC and REP exact counts;
-* item-level SRC→REP transitions under the same α;
-* Jaccard of the α-rescue sets;
-* per-α difference of `prev_S1_rescues_recovered_fraction`.
-
-**Gates block:** DOSE-A … DOSE-J reports.
-
-**Dose curves** are reported as the ordered raw sequences over α ∈ {0 (=S0), 0.25, 0.50, 0.75, 1.00}, with the S1 control shown separately. **No fitted curve, threshold or categorical label is computed by code.**
+**Additional blocks:**
+* `paired → witness → convention → alpha`:
+  * SRC and REP exact;
+  * SRC and REP rescue fraction (W→C / native failures);
+  * SRC and REP regressions;
+  * Jaccard of W→C rescue sets;
+  * difference in previous-S1-rescue recovered fraction;
+  * item-level SRC→REP transitions.
+* `gates` and `hard_stop_preconditions`.
+* `geometry_case_counts` per state.
 
 ## 14. SOURCE / REPAIR PAIRING
 
-Paired reporting is **mandatory** for W3_SRC ↔ W3_REP and W4_SRC ↔ W4_REP, for every α and convention. The dose diagnostic must state whether the α at which previous S1 rescues are recovered is stable across SOURCE and POST_REPAIR. It is reported as raw per-α recovered fractions and item-set overlaps, not as a thresholded verdict. No other seeds or states.
+Paired reporting is mandatory for W3_SRC↔W3_REP and W4_SRC↔W4_REP, for every α and convention. Stability across repair is described from raw values, not thresholds.
 
-## 15. VALIDITY GATES FOR FUTURE EXECUTION (all hard stops)
+## 15. VALIDITY GATES (all hard stops → `GATE_FAILURE.json` / blocker; no interpretation)
 
-On failure, the run writes `GATE_FAILURE.json` (gate, state, evidence) and stops. No summary is written, results are not interpreted, and the case returns to CENTRAL.
+**Hard-stop preconditions (real-state geometry preflight, all states, before any scientific α decode):**
+* `NO_ZERO_SHAT`
+* `NO_ZERO_PROTOTYPE`
+* `NO_NEAR_ANTIPODAL`
 
 | gate | requirement |
 |---|---|
-| **DOSE-A** prior state / control identity | All four states reconstruct with SOURCE, head, archival and composite hashes exactly as §4. The closed contract, item-level, summary and AR files hash exactly as §3. Lexicon, GloVe and bank hashes as §4. |
-| **DOSE-B** endpoint α = 0 | The α = 0 short-circuit decoded through the **new** supplier and hook reproduces immutable S0 item by item for **both** conventions: exact_correct **and** predicted_phonology on all 29,571 items per state (0 mismatches). |
-| **DOSE-C** norm preservation | For every non-ZERO_SHAT item and α: \|‖s_α‖/‖ŝ‖ − 1\| ≤ 1e-6 (float32 vector, float64 norms). |
-| **DOSE-D** directional endpoint | For every non-ZERO_SHAT item: 1 − cos(s_1, v) ≤ 1e-6. |
-| **DOSE-E** angular monotonicity | For ORDINARY items: \|∠(ŝ, s_α) − α·θ\| ≤ 1e-6 rad for all α, and ∠ nondecreasing in α within 1e-9 rad. For NEAR_ANTIPODAL_BASIS: \|∠ − α·θ\| ≤ 1e-6 rad for α < 1. |
-| **DOSE-F** shared downstream path | Every α uses the identical hook site, `decode_from_s_hat` (`sem_to_h0`, decoder, `dec_to_premotor`), motor and `gate_probe` decoders as S0. Recorded tokens reproduce the historical return values. Encoder output is bitwise stable across AR steps. |
-| **DOSE-G** no forbidden access | The FULL-fusion, gate and dorsal guards are never hit (the frozen `ventral_only` guard is reused). |
-| **DOSE-H** immutable previous controls | Before and after execution, the closed `scientific_execution/SHA256SUMS` (37 entries) and freeze `SHA256SUMS` (17 entries) verify, and the closed worktree tracked tree equals `0f25b5b8…`. |
-| **DOSE-I** parameter immutability | Per-state `state_dict` SHA256 is identical before and after evaluation, and equal to the closed preflight values (W3_SRC `4a8d4807…`, W3_REP `c72b87d9…`, W4_SRC `004dda2d…`, W4_REP `d1102732…`). |
-| **DOSE-J** retrieval identity reuse | `retrieved_index` recomputed by the frozen historical rule equals the immutable file for every item and state. Live ŝ in the decode matches the retrieval ŝ within 1e-5 max abs, with identical top-1 (closed SHAT rule). |
+| **DOSE-A** | State, control and data identity: SOURCE, head, archival and composite hashes; closed contract and outputs; lexicon, GloVe and bank. |
+| **DOSE-B** | α = 0 through the **new** supplier reproduces immutable S0 item by item: exact_correct **and** predicted_phonology, **both** conventions, all 29,571 items per state (0 mismatches). |
+| **DOSE-C** | For every item and scientific α: \|‖s_α‖/‖ŝ‖ − 1\| ≤ 1e-6. |
+| **DOSE-D** | For every item: 1 − cos(s_1, v) ≤ 1e-6. |
+| **DOSE-E** | ORDINARY items: \|∠(ŝ, s_α) − α·θ\| ≤ 1e-6 rad and ∠ nondecreasing in α within 1e-9 rad. NEAR_COLLINEAR items: ∠(ŝ, s_α) ≤ θ + 1e-6 and nondecreasing within 1e-9 rad. |
+| **DOSE-F** | Shared downstream path: every decode runs through the frozen `decode_condition` (route `ltm`). The tensor entering `sem_to_h0` equals the supplied vector (bitwise, checked every bind). Recorded tokens reproduce the historical returns. Encoder output is bitwise stable across AR steps. |
+| **DOSE-G** | The frozen `ventral_only` guard is never hit (no gate, FULL or dorsal). |
+| **DOSE-H** | The closed freeze and results SHA256SUMS verify before and after, and the immutable controls hash exactly. |
+| **DOSE-I** | Per-state `state_dict` SHA256 is unchanged before and after, and equal to the closed preflight values (§4). |
+| **DOSE-J** | Recomputed top-1 retrieval equals the immutable `retrieved_index` for every item. The live ŝ in dose decodes equals the preflight ŝ within 1e-5 max abs, with identical top-1. |
 
-## 16. INTERPRETATION FAMILIES (CENTRAL, embedded verbatim in substance)
+### 15b. Real-state geometry / provenance preflight (mandatory, after implementation freeze)
 
-* **DR1 — EARLY RESCUE.** Substantial rescue appears by α ≤ 0.50 with low regression. *Implication:* a small continuous semantic correction may be sufficient; minimal semantic refinement becomes high priority.
-* **DR2 — LATE / NEAR-PROTOTYPE RESCUE.** Large rescue appears mainly at α ≥ 0.75. *Implication:* the inference solution approaches lexical prototype replacement. Do not immediately build an attractor; training-only compatibility becomes the preferred next family.
-* **DR3 — NON-MONOTONIC / REGRESSION-HEAVY.** Intermediate movement causes substantial regressions or unstable behaviour. *Implication:* do not prioritize prototype-directed architectural refinement; training-only becomes preferred.
-* **DR4 — SMOOTH MONOTONIC DOSE RESPONSE.** Decoder compatibility improves progressively as semantic direction approaches the prototype. *Implication:* strong evidence for a graded functional compatibility axis; a minimal differentiable refinement pilot becomes justified.
+For each state and all 29,571 items:
+* reconstruct the state;
+* DOSE-A, DOSE-I and DOSE-J;
+* compute ŝ (frozen `encode_all`, batch 256, bank order), v, d, norm_r;
+* count ZERO_SHAT, ZERO_PROTOTYPE, NEAR_ANTIPODAL, NEAR_COLLINEAR and ORDINARY;
+* run DOSE-B with the α = 0 supplier, both conventions.
 
-**Binding application rules:**
-* No categorical threshold for "substantial", "large" or "low" is defined. None may be introduced after results are seen.
-* The recap must expose raw per-α rescue and regression counts, previous-S1-rescue recovery fractions and the paired SOURCE/REPAIR sequences, then state only conclusions literally supported by those numbers.
-* Classification is per state and convention, with the primary convention leading.
-* If states or conventions materially disagree, no single family is forced; the disagreement is reported.
-* The α = 1 result must always be read against **S1** (same direction, different norm) and **S3** (same norm source, different direction), never substituted for them.
-* "Off-manifold" is not an admissible conclusion (no operational manifold test is preregistered).
+**No α ∈ {0.25, 0.50, 0.75, 1.00} is decoded in the preflight.**
+
+If any hard stop or gate fails, write `CENTRAL_STEERING_BLOCKER_DIRECTIONAL_DOSE.md` with evidence and STOP (`SCIENTIFIC_EXECUTION=NO`).
+
+**`--execute` refuses unless all of the following hold:**
+* contract status FROZEN and SHA256 equal to the CLI value;
+* every `IMPLEMENTATION_MANIFEST.json` hash matches;
+* HEAD equals the CLI-provided implementation-freeze commit;
+* `git status --porcelain` is empty;
+* a fresh in-process real-state preflight (§15b) passes for all four states **before** any scientific decode;
+* the scientific output directory does not exist.
+
+Execution runs exactly once.
+
+## 16. INTERPRETATION FAMILIES (CENTRAL)
+
+* **DR1 — EARLY RESCUE.** Substantial rescue by α ≤ 0.50 with low regression. *Implication:* a small continuous correction may suffice; minimal semantic refinement becomes high priority.
+* **DR2 — LATE / NEAR-PROTOTYPE RESCUE.** Large rescue mainly at α ≥ 0.75. *Implication:* the solution approaches prototype replacement; do not immediately build an attractor; training-only compatibility becomes preferred.
+* **DR3 — NON-MONOTONIC / REGRESSION-HEAVY.** Intermediate movement creates substantial regressions or instability. *Implication:* do not prioritize prototype-directed refinement; training-only preferred.
+* **DR4 — SMOOTH MONOTONIC DOSE RESPONSE.** Compatibility improves progressively toward the prototype. *Implication:* graded functional compatibility axis; a minimal differentiable refinement becomes justified.
+
+**Binding rules:**
+* No numeric threshold for "substantial", "large" or "low", invented before or after results.
+* Raw curves first.
+* If several families apply descriptively, say so.
+* If states or conventions materially disagree, do not force one family.
+* "Off-manifold" is inadmissible.
+
+### 16b. α = 1 factorization (mandatory)
+
+α = 1 (prototype direction + native norm) is compared against **S1** (prototype direction + prototype norm) and **S3** (native direction + prototype norm), per state and convention. Required fields:
+* exact counts;
+* α1 vs S1 exact difference and item disagreement count;
+* α1 rescue overlap with S1 rescues;
+* α1 regressions;
+* a descriptive statement of whether prototype direction alone is sufficient despite the native norm.
+
+No unpreregistered condition may be created.
+
+### 16c. Programme question
+
+The final handoff answers whether the frozen dose response supports prioritizing **T** (training-only compatibility) or **R** (minimal semantic refinement), or **NO_DECISIVE_PRIORITY**. This is a steering recommendation only; neither is implemented.
 
 ## 17. NOT_ESTABLISHED (before execution)
 
-* Any dose-response shape. No α condition has been evaluated.
-* That a small directional correction suffices, or that near-prototype replacement is needed.
-* That a semantic attractor or any refinement architecture is necessary.
-* Why existing supervision (`L_dec` from ŝ, `L_align`, Naming from raw GloVe, retrieval CE; see `VENTRAL_INTERFACE_TRAINING_SUPERVISION_AUDIT.md`) leaves the decoder more compatible with prototype direction than with native ŝ direction.
-* Generality beyond the four frozen states.
-* The content of the "flag" proposal (`YAIR_FLAG_PROVENANCE_AUDIT.md`).
+* The dose-response shape.
+* Whether a small correction suffices.
+* Whether refinement or an attractor is necessary.
+* Why existing supervision leaves the decoder more compatible with prototype direction than with native ŝ direction.
+* Generality beyond the four states.
+
+### 17b. Training-audit boundary (binding)
+
+Established historical facts (routing only; not gradient magnitude or causal effect):
+* `L_dec` already supervises the decoder from encoder-produced ŝ;
+* `L_align` already combines cosine and MSE alignment;
+* Naming already supervises the decoder from raw GloVe;
+* C retrieval trains the encoder and `to_semantic` but not the decoder;
+* FULL repetition and `L_gate` send gradient through the confidence into ŝ.
+
+None of "train decoder on ŝ", "add cosine alignment", "add MSE alignment" or "train from raw GloVe" may be proposed as new without identifying a materially new mechanism relative to V6. No such mechanism is designed in this workstream.
+
+### 17c. Yair flag bookkeeping (binding)
+
+`YAIR_FLAG_IDENTITY=SEMANTIC_ATTRACTOR_FLAG_CONFIRMED`: `semantic_attractor = True / False`, controlling a proposed recurrent semantic-refinement mechanism. Evidence is substantive but comes from paraphrased contemporary meeting notes; the exact wiring is unspecified. **The flag is not implemented and no attractor is implemented.**
 
 ## 18. STOP CONDITIONS
 
-* **This design pass:** STOP after the design package. No driver, no α execution, no dose figures, no training, no architecture, gate or lesion work, no attractor, no flag implementation.
-* **Future execution** (only if CENTRAL authorizes):
-  1. freeze contract, implementation and tests with hashes before any α run;
-  2. execute exactly once;
-  3. any DOSE gate failure → STOP and return to CENTRAL, with no interpretation;
-  4. after packaging → STOP and return to CENTRAL; no training or refinement follows automatically.
+* Contract amendment → implementation → tests → freeze → real-state preflight → (if it passes) exactly-one execution → validation → analysis → handoff → **STOP**.
+* Any hard stop or gate failure → STOP with blocker, no interpretation.
+* Never: training, refinement, attractor, flag, gate change, lesion, or full-ceiling run.
