@@ -75,6 +75,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import copy
+import hashlib
 import json
 import os
 import random
@@ -192,6 +193,19 @@ NAMING_MAX_STEPS = 10               # free-AR decode cap, never target length
 # lexicon is 9 phonemes, so 12 cannot truncate a correct answer while still
 # scoring over-generation and non-termination as errors.
 FREE_AR_MAX_STEPS = 12
+
+# ---- C-ALIGN CAUSAL PILOT: the V1 amendment (CENTRAL-authorized) ----------
+# The resume guard below refuses ANY change of the C objective.  The single
+# sanctioned exception is the preregistered four-arm c-align pilot, whose ON
+# arms continue a c_align_weight=0.0 checkpoint at exactly 0.1 and must
+# declare it explicitly.  No other pair of values is ever accepted, and no
+# other guard is relaxed by the declaration.
+C_ALIGN_PILOT_FROM = 0.0
+C_ALIGN_PILOT_TO = 0.1
+# Streams each interleaved task consumes, for the pilot's batch/task digest.
+TASK_STREAMS = {"repetition": ("repetition", "pool"),
+                "naming": ("naming",),
+                "comprehension": ("comprehension",)}
 
 # ---- C / N population: the frozen Phase 2C subset3288 ----
 SUBSET_PER_BAND = 822
@@ -777,7 +791,10 @@ class JointScratchTrainer:
                  wm_hidden: int = CANONICAL_HIDDEN,
                  enc_hidden: int = CANONICAL_HIDDEN,
                  dec_hidden: int = CANONICAL_HIDDEN,
-                 reanchor_schedule: bool = False) -> None:
+                 reanchor_schedule: bool = False,
+                 declare_c_align_transition: bool = False,
+                 pilot_provenance: Optional[Dict[str, str]] = None,
+                 batch_digest_path: Optional[str] = None) -> None:
         presence = objective_presence(regime)          # validates the regime
         self.regime = regime
         self.retrieval_enabled = presence["retrieval_enabled"]
@@ -866,6 +883,23 @@ class JointScratchTrainer:
                 f"c_align_weight={self.c_align_weight} requires the "
                 f"comprehension stream, which regime {regime!r} does not draw. "
                 f"Use a regime with retrieval enabled ({RETRIEVAL_REGIMES}).")
+
+        # C-align causal pilot (V1 amendment).  The declaration is accepted
+        # ONLY for the preregistered target weight, so a typo can never turn
+        # into a silently different experiment.  It authorizes exactly one
+        # transition, 0.0 -> 0.1, inside load_state_dict.
+        self.declare_c_align_transition = bool(declare_c_align_transition)
+        self.pilot_provenance = dict(pilot_provenance or {})
+        if self.declare_c_align_transition and (
+                self.c_align_weight != C_ALIGN_PILOT_TO):
+            raise RuntimeError(
+                f"--declare-c-align-transition is the c-align causal pilot's "
+                f"ON-arm declaration and permits exactly "
+                f"{C_ALIGN_PILOT_FROM} -> {C_ALIGN_PILOT_TO}; the configured "
+                f"c_align_weight is {self.c_align_weight}.")
+        self.batch_digest_path = batch_digest_path
+        self._digest_steps: List[str] = []
+        self._digest_cumulative = ""
 
         # FINAL-8 knob: the historical ventral-decode weight.  None keeps the
         # canonical 0.5, so every earlier run and every command line that does
@@ -1065,6 +1099,46 @@ class JointScratchTrainer:
         return build_batch(self.entries, self.bank_raw, self.vocab, idx,
                            self.device)
 
+    # ------------------------------------------- c-align pilot: batch digests
+    def step_digest_payload(self, step: int, task: str) -> str:
+        """Canonical text for ONE interleaved step: the step index, its task and
+        the ordered item indices of every stream that step consumes.  Pure
+        function of (schedule seed, step, cursors): it advances nothing."""
+        parts = [f"{int(step)}\t{task}"]
+        for stream in TASK_STREAMS[task]:
+            idx = self.streams[stream].indices(self.cursors[stream])
+            parts.append(f"{stream}:" + ",".join(str(int(i)) for i in idx))
+        return "\t".join(parts)
+
+    def record_step_digest(self, step: int, task: str) -> None:
+        """Accumulate one step, and close the macro-cycle when it is complete.
+
+        The digest is written for whole macro-cycles only, so ON and OFF arms
+        of a pair produce byte-identical files iff they consumed exactly the
+        same tasks and the same items in the same order.
+        """
+        if not self.batch_digest_path:
+            return
+        self._digest_steps.append(self.step_digest_payload(step, task))
+        rel = int(step) - int(self.schedule_anchor_step)
+        if (rel + 1) % self.cycle_steps:
+            return
+        cycle = rel // self.cycle_steps
+        body = "\n".join(self._digest_steps) + "\n"
+        digest = hashlib.sha256(body.encode()).hexdigest()
+        self._digest_cumulative = hashlib.sha256(
+            (self._digest_cumulative + digest).encode()).hexdigest()
+        first = int(step) - self.cycle_steps + 1
+        tasks = ",".join(p.split("\t")[1] for p in self._digest_steps)
+        new = not os.path.exists(self.batch_digest_path)
+        with open(self.batch_digest_path, "a") as fh:
+            if new:
+                fh.write("cycle_index\tstep_start\tstep_end\ttasks\t"
+                         "cycle_digest\tcumulative_digest\n")
+            fh.write(f"{cycle}\t{first}\t{int(step)}\t{tasks}\t{digest}\t"
+                     f"{self._digest_cumulative}\n")
+        self._digest_steps = []
+
     def peek_indices(self, stream: str, k: int = 1) -> List[List[int]]:
         """The next `k` index lists of a stream without advancing it."""
         c = self.cursors[stream]
@@ -1252,6 +1326,9 @@ class JointScratchTrainer:
         # The task is resolved first: under the task-specific policy the LR of
         # this step is a property of the task it trains.
         task = self.task_for_step(self.global_step)
+        # Digest BEFORE the step consumes anything: the cursors still point at
+        # the items this step is about to draw.
+        self.record_step_digest(self.global_step, task)
         lr = self.current_lr(task)
         optim = self.optimizer_for(task)
         for g in optim.param_groups:
@@ -1753,6 +1830,7 @@ class JointScratchTrainer:
             # FINAL-2A: weight on the C stream's own semantic-target alignment
             # (losses.alignment_loss on the retrieval s_hat).  0.0 = FINAL-1.
             "c_align_weight": self.c_align_weight,
+            "c_align_transition_declared": bool(self.declare_c_align_transition),
             "c_stream_objective": (
                 f"{LAMBDA_C} * retrieval_CE + {self.c_align_weight} * "
                 f"alignment_loss(s_hat_C, GloVe_C)"
@@ -1857,12 +1935,48 @@ class JointScratchTrainer:
         # Checkpoints predating FINAL-2A carry no weight; they were produced
         # with the FINAL-1 objective, i.e. 0.0.  Resuming across a change of
         # the C objective would silently splice two different experiments.
+        c_align_transition: Optional[dict] = None
         ck_calign = float(ckpt.get("c_align_weight", 0.0))
         if ck_calign != self.c_align_weight:
+            # The ONE sanctioned exception is the preregistered c-align causal
+            # pilot's ON arm: an explicitly declared 0.0 -> 0.1 continuation.
+            # Every other mismatch still raises, and the declaration relaxes
+            # no other guard in this method.
+            if not (self.declare_c_align_transition
+                    and ck_calign == C_ALIGN_PILOT_FROM
+                    and self.c_align_weight == C_ALIGN_PILOT_TO):
+                raise RuntimeError(
+                    f"checkpoint c_align_weight {ck_calign} != "
+                    f"{self.c_align_weight}: this checkpoint was trained under "
+                    f"a different comprehension objective")
+            c_align_transition = {
+                "changed": ["c_align_weight"],
+                "old": C_ALIGN_PILOT_FROM,
+                "new": C_ALIGN_PILOT_TO,
+                "transition_step": int(ckpt["global_step"]),
+                "declared_causal_pilot": True,
+                "pilot_contract_sha256": self.pilot_provenance.get(
+                    "pilot_contract_sha256"),
+                "pilot_freeze_commit": self.pilot_provenance.get(
+                    "pilot_freeze_commit"),
+                "source_checkpoint": source,
+                "source_commit": (ckpt.get("git") or {}).get("commit"),
+                "new_commit": (git_state(ROOT) or {}).get("commit"),
+                "declared_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            }
+            print(f"[c-align pilot] DECLARED c_align_weight transition "
+                  f"{C_ALIGN_PILOT_FROM} -> {C_ALIGN_PILOT_TO} at step "
+                  f"{ckpt['global_step']}")
+        elif self.declare_c_align_transition:
+            # Nothing to declare: either this is an OFF arm (which must never
+            # record a fake transition) or an ON arm being resumed from its own
+            # already-transitioned checkpoint.  A pilot arm is never restarted
+            # unilaterally, so refusing here is correct in both cases.
             raise RuntimeError(
-                f"checkpoint c_align_weight {ck_calign} != "
-                f"{self.c_align_weight}: this checkpoint was trained under a "
-                f"different comprehension objective")
+                f"--declare-c-align-transition was passed but the checkpoint "
+                f"is already at c_align_weight {ck_calign}: there is no "
+                f"{C_ALIGN_PILOT_FROM} -> {C_ALIGN_PILOT_TO} transition to "
+                f"declare")
         # Checkpoints predating FINAL-3 carry no schedule; they are summed.
         ck_sched = ckpt.get("schedule", SUMMED_SCHEDULE)
         if ck_sched != self.schedule:
@@ -1912,6 +2026,11 @@ class JointScratchTrainer:
             int(ckpt["lr_boundary_steps"]))
         ck_opt_policy = ckpt.get("optimizer_policy", OPT_POLICY_SHARED)
         self.phase_transitions = list(ckpt.get("phase_transitions", []))
+        if c_align_transition is not None:
+            # Appended AFTER the checkpoint's own history is restored, so the
+            # declared pilot transition is recorded exactly once and never
+            # overwritten by the resumed history.
+            self.phase_transitions.append(c_align_transition)
 
         if dict(ck_policy) != dict(self.lr_policy):
             changed.append("lr_policy")
@@ -2279,6 +2398,22 @@ def build_parser() -> argparse.ArgumentParser:
                         "to LAMBDA_C * retrieval_CE and NOT scaled by "
                         "LAMBDA_C.  0.0 (default) = the frozen FINAL-1 "
                         "objective; FINAL-2A uses 1.0.")
+    p.add_argument("--declare-c-align-transition", action="store_true",
+                   help="C-ALIGN CAUSAL PILOT (V1 amendment): declare the one "
+                        "sanctioned continuation across a C-objective change, "
+                        f"{C_ALIGN_PILOT_FROM} -> {C_ALIGN_PILOT_TO}, for an "
+                        "ON arm of the preregistered four-arm pilot.  Any "
+                        "other pair of weights is still refused, and no other "
+                        "resume guard is relaxed.  OFF arms never pass it.")
+    p.add_argument("--pilot-contract-sha256", default=None,
+                   help="sha256 of the frozen pilot contract, recorded in the "
+                        "declared transition's provenance.")
+    p.add_argument("--pilot-freeze-commit", default=None,
+                   help="implementation-freeze commit recorded in the "
+                        "declared transition's provenance.")
+    p.add_argument("--batch-digest-path", default=None,
+                   help="write the per-macro-cycle task/batch digest to this "
+                        "file (c-align pilot validity gate V6).")
     p.add_argument("--torch-deterministic", action="store_true",
                    help="opt-in strict determinism: "
                         "torch.use_deterministic_algorithms(True) + "
@@ -2387,7 +2522,13 @@ def main(argv: Optional[List[str]] = None) -> int:
         dec_weight=args.dec_weight,
         wm_hidden=args.wm_hidden, enc_hidden=args.enc_hidden,
         dec_hidden=args.dec_hidden,
-        reanchor_schedule=args.reanchor_schedule)
+        reanchor_schedule=args.reanchor_schedule,
+        declare_c_align_transition=getattr(
+            args, "declare_c_align_transition", False),
+        pilot_provenance={
+            "pilot_contract_sha256": getattr(args, "pilot_contract_sha256", None),
+            "pilot_freeze_commit": getattr(args, "pilot_freeze_commit", None)},
+        batch_digest_path=getattr(args, "batch_digest_path", None))
 
     run_id = args.run_id or f"{args.regime}_seed{args.seed}"
     run_dir = os.path.join(args.out_dir, run_id)
