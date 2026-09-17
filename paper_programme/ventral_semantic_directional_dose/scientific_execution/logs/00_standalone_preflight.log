@@ -1,0 +1,6 @@
+CMD=python3 scripts/ventral_directional_dose/run_directional_dose.py --preflight --out /Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/ventral_directional_dose_execution_20260917/standalone_preflight
+HEAD=ea1098771ac52cf3a4c591ba650e58d73b9836e4
+START_UTC=2026-09-17T00:34:12Z
+PREFLIGHT=PASS report_sha256=8a442256ac57d169bc0625eb179b622b0131e7c73a80047f933291ae23b55fdd
+exit=0
+END_UTC=2026-09-17T00:38:08Z

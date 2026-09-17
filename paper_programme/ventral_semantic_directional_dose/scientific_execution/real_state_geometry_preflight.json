@@ -1,0 +1,94 @@
+{
+ "W3_REP": {
+  "counts": {
+   "NEAR_ANTIPODAL": 0,
+   "NEAR_COLLINEAR_NLERP": 0,
+   "ORDINARY": 29571,
+   "ZERO_PROTOTYPE": 0,
+   "ZERO_SHAT": 0,
+   "n_items": 29571
+  },
+  "descriptive_bounds": {
+   "cos_us_up_max": 0.9107672386587147,
+   "cos_us_up_min": 0.39057485312390205,
+   "norm_r_min": 0.4129201339072488,
+   "prototype_norm_min": 2.610224743890797,
+   "shat_norm_min": 2.6247240703549113
+  },
+  "hard_stop_preconditions": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "ordinary_plus_collinear_equals_n": true
+ },
+ "W3_SRC": {
+  "counts": {
+   "NEAR_ANTIPODAL": 0,
+   "NEAR_COLLINEAR_NLERP": 0,
+   "ORDINARY": 29571,
+   "ZERO_PROTOTYPE": 0,
+   "ZERO_SHAT": 0,
+   "n_items": 29571
+  },
+  "descriptive_bounds": {
+   "cos_us_up_max": 0.9129678163332738,
+   "cos_us_up_min": 0.3898338073173673,
+   "norm_r_min": 0.40803157517483146,
+   "prototype_norm_min": 2.610224743890797,
+   "shat_norm_min": 2.631141891310343
+  },
+  "hard_stop_preconditions": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "ordinary_plus_collinear_equals_n": true
+ },
+ "W4_REP": {
+  "counts": {
+   "NEAR_ANTIPODAL": 0,
+   "NEAR_COLLINEAR_NLERP": 0,
+   "ORDINARY": 29571,
+   "ZERO_PROTOTYPE": 0,
+   "ZERO_SHAT": 0,
+   "n_items": 29571
+  },
+  "descriptive_bounds": {
+   "cos_us_up_max": 0.9073729232213018,
+   "cos_us_up_min": 0.3803955807330928,
+   "norm_r_min": 0.42032651380186636,
+   "prototype_norm_min": 2.610224743890797,
+   "shat_norm_min": 3.175506550667058
+  },
+  "hard_stop_preconditions": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "ordinary_plus_collinear_equals_n": true
+ },
+ "W4_SRC": {
+  "counts": {
+   "NEAR_ANTIPODAL": 0,
+   "NEAR_COLLINEAR_NLERP": 0,
+   "ORDINARY": 29571,
+   "ZERO_PROTOTYPE": 0,
+   "ZERO_SHAT": 0,
+   "n_items": 29571
+  },
+  "descriptive_bounds": {
+   "cos_us_up_max": 0.9072304639799613,
+   "cos_us_up_min": 0.38023042248121114,
+   "norm_r_min": 0.4206339087932697,
+   "prototype_norm_min": 2.610224743890797,
+   "shat_norm_min": 3.181570367363727
+  },
+  "hard_stop_preconditions": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "ordinary_plus_collinear_equals_n": true
+ }
+}

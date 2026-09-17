@@ -1,0 +1,4283 @@
+{
+ "alpha1_factorization": {
+  "W3_REP": {
+   "canonical": {
+    "S1_regressions": 0,
+    "S1_rescues": 3193,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7435014093329158,
+    "S3_regressions": 2110,
+    "S3_rescues": 382,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -5459,
+    "alpha1_minus_S3_exact": -538,
+    "alpha1_regressions": 4640,
+    "alpha1_rescues": 2374,
+    "alpha1_rescues_also_S1_rescues": 2374,
+    "alpha1_vs_S1_item_disagreements": 5459,
+    "alpha1_vs_S3_item_disagreements": 7018,
+    "alpha1_wrong_S1_correct": 5459,
+    "exact": {
+     "S0": 26378,
+     "S1": 29571,
+     "S3": 24650,
+     "alpha1": 24112
+    },
+    "n": 29571
+   },
+   "freear": {
+    "S1_regressions": 0,
+    "S1_rescues": 3193,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7435014093329158,
+    "S3_regressions": 2110,
+    "S3_rescues": 382,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -5459,
+    "alpha1_minus_S3_exact": -538,
+    "alpha1_regressions": 4640,
+    "alpha1_rescues": 2374,
+    "alpha1_rescues_also_S1_rescues": 2374,
+    "alpha1_vs_S1_item_disagreements": 5459,
+    "alpha1_vs_S3_item_disagreements": 7018,
+    "alpha1_wrong_S1_correct": 5459,
+    "exact": {
+     "S0": 26378,
+     "S1": 29571,
+     "S3": 24650,
+     "alpha1": 24112
+    },
+    "n": 29571
+   }
+  },
+  "W3_SRC": {
+   "canonical": {
+    "S1_regressions": 38,
+    "S1_rescues": 3195,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7439749608763693,
+    "S3_regressions": 2085,
+    "S3_rescues": 397,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -5446,
+    "alpha1_minus_S3_exact": -601,
+    "alpha1_regressions": 4666,
+    "alpha1_rescues": 2377,
+    "alpha1_rescues_also_S1_rescues": 2377,
+    "alpha1_vs_S1_item_disagreements": 5446,
+    "alpha1_vs_S3_item_disagreements": 7027,
+    "alpha1_wrong_S1_correct": 5446,
+    "exact": {
+     "S0": 26372,
+     "S1": 29529,
+     "S3": 24684,
+     "alpha1": 24083
+    },
+    "n": 29571
+   },
+   "freear": {
+    "S1_regressions": 38,
+    "S1_rescues": 3195,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7439749608763693,
+    "S3_regressions": 2085,
+    "S3_rescues": 397,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -5446,
+    "alpha1_minus_S3_exact": -601,
+    "alpha1_regressions": 4666,
+    "alpha1_rescues": 2377,
+    "alpha1_rescues_also_S1_rescues": 2377,
+    "alpha1_vs_S1_item_disagreements": 5446,
+    "alpha1_vs_S3_item_disagreements": 7027,
+    "alpha1_wrong_S1_correct": 5446,
+    "exact": {
+     "S0": 26372,
+     "S1": 29529,
+     "S3": 24684,
+     "alpha1": 24083
+    },
+    "n": 29571
+   }
+  },
+  "W4_REP": {
+   "canonical": {
+    "S1_regressions": 0,
+    "S1_rescues": 3662,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7168214090660842,
+    "S3_regressions": 2556,
+    "S3_rescues": 489,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -6580,
+    "alpha1_minus_S3_exact": -851,
+    "alpha1_regressions": 5543,
+    "alpha1_rescues": 2625,
+    "alpha1_rescues_also_S1_rescues": 2625,
+    "alpha1_vs_S1_item_disagreements": 6580,
+    "alpha1_vs_S3_item_disagreements": 7981,
+    "alpha1_wrong_S1_correct": 6580,
+    "exact": {
+     "S0": 25909,
+     "S1": 29571,
+     "S3": 23842,
+     "alpha1": 22991
+    },
+    "n": 29571
+   },
+   "freear": {
+    "S1_regressions": 0,
+    "S1_rescues": 3662,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7168214090660842,
+    "S3_regressions": 2556,
+    "S3_rescues": 489,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -6580,
+    "alpha1_minus_S3_exact": -851,
+    "alpha1_regressions": 5543,
+    "alpha1_rescues": 2625,
+    "alpha1_rescues_also_S1_rescues": 2625,
+    "alpha1_vs_S1_item_disagreements": 6580,
+    "alpha1_vs_S3_item_disagreements": 7981,
+    "alpha1_wrong_S1_correct": 6580,
+    "exact": {
+     "S0": 25909,
+     "S1": 29571,
+     "S3": 23842,
+     "alpha1": 22991
+    },
+    "n": 29571
+   }
+  },
+  "W4_SRC": {
+   "canonical": {
+    "S1_regressions": 46,
+    "S1_rescues": 3642,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7171883580450302,
+    "S3_regressions": 2545,
+    "S3_rescues": 488,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -6571,
+    "alpha1_minus_S3_exact": -918,
+    "alpha1_regressions": 5587,
+    "alpha1_rescues": 2612,
+    "alpha1_rescues_also_S1_rescues": 2612,
+    "alpha1_vs_S1_item_disagreements": 6571,
+    "alpha1_vs_S3_item_disagreements": 8002,
+    "alpha1_wrong_S1_correct": 6571,
+    "exact": {
+     "S0": 25924,
+     "S1": 29520,
+     "S3": 23867,
+     "alpha1": 22949
+    },
+    "n": 29571
+   },
+   "freear": {
+    "S1_regressions": 46,
+    "S1_rescues": 3642,
+    "S1_rescues_also_alpha1_rescues_fraction": 0.7171883580450302,
+    "S3_regressions": 2545,
+    "S3_rescues": 488,
+    "alpha1_correct_S1_wrong": 0,
+    "alpha1_minus_S1_exact": -6571,
+    "alpha1_minus_S3_exact": -918,
+    "alpha1_regressions": 5587,
+    "alpha1_rescues": 2612,
+    "alpha1_rescues_also_S1_rescues": 2612,
+    "alpha1_vs_S1_item_disagreements": 6571,
+    "alpha1_vs_S3_item_disagreements": 8002,
+    "alpha1_wrong_S1_correct": 6571,
+    "exact": {
+     "S0": 25924,
+     "S1": 29520,
+     "S3": 23867,
+     "alpha1": 22949
+    },
+    "n": 29571
+   }
+  }
+ },
+ "alphas": [
+  0.25,
+  0.5,
+  0.75,
+  1.0
+ ],
+ "contract_sha256": "f5399058d4bf53c313fc4bd179c88b1cebb35348fecf74192a67bb107ec7608c",
+ "gates": {
+  "all_pass": true
+ },
+ "hard_stop_preconditions": {
+  "W3_REP": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "W3_SRC": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "W4_REP": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  },
+  "W4_SRC": {
+   "NO_NEAR_ANTIPODAL": true,
+   "NO_ZERO_PROTOTYPE": true,
+   "NO_ZERO_SHAT": true
+  }
+ },
+ "paired": {
+  "W3": {
+   "canonical": {
+    "a025": {
+     "REP": {
+      "exact": 20441,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.2345756341998121,
+      "regressions": 6686,
+      "rescue_fraction": 0.2345756341998121,
+      "rescues": 749
+     },
+     "SRC": {
+      "exact": 20447,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.2325508607198748,
+      "regressions": 6668,
+      "rescue_fraction": 0.23226008127539857,
+      "rescues": 743
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 20322,
+      "CORRECT_TO_WRONG": 125,
+      "WRONG_TO_CORRECT": 119,
+      "WRONG_TO_WRONG": 9005
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": 0.002024773479937292,
+     "rescue_set_jaccard": 0.907928388746803
+    },
+    "a050": {
+     "REP": {
+      "exact": 13052,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.1803946132164109,
+      "regressions": 13902,
+      "rescue_fraction": 0.1803946132164109,
+      "rescues": 576
+     },
+     "SRC": {
+      "exact": 13020,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.178716744913928,
+      "regressions": 13923,
+      "rescue_fraction": 0.17849327914973429,
+      "rescues": 571
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 12937,
+      "CORRECT_TO_WRONG": 83,
+      "WRONG_TO_CORRECT": 115,
+      "WRONG_TO_WRONG": 16436
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": 0.0016778683024828989,
+     "rescue_set_jaccard": 0.9116666666666666
+    },
+    "a075": {
+     "REP": {
+      "exact": 14398,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.28687754462887566,
+      "regressions": 12896,
+      "rescue_fraction": 0.28687754462887566,
+      "rescues": 916
+     },
+     "SRC": {
+      "exact": 14380,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.28450704225352114,
+      "regressions": 12901,
+      "rescue_fraction": 0.2841512972804001,
+      "rescues": 909
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 14310,
+      "CORRECT_TO_WRONG": 70,
+      "WRONG_TO_CORRECT": 88,
+      "WRONG_TO_WRONG": 15103
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": 0.002370502375354522,
+     "rescue_set_jaccard": 0.9271383315733897
+    },
+    "a100": {
+     "REP": {
+      "exact": 24112,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.7435014093329158,
+      "regressions": 4640,
+      "rescue_fraction": 0.7435014093329158,
+      "rescues": 2374
+     },
+     "SRC": {
+      "exact": 24083,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.7439749608763693,
+      "regressions": 4666,
+      "rescue_fraction": 0.7430447014692091,
+      "rescues": 2377
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 24073,
+      "CORRECT_TO_WRONG": 10,
+      "WRONG_TO_CORRECT": 39,
+      "WRONG_TO_WRONG": 5449
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.0004735515434535209,
+     "rescue_set_jaccard": 0.959983498349835
+    }
+   },
+   "freear": {
+    "a025": {
+     "REP": {
+      "exact": 20441,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.2345756341998121,
+      "regressions": 6686,
+      "rescue_fraction": 0.2345756341998121,
+      "rescues": 749
+     },
+     "SRC": {
+      "exact": 20447,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.2325508607198748,
+      "regressions": 6668,
+      "rescue_fraction": 0.23226008127539857,
+      "rescues": 743
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 20322,
+      "CORRECT_TO_WRONG": 125,
+      "WRONG_TO_CORRECT": 119,
+      "WRONG_TO_WRONG": 9005
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": 0.002024773479937292,
+     "rescue_set_jaccard": 0.907928388746803
+    },
+    "a050": {
+     "REP": {
+      "exact": 13052,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.1803946132164109,
+      "regressions": 13902,
+      "rescue_fraction": 0.1803946132164109,
+      "rescues": 576
+     },
+     "SRC": {
+      "exact": 13020,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.178716744913928,
+      "regressions": 13923,
+      "rescue_fraction": 0.17849327914973429,
+      "rescues": 571
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 12937,
+      "CORRECT_TO_WRONG": 83,
+      "WRONG_TO_CORRECT": 115,
+      "WRONG_TO_WRONG": 16436
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": 0.0016778683024828989,
+     "rescue_set_jaccard": 0.9116666666666666
+    },
+    "a075": {
+     "REP": {
+      "exact": 14398,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.28687754462887566,
+      "regressions": 12896,
+      "rescue_fraction": 0.28687754462887566,
+      "rescues": 916
+     },
+     "SRC": {
+      "exact": 14380,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.28450704225352114,
+      "regressions": 12901,
+      "rescue_fraction": 0.2841512972804001,
+      "rescues": 909
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 14310,
+      "CORRECT_TO_WRONG": 70,
+      "WRONG_TO_CORRECT": 88,
+      "WRONG_TO_WRONG": 15103
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": 0.002370502375354522,
+     "rescue_set_jaccard": 0.9271383315733897
+    },
+    "a100": {
+     "REP": {
+      "exact": 24112,
+      "native_failures": 3193,
+      "prev_S1_recovery_fraction": 0.7435014093329158,
+      "regressions": 4640,
+      "rescue_fraction": 0.7435014093329158,
+      "rescues": 2374
+     },
+     "SRC": {
+      "exact": 24083,
+      "native_failures": 3199,
+      "prev_S1_recovery_fraction": 0.7439749608763693,
+      "regressions": 4666,
+      "rescue_fraction": 0.7430447014692091,
+      "rescues": 2377
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 24073,
+      "CORRECT_TO_WRONG": 10,
+      "WRONG_TO_CORRECT": 39,
+      "WRONG_TO_WRONG": 5449
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.0004735515434535209,
+     "rescue_set_jaccard": 0.959983498349835
+    }
+   }
+  },
+  "W4": {
+   "canonical": {
+    "a025": {
+     "REP": {
+      "exact": 18727,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.2168214090660841,
+      "regressions": 7976,
+      "rescue_fraction": 0.2168214090660841,
+      "rescues": 794
+     },
+     "SRC": {
+      "exact": 18718,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.22185612300933552,
+      "regressions": 8016,
+      "rescue_fraction": 0.2221003564573622,
+      "rescues": 810
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 18549,
+      "CORRECT_TO_WRONG": 169,
+      "WRONG_TO_CORRECT": 178,
+      "WRONG_TO_WRONG": 10675
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.005034713943251418,
+     "rescue_set_jaccard": 0.8672875436554133
+    },
+    "a050": {
+     "REP": {
+      "exact": 11014,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.14172583287820864,
+      "regressions": 15414,
+      "rescue_fraction": 0.14172583287820864,
+      "rescues": 519
+     },
+     "SRC": {
+      "exact": 11034,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.1471718835804503,
+      "regressions": 15427,
+      "rescue_fraction": 0.1472443103921031,
+      "rescues": 537
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 10889,
+      "CORRECT_TO_WRONG": 145,
+      "WRONG_TO_CORRECT": 125,
+      "WRONG_TO_WRONG": 18412
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.0054460507022416615,
+     "rescue_set_jaccard": 0.895870736086176
+    },
+    "a075": {
+     "REP": {
+      "exact": 12205,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.2176406335335882,
+      "regressions": 14501,
+      "rescue_fraction": 0.2176406335335882,
+      "rescues": 797
+     },
+     "SRC": {
+      "exact": 12161,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.21801208127402527,
+      "regressions": 14557,
+      "rescue_fraction": 0.21771318892240196,
+      "rescues": 794
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 12097,
+      "CORRECT_TO_WRONG": 64,
+      "WRONG_TO_CORRECT": 108,
+      "WRONG_TO_WRONG": 17302
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.00037144774043706974,
+     "rescue_set_jaccard": 0.9099639855942377
+    },
+    "a100": {
+     "REP": {
+      "exact": 22991,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.7168214090660842,
+      "regressions": 5543,
+      "rescue_fraction": 0.7168214090660842,
+      "rescues": 2625
+     },
+     "SRC": {
+      "exact": 22949,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.7171883580450302,
+      "regressions": 5587,
+      "rescue_fraction": 0.7162051000822593,
+      "rescues": 2612
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 22941,
+      "CORRECT_TO_WRONG": 8,
+      "WRONG_TO_CORRECT": 50,
+      "WRONG_TO_WRONG": 6572
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.0003669489789460689,
+     "rescue_set_jaccard": 0.9374768775434702
+    }
+   },
+   "freear": {
+    "a025": {
+     "REP": {
+      "exact": 18727,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.2168214090660841,
+      "regressions": 7976,
+      "rescue_fraction": 0.2168214090660841,
+      "rescues": 794
+     },
+     "SRC": {
+      "exact": 18718,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.22185612300933552,
+      "regressions": 8016,
+      "rescue_fraction": 0.2221003564573622,
+      "rescues": 810
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 18549,
+      "CORRECT_TO_WRONG": 169,
+      "WRONG_TO_CORRECT": 178,
+      "WRONG_TO_WRONG": 10675
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.005034713943251418,
+     "rescue_set_jaccard": 0.8672875436554133
+    },
+    "a050": {
+     "REP": {
+      "exact": 11014,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.14172583287820864,
+      "regressions": 15414,
+      "rescue_fraction": 0.14172583287820864,
+      "rescues": 519
+     },
+     "SRC": {
+      "exact": 11034,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.1471718835804503,
+      "regressions": 15427,
+      "rescue_fraction": 0.1472443103921031,
+      "rescues": 537
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 10889,
+      "CORRECT_TO_WRONG": 145,
+      "WRONG_TO_CORRECT": 125,
+      "WRONG_TO_WRONG": 18412
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.0054460507022416615,
+     "rescue_set_jaccard": 0.895870736086176
+    },
+    "a075": {
+     "REP": {
+      "exact": 12205,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.2176406335335882,
+      "regressions": 14501,
+      "rescue_fraction": 0.2176406335335882,
+      "rescues": 797
+     },
+     "SRC": {
+      "exact": 12161,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.21801208127402527,
+      "regressions": 14557,
+      "rescue_fraction": 0.21771318892240196,
+      "rescues": 794
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 12097,
+      "CORRECT_TO_WRONG": 64,
+      "WRONG_TO_CORRECT": 108,
+      "WRONG_TO_WRONG": 17302
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.00037144774043706974,
+     "rescue_set_jaccard": 0.9099639855942377
+    },
+    "a100": {
+     "REP": {
+      "exact": 22991,
+      "native_failures": 3662,
+      "prev_S1_recovery_fraction": 0.7168214090660842,
+      "regressions": 5543,
+      "rescue_fraction": 0.7168214090660842,
+      "rescues": 2625
+     },
+     "SRC": {
+      "exact": 22949,
+      "native_failures": 3647,
+      "prev_S1_recovery_fraction": 0.7171883580450302,
+      "regressions": 5587,
+      "rescue_fraction": 0.7162051000822593,
+      "rescues": 2612
+     },
+     "item_transitions_SRC_to_REP": {
+      "CORRECT_TO_CORRECT": 22941,
+      "CORRECT_TO_WRONG": 8,
+      "WRONG_TO_CORRECT": 50,
+      "WRONG_TO_WRONG": 6572
+     },
+     "prev_S1_recovery_fraction_REP_minus_SRC": -0.0003669489789460689,
+     "rescue_set_jaccard": 0.9374768775434702
+    }
+   }
+  }
+ },
+ "provenance": {
+  "closure_sha256": {
+   "config.py": "9a8088982995a2b53edf4ee81d214ff1ab3603149dd9db9f73a307812cd80453",
+   "data/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "data/lexicon.py": "0e4936d291f27d23d0532ff1aaa93a28b69caf582b37fca5cfb0d0f6ea578d0f",
+   "data/lexicon_en_glove_covered.tsv": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+   "data/phonemes.py": "b093764b744a7be621763a87aacb94ebcd145a04ebaa647f6f261264d9aa1c98",
+   "evaluate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "evaluate/hooks.py": "113d0aeb367e0d181f5f3216ccd515df4658170293db44a5aad25ce5a022f074",
+   "gate_x_lesion/__init__.py": "e629d48a071340c99a990a85d6eba7bf7f30a7a673042b2d8c4a0b0fc3ff7ed1",
+   "gate_x_lesion/hooks.py": "c2a4083d9679b4c089bba0f64f4dbd0936c252f02c7b13ed0b1b3c4b9d519c8b",
+   "gate_x_lesion/identity.py": "413e3648cc0e6bfb5375e610e542e955c4ca6d3b5ebf29ce2b43e8a729c7f2ad",
+   "gate_x_lesion/noise.py": "74bd0f84aead8a22dd95234957df109acbf353889ab5f0bedfd72cb06eb07523",
+   "gate_x_lesion/targets.py": "e24b2491556785e904779fc129738a817e17e33a3da9fbcbb812d2b7cefd357d",
+   "gating_diagnostics/__init__.py": "e844d00fcd5908694f71d4c75bb4914eef701d1ebe5d0ae586115d197484f081",
+   "gating_diagnostics/analysis.py": "4cd598ab161bf67d7e670d936946af1c536d9887ff2e65b65e6f443ef6111aac",
+   "gating_diagnostics/gate_probe.py": "a60ef0c21b922ae9cf5a9a15bd8a7a7c170d275691bcdfa17bbdd681c7b6b02d",
+   "losses.py": "382eed2335ee2add7a00f6de9b73a788cdef5e94155ae1970e38bd5d7dcefd80",
+   "models/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "models/dual_route.py": "dfed9c0083d9b5ec88bec091fa71e74614faeb55b28ced344849ba51ad4425da",
+   "models/gating.py": "3d87ddbf80f540c77262ab7bb310cee271ca849d5e406beeef374c8f7ff11677",
+   "models/ltm_route.py": "49f8cd49b76413c6eb3040c3b90cada2c3e1e31fee842286867bcb8de73b0073",
+   "models/motor.py": "5b8998e7e54b74d2c765e3f24403bad52cab034f4780b12d7910a16177f91906",
+   "models/wm_route.py": "5933765b288e852ee4408058860db5a428c21361052141478dc190089b8b21a7",
+   "paper_programme/gating_route_diagnostics/checkpoint_manifest.tsv": "eeb6b9703ada869e443874fdfe49d714e231f4d2410d32fc4938a1d0fe848d54",
+   "scripts/evaluate_train_lexicon_ceiling.py": "352d9a4b950923b90fc2a7e8e03476ecb938f86850667b927648fa4f83b32a26",
+   "scripts/external_eval.py": "8931a1c92c716124862c170ec7854acc002befc1c4094051b406ef056b7174f1",
+   "scripts/gating_diagnostics/run_gate_route_audit.py": "79feb855d890e3c6a5681926b2ab851a807b6d0375f89757024247a55cc024ce",
+   "scripts/naming_comprehension/aggregate_cohort.py": "9c22adab9571aa96b68ac4b05ea557137e59677c3611ebeaee4540aedeca0c1b",
+   "scripts/naming_comprehension/base123_error_audit.py": "15008114d5e5ff3bde51b550193c07e62d5566347a29510ec9a75bb8ae910b37",
+   "scripts/naming_comprehension/frozen_head_probe.py": "f2a30620aad79bba81bbd9e56ab0b1a38a74801c05e35b0f9e74f7bb63fb851b",
+   "scripts/naming_comprehension/frozen_probe.py": "d4c7bb9289cef56d09d05b1cbcbd9b47f0fa32dda549b333d29d8a4753689d4f",
+   "scripts/naming_comprehension/train_joint_scratch.py": "766244c1363d998f34fe3e4f725b57a9b3f95cf716876d71470d804cf962765c",
+   "scripts/naming_comprehension/train_multitask.py": "d4963f59c51aa46c877d9abf85078352674dbbad32ece264516e9b44d1ea1d96",
+   "scripts/naming_comprehension/train_tasks.py": "a867b6b5ec474fb79fcd18e769fa8d16d8bdc3de920f7704bfa9be2e7b907303",
+   "scripts/ventral_directional_dose/run_directional_dose.py": "3ecff1b7c71531e977a21f1c61245c6f3be1bbbb2d44d5173c94f97d689efc22",
+   "scripts/ventral_interface/run_ventral_interface_factorization.py": "bba7ba0b341d2c74e3660093e444824f60514fd9aad2800cdf656a8633849e01",
+   "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "tests/test_ventral_directional_dose.py": "1607942aecf2863975258d5db3cf6198da74fac1d254b3cab8cf3457104cf175",
+   "tests/test_ventral_interface.py": "585e767e57321b22edd22c657ab61424a05c26497ae28a90bdfb201f2f775621",
+   "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "utils/provenance.py": "c8bb5d4a58d6e48b29a80e83dbe8e3741bb5bdb23173af8fd9df554020b540a7",
+   "utils/seed.py": "aa7c8bbba3e036417bd54a9e8b67a1a09be156bc4542fa0adf10f62e4563f344",
+   "ventral_directional_dose/__init__.py": "49105c17581b083fdf5724b8ac8a06f73df7c5bed65a9cc268cec0a2a988d62a",
+   "ventral_directional_dose/controls.py": "54d12bc62fc72cb666071ce25c5f9a99fd020c9641ee6b9fd79dacd7a7307e9b",
+   "ventral_directional_dose/dose_math.py": "b30cf27ceca0409f02dd2e1711eaf5c7f67d8b9ca6058df9c1a596f699b52797",
+   "ventral_directional_dose/evaluate.py": "0298cc49dcd459f2304c6143081fa088bae7fabea9c114db91667768141b2a82",
+   "ventral_directional_dose/schema.py": "12bd9d75576ce413a7563b287f03356e6499464ef7aa31a05ec420820af49346",
+   "ventral_directional_dose/supplier.py": "a0b7d781e4f893a9dfb0f7af4ee84f2799673745eb1275c069a82b67acb6d5c8",
+   "ventral_interface/__init__.py": "095feec270596a4bd44b4571ecb7decbb9773d0acf845c7aded95c23afb1dfed",
+   "ventral_interface/conditions.py": "634bea5bdbc635f4488fda23f8af507ea88ab47625730c7eca7378d8c7108bec",
+   "ventral_interface/decode.py": "dec068e264f516d559bf6273922a022f66131d6a429aebc482b11bdc2fa3ea43",
+   "ventral_interface/evaluate.py": "70007dc4a728b92f8bbb44f9bf1ac6333947e3d3289ce8c25524316c8a1eeff9",
+   "ventral_interface/injection.py": "e443411c7d002c0a62037e04a137dd876d3a4f522375c9ecd7800f1f2a1e4b7f",
+   "ventral_interface/population.py": "c028395376dc440c3bfdd00eb5392297d7616fb6ea9ec514031e6796b60325cc",
+   "ventral_interface/schema.py": "d6c41e329039c5593a8bb823f28ae8465369ad81ddec35a7d5091151f8231a05"
+  },
+  "environment": {
+   "default_dtype": "torch.float32",
+   "deterministic_algorithms": true,
+   "device": "cpu",
+   "model_semantic_dtype": "torch.float32",
+   "python": "3.11.15",
+   "torch": "2.12.1"
+  },
+  "freeze_commit": "ea1098771ac52cf3a4c591ba650e58d73b9836e4",
+  "git_head": "ea1098771ac52cf3a4c591ba650e58d73b9836e4"
+ },
+ "real_state_geometry": {
+  "execution_case_counts": {
+   "W3_REP": {
+    "NEAR_COLLINEAR_NLERP": 0,
+    "ORDINARY": 29571
+   },
+   "W3_SRC": {
+    "NEAR_COLLINEAR_NLERP": 0,
+    "ORDINARY": 29571
+   },
+   "W4_REP": {
+    "NEAR_COLLINEAR_NLERP": 0,
+    "ORDINARY": 29571
+   },
+   "W4_SRC": {
+    "NEAR_COLLINEAR_NLERP": 0,
+    "ORDINARY": 29571
+   }
+  },
+  "preflight": {
+   "W3_REP": {
+    "counts": {
+     "NEAR_ANTIPODAL": 0,
+     "NEAR_COLLINEAR_NLERP": 0,
+     "ORDINARY": 29571,
+     "ZERO_PROTOTYPE": 0,
+     "ZERO_SHAT": 0,
+     "n_items": 29571
+    },
+    "descriptive_bounds": {
+     "cos_us_up_max": 0.9107672386587147,
+     "cos_us_up_min": 0.39057485312390205,
+     "norm_r_min": 0.4129201339072488,
+     "prototype_norm_min": 2.610224743890797,
+     "shat_norm_min": 2.6247240703549113
+    },
+    "hard_stop_preconditions": {
+     "NO_NEAR_ANTIPODAL": true,
+     "NO_ZERO_PROTOTYPE": true,
+     "NO_ZERO_SHAT": true
+    },
+    "ordinary_plus_collinear_equals_n": true
+   },
+   "W3_SRC": {
+    "counts": {
+     "NEAR_ANTIPODAL": 0,
+     "NEAR_COLLINEAR_NLERP": 0,
+     "ORDINARY": 29571,
+     "ZERO_PROTOTYPE": 0,
+     "ZERO_SHAT": 0,
+     "n_items": 29571
+    },
+    "descriptive_bounds": {
+     "cos_us_up_max": 0.9129678163332738,
+     "cos_us_up_min": 0.3898338073173673,
+     "norm_r_min": 0.40803157517483146,
+     "prototype_norm_min": 2.610224743890797,
+     "shat_norm_min": 2.631141891310343
+    },
+    "hard_stop_preconditions": {
+     "NO_NEAR_ANTIPODAL": true,
+     "NO_ZERO_PROTOTYPE": true,
+     "NO_ZERO_SHAT": true
+    },
+    "ordinary_plus_collinear_equals_n": true
+   },
+   "W4_REP": {
+    "counts": {
+     "NEAR_ANTIPODAL": 0,
+     "NEAR_COLLINEAR_NLERP": 0,
+     "ORDINARY": 29571,
+     "ZERO_PROTOTYPE": 0,
+     "ZERO_SHAT": 0,
+     "n_items": 29571
+    },
+    "descriptive_bounds": {
+     "cos_us_up_max": 0.9073729232213018,
+     "cos_us_up_min": 0.3803955807330928,
+     "norm_r_min": 0.42032651380186636,
+     "prototype_norm_min": 2.610224743890797,
+     "shat_norm_min": 3.175506550667058
+    },
+    "hard_stop_preconditions": {
+     "NO_NEAR_ANTIPODAL": true,
+     "NO_ZERO_PROTOTYPE": true,
+     "NO_ZERO_SHAT": true
+    },
+    "ordinary_plus_collinear_equals_n": true
+   },
+   "W4_SRC": {
+    "counts": {
+     "NEAR_ANTIPODAL": 0,
+     "NEAR_COLLINEAR_NLERP": 0,
+     "ORDINARY": 29571,
+     "ZERO_PROTOTYPE": 0,
+     "ZERO_SHAT": 0,
+     "n_items": 29571
+    },
+    "descriptive_bounds": {
+     "cos_us_up_max": 0.9072304639799613,
+     "cos_us_up_min": 0.38023042248121114,
+     "norm_r_min": 0.4206339087932697,
+     "prototype_norm_min": 2.610224743890797,
+     "shat_norm_min": 3.181570367363727
+    },
+    "hard_stop_preconditions": {
+     "NO_NEAR_ANTIPODAL": true,
+     "NO_ZERO_PROTOTYPE": true,
+     "NO_ZERO_SHAT": true
+    },
+    "ordinary_plus_collinear_equals_n": true
+   }
+  }
+ },
+ "results": {
+  "W3_REP": {
+   "canonical": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 19692,
+      "CORRECT_TO_WRONG": 6686,
+      "WRONG_TO_CORRECT": 749,
+      "WRONG_TO_WRONG": 2444,
+      "denominator": 29571,
+      "exact_count": 20441,
+      "exact_proportion": 0.691251564032329,
+      "new_regressions": 6686,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 749,
+      "recovery_fraction": 0.2345756341998121
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 12476,
+      "CORRECT_TO_WRONG": 13902,
+      "WRONG_TO_CORRECT": 576,
+      "WRONG_TO_WRONG": 2617,
+      "denominator": 29571,
+      "exact_count": 13052,
+      "exact_proportion": 0.4413783774644077,
+      "new_regressions": 13902,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 576,
+      "recovery_fraction": 0.1803946132164109
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 13482,
+      "CORRECT_TO_WRONG": 12896,
+      "WRONG_TO_CORRECT": 916,
+      "WRONG_TO_WRONG": 2277,
+      "denominator": 29571,
+      "exact_count": 14398,
+      "exact_proportion": 0.486895945351865,
+      "new_regressions": 12896,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 916,
+      "recovery_fraction": 0.28687754462887566
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 21738,
+      "CORRECT_TO_WRONG": 4640,
+      "WRONG_TO_CORRECT": 2374,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 29571,
+      "exact_count": 24112,
+      "exact_proportion": 0.8153934598085962,
+      "new_regressions": 4640,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 2374,
+      "recovery_fraction": 0.7435014093329158
+     },
+     "immutable_controls": {
+      "S0_exact_count": 26378,
+      "S1_exact_count": 29571,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 24650,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 739,
+      "WRONG_TO_WRONG": 2420,
+      "denominator": 3159,
+      "exact_count": 739,
+      "exact_proportion": 0.23393478949034505,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 739,
+      "recovery_fraction": 0.23393478949034505
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 565,
+      "WRONG_TO_WRONG": 2594,
+      "denominator": 3159,
+      "exact_count": 565,
+      "exact_proportion": 0.17885406774295662,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 565,
+      "recovery_fraction": 0.17885406774295662
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 898,
+      "WRONG_TO_WRONG": 2261,
+      "denominator": 3159,
+      "exact_count": 898,
+      "exact_proportion": 0.28426717315606204,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 898,
+      "recovery_fraction": 0.28426717315606204
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2343,
+      "WRONG_TO_WRONG": 816,
+      "denominator": 3159,
+      "exact_count": 2343,
+      "exact_proportion": 0.741690408357075,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 2343,
+      "recovery_fraction": 0.741690408357075
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3159,
+      "S2_exact_count": 3159,
+      "S3_exact_count": 375,
+      "denominator": 3159
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 18433,
+      "CORRECT_TO_WRONG": 6389,
+      "WRONG_TO_CORRECT": 739,
+      "WRONG_TO_WRONG": 2420,
+      "denominator": 27981,
+      "exact_count": 19172,
+      "exact_proportion": 0.6851792287623745,
+      "new_regressions": 6389,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 739,
+      "recovery_fraction": 0.23393478949034505
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 11645,
+      "CORRECT_TO_WRONG": 13177,
+      "WRONG_TO_CORRECT": 565,
+      "WRONG_TO_WRONG": 2594,
+      "denominator": 27981,
+      "exact_count": 12210,
+      "exact_proportion": 0.4363675351131125,
+      "new_regressions": 13177,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 565,
+      "recovery_fraction": 0.17885406774295662
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 12569,
+      "CORRECT_TO_WRONG": 12253,
+      "WRONG_TO_CORRECT": 898,
+      "WRONG_TO_WRONG": 2261,
+      "denominator": 27981,
+      "exact_count": 13467,
+      "exact_proportion": 0.4812908759515385,
+      "new_regressions": 12253,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 898,
+      "recovery_fraction": 0.28426717315606204
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20394,
+      "CORRECT_TO_WRONG": 4428,
+      "WRONG_TO_CORRECT": 2343,
+      "WRONG_TO_WRONG": 816,
+      "denominator": 27981,
+      "exact_count": 22737,
+      "exact_proportion": 0.8125871126836067,
+      "new_regressions": 4428,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 2343,
+      "recovery_fraction": 0.741690408357075
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24822,
+      "S1_exact_count": 27981,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 23164,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 749,
+      "WRONG_TO_WRONG": 2444,
+      "denominator": 3193,
+      "exact_count": 749,
+      "exact_proportion": 0.2345756341998121,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 749,
+      "recovery_fraction": 0.2345756341998121
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 576,
+      "WRONG_TO_WRONG": 2617,
+      "denominator": 3193,
+      "exact_count": 576,
+      "exact_proportion": 0.1803946132164109,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 576,
+      "recovery_fraction": 0.1803946132164109
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 916,
+      "WRONG_TO_WRONG": 2277,
+      "denominator": 3193,
+      "exact_count": 916,
+      "exact_proportion": 0.28687754462887566,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 916,
+      "recovery_fraction": 0.28687754462887566
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2374,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 3193,
+      "exact_count": 2374,
+      "exact_proportion": 0.7435014093329158,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 2374,
+      "recovery_fraction": 0.7435014093329158
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3193,
+      "S2_exact_count": 3193,
+      "S3_exact_count": 382,
+      "denominator": 3193
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1259,
+      "CORRECT_TO_WRONG": 297,
+      "WRONG_TO_CORRECT": 10,
+      "WRONG_TO_WRONG": 24,
+      "denominator": 1590,
+      "exact_count": 1269,
+      "exact_proportion": 0.7981132075471699,
+      "new_regressions": 297,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 10,
+      "recovery_fraction": 0.29411764705882354
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 831,
+      "CORRECT_TO_WRONG": 725,
+      "WRONG_TO_CORRECT": 11,
+      "WRONG_TO_WRONG": 23,
+      "denominator": 1590,
+      "exact_count": 842,
+      "exact_proportion": 0.529559748427673,
+      "new_regressions": 725,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 11,
+      "recovery_fraction": 0.3235294117647059
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 913,
+      "CORRECT_TO_WRONG": 643,
+      "WRONG_TO_CORRECT": 18,
+      "WRONG_TO_WRONG": 16,
+      "denominator": 1590,
+      "exact_count": 931,
+      "exact_proportion": 0.5855345911949685,
+      "new_regressions": 643,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 18,
+      "recovery_fraction": 0.5294117647058824
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1344,
+      "CORRECT_TO_WRONG": 212,
+      "WRONG_TO_CORRECT": 31,
+      "WRONG_TO_WRONG": 3,
+      "denominator": 1590,
+      "exact_count": 1375,
+      "exact_proportion": 0.8647798742138365,
+      "new_regressions": 212,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 31,
+      "recovery_fraction": 0.9117647058823529
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1556,
+      "S1_exact_count": 1590,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1486,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 749,
+      "WRONG_TO_WRONG": 2444,
+      "denominator": 3193,
+      "exact_count": 749,
+      "exact_proportion": 0.2345756341998121,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 749,
+      "recovery_fraction": 0.2345756341998121
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 576,
+      "WRONG_TO_WRONG": 2617,
+      "denominator": 3193,
+      "exact_count": 576,
+      "exact_proportion": 0.1803946132164109,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 576,
+      "recovery_fraction": 0.1803946132164109
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 916,
+      "WRONG_TO_WRONG": 2277,
+      "denominator": 3193,
+      "exact_count": 916,
+      "exact_proportion": 0.28687754462887566,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 916,
+      "recovery_fraction": 0.28687754462887566
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2374,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 3193,
+      "exact_count": 2374,
+      "exact_proportion": 0.7435014093329158,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 2374,
+      "recovery_fraction": 0.7435014093329158
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3193,
+      "S2_exact_count": 3193,
+      "S3_exact_count": 382,
+      "denominator": 3193
+     }
+    }
+   },
+   "freear": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 19692,
+      "CORRECT_TO_WRONG": 6686,
+      "WRONG_TO_CORRECT": 749,
+      "WRONG_TO_WRONG": 2444,
+      "denominator": 29571,
+      "exact_count": 20441,
+      "exact_proportion": 0.691251564032329,
+      "new_regressions": 6686,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 749,
+      "recovery_fraction": 0.2345756341998121
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 12476,
+      "CORRECT_TO_WRONG": 13902,
+      "WRONG_TO_CORRECT": 576,
+      "WRONG_TO_WRONG": 2617,
+      "denominator": 29571,
+      "exact_count": 13052,
+      "exact_proportion": 0.4413783774644077,
+      "new_regressions": 13902,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 576,
+      "recovery_fraction": 0.1803946132164109
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 13482,
+      "CORRECT_TO_WRONG": 12896,
+      "WRONG_TO_CORRECT": 916,
+      "WRONG_TO_WRONG": 2277,
+      "denominator": 29571,
+      "exact_count": 14398,
+      "exact_proportion": 0.486895945351865,
+      "new_regressions": 12896,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 916,
+      "recovery_fraction": 0.28687754462887566
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 21738,
+      "CORRECT_TO_WRONG": 4640,
+      "WRONG_TO_CORRECT": 2374,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 29571,
+      "exact_count": 24112,
+      "exact_proportion": 0.8153934598085962,
+      "new_regressions": 4640,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 2374,
+      "recovery_fraction": 0.7435014093329158
+     },
+     "immutable_controls": {
+      "S0_exact_count": 26378,
+      "S1_exact_count": 29571,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 24650,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 739,
+      "WRONG_TO_WRONG": 2420,
+      "denominator": 3159,
+      "exact_count": 739,
+      "exact_proportion": 0.23393478949034505,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 739,
+      "recovery_fraction": 0.23393478949034505
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 565,
+      "WRONG_TO_WRONG": 2594,
+      "denominator": 3159,
+      "exact_count": 565,
+      "exact_proportion": 0.17885406774295662,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 565,
+      "recovery_fraction": 0.17885406774295662
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 898,
+      "WRONG_TO_WRONG": 2261,
+      "denominator": 3159,
+      "exact_count": 898,
+      "exact_proportion": 0.28426717315606204,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 898,
+      "recovery_fraction": 0.28426717315606204
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2343,
+      "WRONG_TO_WRONG": 816,
+      "denominator": 3159,
+      "exact_count": 2343,
+      "exact_proportion": 0.741690408357075,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 2343,
+      "recovery_fraction": 0.741690408357075
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3159,
+      "S2_exact_count": 3159,
+      "S3_exact_count": 375,
+      "denominator": 3159
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 18433,
+      "CORRECT_TO_WRONG": 6389,
+      "WRONG_TO_CORRECT": 739,
+      "WRONG_TO_WRONG": 2420,
+      "denominator": 27981,
+      "exact_count": 19172,
+      "exact_proportion": 0.6851792287623745,
+      "new_regressions": 6389,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 739,
+      "recovery_fraction": 0.23393478949034505
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 11645,
+      "CORRECT_TO_WRONG": 13177,
+      "WRONG_TO_CORRECT": 565,
+      "WRONG_TO_WRONG": 2594,
+      "denominator": 27981,
+      "exact_count": 12210,
+      "exact_proportion": 0.4363675351131125,
+      "new_regressions": 13177,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 565,
+      "recovery_fraction": 0.17885406774295662
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 12569,
+      "CORRECT_TO_WRONG": 12253,
+      "WRONG_TO_CORRECT": 898,
+      "WRONG_TO_WRONG": 2261,
+      "denominator": 27981,
+      "exact_count": 13467,
+      "exact_proportion": 0.4812908759515385,
+      "new_regressions": 12253,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 898,
+      "recovery_fraction": 0.28426717315606204
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20394,
+      "CORRECT_TO_WRONG": 4428,
+      "WRONG_TO_CORRECT": 2343,
+      "WRONG_TO_WRONG": 816,
+      "denominator": 27981,
+      "exact_count": 22737,
+      "exact_proportion": 0.8125871126836067,
+      "new_regressions": 4428,
+      "previous_S1_rescues": 3159,
+      "previous_S1_rescues_recovered": 2343,
+      "recovery_fraction": 0.741690408357075
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24822,
+      "S1_exact_count": 27981,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 23164,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 749,
+      "WRONG_TO_WRONG": 2444,
+      "denominator": 3193,
+      "exact_count": 749,
+      "exact_proportion": 0.2345756341998121,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 749,
+      "recovery_fraction": 0.2345756341998121
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 576,
+      "WRONG_TO_WRONG": 2617,
+      "denominator": 3193,
+      "exact_count": 576,
+      "exact_proportion": 0.1803946132164109,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 576,
+      "recovery_fraction": 0.1803946132164109
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 916,
+      "WRONG_TO_WRONG": 2277,
+      "denominator": 3193,
+      "exact_count": 916,
+      "exact_proportion": 0.28687754462887566,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 916,
+      "recovery_fraction": 0.28687754462887566
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2374,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 3193,
+      "exact_count": 2374,
+      "exact_proportion": 0.7435014093329158,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 2374,
+      "recovery_fraction": 0.7435014093329158
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3193,
+      "S2_exact_count": 3193,
+      "S3_exact_count": 382,
+      "denominator": 3193
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1259,
+      "CORRECT_TO_WRONG": 297,
+      "WRONG_TO_CORRECT": 10,
+      "WRONG_TO_WRONG": 24,
+      "denominator": 1590,
+      "exact_count": 1269,
+      "exact_proportion": 0.7981132075471699,
+      "new_regressions": 297,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 10,
+      "recovery_fraction": 0.29411764705882354
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 831,
+      "CORRECT_TO_WRONG": 725,
+      "WRONG_TO_CORRECT": 11,
+      "WRONG_TO_WRONG": 23,
+      "denominator": 1590,
+      "exact_count": 842,
+      "exact_proportion": 0.529559748427673,
+      "new_regressions": 725,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 11,
+      "recovery_fraction": 0.3235294117647059
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 913,
+      "CORRECT_TO_WRONG": 643,
+      "WRONG_TO_CORRECT": 18,
+      "WRONG_TO_WRONG": 16,
+      "denominator": 1590,
+      "exact_count": 931,
+      "exact_proportion": 0.5855345911949685,
+      "new_regressions": 643,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 18,
+      "recovery_fraction": 0.5294117647058824
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1344,
+      "CORRECT_TO_WRONG": 212,
+      "WRONG_TO_CORRECT": 31,
+      "WRONG_TO_WRONG": 3,
+      "denominator": 1590,
+      "exact_count": 1375,
+      "exact_proportion": 0.8647798742138365,
+      "new_regressions": 212,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 31,
+      "recovery_fraction": 0.9117647058823529
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1556,
+      "S1_exact_count": 1590,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1486,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 749,
+      "WRONG_TO_WRONG": 2444,
+      "denominator": 3193,
+      "exact_count": 749,
+      "exact_proportion": 0.2345756341998121,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 749,
+      "recovery_fraction": 0.2345756341998121
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 576,
+      "WRONG_TO_WRONG": 2617,
+      "denominator": 3193,
+      "exact_count": 576,
+      "exact_proportion": 0.1803946132164109,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 576,
+      "recovery_fraction": 0.1803946132164109
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 916,
+      "WRONG_TO_WRONG": 2277,
+      "denominator": 3193,
+      "exact_count": 916,
+      "exact_proportion": 0.28687754462887566,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 916,
+      "recovery_fraction": 0.28687754462887566
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2374,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 3193,
+      "exact_count": 2374,
+      "exact_proportion": 0.7435014093329158,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3193,
+      "previous_S1_rescues_recovered": 2374,
+      "recovery_fraction": 0.7435014093329158
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3193,
+      "S2_exact_count": 3193,
+      "S3_exact_count": 382,
+      "denominator": 3193
+     }
+    }
+   }
+  },
+  "W3_SRC": {
+   "canonical": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 19704,
+      "CORRECT_TO_WRONG": 6668,
+      "WRONG_TO_CORRECT": 743,
+      "WRONG_TO_WRONG": 2456,
+      "denominator": 29571,
+      "exact_count": 20447,
+      "exact_proportion": 0.691454465523655,
+      "new_regressions": 6668,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 743,
+      "recovery_fraction": 0.2325508607198748
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 12449,
+      "CORRECT_TO_WRONG": 13923,
+      "WRONG_TO_CORRECT": 571,
+      "WRONG_TO_WRONG": 2628,
+      "denominator": 29571,
+      "exact_count": 13020,
+      "exact_proportion": 0.4402962361773359,
+      "new_regressions": 13923,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 571,
+      "recovery_fraction": 0.178716744913928
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 13471,
+      "CORRECT_TO_WRONG": 12901,
+      "WRONG_TO_CORRECT": 909,
+      "WRONG_TO_WRONG": 2290,
+      "denominator": 29571,
+      "exact_count": 14380,
+      "exact_proportion": 0.4862872408778871,
+      "new_regressions": 12901,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 909,
+      "recovery_fraction": 0.28450704225352114
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 21706,
+      "CORRECT_TO_WRONG": 4666,
+      "WRONG_TO_CORRECT": 2377,
+      "WRONG_TO_WRONG": 822,
+      "denominator": 29571,
+      "exact_count": 24083,
+      "exact_proportion": 0.8144127692671874,
+      "new_regressions": 4666,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 2377,
+      "recovery_fraction": 0.7439749608763693
+     },
+     "immutable_controls": {
+      "S0_exact_count": 26372,
+      "S1_exact_count": 29529,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 24684,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 733,
+      "WRONG_TO_WRONG": 2427,
+      "denominator": 3160,
+      "exact_count": 733,
+      "exact_proportion": 0.23196202531645568,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 733,
+      "recovery_fraction": 0.23196202531645568
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 560,
+      "WRONG_TO_WRONG": 2600,
+      "denominator": 3160,
+      "exact_count": 560,
+      "exact_proportion": 0.17721518987341772,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 560,
+      "recovery_fraction": 0.17721518987341772
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 891,
+      "WRONG_TO_WRONG": 2269,
+      "denominator": 3160,
+      "exact_count": 891,
+      "exact_proportion": 0.2819620253164557,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 891,
+      "recovery_fraction": 0.2819620253164557
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2345,
+      "WRONG_TO_WRONG": 815,
+      "denominator": 3160,
+      "exact_count": 2345,
+      "exact_proportion": 0.7420886075949367,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 2345,
+      "recovery_fraction": 0.7420886075949367
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3160,
+      "S2_exact_count": 3160,
+      "S3_exact_count": 390,
+      "denominator": 3160
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 18446,
+      "CORRECT_TO_WRONG": 6371,
+      "WRONG_TO_CORRECT": 733,
+      "WRONG_TO_WRONG": 2431,
+      "denominator": 27981,
+      "exact_count": 19179,
+      "exact_proportion": 0.6854293985204246,
+      "new_regressions": 6371,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 733,
+      "recovery_fraction": 0.23196202531645568
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 11630,
+      "CORRECT_TO_WRONG": 13187,
+      "WRONG_TO_CORRECT": 560,
+      "WRONG_TO_WRONG": 2604,
+      "denominator": 27981,
+      "exact_count": 12190,
+      "exact_proportion": 0.43565276437582645,
+      "new_regressions": 13187,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 560,
+      "recovery_fraction": 0.17721518987341772
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 12567,
+      "CORRECT_TO_WRONG": 12250,
+      "WRONG_TO_CORRECT": 891,
+      "WRONG_TO_WRONG": 2273,
+      "denominator": 27981,
+      "exact_count": 13458,
+      "exact_proportion": 0.4809692291197598,
+      "new_regressions": 12250,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 891,
+      "recovery_fraction": 0.2819620253164557
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20371,
+      "CORRECT_TO_WRONG": 4446,
+      "WRONG_TO_CORRECT": 2345,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 27981,
+      "exact_count": 22716,
+      "exact_proportion": 0.8118366034094564,
+      "new_regressions": 4446,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 2345,
+      "recovery_fraction": 0.7420886075949367
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24817,
+      "S1_exact_count": 27947,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 23197,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 743,
+      "WRONG_TO_WRONG": 2456,
+      "denominator": 3199,
+      "exact_count": 743,
+      "exact_proportion": 0.23226008127539857,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 743,
+      "recovery_fraction": 0.2325508607198748
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 571,
+      "WRONG_TO_WRONG": 2628,
+      "denominator": 3199,
+      "exact_count": 571,
+      "exact_proportion": 0.17849327914973429,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 571,
+      "recovery_fraction": 0.178716744913928
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 909,
+      "WRONG_TO_WRONG": 2290,
+      "denominator": 3199,
+      "exact_count": 909,
+      "exact_proportion": 0.2841512972804001,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 909,
+      "recovery_fraction": 0.28450704225352114
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2377,
+      "WRONG_TO_WRONG": 822,
+      "denominator": 3199,
+      "exact_count": 2377,
+      "exact_proportion": 0.7430447014692091,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 2377,
+      "recovery_fraction": 0.7439749608763693
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3195,
+      "S2_exact_count": 3199,
+      "S3_exact_count": 397,
+      "denominator": 3199
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1258,
+      "CORRECT_TO_WRONG": 297,
+      "WRONG_TO_CORRECT": 10,
+      "WRONG_TO_WRONG": 25,
+      "denominator": 1590,
+      "exact_count": 1268,
+      "exact_proportion": 0.7974842767295598,
+      "new_regressions": 297,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 10,
+      "recovery_fraction": 0.2857142857142857
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 819,
+      "CORRECT_TO_WRONG": 736,
+      "WRONG_TO_CORRECT": 11,
+      "WRONG_TO_WRONG": 24,
+      "denominator": 1590,
+      "exact_count": 830,
+      "exact_proportion": 0.5220125786163522,
+      "new_regressions": 736,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 11,
+      "recovery_fraction": 0.3142857142857143
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 904,
+      "CORRECT_TO_WRONG": 651,
+      "WRONG_TO_CORRECT": 18,
+      "WRONG_TO_WRONG": 17,
+      "denominator": 1590,
+      "exact_count": 922,
+      "exact_proportion": 0.579874213836478,
+      "new_regressions": 651,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 18,
+      "recovery_fraction": 0.5142857142857142
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1335,
+      "CORRECT_TO_WRONG": 220,
+      "WRONG_TO_CORRECT": 32,
+      "WRONG_TO_WRONG": 3,
+      "denominator": 1590,
+      "exact_count": 1367,
+      "exact_proportion": 0.859748427672956,
+      "new_regressions": 220,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 32,
+      "recovery_fraction": 0.9142857142857143
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1555,
+      "S1_exact_count": 1582,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1487,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 743,
+      "WRONG_TO_WRONG": 2452,
+      "denominator": 3195,
+      "exact_count": 743,
+      "exact_proportion": 0.2325508607198748,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 743,
+      "recovery_fraction": 0.2325508607198748
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 571,
+      "WRONG_TO_WRONG": 2624,
+      "denominator": 3195,
+      "exact_count": 571,
+      "exact_proportion": 0.178716744913928,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 571,
+      "recovery_fraction": 0.178716744913928
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 909,
+      "WRONG_TO_WRONG": 2286,
+      "denominator": 3195,
+      "exact_count": 909,
+      "exact_proportion": 0.28450704225352114,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 909,
+      "recovery_fraction": 0.28450704225352114
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2377,
+      "WRONG_TO_WRONG": 818,
+      "denominator": 3195,
+      "exact_count": 2377,
+      "exact_proportion": 0.7439749608763693,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 2377,
+      "recovery_fraction": 0.7439749608763693
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3195,
+      "S2_exact_count": 3195,
+      "S3_exact_count": 397,
+      "denominator": 3195
+     }
+    }
+   },
+   "freear": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 19704,
+      "CORRECT_TO_WRONG": 6668,
+      "WRONG_TO_CORRECT": 743,
+      "WRONG_TO_WRONG": 2456,
+      "denominator": 29571,
+      "exact_count": 20447,
+      "exact_proportion": 0.691454465523655,
+      "new_regressions": 6668,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 743,
+      "recovery_fraction": 0.2325508607198748
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 12449,
+      "CORRECT_TO_WRONG": 13923,
+      "WRONG_TO_CORRECT": 571,
+      "WRONG_TO_WRONG": 2628,
+      "denominator": 29571,
+      "exact_count": 13020,
+      "exact_proportion": 0.4402962361773359,
+      "new_regressions": 13923,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 571,
+      "recovery_fraction": 0.178716744913928
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 13471,
+      "CORRECT_TO_WRONG": 12901,
+      "WRONG_TO_CORRECT": 909,
+      "WRONG_TO_WRONG": 2290,
+      "denominator": 29571,
+      "exact_count": 14380,
+      "exact_proportion": 0.4862872408778871,
+      "new_regressions": 12901,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 909,
+      "recovery_fraction": 0.28450704225352114
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 21706,
+      "CORRECT_TO_WRONG": 4666,
+      "WRONG_TO_CORRECT": 2377,
+      "WRONG_TO_WRONG": 822,
+      "denominator": 29571,
+      "exact_count": 24083,
+      "exact_proportion": 0.8144127692671874,
+      "new_regressions": 4666,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 2377,
+      "recovery_fraction": 0.7439749608763693
+     },
+     "immutable_controls": {
+      "S0_exact_count": 26372,
+      "S1_exact_count": 29529,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 24684,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 733,
+      "WRONG_TO_WRONG": 2427,
+      "denominator": 3160,
+      "exact_count": 733,
+      "exact_proportion": 0.23196202531645568,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 733,
+      "recovery_fraction": 0.23196202531645568
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 560,
+      "WRONG_TO_WRONG": 2600,
+      "denominator": 3160,
+      "exact_count": 560,
+      "exact_proportion": 0.17721518987341772,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 560,
+      "recovery_fraction": 0.17721518987341772
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 891,
+      "WRONG_TO_WRONG": 2269,
+      "denominator": 3160,
+      "exact_count": 891,
+      "exact_proportion": 0.2819620253164557,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 891,
+      "recovery_fraction": 0.2819620253164557
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2345,
+      "WRONG_TO_WRONG": 815,
+      "denominator": 3160,
+      "exact_count": 2345,
+      "exact_proportion": 0.7420886075949367,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 2345,
+      "recovery_fraction": 0.7420886075949367
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3160,
+      "S2_exact_count": 3160,
+      "S3_exact_count": 390,
+      "denominator": 3160
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 18446,
+      "CORRECT_TO_WRONG": 6371,
+      "WRONG_TO_CORRECT": 733,
+      "WRONG_TO_WRONG": 2431,
+      "denominator": 27981,
+      "exact_count": 19179,
+      "exact_proportion": 0.6854293985204246,
+      "new_regressions": 6371,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 733,
+      "recovery_fraction": 0.23196202531645568
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 11630,
+      "CORRECT_TO_WRONG": 13187,
+      "WRONG_TO_CORRECT": 560,
+      "WRONG_TO_WRONG": 2604,
+      "denominator": 27981,
+      "exact_count": 12190,
+      "exact_proportion": 0.43565276437582645,
+      "new_regressions": 13187,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 560,
+      "recovery_fraction": 0.17721518987341772
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 12567,
+      "CORRECT_TO_WRONG": 12250,
+      "WRONG_TO_CORRECT": 891,
+      "WRONG_TO_WRONG": 2273,
+      "denominator": 27981,
+      "exact_count": 13458,
+      "exact_proportion": 0.4809692291197598,
+      "new_regressions": 12250,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 891,
+      "recovery_fraction": 0.2819620253164557
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20371,
+      "CORRECT_TO_WRONG": 4446,
+      "WRONG_TO_CORRECT": 2345,
+      "WRONG_TO_WRONG": 819,
+      "denominator": 27981,
+      "exact_count": 22716,
+      "exact_proportion": 0.8118366034094564,
+      "new_regressions": 4446,
+      "previous_S1_rescues": 3160,
+      "previous_S1_rescues_recovered": 2345,
+      "recovery_fraction": 0.7420886075949367
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24817,
+      "S1_exact_count": 27947,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 23197,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 743,
+      "WRONG_TO_WRONG": 2456,
+      "denominator": 3199,
+      "exact_count": 743,
+      "exact_proportion": 0.23226008127539857,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 743,
+      "recovery_fraction": 0.2325508607198748
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 571,
+      "WRONG_TO_WRONG": 2628,
+      "denominator": 3199,
+      "exact_count": 571,
+      "exact_proportion": 0.17849327914973429,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 571,
+      "recovery_fraction": 0.178716744913928
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 909,
+      "WRONG_TO_WRONG": 2290,
+      "denominator": 3199,
+      "exact_count": 909,
+      "exact_proportion": 0.2841512972804001,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 909,
+      "recovery_fraction": 0.28450704225352114
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2377,
+      "WRONG_TO_WRONG": 822,
+      "denominator": 3199,
+      "exact_count": 2377,
+      "exact_proportion": 0.7430447014692091,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 2377,
+      "recovery_fraction": 0.7439749608763693
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3195,
+      "S2_exact_count": 3199,
+      "S3_exact_count": 397,
+      "denominator": 3199
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1258,
+      "CORRECT_TO_WRONG": 297,
+      "WRONG_TO_CORRECT": 10,
+      "WRONG_TO_WRONG": 25,
+      "denominator": 1590,
+      "exact_count": 1268,
+      "exact_proportion": 0.7974842767295598,
+      "new_regressions": 297,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 10,
+      "recovery_fraction": 0.2857142857142857
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 819,
+      "CORRECT_TO_WRONG": 736,
+      "WRONG_TO_CORRECT": 11,
+      "WRONG_TO_WRONG": 24,
+      "denominator": 1590,
+      "exact_count": 830,
+      "exact_proportion": 0.5220125786163522,
+      "new_regressions": 736,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 11,
+      "recovery_fraction": 0.3142857142857143
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 904,
+      "CORRECT_TO_WRONG": 651,
+      "WRONG_TO_CORRECT": 18,
+      "WRONG_TO_WRONG": 17,
+      "denominator": 1590,
+      "exact_count": 922,
+      "exact_proportion": 0.579874213836478,
+      "new_regressions": 651,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 18,
+      "recovery_fraction": 0.5142857142857142
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1335,
+      "CORRECT_TO_WRONG": 220,
+      "WRONG_TO_CORRECT": 32,
+      "WRONG_TO_WRONG": 3,
+      "denominator": 1590,
+      "exact_count": 1367,
+      "exact_proportion": 0.859748427672956,
+      "new_regressions": 220,
+      "previous_S1_rescues": 35,
+      "previous_S1_rescues_recovered": 32,
+      "recovery_fraction": 0.9142857142857143
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1555,
+      "S1_exact_count": 1582,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1487,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 743,
+      "WRONG_TO_WRONG": 2452,
+      "denominator": 3195,
+      "exact_count": 743,
+      "exact_proportion": 0.2325508607198748,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 743,
+      "recovery_fraction": 0.2325508607198748
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 571,
+      "WRONG_TO_WRONG": 2624,
+      "denominator": 3195,
+      "exact_count": 571,
+      "exact_proportion": 0.178716744913928,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 571,
+      "recovery_fraction": 0.178716744913928
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 909,
+      "WRONG_TO_WRONG": 2286,
+      "denominator": 3195,
+      "exact_count": 909,
+      "exact_proportion": 0.28450704225352114,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 909,
+      "recovery_fraction": 0.28450704225352114
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2377,
+      "WRONG_TO_WRONG": 818,
+      "denominator": 3195,
+      "exact_count": 2377,
+      "exact_proportion": 0.7439749608763693,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3195,
+      "previous_S1_rescues_recovered": 2377,
+      "recovery_fraction": 0.7439749608763693
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3195,
+      "S2_exact_count": 3195,
+      "S3_exact_count": 397,
+      "denominator": 3195
+     }
+    }
+   }
+  },
+  "W4_REP": {
+   "canonical": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 17933,
+      "CORRECT_TO_WRONG": 7976,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2868,
+      "denominator": 29571,
+      "exact_count": 18727,
+      "exact_proportion": 0.633289371343546,
+      "new_regressions": 7976,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.2168214090660841
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 10495,
+      "CORRECT_TO_WRONG": 15414,
+      "WRONG_TO_CORRECT": 519,
+      "WRONG_TO_WRONG": 3143,
+      "denominator": 29571,
+      "exact_count": 11014,
+      "exact_proportion": 0.37245950424402285,
+      "new_regressions": 15414,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 519,
+      "recovery_fraction": 0.14172583287820864
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 11408,
+      "CORRECT_TO_WRONG": 14501,
+      "WRONG_TO_CORRECT": 797,
+      "WRONG_TO_WRONG": 2865,
+      "denominator": 29571,
+      "exact_count": 12205,
+      "exact_proportion": 0.4127354502722262,
+      "new_regressions": 14501,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 797,
+      "recovery_fraction": 0.2176406335335882
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20366,
+      "CORRECT_TO_WRONG": 5543,
+      "WRONG_TO_CORRECT": 2625,
+      "WRONG_TO_WRONG": 1037,
+      "denominator": 29571,
+      "exact_count": 22991,
+      "exact_proportion": 0.7774846978458625,
+      "new_regressions": 5543,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 2625,
+      "recovery_fraction": 0.7168214090660842
+     },
+     "immutable_controls": {
+      "S0_exact_count": 25909,
+      "S1_exact_count": 29571,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 23842,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 789,
+      "WRONG_TO_WRONG": 2839,
+      "denominator": 3628,
+      "exact_count": 789,
+      "exact_proportion": 0.21747519294377068,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 789,
+      "recovery_fraction": 0.21747519294377068
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 514,
+      "WRONG_TO_WRONG": 3114,
+      "denominator": 3628,
+      "exact_count": 514,
+      "exact_proportion": 0.14167585446527012,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 514,
+      "recovery_fraction": 0.14167585446527012
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 790,
+      "WRONG_TO_WRONG": 2838,
+      "denominator": 3628,
+      "exact_count": 790,
+      "exact_proportion": 0.2177508269018743,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 790,
+      "recovery_fraction": 0.2177508269018743
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2599,
+      "WRONG_TO_WRONG": 1029,
+      "denominator": 3628,
+      "exact_count": 2599,
+      "exact_proportion": 0.7163726571113561,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 2599,
+      "recovery_fraction": 0.7163726571113561
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3628,
+      "S2_exact_count": 3628,
+      "S3_exact_count": 482,
+      "denominator": 3628
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 16781,
+      "CORRECT_TO_WRONG": 7572,
+      "WRONG_TO_CORRECT": 789,
+      "WRONG_TO_WRONG": 2839,
+      "denominator": 27981,
+      "exact_count": 17570,
+      "exact_proportion": 0.6279260927057646,
+      "new_regressions": 7572,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 789,
+      "recovery_fraction": 0.21747519294377068
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 9729,
+      "CORRECT_TO_WRONG": 14624,
+      "WRONG_TO_CORRECT": 514,
+      "WRONG_TO_WRONG": 3114,
+      "denominator": 27981,
+      "exact_count": 10243,
+      "exact_proportion": 0.36606983310103286,
+      "new_regressions": 14624,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 514,
+      "recovery_fraction": 0.14167585446527012
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 10573,
+      "CORRECT_TO_WRONG": 13780,
+      "WRONG_TO_CORRECT": 790,
+      "WRONG_TO_WRONG": 2838,
+      "denominator": 27981,
+      "exact_count": 11363,
+      "exact_proportion": 0.4060969943890497,
+      "new_regressions": 13780,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 790,
+      "recovery_fraction": 0.2177508269018743
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 19026,
+      "CORRECT_TO_WRONG": 5327,
+      "WRONG_TO_CORRECT": 2599,
+      "WRONG_TO_WRONG": 1029,
+      "denominator": 27981,
+      "exact_count": 21625,
+      "exact_proportion": 0.7728458596905042,
+      "new_regressions": 5327,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 2599,
+      "recovery_fraction": 0.7163726571113561
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24353,
+      "S1_exact_count": 27981,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 22366,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2868,
+      "denominator": 3662,
+      "exact_count": 794,
+      "exact_proportion": 0.2168214090660841,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.2168214090660841
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 519,
+      "WRONG_TO_WRONG": 3143,
+      "denominator": 3662,
+      "exact_count": 519,
+      "exact_proportion": 0.14172583287820864,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 519,
+      "recovery_fraction": 0.14172583287820864
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 797,
+      "WRONG_TO_WRONG": 2865,
+      "denominator": 3662,
+      "exact_count": 797,
+      "exact_proportion": 0.2176406335335882,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 797,
+      "recovery_fraction": 0.2176406335335882
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2625,
+      "WRONG_TO_WRONG": 1037,
+      "denominator": 3662,
+      "exact_count": 2625,
+      "exact_proportion": 0.7168214090660842,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 2625,
+      "recovery_fraction": 0.7168214090660842
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3662,
+      "S2_exact_count": 3662,
+      "S3_exact_count": 489,
+      "denominator": 3662
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1152,
+      "CORRECT_TO_WRONG": 404,
+      "WRONG_TO_CORRECT": 5,
+      "WRONG_TO_WRONG": 29,
+      "denominator": 1590,
+      "exact_count": 1157,
+      "exact_proportion": 0.7276729559748427,
+      "new_regressions": 404,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 5,
+      "recovery_fraction": 0.14705882352941177
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 766,
+      "CORRECT_TO_WRONG": 790,
+      "WRONG_TO_CORRECT": 5,
+      "WRONG_TO_WRONG": 29,
+      "denominator": 1590,
+      "exact_count": 771,
+      "exact_proportion": 0.4849056603773585,
+      "new_regressions": 790,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 5,
+      "recovery_fraction": 0.14705882352941177
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 835,
+      "CORRECT_TO_WRONG": 721,
+      "WRONG_TO_CORRECT": 7,
+      "WRONG_TO_WRONG": 27,
+      "denominator": 1590,
+      "exact_count": 842,
+      "exact_proportion": 0.529559748427673,
+      "new_regressions": 721,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 7,
+      "recovery_fraction": 0.20588235294117646
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1340,
+      "CORRECT_TO_WRONG": 216,
+      "WRONG_TO_CORRECT": 26,
+      "WRONG_TO_WRONG": 8,
+      "denominator": 1590,
+      "exact_count": 1366,
+      "exact_proportion": 0.8591194968553459,
+      "new_regressions": 216,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 26,
+      "recovery_fraction": 0.7647058823529411
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1556,
+      "S1_exact_count": 1590,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1476,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2868,
+      "denominator": 3662,
+      "exact_count": 794,
+      "exact_proportion": 0.2168214090660841,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.2168214090660841
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 519,
+      "WRONG_TO_WRONG": 3143,
+      "denominator": 3662,
+      "exact_count": 519,
+      "exact_proportion": 0.14172583287820864,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 519,
+      "recovery_fraction": 0.14172583287820864
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 797,
+      "WRONG_TO_WRONG": 2865,
+      "denominator": 3662,
+      "exact_count": 797,
+      "exact_proportion": 0.2176406335335882,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 797,
+      "recovery_fraction": 0.2176406335335882
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2625,
+      "WRONG_TO_WRONG": 1037,
+      "denominator": 3662,
+      "exact_count": 2625,
+      "exact_proportion": 0.7168214090660842,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 2625,
+      "recovery_fraction": 0.7168214090660842
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3662,
+      "S2_exact_count": 3662,
+      "S3_exact_count": 489,
+      "denominator": 3662
+     }
+    }
+   },
+   "freear": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 17933,
+      "CORRECT_TO_WRONG": 7976,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2868,
+      "denominator": 29571,
+      "exact_count": 18727,
+      "exact_proportion": 0.633289371343546,
+      "new_regressions": 7976,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.2168214090660841
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 10495,
+      "CORRECT_TO_WRONG": 15414,
+      "WRONG_TO_CORRECT": 519,
+      "WRONG_TO_WRONG": 3143,
+      "denominator": 29571,
+      "exact_count": 11014,
+      "exact_proportion": 0.37245950424402285,
+      "new_regressions": 15414,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 519,
+      "recovery_fraction": 0.14172583287820864
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 11408,
+      "CORRECT_TO_WRONG": 14501,
+      "WRONG_TO_CORRECT": 797,
+      "WRONG_TO_WRONG": 2865,
+      "denominator": 29571,
+      "exact_count": 12205,
+      "exact_proportion": 0.4127354502722262,
+      "new_regressions": 14501,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 797,
+      "recovery_fraction": 0.2176406335335882
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20366,
+      "CORRECT_TO_WRONG": 5543,
+      "WRONG_TO_CORRECT": 2625,
+      "WRONG_TO_WRONG": 1037,
+      "denominator": 29571,
+      "exact_count": 22991,
+      "exact_proportion": 0.7774846978458625,
+      "new_regressions": 5543,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 2625,
+      "recovery_fraction": 0.7168214090660842
+     },
+     "immutable_controls": {
+      "S0_exact_count": 25909,
+      "S1_exact_count": 29571,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 23842,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 789,
+      "WRONG_TO_WRONG": 2839,
+      "denominator": 3628,
+      "exact_count": 789,
+      "exact_proportion": 0.21747519294377068,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 789,
+      "recovery_fraction": 0.21747519294377068
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 514,
+      "WRONG_TO_WRONG": 3114,
+      "denominator": 3628,
+      "exact_count": 514,
+      "exact_proportion": 0.14167585446527012,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 514,
+      "recovery_fraction": 0.14167585446527012
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 790,
+      "WRONG_TO_WRONG": 2838,
+      "denominator": 3628,
+      "exact_count": 790,
+      "exact_proportion": 0.2177508269018743,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 790,
+      "recovery_fraction": 0.2177508269018743
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2599,
+      "WRONG_TO_WRONG": 1029,
+      "denominator": 3628,
+      "exact_count": 2599,
+      "exact_proportion": 0.7163726571113561,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 2599,
+      "recovery_fraction": 0.7163726571113561
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3628,
+      "S2_exact_count": 3628,
+      "S3_exact_count": 482,
+      "denominator": 3628
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 16781,
+      "CORRECT_TO_WRONG": 7572,
+      "WRONG_TO_CORRECT": 789,
+      "WRONG_TO_WRONG": 2839,
+      "denominator": 27981,
+      "exact_count": 17570,
+      "exact_proportion": 0.6279260927057646,
+      "new_regressions": 7572,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 789,
+      "recovery_fraction": 0.21747519294377068
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 9729,
+      "CORRECT_TO_WRONG": 14624,
+      "WRONG_TO_CORRECT": 514,
+      "WRONG_TO_WRONG": 3114,
+      "denominator": 27981,
+      "exact_count": 10243,
+      "exact_proportion": 0.36606983310103286,
+      "new_regressions": 14624,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 514,
+      "recovery_fraction": 0.14167585446527012
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 10573,
+      "CORRECT_TO_WRONG": 13780,
+      "WRONG_TO_CORRECT": 790,
+      "WRONG_TO_WRONG": 2838,
+      "denominator": 27981,
+      "exact_count": 11363,
+      "exact_proportion": 0.4060969943890497,
+      "new_regressions": 13780,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 790,
+      "recovery_fraction": 0.2177508269018743
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 19026,
+      "CORRECT_TO_WRONG": 5327,
+      "WRONG_TO_CORRECT": 2599,
+      "WRONG_TO_WRONG": 1029,
+      "denominator": 27981,
+      "exact_count": 21625,
+      "exact_proportion": 0.7728458596905042,
+      "new_regressions": 5327,
+      "previous_S1_rescues": 3628,
+      "previous_S1_rescues_recovered": 2599,
+      "recovery_fraction": 0.7163726571113561
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24353,
+      "S1_exact_count": 27981,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 22366,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2868,
+      "denominator": 3662,
+      "exact_count": 794,
+      "exact_proportion": 0.2168214090660841,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.2168214090660841
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 519,
+      "WRONG_TO_WRONG": 3143,
+      "denominator": 3662,
+      "exact_count": 519,
+      "exact_proportion": 0.14172583287820864,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 519,
+      "recovery_fraction": 0.14172583287820864
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 797,
+      "WRONG_TO_WRONG": 2865,
+      "denominator": 3662,
+      "exact_count": 797,
+      "exact_proportion": 0.2176406335335882,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 797,
+      "recovery_fraction": 0.2176406335335882
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2625,
+      "WRONG_TO_WRONG": 1037,
+      "denominator": 3662,
+      "exact_count": 2625,
+      "exact_proportion": 0.7168214090660842,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 2625,
+      "recovery_fraction": 0.7168214090660842
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3662,
+      "S2_exact_count": 3662,
+      "S3_exact_count": 489,
+      "denominator": 3662
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1152,
+      "CORRECT_TO_WRONG": 404,
+      "WRONG_TO_CORRECT": 5,
+      "WRONG_TO_WRONG": 29,
+      "denominator": 1590,
+      "exact_count": 1157,
+      "exact_proportion": 0.7276729559748427,
+      "new_regressions": 404,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 5,
+      "recovery_fraction": 0.14705882352941177
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 766,
+      "CORRECT_TO_WRONG": 790,
+      "WRONG_TO_CORRECT": 5,
+      "WRONG_TO_WRONG": 29,
+      "denominator": 1590,
+      "exact_count": 771,
+      "exact_proportion": 0.4849056603773585,
+      "new_regressions": 790,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 5,
+      "recovery_fraction": 0.14705882352941177
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 835,
+      "CORRECT_TO_WRONG": 721,
+      "WRONG_TO_CORRECT": 7,
+      "WRONG_TO_WRONG": 27,
+      "denominator": 1590,
+      "exact_count": 842,
+      "exact_proportion": 0.529559748427673,
+      "new_regressions": 721,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 7,
+      "recovery_fraction": 0.20588235294117646
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1340,
+      "CORRECT_TO_WRONG": 216,
+      "WRONG_TO_CORRECT": 26,
+      "WRONG_TO_WRONG": 8,
+      "denominator": 1590,
+      "exact_count": 1366,
+      "exact_proportion": 0.8591194968553459,
+      "new_regressions": 216,
+      "previous_S1_rescues": 34,
+      "previous_S1_rescues_recovered": 26,
+      "recovery_fraction": 0.7647058823529411
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1556,
+      "S1_exact_count": 1590,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1476,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2868,
+      "denominator": 3662,
+      "exact_count": 794,
+      "exact_proportion": 0.2168214090660841,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.2168214090660841
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 519,
+      "WRONG_TO_WRONG": 3143,
+      "denominator": 3662,
+      "exact_count": 519,
+      "exact_proportion": 0.14172583287820864,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 519,
+      "recovery_fraction": 0.14172583287820864
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 797,
+      "WRONG_TO_WRONG": 2865,
+      "denominator": 3662,
+      "exact_count": 797,
+      "exact_proportion": 0.2176406335335882,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 797,
+      "recovery_fraction": 0.2176406335335882
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2625,
+      "WRONG_TO_WRONG": 1037,
+      "denominator": 3662,
+      "exact_count": 2625,
+      "exact_proportion": 0.7168214090660842,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3662,
+      "previous_S1_rescues_recovered": 2625,
+      "recovery_fraction": 0.7168214090660842
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3662,
+      "S2_exact_count": 3662,
+      "S3_exact_count": 489,
+      "denominator": 3662
+     }
+    }
+   }
+  },
+  "W4_SRC": {
+   "canonical": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 17908,
+      "CORRECT_TO_WRONG": 8016,
+      "WRONG_TO_CORRECT": 810,
+      "WRONG_TO_WRONG": 2837,
+      "denominator": 29571,
+      "exact_count": 18718,
+      "exact_proportion": 0.6329850191065571,
+      "new_regressions": 8016,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 808,
+      "recovery_fraction": 0.22185612300933552
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 10497,
+      "CORRECT_TO_WRONG": 15427,
+      "WRONG_TO_CORRECT": 537,
+      "WRONG_TO_WRONG": 3110,
+      "denominator": 29571,
+      "exact_count": 11034,
+      "exact_proportion": 0.37313584254844273,
+      "new_regressions": 15427,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 536,
+      "recovery_fraction": 0.1471718835804503
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 11367,
+      "CORRECT_TO_WRONG": 14557,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2853,
+      "denominator": 29571,
+      "exact_count": 12161,
+      "exact_proportion": 0.4112475060025024,
+      "new_regressions": 14557,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.21801208127402527
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20337,
+      "CORRECT_TO_WRONG": 5587,
+      "WRONG_TO_CORRECT": 2612,
+      "WRONG_TO_WRONG": 1035,
+      "denominator": 29571,
+      "exact_count": 22949,
+      "exact_proportion": 0.7760643874065808,
+      "new_regressions": 5587,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 2612,
+      "recovery_fraction": 0.7171883580450302
+     },
+     "immutable_controls": {
+      "S0_exact_count": 25924,
+      "S1_exact_count": 29520,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 23867,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 802,
+      "WRONG_TO_WRONG": 2807,
+      "denominator": 3609,
+      "exact_count": 802,
+      "exact_proportion": 0.2222222222222222,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 802,
+      "recovery_fraction": 0.2222222222222222
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 531,
+      "WRONG_TO_WRONG": 3078,
+      "denominator": 3609,
+      "exact_count": 531,
+      "exact_proportion": 0.14713216957605985,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 531,
+      "recovery_fraction": 0.14713216957605985
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 786,
+      "WRONG_TO_WRONG": 2823,
+      "denominator": 3609,
+      "exact_count": 786,
+      "exact_proportion": 0.21778886118038238,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 786,
+      "recovery_fraction": 0.21778886118038238
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2586,
+      "WRONG_TO_WRONG": 1023,
+      "denominator": 3609,
+      "exact_count": 2586,
+      "exact_proportion": 0.7165419783873649,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 2586,
+      "recovery_fraction": 0.7165419783873649
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3609,
+      "S2_exact_count": 3609,
+      "S3_exact_count": 479,
+      "denominator": 3609
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 16758,
+      "CORRECT_TO_WRONG": 7609,
+      "WRONG_TO_CORRECT": 804,
+      "WRONG_TO_WRONG": 2810,
+      "denominator": 27981,
+      "exact_count": 17562,
+      "exact_proportion": 0.6276401844108502,
+      "new_regressions": 7609,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 802,
+      "recovery_fraction": 0.2222222222222222
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 9721,
+      "CORRECT_TO_WRONG": 14646,
+      "WRONG_TO_CORRECT": 532,
+      "WRONG_TO_WRONG": 3082,
+      "denominator": 27981,
+      "exact_count": 10253,
+      "exact_proportion": 0.36642721846967585,
+      "new_regressions": 14646,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 531,
+      "recovery_fraction": 0.14713216957605985
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 10541,
+      "CORRECT_TO_WRONG": 13826,
+      "WRONG_TO_CORRECT": 786,
+      "WRONG_TO_WRONG": 2828,
+      "denominator": 27981,
+      "exact_count": 11327,
+      "exact_proportion": 0.4048104070619349,
+      "new_regressions": 13826,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 786,
+      "recovery_fraction": 0.21778886118038238
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 19006,
+      "CORRECT_TO_WRONG": 5361,
+      "WRONG_TO_CORRECT": 2586,
+      "WRONG_TO_WRONG": 1028,
+      "denominator": 27981,
+      "exact_count": 21592,
+      "exact_proportion": 0.7716664879739823,
+      "new_regressions": 5361,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 2586,
+      "recovery_fraction": 0.7165419783873649
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24367,
+      "S1_exact_count": 27939,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 22384,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 810,
+      "WRONG_TO_WRONG": 2837,
+      "denominator": 3647,
+      "exact_count": 810,
+      "exact_proportion": 0.2221003564573622,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 808,
+      "recovery_fraction": 0.22185612300933552
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 537,
+      "WRONG_TO_WRONG": 3110,
+      "denominator": 3647,
+      "exact_count": 537,
+      "exact_proportion": 0.1472443103921031,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 536,
+      "recovery_fraction": 0.1471718835804503
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2853,
+      "denominator": 3647,
+      "exact_count": 794,
+      "exact_proportion": 0.21771318892240196,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.21801208127402527
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2612,
+      "WRONG_TO_WRONG": 1035,
+      "denominator": 3647,
+      "exact_count": 2612,
+      "exact_proportion": 0.7162051000822593,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 2612,
+      "recovery_fraction": 0.7171883580450302
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3642,
+      "S2_exact_count": 3647,
+      "S3_exact_count": 488,
+      "denominator": 3647
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1150,
+      "CORRECT_TO_WRONG": 407,
+      "WRONG_TO_CORRECT": 6,
+      "WRONG_TO_WRONG": 27,
+      "denominator": 1590,
+      "exact_count": 1156,
+      "exact_proportion": 0.7270440251572327,
+      "new_regressions": 407,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 6,
+      "recovery_fraction": 0.18181818181818182
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 776,
+      "CORRECT_TO_WRONG": 781,
+      "WRONG_TO_CORRECT": 5,
+      "WRONG_TO_WRONG": 28,
+      "denominator": 1590,
+      "exact_count": 781,
+      "exact_proportion": 0.4911949685534591,
+      "new_regressions": 781,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 5,
+      "recovery_fraction": 0.15151515151515152
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 826,
+      "CORRECT_TO_WRONG": 731,
+      "WRONG_TO_CORRECT": 8,
+      "WRONG_TO_WRONG": 25,
+      "denominator": 1590,
+      "exact_count": 834,
+      "exact_proportion": 0.5245283018867924,
+      "new_regressions": 731,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 8,
+      "recovery_fraction": 0.24242424242424243
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1331,
+      "CORRECT_TO_WRONG": 226,
+      "WRONG_TO_CORRECT": 26,
+      "WRONG_TO_WRONG": 7,
+      "denominator": 1590,
+      "exact_count": 1357,
+      "exact_proportion": 0.8534591194968554,
+      "new_regressions": 226,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 26,
+      "recovery_fraction": 0.7878787878787878
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1557,
+      "S1_exact_count": 1581,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1483,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 808,
+      "WRONG_TO_WRONG": 2834,
+      "denominator": 3642,
+      "exact_count": 808,
+      "exact_proportion": 0.22185612300933552,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 808,
+      "recovery_fraction": 0.22185612300933552
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 536,
+      "WRONG_TO_WRONG": 3106,
+      "denominator": 3642,
+      "exact_count": 536,
+      "exact_proportion": 0.1471718835804503,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 536,
+      "recovery_fraction": 0.1471718835804503
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2848,
+      "denominator": 3642,
+      "exact_count": 794,
+      "exact_proportion": 0.21801208127402527,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.21801208127402527
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2612,
+      "WRONG_TO_WRONG": 1030,
+      "denominator": 3642,
+      "exact_count": 2612,
+      "exact_proportion": 0.7171883580450302,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 2612,
+      "recovery_fraction": 0.7171883580450302
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3642,
+      "S2_exact_count": 3642,
+      "S3_exact_count": 486,
+      "denominator": 3642
+     }
+    }
+   },
+   "freear": {
+    "ALL_REPETITION_ITEMS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 17908,
+      "CORRECT_TO_WRONG": 8016,
+      "WRONG_TO_CORRECT": 810,
+      "WRONG_TO_WRONG": 2837,
+      "denominator": 29571,
+      "exact_count": 18718,
+      "exact_proportion": 0.6329850191065571,
+      "new_regressions": 8016,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 808,
+      "recovery_fraction": 0.22185612300933552
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 10497,
+      "CORRECT_TO_WRONG": 15427,
+      "WRONG_TO_CORRECT": 537,
+      "WRONG_TO_WRONG": 3110,
+      "denominator": 29571,
+      "exact_count": 11034,
+      "exact_proportion": 0.37313584254844273,
+      "new_regressions": 15427,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 536,
+      "recovery_fraction": 0.1471718835804503
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 11367,
+      "CORRECT_TO_WRONG": 14557,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2853,
+      "denominator": 29571,
+      "exact_count": 12161,
+      "exact_proportion": 0.4112475060025024,
+      "new_regressions": 14557,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.21801208127402527
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 20337,
+      "CORRECT_TO_WRONG": 5587,
+      "WRONG_TO_CORRECT": 2612,
+      "WRONG_TO_WRONG": 1035,
+      "denominator": 29571,
+      "exact_count": 22949,
+      "exact_proportion": 0.7760643874065808,
+      "new_regressions": 5587,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 2612,
+      "recovery_fraction": 0.7171883580450302
+     },
+     "immutable_controls": {
+      "S0_exact_count": 25924,
+      "S1_exact_count": 29520,
+      "S2_exact_count": 29571,
+      "S3_exact_count": 23867,
+      "denominator": 29571
+     }
+    },
+    "C_CORRECT_AND_NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 802,
+      "WRONG_TO_WRONG": 2807,
+      "denominator": 3609,
+      "exact_count": 802,
+      "exact_proportion": 0.2222222222222222,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 802,
+      "recovery_fraction": 0.2222222222222222
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 531,
+      "WRONG_TO_WRONG": 3078,
+      "denominator": 3609,
+      "exact_count": 531,
+      "exact_proportion": 0.14713216957605985,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 531,
+      "recovery_fraction": 0.14713216957605985
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 786,
+      "WRONG_TO_WRONG": 2823,
+      "denominator": 3609,
+      "exact_count": 786,
+      "exact_proportion": 0.21778886118038238,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 786,
+      "recovery_fraction": 0.21778886118038238
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2586,
+      "WRONG_TO_WRONG": 1023,
+      "denominator": 3609,
+      "exact_count": 2586,
+      "exact_proportion": 0.7165419783873649,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 2586,
+      "recovery_fraction": 0.7165419783873649
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3609,
+      "S2_exact_count": 3609,
+      "S3_exact_count": 479,
+      "denominator": 3609
+     }
+    },
+    "C_POPULATION": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 16758,
+      "CORRECT_TO_WRONG": 7609,
+      "WRONG_TO_CORRECT": 804,
+      "WRONG_TO_WRONG": 2810,
+      "denominator": 27981,
+      "exact_count": 17562,
+      "exact_proportion": 0.6276401844108502,
+      "new_regressions": 7609,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 802,
+      "recovery_fraction": 0.2222222222222222
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 9721,
+      "CORRECT_TO_WRONG": 14646,
+      "WRONG_TO_CORRECT": 532,
+      "WRONG_TO_WRONG": 3082,
+      "denominator": 27981,
+      "exact_count": 10253,
+      "exact_proportion": 0.36642721846967585,
+      "new_regressions": 14646,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 531,
+      "recovery_fraction": 0.14713216957605985
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 10541,
+      "CORRECT_TO_WRONG": 13826,
+      "WRONG_TO_CORRECT": 786,
+      "WRONG_TO_WRONG": 2828,
+      "denominator": 27981,
+      "exact_count": 11327,
+      "exact_proportion": 0.4048104070619349,
+      "new_regressions": 13826,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 786,
+      "recovery_fraction": 0.21778886118038238
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 19006,
+      "CORRECT_TO_WRONG": 5361,
+      "WRONG_TO_CORRECT": 2586,
+      "WRONG_TO_WRONG": 1028,
+      "denominator": 27981,
+      "exact_count": 21592,
+      "exact_proportion": 0.7716664879739823,
+      "new_regressions": 5361,
+      "previous_S1_rescues": 3609,
+      "previous_S1_rescues_recovered": 2586,
+      "recovery_fraction": 0.7165419783873649
+     },
+     "immutable_controls": {
+      "S0_exact_count": 24367,
+      "S1_exact_count": 27939,
+      "S2_exact_count": 27981,
+      "S3_exact_count": 22384,
+      "denominator": 27981
+     }
+    },
+    "NATIVE_LTM_WRONG": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 810,
+      "WRONG_TO_WRONG": 2837,
+      "denominator": 3647,
+      "exact_count": 810,
+      "exact_proportion": 0.2221003564573622,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 808,
+      "recovery_fraction": 0.22185612300933552
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 537,
+      "WRONG_TO_WRONG": 3110,
+      "denominator": 3647,
+      "exact_count": 537,
+      "exact_proportion": 0.1472443103921031,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 536,
+      "recovery_fraction": 0.1471718835804503
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2853,
+      "denominator": 3647,
+      "exact_count": 794,
+      "exact_proportion": 0.21771318892240196,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.21801208127402527
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2612,
+      "WRONG_TO_WRONG": 1035,
+      "denominator": 3647,
+      "exact_count": 2612,
+      "exact_proportion": 0.7162051000822593,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 2612,
+      "recovery_fraction": 0.7171883580450302
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3642,
+      "S2_exact_count": 3647,
+      "S3_exact_count": 488,
+      "denominator": 3647
+     }
+    },
+    "NEAR_COLLINEAR_CASES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 0,
+      "WRONG_TO_WRONG": 0,
+      "denominator": 0,
+      "exact_count": 0,
+      "exact_proportion": null,
+      "new_regressions": 0,
+      "previous_S1_rescues": 0,
+      "previous_S1_rescues_recovered": 0,
+      "recovery_fraction": null
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 0,
+      "S2_exact_count": 0,
+      "S3_exact_count": 0,
+      "denominator": 0
+     }
+    },
+    "NONCANONICAL_HOMOPHONE_MEMBERS": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 1150,
+      "CORRECT_TO_WRONG": 407,
+      "WRONG_TO_CORRECT": 6,
+      "WRONG_TO_WRONG": 27,
+      "denominator": 1590,
+      "exact_count": 1156,
+      "exact_proportion": 0.7270440251572327,
+      "new_regressions": 407,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 6,
+      "recovery_fraction": 0.18181818181818182
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 776,
+      "CORRECT_TO_WRONG": 781,
+      "WRONG_TO_CORRECT": 5,
+      "WRONG_TO_WRONG": 28,
+      "denominator": 1590,
+      "exact_count": 781,
+      "exact_proportion": 0.4911949685534591,
+      "new_regressions": 781,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 5,
+      "recovery_fraction": 0.15151515151515152
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 826,
+      "CORRECT_TO_WRONG": 731,
+      "WRONG_TO_CORRECT": 8,
+      "WRONG_TO_WRONG": 25,
+      "denominator": 1590,
+      "exact_count": 834,
+      "exact_proportion": 0.5245283018867924,
+      "new_regressions": 731,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 8,
+      "recovery_fraction": 0.24242424242424243
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 1331,
+      "CORRECT_TO_WRONG": 226,
+      "WRONG_TO_CORRECT": 26,
+      "WRONG_TO_WRONG": 7,
+      "denominator": 1590,
+      "exact_count": 1357,
+      "exact_proportion": 0.8534591194968554,
+      "new_regressions": 226,
+      "previous_S1_rescues": 33,
+      "previous_S1_rescues_recovered": 26,
+      "recovery_fraction": 0.7878787878787878
+     },
+     "immutable_controls": {
+      "S0_exact_count": 1557,
+      "S1_exact_count": 1581,
+      "S2_exact_count": 1590,
+      "S3_exact_count": 1483,
+      "denominator": 1590
+     }
+    },
+    "PREV_S1_RESCUES": {
+     "a025": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 808,
+      "WRONG_TO_WRONG": 2834,
+      "denominator": 3642,
+      "exact_count": 808,
+      "exact_proportion": 0.22185612300933552,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 808,
+      "recovery_fraction": 0.22185612300933552
+     },
+     "a050": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 536,
+      "WRONG_TO_WRONG": 3106,
+      "denominator": 3642,
+      "exact_count": 536,
+      "exact_proportion": 0.1471718835804503,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 536,
+      "recovery_fraction": 0.1471718835804503
+     },
+     "a075": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 794,
+      "WRONG_TO_WRONG": 2848,
+      "denominator": 3642,
+      "exact_count": 794,
+      "exact_proportion": 0.21801208127402527,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 794,
+      "recovery_fraction": 0.21801208127402527
+     },
+     "a100": {
+      "CORRECT_TO_CORRECT": 0,
+      "CORRECT_TO_WRONG": 0,
+      "WRONG_TO_CORRECT": 2612,
+      "WRONG_TO_WRONG": 1030,
+      "denominator": 3642,
+      "exact_count": 2612,
+      "exact_proportion": 0.7171883580450302,
+      "new_regressions": 0,
+      "previous_S1_rescues": 3642,
+      "previous_S1_rescues_recovered": 2612,
+      "recovery_fraction": 0.7171883580450302
+     },
+     "immutable_controls": {
+      "S0_exact_count": 0,
+      "S1_exact_count": 3642,
+      "S2_exact_count": 3642,
+      "S3_exact_count": 486,
+      "denominator": 3642
+     }
+    }
+   }
+  }
+ },
+ "schema_version": "ventral-directional-dose-schema-v1"
+}

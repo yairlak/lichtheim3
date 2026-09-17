@@ -1,0 +1,427 @@
+{
+ "environment": {
+  "default_dtype": "torch.float32",
+  "deterministic_algorithms": true,
+  "device": "cpu",
+  "model_semantic_dtype": "torch.float32",
+  "python": "3.11.15",
+  "torch": "2.12.1"
+ },
+ "failure": null,
+ "mode": "PREFLIGHT",
+ "pass": true,
+ "reports": {
+  "DOSE-A_H_lineage": {
+   "ar_diagnostic": true,
+   "closed_contract": true,
+   "closed_sha256sums": [
+    {
+     "entries": 37,
+     "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose/paper_programme/ventral_semantic_interface/scientific_execution/SHA256SUMS",
+     "pass": true
+    },
+    {
+     "entries": 37,
+     "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-interface/paper_programme/ventral_semantic_interface/scientific_execution/SHA256SUMS",
+     "pass": true
+    },
+    {
+     "entries": 17,
+     "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose/./paper_programme/ventral_semantic_interface/SHA256SUMS",
+     "pass": true
+    },
+    {
+     "entries": 17,
+     "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-interface/./paper_programme/ventral_semantic_interface/SHA256SUMS",
+     "pass": true
+    }
+   ],
+   "closed_worktree_ar_diagnostic": true,
+   "closed_worktree_clean": true,
+   "closed_worktree_closed_contract": true,
+   "closed_worktree_head": true,
+   "closed_worktree_item_level": true,
+   "closed_worktree_summary": true,
+   "glove": true,
+   "head_descends_from_closed_results": true,
+   "item_level": true,
+   "lexicon": true,
+   "pass": true,
+   "state_manifest_blob": true,
+   "states": {
+    "W3_REP": {
+     "archival": true,
+     "composite": true,
+     "head": true,
+     "source": true
+    },
+    "W3_SRC": {
+     "archival": true,
+     "composite": true,
+     "head": true,
+     "source": true
+    },
+    "W4_REP": {
+     "archival": true,
+     "composite": true,
+     "head": true,
+     "source": true
+    },
+    "W4_SRC": {
+     "archival": true,
+     "composite": true,
+     "head": true,
+     "source": true
+    }
+   },
+   "summary": true
+  },
+  "W3_REP": {
+   "DOSE-A_state_controls": {
+    "n_entries": 29571,
+    "n_rows": 29571,
+    "pass": true
+   },
+   "DOSE-B_alpha0_reproduces_S0": {
+    "mismatches": {
+     "canonical": {
+      "exact": 0,
+      "phonology": 0
+     },
+     "freear": {
+      "exact": 0,
+      "phonology": 0
+     }
+    },
+    "pass": true
+   },
+   "DOSE-F_preflight_alpha0_path": {
+    "encoder_step_max_abs_dev": 0.0,
+    "pass": true,
+    "sem_to_h0_mismatch_or_uncalled": 0
+   },
+   "DOSE-G_preflight": {
+    "guard_violations": 0,
+    "pass": true
+   },
+   "DOSE-I_post_preflight": {
+    "after": "c72b87d925bab8afc7690c18bea8f978736f9e3e91cdc8b17b5dcba37bae7bf2",
+    "before": "c72b87d925bab8afc7690c18bea8f978736f9e3e91cdc8b17b5dcba37bae7bf2",
+    "pass": true
+   },
+   "DOSE-I_pre": {
+    "expected": "c72b87d925bab8afc7690c18bea8f978736f9e3e91cdc8b17b5dcba37bae7bf2",
+    "params_sha256": "c72b87d925bab8afc7690c18bea8f978736f9e3e91cdc8b17b5dcba37bae7bf2",
+    "pass": true
+   },
+   "DOSE-J_live_shat_preflight": {
+    "max_abs_dev_live_vs_geometry_shat": 0.0,
+    "pass": true,
+    "tolerance": 1e-05
+   },
+   "DOSE-J_retrieval_identity": {
+    "n_mismatch": 0,
+    "pass": true
+   },
+   "NO_NEAR_ANTIPODAL": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_PROTOTYPE": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_SHAT": {
+    "count": 0,
+    "pass": true
+   }
+  },
+  "W3_SRC": {
+   "DOSE-A_state_controls": {
+    "n_entries": 29571,
+    "n_rows": 29571,
+    "pass": true
+   },
+   "DOSE-B_alpha0_reproduces_S0": {
+    "mismatches": {
+     "canonical": {
+      "exact": 0,
+      "phonology": 0
+     },
+     "freear": {
+      "exact": 0,
+      "phonology": 0
+     }
+    },
+    "pass": true
+   },
+   "DOSE-F_preflight_alpha0_path": {
+    "encoder_step_max_abs_dev": 0.0,
+    "pass": true,
+    "sem_to_h0_mismatch_or_uncalled": 0
+   },
+   "DOSE-G_preflight": {
+    "guard_violations": 0,
+    "pass": true
+   },
+   "DOSE-I_post_preflight": {
+    "after": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+    "before": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+    "pass": true
+   },
+   "DOSE-I_pre": {
+    "expected": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+    "params_sha256": "4a8d4807f1a1928faebebf696d41f4c222b3997b52432d7015fc038881eac785",
+    "pass": true
+   },
+   "DOSE-J_live_shat_preflight": {
+    "max_abs_dev_live_vs_geometry_shat": 0.0,
+    "pass": true,
+    "tolerance": 1e-05
+   },
+   "DOSE-J_retrieval_identity": {
+    "n_mismatch": 0,
+    "pass": true
+   },
+   "NO_NEAR_ANTIPODAL": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_PROTOTYPE": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_SHAT": {
+    "count": 0,
+    "pass": true
+   }
+  },
+  "W4_REP": {
+   "DOSE-A_state_controls": {
+    "n_entries": 29571,
+    "n_rows": 29571,
+    "pass": true
+   },
+   "DOSE-B_alpha0_reproduces_S0": {
+    "mismatches": {
+     "canonical": {
+      "exact": 0,
+      "phonology": 0
+     },
+     "freear": {
+      "exact": 0,
+      "phonology": 0
+     }
+    },
+    "pass": true
+   },
+   "DOSE-F_preflight_alpha0_path": {
+    "encoder_step_max_abs_dev": 0.0,
+    "pass": true,
+    "sem_to_h0_mismatch_or_uncalled": 0
+   },
+   "DOSE-G_preflight": {
+    "guard_violations": 0,
+    "pass": true
+   },
+   "DOSE-I_post_preflight": {
+    "after": "d11027323a71884775a64f29974ff8e4cfc5931b8cf531d32492330cc40e3008",
+    "before": "d11027323a71884775a64f29974ff8e4cfc5931b8cf531d32492330cc40e3008",
+    "pass": true
+   },
+   "DOSE-I_pre": {
+    "expected": "d11027323a71884775a64f29974ff8e4cfc5931b8cf531d32492330cc40e3008",
+    "params_sha256": "d11027323a71884775a64f29974ff8e4cfc5931b8cf531d32492330cc40e3008",
+    "pass": true
+   },
+   "DOSE-J_live_shat_preflight": {
+    "max_abs_dev_live_vs_geometry_shat": 0.0,
+    "pass": true,
+    "tolerance": 1e-05
+   },
+   "DOSE-J_retrieval_identity": {
+    "n_mismatch": 0,
+    "pass": true
+   },
+   "NO_NEAR_ANTIPODAL": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_PROTOTYPE": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_SHAT": {
+    "count": 0,
+    "pass": true
+   }
+  },
+  "W4_SRC": {
+   "DOSE-A_state_controls": {
+    "n_entries": 29571,
+    "n_rows": 29571,
+    "pass": true
+   },
+   "DOSE-B_alpha0_reproduces_S0": {
+    "mismatches": {
+     "canonical": {
+      "exact": 0,
+      "phonology": 0
+     },
+     "freear": {
+      "exact": 0,
+      "phonology": 0
+     }
+    },
+    "pass": true
+   },
+   "DOSE-F_preflight_alpha0_path": {
+    "encoder_step_max_abs_dev": 0.0,
+    "pass": true,
+    "sem_to_h0_mismatch_or_uncalled": 0
+   },
+   "DOSE-G_preflight": {
+    "guard_violations": 0,
+    "pass": true
+   },
+   "DOSE-I_post_preflight": {
+    "after": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+    "before": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+    "pass": true
+   },
+   "DOSE-I_pre": {
+    "expected": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+    "params_sha256": "004dda2d9a846ce194d4b0b3f7adc408d5c9d909aadbe413a35e96ceaa411974",
+    "pass": true
+   },
+   "DOSE-J_live_shat_preflight": {
+    "max_abs_dev_live_vs_geometry_shat": 0.0,
+    "pass": true,
+    "tolerance": 1e-05
+   },
+   "DOSE-J_retrieval_identity": {
+    "n_mismatch": 0,
+    "pass": true
+   },
+   "NO_NEAR_ANTIPODAL": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_PROTOTYPE": {
+    "count": 0,
+    "pass": true
+   },
+   "NO_ZERO_SHAT": {
+    "count": 0,
+    "pass": true
+   }
+  },
+  "runtime_closure": {
+   "closure_sha256": {
+    "config.py": "9a8088982995a2b53edf4ee81d214ff1ab3603149dd9db9f73a307812cd80453",
+    "data/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/lexicon.py": "0e4936d291f27d23d0532ff1aaa93a28b69caf582b37fca5cfb0d0f6ea578d0f",
+    "data/lexicon_en_glove_covered.tsv": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66",
+    "data/phonemes.py": "b093764b744a7be621763a87aacb94ebcd145a04ebaa647f6f261264d9aa1c98",
+    "evaluate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evaluate/hooks.py": "113d0aeb367e0d181f5f3216ccd515df4658170293db44a5aad25ce5a022f074",
+    "gate_x_lesion/__init__.py": "e629d48a071340c99a990a85d6eba7bf7f30a7a673042b2d8c4a0b0fc3ff7ed1",
+    "gate_x_lesion/hooks.py": "c2a4083d9679b4c089bba0f64f4dbd0936c252f02c7b13ed0b1b3c4b9d519c8b",
+    "gate_x_lesion/identity.py": "413e3648cc0e6bfb5375e610e542e955c4ca6d3b5ebf29ce2b43e8a729c7f2ad",
+    "gate_x_lesion/noise.py": "74bd0f84aead8a22dd95234957df109acbf353889ab5f0bedfd72cb06eb07523",
+    "gate_x_lesion/targets.py": "e24b2491556785e904779fc129738a817e17e33a3da9fbcbb812d2b7cefd357d",
+    "gating_diagnostics/__init__.py": "e844d00fcd5908694f71d4c75bb4914eef701d1ebe5d0ae586115d197484f081",
+    "gating_diagnostics/analysis.py": "4cd598ab161bf67d7e670d936946af1c536d9887ff2e65b65e6f443ef6111aac",
+    "gating_diagnostics/gate_probe.py": "a60ef0c21b922ae9cf5a9a15bd8a7a7c170d275691bcdfa17bbdd681c7b6b02d",
+    "losses.py": "382eed2335ee2add7a00f6de9b73a788cdef5e94155ae1970e38bd5d7dcefd80",
+    "models/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/dual_route.py": "dfed9c0083d9b5ec88bec091fa71e74614faeb55b28ced344849ba51ad4425da",
+    "models/gating.py": "3d87ddbf80f540c77262ab7bb310cee271ca849d5e406beeef374c8f7ff11677",
+    "models/ltm_route.py": "49f8cd49b76413c6eb3040c3b90cada2c3e1e31fee842286867bcb8de73b0073",
+    "models/motor.py": "5b8998e7e54b74d2c765e3f24403bad52cab034f4780b12d7910a16177f91906",
+    "models/wm_route.py": "5933765b288e852ee4408058860db5a428c21361052141478dc190089b8b21a7",
+    "paper_programme/gating_route_diagnostics/checkpoint_manifest.tsv": "eeb6b9703ada869e443874fdfe49d714e231f4d2410d32fc4938a1d0fe848d54",
+    "scripts/evaluate_train_lexicon_ceiling.py": "352d9a4b950923b90fc2a7e8e03476ecb938f86850667b927648fa4f83b32a26",
+    "scripts/external_eval.py": "8931a1c92c716124862c170ec7854acc002befc1c4094051b406ef056b7174f1",
+    "scripts/gating_diagnostics/run_gate_route_audit.py": "79feb855d890e3c6a5681926b2ab851a807b6d0375f89757024247a55cc024ce",
+    "scripts/naming_comprehension/aggregate_cohort.py": "9c22adab9571aa96b68ac4b05ea557137e59677c3611ebeaee4540aedeca0c1b",
+    "scripts/naming_comprehension/base123_error_audit.py": "15008114d5e5ff3bde51b550193c07e62d5566347a29510ec9a75bb8ae910b37",
+    "scripts/naming_comprehension/frozen_head_probe.py": "f2a30620aad79bba81bbd9e56ab0b1a38a74801c05e35b0f9e74f7bb63fb851b",
+    "scripts/naming_comprehension/frozen_probe.py": "d4c7bb9289cef56d09d05b1cbcbd9b47f0fa32dda549b333d29d8a4753689d4f",
+    "scripts/naming_comprehension/train_joint_scratch.py": "766244c1363d998f34fe3e4f725b57a9b3f95cf716876d71470d804cf962765c",
+    "scripts/naming_comprehension/train_multitask.py": "d4963f59c51aa46c877d9abf85078352674dbbad32ece264516e9b44d1ea1d96",
+    "scripts/naming_comprehension/train_tasks.py": "a867b6b5ec474fb79fcd18e769fa8d16d8bdc3de920f7704bfa9be2e7b907303",
+    "scripts/ventral_directional_dose/run_directional_dose.py": "3ecff1b7c71531e977a21f1c61245c6f3be1bbbb2d44d5173c94f97d689efc22",
+    "scripts/ventral_interface/run_ventral_interface_factorization.py": "bba7ba0b341d2c74e3660093e444824f60514fd9aad2800cdf656a8633849e01",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_ventral_directional_dose.py": "1607942aecf2863975258d5db3cf6198da74fac1d254b3cab8cf3457104cf175",
+    "tests/test_ventral_interface.py": "585e767e57321b22edd22c657ab61424a05c26497ae28a90bdfb201f2f775621",
+    "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "utils/provenance.py": "c8bb5d4a58d6e48b29a80e83dbe8e3741bb5bdb23173af8fd9df554020b540a7",
+    "utils/seed.py": "aa7c8bbba3e036417bd54a9e8b67a1a09be156bc4542fa0adf10f62e4563f344",
+    "ventral_directional_dose/__init__.py": "49105c17581b083fdf5724b8ac8a06f73df7c5bed65a9cc268cec0a2a988d62a",
+    "ventral_directional_dose/controls.py": "54d12bc62fc72cb666071ce25c5f9a99fd020c9641ee6b9fd79dacd7a7307e9b",
+    "ventral_directional_dose/dose_math.py": "b30cf27ceca0409f02dd2e1711eaf5c7f67d8b9ca6058df9c1a596f699b52797",
+    "ventral_directional_dose/evaluate.py": "0298cc49dcd459f2304c6143081fa088bae7fabea9c114db91667768141b2a82",
+    "ventral_directional_dose/schema.py": "12bd9d75576ce413a7563b287f03356e6499464ef7aa31a05ec420820af49346",
+    "ventral_directional_dose/supplier.py": "a0b7d781e4f893a9dfb0f7af4ee84f2799673745eb1275c069a82b67acb6d5c8",
+    "ventral_interface/__init__.py": "095feec270596a4bd44b4571ecb7decbb9773d0acf845c7aded95c23afb1dfed",
+    "ventral_interface/conditions.py": "634bea5bdbc635f4488fda23f8af507ea88ab47625730c7eca7378d8c7108bec",
+    "ventral_interface/decode.py": "dec068e264f516d559bf6273922a022f66131d6a429aebc482b11bdc2fa3ea43",
+    "ventral_interface/evaluate.py": "70007dc4a728b92f8bbb44f9bf1ac6333947e3d3289ce8c25524316c8a1eeff9",
+    "ventral_interface/injection.py": "e443411c7d002c0a62037e04a137dd876d3a4f522375c9ecd7800f1f2a1e4b7f",
+    "ventral_interface/population.py": "c028395376dc440c3bfdd00eb5392297d7616fb6ea9ec514031e6796b60325cc",
+    "ventral_interface/schema.py": "d6c41e329039c5593a8bb823f28ae8465369ad81ddec35a7d5091151f8231a05"
+   },
+   "missing_from_frozen_closure": [],
+   "pass": true,
+   "runtime_loaded_modules": [
+    "config.py",
+    "data/__init__.py",
+    "data/lexicon.py",
+    "data/phonemes.py",
+    "evaluate/__init__.py",
+    "evaluate/hooks.py",
+    "gate_x_lesion/__init__.py",
+    "gate_x_lesion/hooks.py",
+    "gate_x_lesion/identity.py",
+    "gate_x_lesion/noise.py",
+    "gate_x_lesion/targets.py",
+    "gating_diagnostics/__init__.py",
+    "gating_diagnostics/analysis.py",
+    "gating_diagnostics/gate_probe.py",
+    "losses.py",
+    "models/__init__.py",
+    "models/dual_route.py",
+    "models/gating.py",
+    "models/ltm_route.py",
+    "models/motor.py",
+    "models/wm_route.py",
+    "scripts/external_eval.py",
+    "scripts/gating_diagnostics/run_gate_route_audit.py",
+    "scripts/naming_comprehension/aggregate_cohort.py",
+    "scripts/naming_comprehension/base123_error_audit.py",
+    "scripts/naming_comprehension/frozen_head_probe.py",
+    "scripts/naming_comprehension/frozen_probe.py",
+    "scripts/naming_comprehension/train_joint_scratch.py",
+    "scripts/naming_comprehension/train_multitask.py",
+    "scripts/naming_comprehension/train_tasks.py",
+    "scripts/ventral_directional_dose/run_directional_dose.py",
+    "utils/__init__.py",
+    "utils/provenance.py",
+    "utils/seed.py",
+    "ventral_directional_dose/__init__.py",
+    "ventral_directional_dose/controls.py",
+    "ventral_directional_dose/dose_math.py",
+    "ventral_directional_dose/evaluate.py",
+    "ventral_directional_dose/supplier.py",
+    "ventral_interface/__init__.py",
+    "ventral_interface/conditions.py",
+    "ventral_interface/decode.py",
+    "ventral_interface/injection.py",
+    "ventral_interface/population.py"
+   ]
+  }
+ },
+ "scientific_alpha_decoded": false
+}

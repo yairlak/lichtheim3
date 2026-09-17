@@ -1,0 +1,5 @@
+state_id	n	correct_at_all_five_alphas_incl_S0	wrong_at_all_five	S0_correct_then_any_dose_wrong	S0_correct_wrong_at_050_correct_at_100	S0_wrong_correct_at_025_wrong_at_050	S0_wrong_correct_at_100	S0_wrong_correct_at_025_and_100	items_with_any_correct_to_wrong_step_in_sequence	items_with_any_wrong_to_correct_step_in_sequence
+W3_SRC	29571	8491	586	17881	10855	392	2377	594	18555	16335
+W3_REP	29571	8498	582	17880	10862	390	2374	601	18551	16360
+W4_SRC	29571	6580	763	19344	11453	475	2612	616	20111	17248
+W4_REP	29571	6597	767	19312	11465	476	2625	609	20075	17264

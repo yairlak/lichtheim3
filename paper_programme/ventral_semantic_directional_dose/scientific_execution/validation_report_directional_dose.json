@@ -1,0 +1,163 @@
+{
+ "all_pass": true,
+ "checks": {
+  "all_validity_gates_pass": {
+   "detail": null,
+   "pass": true
+  },
+  "alpha1_factorization_recomputes_exactly": {
+   "detail": null,
+   "pass": true
+  },
+  "alpha1_uses_native_norm_not_S1_vector": {
+   "detail": {
+    "items_where_native_and_prototype_norms_differ": 118238,
+    "max_rel_dev_to_native_norm": 2.1299879686606485e-08
+   },
+   "pass": true
+  },
+  "closed_S0_S3_outputs_sources_heads_unchanged": {
+   "detail": {
+    "ar_diagnostic": true,
+    "closed_contract": true,
+    "closed_sha256sums": [
+     {
+      "entries": 37,
+      "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose/paper_programme/ventral_semantic_interface/scientific_execution/SHA256SUMS",
+      "pass": true
+     },
+     {
+      "entries": 37,
+      "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-interface/paper_programme/ventral_semantic_interface/scientific_execution/SHA256SUMS",
+      "pass": true
+     },
+     {
+      "entries": 17,
+      "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose/./paper_programme/ventral_semantic_interface/SHA256SUMS",
+      "pass": true
+     },
+     {
+      "entries": 17,
+      "file": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-interface/./paper_programme/ventral_semantic_interface/SHA256SUMS",
+      "pass": true
+     }
+    ],
+    "closed_worktree_ar_diagnostic": true,
+    "closed_worktree_clean": true,
+    "closed_worktree_closed_contract": true,
+    "closed_worktree_head": true,
+    "closed_worktree_item_level": true,
+    "closed_worktree_summary": true,
+    "glove": true,
+    "head_descends_from_closed_results": true,
+    "item_level": true,
+    "lexicon": true,
+    "pass": true,
+    "state_manifest_blob": true,
+    "summary": true
+   },
+   "pass": true
+  },
+  "contract_hash_unchanged": {
+   "detail": null,
+   "pass": true
+  },
+  "each_state_complete": {
+   "detail": null,
+   "pass": true
+  },
+  "exactly_four_alpha_blocks_no_fifth": {
+   "detail": [
+    "a025",
+    "a050",
+    "a075",
+    "a100"
+   ],
+   "pass": true
+  },
+  "expected_files_exist": {
+   "detail": [],
+   "pass": true
+  },
+  "figure_source_data_match_summary": {
+   "detail": 0,
+   "pass": true
+  },
+  "freeze_SHA256SUMS_CODE_verifies": {
+   "detail": [],
+   "pass": true
+  },
+  "freeze_SHA256SUMS_verifies": {
+   "detail": [],
+   "pass": true
+  },
+  "frozen_tracked_files_byte_identical_to_freeze_commit": {
+   "detail": null,
+   "pass": true
+  },
+  "geometry_hard_stop_counts_zero": {
+   "detail": null,
+   "pass": true
+  },
+  "gz_decompresses_to_raw_item_tsv": {
+   "detail": "08fe29fe3a3f701a0b3e3f4ad4ac23ce1594349a830f4927d1713695dd0a4fcb",
+   "pass": true
+  },
+  "implementation_manifest_hashes_match": {
+   "detail": [],
+   "pass": true
+  },
+  "item_columns_equal_frozen_schema": {
+   "detail": null,
+   "pass": true
+  },
+  "item_rows_4x29571": {
+   "detail": 118284,
+   "pass": true
+  },
+  "item_state_item_unique": {
+   "detail": null,
+   "pass": true
+  },
+  "item_tsv_available": {
+   "detail": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/ventral_directional_dose_execution_20260917/item_level_directional_dose.tsv",
+   "pass": true
+  },
+  "model_parameters_unchanged_and_equal_closed": {
+   "detail": null,
+   "pass": true
+  },
+  "no_hard_stop_geometry_case": {
+   "detail": [
+    "ORDINARY"
+   ],
+   "pass": true
+  },
+  "paired_recomputes_exactly": {
+   "detail": null,
+   "pass": true
+  },
+  "previous_S1_rescues_and_controls_match_immutable_file": {
+   "detail": 0,
+   "pass": true
+  },
+  "standalone_and_in_process_geometry_identical": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_alpha_keys_exactly_four": {
+   "detail": null,
+   "pass": true
+  },
+  "summary_results_recompute_exactly": {
+   "detail": null,
+   "pass": true
+  },
+  "transitions_sum_to_denominators": {
+   "detail": 0,
+   "pass": true
+  }
+ },
+ "raw_item_tsv": "/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/archives/ventral_directional_dose_execution_20260917/item_level_directional_dose.tsv",
+ "raw_item_tsv_sha256": "08fe29fe3a3f701a0b3e3f4ad4ac23ce1594349a830f4927d1713695dd0a4fcb"
+}

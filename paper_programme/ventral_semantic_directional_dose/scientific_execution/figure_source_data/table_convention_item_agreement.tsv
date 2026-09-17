@@ -1,0 +1,17 @@
+state_id	alpha	freear_vs_canonical_exact_disagreements
+W3_SRC	0.25	0
+W3_SRC	0.5	0
+W3_SRC	0.75	0
+W3_SRC	1	0
+W3_REP	0.25	0
+W3_REP	0.5	0
+W3_REP	0.75	0
+W3_REP	1	0
+W4_SRC	0.25	0
+W4_SRC	0.5	0
+W4_SRC	0.75	0
+W4_SRC	1	0
+W4_REP	0.25	0
+W4_REP	0.5	0
+W4_REP	0.75	0
+W4_REP	1	0

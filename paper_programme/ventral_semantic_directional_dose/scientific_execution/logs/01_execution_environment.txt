@@ -1,0 +1,13 @@
+CMD=python3 scripts/ventral_directional_dose/run_directional_dose.py --execute --contract-sha256 f5399058d4bf53c313fc4bd179c88b1cebb35348fecf74192a67bb107ec7608c --freeze-commit ea1098771ac52cf3a4c591ba650e58d73b9836e4
+CWD=/Users/louishayot/MVA/ENS-LSCP/Yair-Lichtheim3/wt-ventral-directional-dose
+HEAD=ea1098771ac52cf3a4c591ba650e58d73b9836e4
+STATUS_PORCELAIN=[]
+START_UTC=2026-09-17T00:38:27Z
+/opt/homebrew/Caskroom/miniforge/base/envs/lichtheim3/bin/python3
+3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]
+torch 2.12.1
+macOS-14.2.1-arm64-arm-64bit
+threads 6
+Apple M2 Pro
+10
+17179869184
