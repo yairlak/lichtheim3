@@ -2,11 +2,26 @@
 
 ## 1. STATUS
 
-PILOT_CONTRACT_STATUS=DESIGN_COMPLETE_NOT_TRAINING_AUTHORIZED
+PILOT_CONTRACT_STATUS=AMENDED_CONDITIONALLY_AUTHORIZED
+(prior status at design commit `9f36f2e0cf913ffe5f453a82ca43c20fa4ec824d`: DESIGN_COMPLETE_NOT_TRAINING_AUTHORIZED)
 
-* Design only. No training run, no optimizer step, no launcher that updates parameters.
-* Execution requires a new, explicit CENTRAL authorization and a separate, preregistered driver-amendment/preflight workstream (§19).
-* Nothing in this document is authorization to train.
+**CENTRAL arbitration recorded in this amendment (binding):**
+
+* C_ALIGN_DESIGN_STATUS=ACCEPTED_WITH_MODIFICATION
+* HISTORICAL_AUDIT_STATUS=ACCEPTED_WITH_QUALIFICATION
+* GRADIENT_DIAGNOSTIC_STATUS=ACCEPTED_WITH_QUALIFICATION
+* PILOT_FORM=WARM_START · C_ALIGN_WEIGHT=0.1 · TRAINING_BUDGET=ACCEPT_50U
+* SUCCESS_FAILURE_CONTRACT=ACCEPTED_WITH_MODIFICATION (terminology only; every threshold is unchanged)
+* GO_FOR_DRIVER_AMENDMENT_AND_PREFLIGHT=YES
+* GO_FOR_SINGLE_C_ALIGN_TRAINING_PILOT=CONDITIONAL_YES — effective if and only if every pre-training prerequisite in §19 passes
+* GO_FOR_ATTRACTOR=NO · GO_FOR_GATE_CHANGE=NO · GO_FOR_LESIONING=NO · GO_FOR_FULL_CEILING_RUN=NO
+* FINAL_2A_STATUS=NEGATIVE_PRIOR_NOT_DECISIVE (carried, not reinterpreted)
+
+**What this amendment changed:** outcome terminology (§17), prospectively frozen descriptive T2 sublabels (§17.4), and this authorization block. **Nothing else.** D_LTM = 560, D_LTM_ROBUST = 280, preservation floors, collapse limits, budget, evaluation cadence, start states, optimizer policy, weight, and readouts are unchanged from `9f36f2e0`.
+
+**Interpretive boundary (CENTRAL, binding).** This pilot tests only whether adding C-step raw-GloVe alignment at w=0.1 improves the already-mature native ventral interface over 50u relative to a matched OFF continuation. It does not test whether C updates caused the deficit, whether 0.1 is optimal, whether C-align should have been present from step 0, from-scratch reachability, the need for an attractor, or the general usefulness of semantic refinement. A negative result is bounded to w=0.1, this mature warm-start design, and this fixed 50u horizon.
+
+* No optimizer step is authorized until the §19 gates pass (see §22).
 
 Lineage:
 
@@ -258,22 +273,36 @@ A pair has **DAMAGE** if any floor is exceeded.
 * **HARM_P:** ΔLTM_freeAR ≥ +560 and mean over k = 8–10 ≥ +280.
 * **NULL_P:** otherwise.
 
-### 17.3 Outcome (evaluated in this order; the first match wins)
+### 17.3 Outcome (CENTRAL terminology; evaluated in this order, first match wins)
+
+| label | CENTRAL name |
+|---|---|
+| T1 | **MATERIAL_REPLICATED_TARGETED_IMPROVEMENT** |
+| T2 | **NO_MATERIAL_REPLICATED_TARGETED_IMPROVEMENT** |
+| T3 | **MATERIAL_IMPROVEMENT_WITH_TRADEOFF** |
+| T4 | **INSTABILITY_OR_MATERIAL_CROSS_SEED_REVERSAL** |
 
 0. **INVALID:** any §19 validity gate fails, or any OFF arm collapses. Not interpreted; return to CENTRAL.
-1. **T4 — INSTABILITY / INTERFERENCE:** any of
+1. **T4 = INSTABILITY_OR_MATERIAL_CROSS_SEED_REVERSAL:** any of
    * nonfinite loss, gradient norm or parameter in any ON arm
    * collapse limit reached in any ON arm
-   * IMPROVE in one pair and HARM in the other (materially incompatible causal effects)
-2. **T3 — TRADE-OFF:** IMPROVE_W3 and IMPROVE_W4, and DAMAGE in at least one pair.
-3. **T1 — TARGETED IMPROVEMENT:** IMPROVE_W3 and IMPROVE_W4, and no DAMAGE in either pair.
-4. **T2 — NO EFFECT:** everything else, with a mandatory sub-label:
-   * T2_NULL: both NULL
-   * T2_NOT_REPLICATED: IMPROVE in exactly one pair, the other NULL
-   * T2_HARM: HARM in at least one pair, not T4
-   * plus a DAMAGE flag (YES/NO)
+   * W3 IMPROVE and W4 HARM, or W4 IMPROVE and W3 HARM
+2. **T3 = MATERIAL_IMPROVEMENT_WITH_TRADEOFF:** IMPROVE_W3 and IMPROVE_W4, and DAMAGE in at least one pair.
+3. **T1 = MATERIAL_REPLICATED_TARGETED_IMPROVEMENT:** IMPROVE_W3 and IMPROVE_W4, and no DAMAGE in either pair.
+4. **T2 = NO_MATERIAL_REPLICATED_TARGETED_IMPROVEMENT:** everything else, with a mandatory descriptive sublabel (§17.4) and a separately reported DAMAGE flag.
 
-   Semantic geometry or retrieval movement (§14) does not change a T2 classification.
+   Semantic geometry or retrieval movement (§14) does not change a T2 classification. **T2 is never summarized as "no effect".** The permitted statement is: "the frozen mature-repair pilot did not meet the prospectively defined material replicated improvement criterion."
+
+### 17.4 T2 descriptive sublabels (frozen prospectively; no new threshold)
+
+These use only the already-frozen IMPROVE / HARM / NULL classifications and the signs of the raw paired differences. They introduce no new materiality threshold and do not modify T1–T4. Evaluated in order, first match wins:
+
+1. **T2_NOT_REPLICATED:** exactly one pair satisfies IMPROVE and the other does not satisfy HARM (a HARM counterpart is already T4).
+2. **T2_HARM:** at least one pair satisfies HARM, and the outcome is not T4.
+3. **T2_SUBMATERIAL_SAME_DIRECTION:** neither pair satisfies IMPROVE or HARM, **and** both pairs have ΔLTM_freeAR(50u) < 0 **and** ΔLTM_canonical(50u) < 0. This is a descriptive sign-consistency label only.
+4. **T2_NULL_OR_NEGLIGIBLE:** all remaining T2 cases.
+
+Raw W3 and W4 trajectories and DAMAGE=YES/NO are always reported alongside the sublabel.
 
 **Secondary, non-decisive mechanism readouts** are reported for any outcome:
 
@@ -328,11 +357,12 @@ A T1 whose ΔG does not move in the same direction is reported as T1 with MECHAN
 * Any generalization beyond seeds 19 and 20, or to from-scratch development.
 * That S1c remains a valid upper bound at every future checkpoint (flagged per checkpoint, §15).
 
-## 22. STOP BEFORE TRAINING
+## 22. STOP BEFORE TRAINING (authorization state after the CENTRAL amendment)
 
-* This design pass created no training launcher, ran no OFF or ON arm, and performed no optimizer step on any state.
-* TRAINING_RUN=NO · OPTIMIZER_STEP_COUNT=0 · ARCHITECTURE_CHANGED=NO · GATE_CHANGED=NO · ATTRACTOR_IMPLEMENTED=NO · YAIR_FLAG_IMPLEMENTED=NO · LESIONING_RUN=NO · FULL_CEILING_RUN=NO.
-* Indicative future invocation, for CENTRAL review only; **do not execute**. It requires the V1 amendment, which does not exist:
+* The design pass created no training launcher, ran no OFF or ON arm, and performed no optimizer step on any state.
+* CENTRAL has since issued GO_FOR_DRIVER_AMENDMENT_AND_PREFLIGHT=YES and GO_FOR_SINGLE_C_ALIGN_TRAINING_PILOT=CONDITIONAL_YES. The first optimizer step is authorized **if and only if** every §19 pre-training gate (V1–V10) passes from the frozen implementation commit; otherwise TRAINING_RUN=NO, OPTIMIZER_STEP_COUNT=0, and the blocker returns to CENTRAL without patch-and-continue.
+* ARCHITECTURE_CHANGED=NO · GATE_CHANGED=NO · ATTRACTOR_IMPLEMENTED=NO · YAIR_FLAG_IMPLEMENTED=NO · LESIONING_RUN=NO · FULL_CEILING_RUN=NO remain binding for this workstream regardless of outcome.
+* Indicative invocation, subject to the V1 amendment and the frozen launch configs:
 
   ```
   # NOT AUTHORIZED — illustrative only
