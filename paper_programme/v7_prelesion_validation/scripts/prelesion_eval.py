@@ -23,6 +23,9 @@ from typing import Dict, List, Sequence, Tuple
 
 import torch
 
+from rules import (  # frozen rules live in a torch-free module
+    classify_ordering, first_divergence, levenshtein, preservation, summarize)
+
 CONTRACT_DIR = os.path.join(os.path.dirname(__file__), "..", "contract")
 DEPLOYED_HEAD_KEYS = {"2.weight", "2.bias"}
 
@@ -161,70 +164,10 @@ def free_ar_items(tr, model, entries, routes: Sequence[str] = ("full", "wm", "lt
     return out
 
 
-def levenshtein(a: Sequence[int], b: Sequence[int]) -> int:
-    if not a:
-        return len(b)
-    prev = list(range(len(b) + 1))
-    for i, ca in enumerate(a, 1):
-        cur = [i]
-        for j, cb in enumerate(b, 1):
-            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
-        prev = cur
-    return prev[-1]
-
-
-def first_divergence(pred: Sequence[int], tgt: Sequence[int]):
-    for i in range(min(len(pred), len(tgt))):
-        if pred[i] != tgt[i]:
-            return i
-    return None if len(pred) == len(tgt) else min(len(pred), len(tgt))
-
-
 # ------------------------------------------------------------- distributions --
-def summarize(values: Sequence[float]) -> dict:
-    """n / mean / sample SD / min / p01..p99 / max, in float64."""
-    import statistics
-    v = sorted(float(x) for x in values)
-    if not v:
-        return {"n": 0}
-    def pct(p: float) -> float:
-        if len(v) == 1:
-            return v[0]
-        k = p * (len(v) - 1)
-        lo, hi = int(k), min(int(k) + 1, len(v) - 1)
-        return v[lo] + (k - lo) * (v[hi] - v[lo])
-    return {"n": len(v), "mean": sum(v) / len(v),
-            "sd": statistics.stdev(v) if len(v) > 1 else 0.0,
-            "min": v[0], "p01": pct(.01), "p05": pct(.05), "p25": pct(.25),
-            "p50": pct(.50), "p75": pct(.75), "p95": pct(.95), "p99": pct(.99),
-            "max": v[-1]}
 
 
 # --------------------------------------------------------- ordering / status --
-def classify_ordering(acc_wm: float, acc_ltm: float,
-                      ned_wm: float, ned_ltm: float) -> dict:
-    """Frozen rule.  No post-hoc tolerance; float64 throughout."""
-    d_acc = float(acc_wm) - float(acc_ltm)
-    d_ned = float(ned_ltm) - float(ned_wm)
-    if d_acc == 0.0 and d_ned == 0.0:
-        label = "TIE"
-    elif d_acc >= 0.0 and d_ned >= 0.0:
-        label = "WM_DOMINANT"
-    elif d_acc <= 0.0 and d_ned <= 0.0:
-        label = "LTM_DOMINANT"
-    else:
-        label = "MIXED"
-    return {"delta_acc": d_acc, "delta_ned": d_ned, "ordering": label}
-
-
-def preservation(source_label: str, post_label: str) -> str:
-    if source_label == "WM_DOMINANT" and post_label == "WM_DOMINANT":
-        return "PRESERVED"
-    if source_label != "WM_DOMINANT" and post_label == "WM_DOMINANT":
-        return "PRESERVED_FROM_NONDOMINANT_SOURCE"
-    if source_label == "WM_DOMINANT" and post_label != "WM_DOMINANT":
-        return "NOT_PRESERVED"
-    return "NO_EXPECTED_PATTERN_AT_SOURCE"
 
 
 def load_manifest(name: str) -> List[dict]:
@@ -234,3 +177,63 @@ def load_manifest(name: str) -> List[dict]:
     with open(path) as fh:
         lines = [l for l in fh if not l.startswith("#")]
     return list(csv.DictReader(lines, delimiter="\t"))
+
+
+# ------------------------------------------------- canonical (forced length) --
+def canonical_items(tr, model, bank_indices, routes=("full", "wm", "ltm")):
+    """Item-level CANONICAL repetition, via the frozen evaluator verbatim.
+
+    `evaluate_forms_ar` is exactly the function `train_tasks.repetition_snapshot`
+    uses for its primary readout, so this is reuse, not a reimplementation. The
+    aggregate below is the identical expression `repetition_snapshot` applies to
+    the same rows; a test asserts the two agree on the smoke set.
+    """
+    from scripts.evaluate_train_lexicon_ceiling import evaluate_forms_ar
+
+    was_training = model.training
+    model.eval()
+    try:
+        items = [tr.entries[i] for i in bank_indices]
+        rows = evaluate_forms_ar(model, tr.vocab, items, "cpu",
+                                 routes=routes, wm_noise=False)
+    finally:
+        model.train(was_training)
+    agg = {r: sum(row[f"{r}_exact_match"] for row in rows) / max(len(rows), 1)
+           for r in routes}
+    return rows, agg
+
+
+# ------------------------------------------------------- gating diagnostics --
+@torch.no_grad()
+def gating_items(tr, model, bank_indices, batch_size: int = 256):
+    """Item-level c_LTM and g, read from the frozen model outputs.
+
+    c_LTM is the LTM route's max cosine similarity to the semantic bank
+    (`ltm_route.LTMLexicon.lexical_field` -> "confidence", surfaced by
+    `DualRouteModel.forward` as `field_confidence`); g is the gate value the
+    model itself computes, g = sigmoid(alpha * (c_LTM - gate_threshold)).
+    Neither is recomputed here.
+    """
+    from scripts.naming_comprehension.train_joint_scratch import build_batch
+
+    was_training = model.training
+    model.eval()
+    rows = []
+    try:
+        for lo in range(0, len(bank_indices), batch_size):
+            idx = list(bank_indices[lo:lo + batch_size])
+            b = build_batch(tr.entries, tr.bank_raw, tr.vocab, idx, tr.device)
+            o = model(b["enc_in"], b["enc_mask"], b["dec_in"])
+            g = o["gate"].detach().reshape(len(idx), -1).float().mean(dim=1).cpu()
+            conf = o.get("field_confidence")
+            c = (conf.detach().reshape(len(idx), -1).float().mean(dim=1).cpu()
+                 if conf is not None else None)
+            for k, i in enumerate(idx):
+                rows.append({
+                    "bank_index": int(i),
+                    "c_ltm": (None if c is None else float(c[k])),
+                    "g": float(g[k]),
+                })
+    finally:
+        model.train(was_training)
+    return rows
