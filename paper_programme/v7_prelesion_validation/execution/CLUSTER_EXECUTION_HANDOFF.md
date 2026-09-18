@@ -77,7 +77,7 @@ Any failure exits 2 with `PREFLIGHT_FAIL` and runs nothing.
     #   GloVe is taken from the frozen evaluator (data/glove.6B.300d.txt) and
     #   is SHA-checked by preflight; no fallback embedding is permitted.
 
-    # 3. complete test suite  -> expect 77 passed, 0 skipped
+    # 3. complete test suite  -> expect 89 passed, 0 skipped
     python -m pytest paper_programme/v7_prelesion_validation/tests -q -rs
 
     # 4. dry run -> PREFLIGHT_OK, zero model forwards, writes nothing
@@ -95,9 +95,13 @@ Any failure exits 2 with `PREFLIGHT_FAIL` and runs nothing.
 
 Expected test totals:
 
-    77 passed,  0 skipped   -> READY; proceed to step 4
-    67 passed, 10 skipped   -> inputs not configured; NOT ready
+    89 passed,  0 skipped   -> READY; proceed to step 4
+    79 passed, 10 skipped   -> inputs not configured; NOT ready
     any failure             -> STOP, return to CENTRAL
+
+Step 4 must now print PREFLIGHT_OK and reach
+`DRY_RUN=1 : no model was loaded and no forward pass was run.`
+(Attempt 2 failed here on a false-positive sentinel check; see PREFLIGHT_LOG.md.)
 
 ## 5. Outputs
 

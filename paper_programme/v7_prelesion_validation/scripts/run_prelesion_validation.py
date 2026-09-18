@@ -98,6 +98,56 @@ def git_head() -> str:
 
 
 # ---------------------------------------------------------------- preflight --
+def docstring_constant_ids(tree: ast.AST) -> set:
+    """ids of the Constant nodes that are docstrings OF THIS SAME TREE.
+
+    Identity is only meaningful within one parsed tree, so the tree must be
+    passed in and reused -- never reparsed here. (Reparsing and comparing
+    across trees is exactly the defect this replaces: `is` could never match,
+    so every docstring was misread as executable.)
+    """
+    out = set()
+    owners = [tree] + [n for n in ast.walk(tree)
+                       if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                         ast.ClassDef))]
+    for owner in owners:
+        body = getattr(owner, "body", None)
+        if not body:
+            continue
+        first = body[0]
+        if (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
+                and isinstance(first.value.value, str)):
+            out.add(id(first.value))
+    return out
+
+
+def scan_forbidden_head(source: str):
+    """Yield (kind, detail) for every EXECUTABLE reference to the superseded head.
+
+    Exactly one tree is parsed and both the docstring set and the walk come
+    from it. Documentation (docstrings, comments) is allowed to name the head;
+    a string literal in executable position, an attribute, a name, a keyword
+    or an alias is not.
+    """
+    tree = ast.parse(source)
+    docs = docstring_constant_ids(tree)
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Constant) and isinstance(node.value, str)
+                and _FORBIDDEN_HEAD in node.value and id(node) not in docs):
+            yield "contains an executable string literal", node.value
+        elif isinstance(node, ast.Attribute) and _FORBIDDEN_HEAD in node.attr:
+            yield "references an attribute", node.attr
+        elif isinstance(node, ast.Name) and _FORBIDDEN_HEAD in node.id:
+            yield "references a name", node.id
+        elif isinstance(node, ast.keyword) and node.arg and \
+                _FORBIDDEN_HEAD in node.arg:
+            yield "passes a keyword", node.arg
+        elif isinstance(node, ast.alias) and (
+                _FORBIDDEN_HEAD in node.name
+                or (node.asname and _FORBIDDEN_HEAD in node.asname)):
+            yield "imports", node.asname or node.name
+
+
 def preflight(out_dir: str, require_clean_namespace: bool = True) -> dict:
     """The nine hard stops. Raises PreflightError; performs ZERO model forwards."""
     report: Dict[str, object] = {}
@@ -167,17 +217,12 @@ def preflight(out_dir: str, require_clean_namespace: bool = True) -> dict:
     report["population_manifest_sha256"] = pops
 
     # 8. the superseded head must not be referenceable in execution code.
+    #    Documentation may name it; only EXECUTABLE context is rejected.
     for rel in ("scripts/run_prelesion_validation.py", "scripts/prelesion_eval.py",
                 "execution/inputs.py", "scripts/rules.py"):
-        for node in ast.walk(ast.parse(open(os.path.join(PKG, rel)).read())):
-            # only executable string/name context counts; docstrings and
-            # comments are documentation, not a selectable path
-            if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                if _FORBIDDEN_HEAD in node.value and not _is_docstring(node, rel):
-                    raise PreflightError(
-                        f"{rel} contains a {_FORBIDDEN_HEAD} string literal")
-            if isinstance(node, ast.Attribute) and _FORBIDDEN_HEAD in node.attr:
-                raise PreflightError(f"{rel} references {_FORBIDDEN_HEAD} attribute")
+        for kind, detail in scan_forbidden_head(
+                open(os.path.join(PKG, rel)).read()):
+            raise PreflightError(f"{rel} {kind}: {detail}")
     for slot, a in artifacts.items():
         if not a["repair_head"].endswith(EXIN.REPAIR_HEAD_BASENAME):
             raise PreflightError(f"{slot} repair head is not head_first_c0.pt")
@@ -195,21 +240,6 @@ def preflight(out_dir: str, require_clean_namespace: bool = True) -> dict:
     report["no_training_path"] = True
 
     return report
-
-
-def _is_docstring(node, rel: str) -> bool:
-    """True if this string Constant is a module/class/function docstring."""
-    tree = _AST_CACHE.setdefault(rel, ast.parse(open(os.path.join(PKG, rel)).read()))
-    for parent in ast.walk(tree):
-        if isinstance(parent, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef,
-                               ast.ClassDef)):
-            body = getattr(parent, "body", [])
-            if body and isinstance(body[0], ast.Expr) and body[0].value is node:
-                return True
-    return False
-
-
-_AST_CACHE: Dict[str, object] = {}
 
 
 def _glove_path() -> str:

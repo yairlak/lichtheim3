@@ -298,7 +298,7 @@ def test_preflight_has_all_nine_hard_stops():
     for marker in ("git HEAD", "CONTRACT DRIFT", "canon_table_path",
                    "resolve_artifacts", "GloVe SHA mismatch",
                    "already exists", "8 unique states",
-                   "population_manifest_sha256", "_FORBIDDEN_HEAD",
+                   "population_manifest_sha256", "scan_forbidden_head",
                    "training operation"):
         assert marker in body, f"preflight missing: {marker}"
 
@@ -335,3 +335,94 @@ def test_runner_exposes_a_cli():
 
 def test_no_results_namespace_committed():
     assert not os.path.exists(os.path.join(PKG, "results"))
+
+
+# ===========================================================================
+#  Regression: docstring-vs-executable sentinel (Jean-Zay PREFLIGHT_ATTEMPT_2)
+#
+#  The original _is_docstring() reparsed each file into a NEW tree and compared
+#  `body[0].value is node` against a node from a DIFFERENT tree. Identity can
+#  never hold across trees, so every docstring was misclassified as executable
+#  and the runner's own module docstring failed preflight. The replacement
+#  parses ONE tree per file and derives both the docstring set and the walk
+#  from it.
+# ===========================================================================
+FH = RUN._FORBIDDEN_HEAD
+
+
+def _flagged(src: str) -> bool:
+    return bool(list(RUN.scan_forbidden_head(src)))
+
+
+def test_module_docstring_may_mention_forbidden_head():
+    assert not _flagged(f'"""never evaluates `{FH}`."""\nx = 1\n')
+
+
+def test_function_and_class_docstrings_may_mention_forbidden_head():
+    assert not _flagged(f'def f():\n    """describes {FH}"""\n    return 1\n')
+    assert not _flagged(f'class C:\n    """describes {FH}"""\n    pass\n')
+    assert not _flagged(
+        f'async def g():\n    """describes {FH}"""\n    return 1\n')
+
+
+def test_executable_assignment_is_rejected():
+    assert _flagged(f'p = "{FH}.pt"\n')
+
+
+def test_executable_call_argument_is_rejected():
+    assert _flagged(f'open("/runs/{FH}.pt")\n')
+
+
+def test_attribute_reference_is_rejected():
+    assert _flagged(f'x = obj.{FH}_state\n')
+
+
+def test_name_keyword_and_alias_references_are_rejected():
+    assert _flagged(f'{FH}_path = 1\n')
+    assert _flagged(f'f({FH}=1)\n')
+    assert _flagged(f'import os as {FH}_mod\n')
+
+
+def test_non_first_string_in_a_function_is_not_a_docstring():
+    """A string that merely appears after a real docstring is executable."""
+    assert _flagged(f'def f():\n    """ok"""\n    return "{FH}"\n')
+
+
+def test_docstring_ids_come_from_the_same_tree():
+    """The defect was cross-tree identity; guard against its reintroduction."""
+    import inspect
+    src = inspect.getsource(RUN.scan_forbidden_head)
+    assert src.count("ast.parse") == 1, "scanner must parse exactly one tree"
+    assert "docstring_constant_ids(tree)" in src
+    helper = inspect.getsource(RUN.docstring_constant_ids)
+    assert "ast.parse" not in helper, "docstring helper must not reparse"
+    assert not hasattr(RUN, "_is_docstring"), "broken helper still present"
+    assert not hasattr(RUN, "_AST_CACHE")
+
+
+def test_real_execution_files_pass_the_sentinel():
+    for rel in ("scripts/run_prelesion_validation.py", "scripts/prelesion_eval.py",
+                "scripts/rules.py", "execution/inputs.py"):
+        hits = list(RUN.scan_forbidden_head(open(os.path.join(PKG, rel)).read()))
+        assert hits == [], f"{rel} flagged: {hits}"
+
+
+def test_runner_module_docstring_still_documents_the_prohibition():
+    """The documentation must not have been deleted to dodge the check."""
+    doc = ast.get_docstring(ast.parse(RUNNER_SRC)) or ""
+    assert FH in doc, "the prohibition documentation was removed"
+
+
+def test_sentinel_is_still_built_from_parts():
+    assert FH == "head_final"
+    lits = [v for v in _code_strings(RUNNER_SRC) if v == "head_final"]
+    assert lits == [], "a selectable forbidden-head literal reappeared"
+
+
+def test_prohibition_is_not_weakened():
+    """Attribute/name checks must remain part of the scan."""
+    import inspect
+    src = inspect.getsource(RUN.scan_forbidden_head)
+    for guard in ("ast.Attribute", "ast.Name", "ast.keyword", "ast.alias",
+                  "ast.Constant"):
+        assert guard in src, f"scan no longer checks {guard}"
