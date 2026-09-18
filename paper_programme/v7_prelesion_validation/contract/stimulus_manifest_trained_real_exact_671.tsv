@@ -1,0 +1,683 @@
+# manifest	TRAINED_REAL_EXACT
+# frozen_by	CENTRAL D2 (2026-09-18)
+# source_table	../lichtheim3/outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv
+# source_table_sha256	8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67
+# lexicon_file	data/lexicon_en_glove_covered.tsv
+# lexicon_file_sha256	ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66
+# dorsal_pool_generator	train_joint_scratch.py::build_pool_entries seed=raw_train_seed n=4000 min_len=2 max_len=9
+# rule	frozen 671; descriptive exposure/lexicality comparison only
+# status	DESCRIPTIVE_ONLY
+# warning	NOT a pure causal lexicality contrast
+# n_items	671
+item_id	target_arpabet	target_phoneme_ids	target_length	source_lexicality	morphology	size	condition	zipf_frequency	frequency_class	lichtheim_exposure_status
+wfe_0000	AH T EH N D IH NG	37 5 30 21 6 28 22	7	real	complex	long	RLCH	4.31	high	TRAINED_REAL_EXACT
+wfe_0001	K AH M IH SH AH N ER	7 37 20 28 17 37 21 38	8	real	complex	long	RLCH	4.43	high	TRAINED_REAL_EXACT
+wfe_0002	AA P ER EY SH AH N	32 3 38 29 17 37 21	7	real	complex	long	RLCH	4.92	high	TRAINED_REAL_EXACT
+wfe_0003	HH AA S P IH T AH L Z	19 32 15 3 28 5 37 23 16	9	real	complex	long	RLCH	4.33	high	TRAINED_REAL_EXACT
+wfe_0004	AE K W AH Z IH SH AH N	31 7 25 37 16 28 17 37 21	9	real	complex	long	RLCH	4.26	high	TRAINED_REAL_EXACT
+wfe_0005	D R IH NG K IH NG	6 24 28 22 7 28 22	7	real	complex	long	RLCH	4.71	high	TRAINED_REAL_EXACT
+wfe_0006	Y UW N AH V ER S	26 36 21 37 12 38 15	7	real	complex	long	RLCH	4.59	high	TRAINED_REAL_EXACT
+wfe_0007	AA B V IY AH S L IY	32 4 12 27 37 15 23 27	8	real	complex	long	RLCH	4.8	high	TRAINED_REAL_EXACT
+wfe_0008	F IH Z IH K AH L IY	11 28 16 28 7 37 23 27	8	real	complex	long	RLCH	4.3	high	TRAINED_REAL_EXACT
+wfe_0009	AH W EH R N AH S	37 25 30 24 21 37 15	7	real	complex	long	RLCH	4.44	high	TRAINED_REAL_EXACT
+wfe_0010	P ER F AH K T L IY	3 38 11 37 7 5 23 27	8	real	complex	long	RLCH	4.61	high	TRAINED_REAL_EXACT
+wfe_0011	AH N D ER G R AW N D	37 21 6 38 8 24 40 21 6	9	real	complex	long	RLCH	4.32	high	TRAINED_REAL_EXACT
+wfe_0012	L IH S AH N IH NG	23 28 15 37 21 28 22	7	real	complex	long	RLCH	4.66	high	TRAINED_REAL_EXACT
+wfe_0013	L AE NG G W AH JH AH Z	23 31 22 8 25 37 10 37 16	9	real	complex	long	RLCH	4.42	high	TRAINED_REAL_EXACT
+wfe_0014	IH M P R EH S T	28 20 3 24 30 15 5	7	real	complex	long	RLCH	4.34	high	TRAINED_REAL_EXACT
+wfe_0015	IH N K R IY S IH NG	28 21 7 24 27 15 28 22	8	real	complex	long	RLCH	4.68	high	TRAINED_REAL_EXACT
+wfe_0016	K R IY EY SH AH N	7 24 27 29 17 37 21	7	real	complex	long	RLCH	4.56	high	TRAINED_REAL_EXACT
+wfe_0017	F R EY M W ER K	11 24 29 20 25 38 7	7	real	complex	long	RLCH	4.29	high	TRAINED_REAL_EXACT
+wfe_0018	D IH F ER AH N T	6 28 11 38 37 21 5	7	real	complex	long	RLCH	5.59	high	TRAINED_REAL_EXACT
+wfe_0019	K AH N EH K SH AH N Z	7 37 21 30 7 17 37 21 16	9	real	complex	long	RLCH	4.32	high	TRAINED_REAL_EXACT
+wfe_0020	D IH S K AH S T	6 28 15 7 37 15 5	7	real	complex	long	RLCH	4.45	high	TRAINED_REAL_EXACT
+wfe_0021	R IY L EY SH AH N	24 27 23 29 17 37 21	7	real	complex	long	RLCH	4.31	high	TRAINED_REAL_EXACT
+wfe_0022	G R AE JH AH W AH T	8 24 31 10 37 25 37 5	8	real	complex	long	RLCH	4.5	high	TRAINED_REAL_EXACT
+wfe_0023	N EH V ER DH AH L EH S	21 30 12 38 14 37 23 30 15	9	real	complex	long	RLCH	4.25	high	TRAINED_REAL_EXACT
+wfe_0024	D IH S AH P L AH N	6 28 15 37 3 23 37 21	8	real	complex	long	RLCH	4.23	high	TRAINED_REAL_EXACT
+wfe_0025	K AH S T AH M ER	7 37 15 5 37 20 38	7	real	complex	long	RLCH	4.61	high	TRAINED_REAL_EXACT
+wfe_0026	K L AE S IH K AH L	7 23 31 15 28 7 37 23	8	real	complex	long	RLCH	4.26	high	TRAINED_REAL_EXACT
+wfe_0027	P R AA G R EH S	3 24 32 8 24 30 15	7	real	complex	long	RLCH	4.78	high	TRAINED_REAL_EXACT
+wfe_0028	EH N JH AH N IH R Z	30 21 10 37 21 28 24 16	8	real	complex	long	RLCH	4.41	high	TRAINED_REAL_EXACT
+wfe_0029	IH K W IH P M AH N T	28 7 25 28 3 20 37 21 5	9	real	complex	long	RLCH	4.88	high	TRAINED_REAL_EXACT
+wfe_0030	IH G Z IH S T IH NG	28 8 16 28 15 5 28 22	8	real	complex	long	RLCH	4.75	high	TRAINED_REAL_EXACT
+wfe_0031	T EH K N AA L AH JH IY	5 30 7 21 32 23 37 10 27	9	real	complex	long	RLCH	5.09	high	TRAINED_REAL_EXACT
+wfe_0032	K AH N T IH N Y UW D	7 37 21 5 28 21 26 36 6	9	real	complex	long	RLCH	4.96	high	TRAINED_REAL_EXACT
+wfe_0033	R EY S IH Z AH M	24 29 15 28 16 37 20	7	real	complex	long	RLCH	4.25	high	TRAINED_REAL_EXACT
+wfe_0034	AH N AE L AH S AH S	37 21 31 23 37 15 37 15	8	real	complex	long	RLCH	4.91	high	TRAINED_REAL_EXACT
+wfe_0035	P AH T EH N SH AH L IY	3 37 5 30 21 17 37 23 27	9	real	complex	long	RLCH	4.39	high	TRAINED_REAL_EXACT
+wfe_0036	D IH V EH L AH P ER	6 28 12 30 23 37 3 38	8	real	complex	long	RLCH	4.2	high	TRAINED_REAL_EXACT
+wfe_0037	K AH M P OW Z D	7 37 20 3 34 16 6	7	real	complex	long	RLCH	4.27	high	TRAINED_REAL_EXACT
+wfe_0038	D IH S EY B AH L D	6 28 15 29 4 37 23 6	8	real	complex	long	RLCH	4.29	high	TRAINED_REAL_EXACT
+wfe_0039	P AH N IH SH M AH N T	3 37 21 28 17 20 37 21 5	9	real	complex	long	RLCH	4.34	high	TRAINED_REAL_EXACT
+wfe_0040	IH K S P OW Z D	28 7 15 3 34 16 6	7	real	complex	long	RLCH	4.51	high	TRAINED_REAL_EXACT
+wfe_0043	DH EH M S EH L V Z	14 30 20 15 30 23 12 16	8	real	complex	long	RLCH	5.16	high	TRAINED_REAL_EXACT
+wfe_0044	N EY B ER HH UH D	21 29 4 38 19 35 6	7	real	complex	long	RLCH	4.5	high	TRAINED_REAL_EXACT
+wfe_0045	F AH M IH L Y ER	11 37 20 28 23 26 38	7	real	complex	long	RLCH	4.61	high	TRAINED_REAL_EXACT
+wfe_0046	K W IY N Z L AE N D	7 25 27 21 16 23 31 21 6	9	real	complex	long	RLCH	4.23	high	TRAINED_REAL_EXACT
+wfe_0047	S IY K R AH T S	15 27 7 24 37 5 15	7	real	complex	long	RLCH	4.31	high	TRAINED_REAL_EXACT
+wfe_0048	K EY M B R IH JH	7 29 20 4 24 28 10	7	real	complex	long	RLCH	4.39	high	TRAINED_REAL_EXACT
+wfe_0049	EH S T AH M EY T AH D	30 15 5 37 20 29 5 37 6	9	real	complex	long	RLCH	4.62	high	TRAINED_REAL_EXACT
+wfe_0050	D IH P R EH SH AH N	6 28 3 24 30 17 37 21	8	real	complex	long	RLCH	4.56	high	TRAINED_REAL_EXACT
+wfe_0051	G ER L F R EH N D	8 38 23 11 24 30 21 6	8	real	complex	long	RLCH	4.68	high	TRAINED_REAL_EXACT
+wfe_0052	F AH NG K SH AH N AH L	11 37 22 7 17 37 21 37 23	9	real	complex	long	RLCH	4.24	high	TRAINED_REAL_EXACT
+wfe_0053	AE M B AE S AH D ER	31 20 4 31 15 37 6 38	8	real	complex	long	RLCH	4.35	high	TRAINED_REAL_EXACT
+wfe_0054	P R AA P ER T IY	3 24 32 3 38 5 27	7	real	complex	long	RLCH	5.11	high	TRAINED_REAL_EXACT
+wfe_0055	M AH M AO R IY AH L	20 37 20 33 24 27 37 23	8	real	complex	long	RLCH	4.41	high	TRAINED_REAL_EXACT
+wfe_0056	T R AE V AH L IH NG	5 24 31 12 37 23 28 22	8	real	complex	long	RLCH	4.27	high	TRAINED_REAL_EXACT
+wfe_0057	P ER S EH N T AH JH	3 38 15 30 21 5 37 10	8	real	complex	long	RLCH	4.48	high	TRAINED_REAL_EXACT
+wfe_0059	R AH F Y UW Z D	24 37 11 26 36 16 6	7	real	complex	long	RLCH	4.54	high	TRAINED_REAL_EXACT
+wfe_0060	L EH JH AH N D EH R IY	23 30 10 37 21 6 30 24 27	9	real	complex	long	RLCH	4.23	high	TRAINED_REAL_EXACT
+wfe_0061	N UW Z P EY P ER	21 36 16 3 29 3 38	7	real	complex	long	RLCH	4.6	high	TRAINED_REAL_EXACT
+wfe_0062	AH S EH S M AH N T	37 15 30 15 20 37 21 5	8	real	complex	long	RLCH	4.46	high	TRAINED_REAL_EXACT
+wfe_0063	D IH V EH L AH P	6 28 12 30 23 37 3	7	real	complex	long	RLCH	4.75	high	TRAINED_REAL_EXACT
+wfe_0064	AE L AH G Z AE N D ER	31 23 37 8 16 31 21 6 38	9	real	complex	long	RLCH	4.4	high	TRAINED_REAL_EXACT
+wfe_0065	P R AH T EH K SH AH N	3 24 37 5 30 7 17 37 21	9	real	complex	long	RLCH	4.85	high	TRAINED_REAL_EXACT
+wfe_0066	D AA M AH N AH N T	6 32 20 37 21 37 21 5	8	real	complex	long	RLCH	4.23	high	TRAINED_REAL_EXACT
+wfe_0067	G AA R D IY AH N	8 32 24 6 27 37 21	7	real	complex	long	RLCH	4.26	high	TRAINED_REAL_EXACT
+wfe_0068	S AH P AO R T S	15 37 3 33 24 5 15	7	real	complex	long	RLCH	4.42	high	TRAINED_REAL_EXACT
+wfe_0069	N AY JH IH R IY AH	21 39 10 28 24 27 37	7	real	complex	long	RLCH	4.33	high	TRAINED_REAL_EXACT
+wfe_0070	IH K S P EH N S IH V	28 7 15 3 30 21 15 28 12	9	real	complex	long	RLCH	4.69	high	TRAINED_REAL_EXACT
+wfe_0071	D IH V EH L AH P ER Z	6 28 12 30 23 37 3 38 16	9	real	complex	long	RLCH	4.22	high	TRAINED_REAL_EXACT
+wfe_0072	JH AE N Y UW EH R IY	10 31 21 26 36 30 24 27	8	real	complex	long	RLCH	5.09	high	TRAINED_REAL_EXACT
+wfe_0073	F AY N D IH NG Z	11 39 21 6 28 22 16	7	real	complex	long	RLCH	4.38	high	TRAINED_REAL_EXACT
+wfe_0074	IH K S T EH N SH AH N	28 7 15 5 30 21 17 37 21	9	real	complex	long	RLCH	4.46	high	TRAINED_REAL_EXACT
+wfe_0075	D IH S K R AY B	6 28 15 7 24 39 4	7	real	complex	long	RLCH	4.56	high	TRAINED_REAL_EXACT
+wfe_0076	F R EH N D L IY	11 24 30 21 6 23 27	7	real	complex	long	RLCH	4.64	high	TRAINED_REAL_EXACT
+wfe_0077	AE K T IH V AH T IY Z	31 7 5 28 12 37 5 27 16	9	real	complex	long	RLCH	4.91	high	TRAINED_REAL_EXACT
+wfe_0078	K R IH S CH AH N	7 24 28 15 9 37 21	7	real	complex	long	RLCH	4.88	high	TRAINED_REAL_EXACT
+wfe_0079	IH N T R AH D UW S T	28 21 5 24 37 6 36 15 5	9	real	complex	long	RLCH	4.72	high	TRAINED_REAL_EXACT
+wfe_0080	K R IH T IH K AH L	7 24 28 5 28 7 37 23	8	real	complex	long	RLCH	4.83	high	TRAINED_REAL_EXACT
+wfe_0081	JH ER N AH L AH S T	10 38 21 37 23 37 15 5	8	real	complex	long	RLCH	4.38	high	TRAINED_REAL_EXACT
+wfe_0083	IH N T EH G R AH T IY	28 21 5 30 8 24 37 5 27	9	real	complex	long	RLCH	4.22	high	TRAINED_REAL_EXACT
+wfe_0084	S T AA R T IH NG	15 5 32 24 5 28 22	7	real	complex	long	RLCH	5.07	high	TRAINED_REAL_EXACT
+wfe_0085	TH R EH T AH N D	13 24 30 5 37 21 6	7	real	complex	long	RLCH	4.36	high	TRAINED_REAL_EXACT
+wfe_0086	AH F EH N S IH V	37 11 30 21 15 28 12	7	real	complex	long	RLCH	4.46	high	TRAINED_REAL_EXACT
+wfe_0087	P R AA B L AH M Z	3 24 32 4 23 37 20 16	8	real	complex	long	RLCH	5.19	high	TRAINED_REAL_EXACT
+wfe_0088	IH N T R AH S T IH NG	28 21 5 24 37 15 5 28 22	9	real	complex	long	RLCH	5.0	high	TRAINED_REAL_EXACT
+wfe_0089	K R EH D IH T S	7 24 30 6 28 5 15	7	real	complex	long	RLCH	4.27	high	TRAINED_REAL_EXACT
+wfe_0090	IH Z L AA M IH K	28 16 23 32 20 28 7	7	real	complex	long	RLCH	4.44	high	TRAINED_REAL_EXACT
+wfe_0091	R AH K AO R D IH NG	24 37 7 33 24 6 28 22	8	real	complex	long	RLCH	4.51	high	TRAINED_REAL_EXACT
+wfe_0092	AH D V AE N S T	37 6 12 31 21 15 5	7	real	complex	long	RLCH	4.71	high	TRAINED_REAL_EXACT
+wfe_0093	P R IY M IY AH M	3 24 27 20 27 37 20	7	real	complex	long	RLCH	4.33	high	TRAINED_REAL_EXACT
+wfe_0094	D IH S EH M B ER	6 28 15 30 20 4 38	7	real	complex	long	RLCH	5.07	high	TRAINED_REAL_EXACT
+wfe_0095	IH M ER JH AH N S IY	28 20 38 10 37 21 15 27	8	real	complex	long	RLCH	4.72	high	TRAINED_REAL_EXACT
+wfe_0096	M EH K AH N IH Z AH M	20 30 7 37 21 28 16 37 20	9	real	complex	long	RLCH	4.27	high	TRAINED_REAL_EXACT
+wfe_0097	S IH CH UW EY SH AH N Z	15 28 9 36 29 17 37 21 16	9	real	complex	long	RLCH	4.47	high	TRAINED_REAL_EXACT
+wfe_0098	EH V AH L UW SH AH N	30 12 37 23 36 17 37 21	8	real	complex	long	RLCH	4.41	high	TRAINED_REAL_EXACT
+wfe_0099	EH M P L OY ER Z	30 20 3 23 41 38 16	7	real	complex	long	RLCH	4.25	high	TRAINED_REAL_EXACT
+wfe_0100	K AA N F L UW AH N S	7 32 21 11 23 36 37 21 15	9	real	complex	long	RLCL	3.12	low	TRAINED_REAL_EXACT
+wfe_0105	P AH T R OW L D	3 37 5 24 34 23 6	7	real	complex	long	RLCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0108	K AO R AH L EY T AH D	7 33 24 37 23 29 5 37 6	9	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0109	P R IY K EH R IY AH S	3 24 27 7 30 24 27 37 15	9	real	complex	long	RLCL	3.27	low	TRAINED_REAL_EXACT
+wfe_0110	N AA R S IH S IH S T	21 32 24 15 28 15 28 15 5	9	real	complex	long	RLCL	2.99	low	TRAINED_REAL_EXACT
+wfe_0111	B AY OW S F IH R	4 39 34 15 11 28 24	7	real	complex	long	RLCL	2.89	low	TRAINED_REAL_EXACT
+wfe_0115	D EH S AH M AH L	6 30 15 37 20 37 23	7	real	complex	long	RLCL	3.28	low	TRAINED_REAL_EXACT
+wfe_0116	B L AA K B AH S T ER	4 23 32 7 4 37 15 5 38	9	real	complex	long	RLCL	3.48	low	TRAINED_REAL_EXACT
+wfe_0119	HH AA L AH G R AE M	19 32 23 37 8 24 31 20	8	real	complex	long	RLCL	3.11	low	TRAINED_REAL_EXACT
+wfe_0120	D UW P L EH K S	6 36 3 23 30 7 15	7	real	complex	long	RLCL	3.13	low	TRAINED_REAL_EXACT
+wfe_0121	K AH M EH M ER EY T	7 37 20 30 20 38 29 5	8	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0123	B EH R AH B AH L	4 30 24 37 4 37 23	7	real	complex	long	RLCL	2.89	low	TRAINED_REAL_EXACT
+wfe_0124	P OW T AH N S IY	3 34 5 37 21 15 27	7	real	complex	long	RLCL	3.27	low	TRAINED_REAL_EXACT
+wfe_0125	D IH G N AH F AY D	6 28 8 21 37 11 39 6	8	real	complex	long	RLCL	3.28	low	TRAINED_REAL_EXACT
+wfe_0126	K AH N S T R EY N T	7 37 21 15 5 24 29 21 5	9	real	complex	long	RLCL	3.28	low	TRAINED_REAL_EXACT
+wfe_0127	D IH T ER AH N S	6 28 5 38 37 21 15	7	real	complex	long	RLCL	2.99	low	TRAINED_REAL_EXACT
+wfe_0128	D IH SH W AA SH ER	6 28 17 25 32 17 38	7	real	complex	long	RLCL	3.29	low	TRAINED_REAL_EXACT
+wfe_0131	R IH F AY N ER IY	24 28 11 39 21 38 27	7	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0132	D IY OW D ER AH N T	6 27 34 6 38 37 21 5	8	real	complex	long	RLCL	3.12	low	TRAINED_REAL_EXACT
+wfe_0135	B AH T AE N IH K AH L	4 37 5 31 21 28 7 37 23	9	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0136	M AH L T AH P L AY	20 37 23 5 37 3 23 39	8	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0137	B OW HH IY M IY AH N	4 34 19 27 20 27 37 21	8	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0138	ER IH S T AH K R AE T	38 28 15 5 37 7 24 31 5	9	real	complex	long	RLCL	2.99	low	TRAINED_REAL_EXACT
+wfe_0139	G L AE M ER AH S	8 23 31 20 38 37 15	7	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0140	L OW K AH M OW T IH V	23 34 7 37 20 34 5 28 12	9	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0141	D EH R D EH V AH L	6 30 24 6 30 12 37 23	8	real	complex	long	RLCL	3.29	low	TRAINED_REAL_EXACT
+wfe_0142	K AA M ER AA D ER IY	7 32 20 38 32 6 38 27	8	real	complex	long	RLCL	2.99	low	TRAINED_REAL_EXACT
+wfe_0143	R AH S AY T AH L	24 37 15 39 5 37 23	7	real	complex	long	RLCL	3.28	low	TRAINED_REAL_EXACT
+wfe_0149	B UH L D OW Z ER	4 35 23 6 34 16 38	7	real	complex	long	RLCL	2.88	low	TRAINED_REAL_EXACT
+wfe_0152	IH N T ER CH EY N JH	28 21 5 38 9 29 21 10	8	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0153	P AA L IH N IY ZH AH N	3 32 23 28 21 27 18 37 21	9	real	complex	long	RLCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0155	AE N ER OW B IH K	31 21 38 34 4 28 7	7	real	complex	long	RLCL	2.97	low	TRAINED_REAL_EXACT
+wfe_0156	S AY K AH P AE TH IH K	15 39 7 37 3 31 13 28 7	9	real	complex	long	RLCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0158	S IH N IH S IH Z AH M	15 28 21 28 15 28 16 37 20	9	real	complex	long	RLCL	3.13	low	TRAINED_REAL_EXACT
+wfe_0160	P R IY T EH K S T	3 24 27 5 30 7 15 5	8	real	complex	long	RLCL	3.27	low	TRAINED_REAL_EXACT
+wfe_0163	S K AH L P CH ER AH L	15 7 37 23 3 9 38 37 23	9	real	complex	long	RLCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0166	EH P AH S EH N T ER	30 3 37 15 30 21 5 38	8	real	complex	long	RLCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0167	OW B IY D IY AH N S	34 4 27 6 27 37 21 15	8	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0169	M AA R K AH D L IY	20 32 24 7 37 6 23 27	8	real	complex	long	RLCL	3.29	low	TRAINED_REAL_EXACT
+wfe_0170	HH IH N JH UW IH Z AH M	19 28 21 10 36 28 16 37 20	9	real	complex	long	RLCL	3.27	low	TRAINED_REAL_EXACT
+wfe_0171	AE G AH N AY Z IH NG	31 8 37 21 39 16 28 22	8	real	complex	long	RLCL	2.99	low	TRAINED_REAL_EXACT
+wfe_0173	B AA R B EH R IY AH N	4 32 24 4 30 24 27 37 21	9	real	complex	long	RLCL	3.28	low	TRAINED_REAL_EXACT
+wfe_0174	AE N S EH S T R IY	31 21 15 30 15 5 24 27	8	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0175	T R AE V AH L ER	5 24 31 12 37 23 38	7	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0177	K AO R AH S P AA N D	7 33 24 37 15 3 32 21 6	9	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0178	IH M AH T IH R IY AH L	28 20 37 5 28 24 27 37 23	9	real	complex	long	RLCL	2.89	low	TRAINED_REAL_EXACT
+wfe_0180	K AH L AO R IH K	7 37 23 33 24 28 7	7	real	complex	long	RLCL	2.98	low	TRAINED_REAL_EXACT
+wfe_0181	M AY N D F AH L	20 39 21 6 11 37 23	7	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0182	F IH SH ER M AE N	11 28 17 38 20 31 21	7	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0184	B AA R T EH N D ER	4 32 24 5 30 21 6 38	8	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0186	P ER EH N TH AH S IY Z	3 38 30 21 13 37 15 27 16	9	real	complex	long	RLCL	3.13	low	TRAINED_REAL_EXACT
+wfe_0189	L AY B IH R IY AH	23 39 4 28 24 27 37	7	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0190	K OW IH N S AY D	7 34 28 21 15 39 6	7	real	complex	long	RLCL	3.49	low	TRAINED_REAL_EXACT
+wfe_0192	HH OW M AH F OW B IH K	19 34 20 37 11 34 4 28 7	9	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0193	K AA N S AH L ER	7 32 21 15 37 23 38	7	real	complex	long	RLCL	3.29	low	TRAINED_REAL_EXACT
+wfe_0195	P EH N JH AH L AH M	3 30 21 10 37 23 37 20	8	real	complex	long	RLCL	3.27	low	TRAINED_REAL_EXACT
+wfe_0196	AA R K AY V AH L	32 24 7 39 12 37 23	7	real	complex	long	RLCL	3.28	low	TRAINED_REAL_EXACT
+wfe_0198	G OW L D B ER G	8 34 23 6 4 38 8	7	real	complex	long	RLCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0199	M IY D IY EY T ER	20 27 6 27 29 5 38	7	real	complex	long	RLCL	3.29	low	TRAINED_REAL_EXACT
+wfe_0200	K AA N T AE K T	7 32 21 5 31 7 5	7	real	simple	long	RLSH	4.99	high	TRAINED_REAL_EXACT
+wfe_0201	K AA N S EH P T	7 32 21 15 30 3 5	7	real	simple	long	RLSH	4.77	high	TRAINED_REAL_EXACT
+wfe_0202	F Y UW N ER AH L	11 26 36 21 38 37 23	7	real	simple	long	RLSH	4.37	high	TRAINED_REAL_EXACT
+wfe_0203	M EH R AH W AA N AH	20 30 24 37 25 32 21 37	8	real	simple	long	RLSH	4.2	high	TRAINED_REAL_EXACT
+wfe_0204	K L IH N T AH N	7 23 28 21 5 37 21	7	real	simple	long	RLSH	4.57	high	TRAINED_REAL_EXACT
+wfe_0205	S T R AE T AH JH IY	15 5 24 31 5 37 10 27	8	real	simple	long	RLSH	4.74	high	TRAINED_REAL_EXACT
+wfe_0206	HH AH Z B AH N D	19 37 16 4 37 21 6	7	real	simple	long	RLSH	5.0	high	TRAINED_REAL_EXACT
+wfe_0207	W AA SH IH NG T AH N	25 32 17 28 22 5 37 21	8	real	simple	long	RLSH	5.08	high	TRAINED_REAL_EXACT
+wfe_0208	AH L T AH M AH T	37 23 5 37 20 37 5	7	real	simple	long	RLSH	4.53	high	TRAINED_REAL_EXACT
+wfe_0209	D AH M EH S T IH K	6 37 20 30 15 5 28 7	8	real	simple	long	RLSH	4.69	high	TRAINED_REAL_EXACT
+wfe_0210	AA R S AH N AH L	32 24 15 37 21 37 23	7	real	simple	long	RLSH	4.31	high	TRAINED_REAL_EXACT
+wfe_0211	L UW T EH N AH N T	23 36 5 30 21 37 21 5	8	real	simple	long	RLSH	4.44	high	TRAINED_REAL_EXACT
+wfe_0212	P R EH Z AH N T	3 24 30 16 37 21 5	7	real	simple	long	RLSH	5.18	high	TRAINED_REAL_EXACT
+wfe_0213	EH L AH M AH N T	30 23 37 20 37 21 5	7	real	simple	long	RLSH	4.46	high	TRAINED_REAL_EXACT
+wfe_0214	IH N S T AH N S	28 21 15 5 37 21 15	7	real	simple	long	RLSH	4.59	high	TRAINED_REAL_EXACT
+wfe_0215	S EH N T AH N S	15 30 21 5 37 21 15	7	real	simple	long	RLSH	4.58	high	TRAINED_REAL_EXACT
+wfe_0216	V AH L N ER AH B AH L	12 37 23 21 38 37 4 37 23	9	real	simple	long	RLSH	4.21	high	TRAINED_REAL_EXACT
+wfe_0217	IH M P L AH M AH N T	28 20 3 23 37 20 37 21 5	9	real	simple	long	RLSH	4.2	high	TRAINED_REAL_EXACT
+wfe_0218	G AE L AH K S IY	8 31 23 37 7 15 27	7	real	simple	long	RLSH	4.28	high	TRAINED_REAL_EXACT
+wfe_0219	M Y UW Z IY AH M	20 26 36 16 27 37 20	7	real	simple	long	RLSH	4.71	high	TRAINED_REAL_EXACT
+wfe_0220	IH K AA N AH M IY	28 7 32 21 37 20 27	7	real	simple	long	RLSH	4.87	high	TRAINED_REAL_EXACT
+wfe_0221	AO R D AH N EH R IY	33 24 6 37 21 30 24 27	8	real	simple	long	RLSH	4.42	high	TRAINED_REAL_EXACT
+wfe_0222	S AH S P EH K T	15 37 15 3 30 7 5	7	real	simple	long	RLSH	4.51	high	TRAINED_REAL_EXACT
+wfe_0223	P R IH N S AH P AH L	3 24 28 21 15 37 3 37 23	9	real	simple	long	RLSH	4.34	high	TRAINED_REAL_EXACT
+wfe_0224	K AH N S IH D ER	7 37 21 15 28 6 38	7	real	simple	long	RLSH	4.99	high	TRAINED_REAL_EXACT
+wfe_0225	Y UW ZH AH W AH L	26 36 18 37 25 37 23	7	real	simple	long	RLSH	4.62	high	TRAINED_REAL_EXACT
+wfe_0226	K AH N K R IY T	7 37 21 7 24 27 5	7	real	simple	long	RLSH	4.44	high	TRAINED_REAL_EXACT
+wfe_0227	P AA S AH B AH L	3 32 15 37 4 37 23	7	real	simple	long	RLSH	5.36	high	TRAINED_REAL_EXACT
+wfe_0228	IH K S P EH N S	28 7 15 3 30 21 15	7	real	simple	long	RLSH	4.23	high	TRAINED_REAL_EXACT
+wfe_0229	M AE N Y UW AH L	20 31 21 26 36 37 23	7	real	simple	long	RLSH	4.32	high	TRAINED_REAL_EXACT
+wfe_0230	W IH S K AA N S AH N	25 28 15 7 32 21 15 37 21	9	real	simple	long	RLSH	4.36	high	TRAINED_REAL_EXACT
+wfe_0231	AA K S AH JH AH N	32 7 15 37 10 37 21	7	real	simple	long	RLSH	4.25	high	TRAINED_REAL_EXACT
+wfe_0232	AE D V AH K AH T	31 6 12 37 7 37 5	7	real	simple	long	RLSH	4.21	high	TRAINED_REAL_EXACT
+wfe_0233	AH T EH N SH AH N	37 5 30 21 17 37 21	7	real	simple	long	RLSH	5.11	high	TRAINED_REAL_EXACT
+wfe_0234	JH EH N Y AH W AH N	10 30 21 26 37 25 37 21	8	real	simple	long	RLSH	4.37	high	TRAINED_REAL_EXACT
+wfe_0235	IH M P AO R T AH N T	28 20 3 33 24 5 37 21 5	9	real	simple	long	RLSH	5.44	high	TRAINED_REAL_EXACT
+wfe_0236	V AA L AH N T IH R	12 32 23 37 21 5 28 24	8	real	simple	long	RLSH	4.28	high	TRAINED_REAL_EXACT
+wfe_0237	AH P EH R AH N T	37 3 30 24 37 21 5	7	real	simple	long	RLSH	4.32	high	TRAINED_REAL_EXACT
+wfe_0238	AE N AH V ER S ER IY	31 21 37 12 38 15 38 27	8	real	simple	long	RLSH	4.53	high	TRAINED_REAL_EXACT
+wfe_0239	R IH S P EH K T	24 28 15 3 30 7 5	7	real	simple	long	RLSH	5.03	high	TRAINED_REAL_EXACT
+wfe_0240	F AE K AH L T IY	11 31 7 37 23 5 27	7	real	simple	long	RLSH	4.32	high	TRAINED_REAL_EXACT
+wfe_0241	IH F IH SH AH N T	28 11 28 17 37 21 5	7	real	simple	long	RLSH	4.42	high	TRAINED_REAL_EXACT
+wfe_0242	K Y UH R IY AH S	7 26 35 24 27 37 15	7	real	simple	long	RLSH	4.45	high	TRAINED_REAL_EXACT
+wfe_0243	IH N T R AH S T	28 21 5 24 37 15 5	7	real	simple	long	RLSH	5.17	high	TRAINED_REAL_EXACT
+wfe_0244	P AH Z IH SH AH N	3 37 16 28 17 37 21	7	real	simple	long	RLSH	5.21	high	TRAINED_REAL_EXACT
+wfe_0245	EH S T AH M AH T	30 15 5 37 20 37 5	7	real	simple	long	RLSH	4.29	high	TRAINED_REAL_EXACT
+wfe_0246	P R EH G N AH N T	3 24 30 8 21 37 21 5	8	real	simple	long	RLSH	4.56	high	TRAINED_REAL_EXACT
+wfe_0247	K AA N F L IH K T	7 32 21 11 23 28 7 5	8	real	simple	long	RLSH	4.64	high	TRAINED_REAL_EXACT
+wfe_0248	AH K AE D AH M IY	37 7 31 6 37 20 27	7	real	simple	long	RLSH	4.57	high	TRAINED_REAL_EXACT
+wfe_0249	IH N AH S AH N T	28 21 37 15 37 21 5	7	real	simple	long	RLSH	4.45	high	TRAINED_REAL_EXACT
+wfe_0250	HH Y UW S T AH N	19 26 36 15 5 37 21	7	real	simple	long	RLSH	4.42	high	TRAINED_REAL_EXACT
+wfe_0251	V IY HH IH K AH L	12 27 19 28 7 37 23	7	real	simple	long	RLSH	4.76	high	TRAINED_REAL_EXACT
+wfe_0252	K AE T AH G AO R IY	7 31 5 37 8 33 24 27	8	real	simple	long	RLSH	4.57	high	TRAINED_REAL_EXACT
+wfe_0253	S T EY D IY AH M	15 5 29 6 27 37 20	7	real	simple	long	RLSH	4.63	high	TRAINED_REAL_EXACT
+wfe_0254	V AY AH L AH N T	12 39 37 23 37 21 5	7	real	simple	long	RLSH	4.46	high	TRAINED_REAL_EXACT
+wfe_0255	S T R AH G AH L	15 5 24 37 8 37 23	7	real	simple	long	RLSH	4.62	high	TRAINED_REAL_EXACT
+wfe_0256	R IH S P AA N D	24 28 15 3 32 21 6	7	real	simple	long	RLSH	4.53	high	TRAINED_REAL_EXACT
+wfe_0257	R EH JH IH S T ER	24 30 10 28 15 5 38	7	real	simple	long	RLSH	4.59	high	TRAINED_REAL_EXACT
+wfe_0259	HH AA S P IH T AH L	19 32 15 3 28 5 37 23	8	real	simple	long	RLSH	5.07	high	TRAINED_REAL_EXACT
+wfe_0260	D AH T ER M AH N	6 37 5 38 20 37 21	7	real	simple	long	RLSH	4.63	high	TRAINED_REAL_EXACT
+wfe_0261	R IH K W EH S T	24 28 7 25 30 15 5	7	real	simple	long	RLSH	4.76	high	TRAINED_REAL_EXACT
+wfe_0262	N OW V EH M B ER	21 34 12 30 20 4 38	7	real	simple	long	RLSH	5.1	high	TRAINED_REAL_EXACT
+wfe_0263	P R AA JH EH K T	3 24 32 10 30 7 5	7	real	simple	long	RLSH	5.22	high	TRAINED_REAL_EXACT
+wfe_0264	S EH K R AH T EH R IY	15 30 7 24 37 5 30 24 27	9	real	simple	long	RLSH	4.95	high	TRAINED_REAL_EXACT
+wfe_0265	D IH Z AE S T ER	6 28 16 31 15 5 38	7	real	simple	long	RLSH	4.39	high	TRAINED_REAL_EXACT
+wfe_0266	G EH R AH N T IY	8 30 24 37 21 5 27	7	real	simple	long	RLSH	4.44	high	TRAINED_REAL_EXACT
+wfe_0267	AH P R IY SH IY EY T	37 3 24 27 17 27 29 5	8	real	simple	long	RLSH	4.74	high	TRAINED_REAL_EXACT
+wfe_0268	K AA N D AH K T	7 32 21 6 37 7 5	7	real	simple	long	RLSH	4.52	high	TRAINED_REAL_EXACT
+wfe_0269	K AH N S EH N T	7 37 21 15 30 21 5	7	real	simple	long	RLSH	4.36	high	TRAINED_REAL_EXACT
+wfe_0270	S T R EH NG K TH	15 5 24 30 22 7 13	7	real	simple	long	RLSH	4.8	high	TRAINED_REAL_EXACT
+wfe_0271	AH M EH R AH K AH	37 20 30 24 37 7 37	7	real	simple	long	RLSH	5.22	high	TRAINED_REAL_EXACT
+wfe_0272	AE L AH B AE M AH	31 23 37 4 31 20 37	7	real	simple	long	RLSH	4.26	high	TRAINED_REAL_EXACT
+wfe_0273	P R AA B L AH M	3 24 32 4 23 37 20	7	real	simple	long	RLSH	5.4	high	TRAINED_REAL_EXACT
+wfe_0274	S IH NG AH P AO R	15 28 22 37 3 33 24	7	real	simple	long	RLSH	4.35	high	TRAINED_REAL_EXACT
+wfe_0275	IH N S AH D AH N T	28 21 15 37 6 37 21 5	8	real	simple	long	RLSH	4.54	high	TRAINED_REAL_EXACT
+wfe_0276	P AO R T R AH T	3 33 24 5 24 37 5	7	real	simple	long	RLSH	4.22	high	TRAINED_REAL_EXACT
+wfe_0277	R EH G Y AH L ER	24 30 8 26 37 23 38	7	real	simple	long	RLSH	4.95	high	TRAINED_REAL_EXACT
+wfe_0278	HH AE M AH L T AH N	19 31 20 37 23 5 37 21	8	real	simple	long	RLSH	4.31	high	TRAINED_REAL_EXACT
+wfe_0279	K AA N T R AE K T	7 32 21 5 24 31 7 5	8	real	simple	long	RLSH	4.94	high	TRAINED_REAL_EXACT
+wfe_0280	K AH N V IH N S	7 37 21 12 28 21 15	7	real	simple	long	RLSH	4.26	high	TRAINED_REAL_EXACT
+wfe_0281	T UH R N AH M AH N T	5 35 24 21 37 20 37 21 5	9	real	simple	long	RLSH	4.56	high	TRAINED_REAL_EXACT
+wfe_0282	AE L K AH HH AA L	31 23 7 37 19 32 23	7	real	simple	long	RLSH	4.61	high	TRAINED_REAL_EXACT
+wfe_0283	K AH M P L IY T	7 37 20 3 23 27 5	7	real	simple	long	RLSH	5.1	high	TRAINED_REAL_EXACT
+wfe_0284	P R AA V AH N S	3 24 32 12 37 21 15	7	real	simple	long	RLSH	4.47	high	TRAINED_REAL_EXACT
+wfe_0286	M EH K S AH K OW	20 30 7 15 37 7 34	7	real	simple	long	RLSH	4.75	high	TRAINED_REAL_EXACT
+wfe_0287	P AA R L AH M AH N T	3 32 24 23 37 20 37 21 5	9	real	simple	long	RLSH	4.74	high	TRAINED_REAL_EXACT
+wfe_0288	M AA R G ER IH T	20 32 24 8 38 28 5	7	real	simple	long	RLSH	4.23	high	TRAINED_REAL_EXACT
+wfe_0289	P R IH N S AH P AH L	3 24 28 21 15 37 3 37 23	9	real	simple	long	RLSH	4.52	high	TRAINED_REAL_EXACT
+wfe_0290	M AE G AH Z IY N	20 31 8 37 16 27 21	7	real	simple	long	RLSH	4.74	high	TRAINED_REAL_EXACT
+wfe_0291	K AE N D AH D EY T	7 31 21 6 37 6 29 5	8	real	simple	long	RLSH	4.66	high	TRAINED_REAL_EXACT
+wfe_0292	F AE N T AH S IY	11 31 21 5 37 15 27	7	real	simple	long	RLSH	4.52	high	TRAINED_REAL_EXACT
+wfe_0293	AA R JH AH N T IY N AH	32 24 10 37 21 5 27 21 37	9	real	simple	long	RLSH	4.22	high	TRAINED_REAL_EXACT
+wfe_0294	F R AE N CH AY Z	11 24 31 21 9 39 16	7	real	simple	long	RLSH	4.29	high	TRAINED_REAL_EXACT
+wfe_0296	K AH P AE S AH T IY	7 37 3 31 15 37 5 27	8	real	simple	long	RLSH	4.71	high	TRAINED_REAL_EXACT
+wfe_0297	D EH P Y AH T IY	6 30 3 26 37 5 27	7	real	simple	long	RLSH	4.55	high	TRAINED_REAL_EXACT
+wfe_0298	R IH L IH JH AH N	24 28 23 28 10 37 21	7	real	simple	long	RLSH	4.74	high	TRAINED_REAL_EXACT
+wfe_0299	L AY B R EH R IY	23 39 4 24 30 24 27	7	real	simple	long	RLSH	4.86	high	TRAINED_REAL_EXACT
+wfe_0300	B ER G AH N D IY	4 38 8 37 21 6 27	7	real	simple	long	RLSL	3.46	low	TRAINED_REAL_EXACT
+wfe_0302	B AA R B EY D OW S	4 32 24 4 29 6 34 15	8	real	simple	long	RLSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0304	EH K S T AH S IY	30 7 15 5 37 15 27	7	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0305	K Y UW B R IH K	7 26 36 4 24 28 7	7	real	simple	long	RLSL	2.88	low	TRAINED_REAL_EXACT
+wfe_0306	IH M P AH T AH S	28 20 3 37 5 37 15	7	real	simple	long	RLSL	3.27	low	TRAINED_REAL_EXACT
+wfe_0307	HH AA N AH L UW L UW	19 32 21 37 23 36 23 36	8	real	simple	long	RLSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0308	AE M IH TH IH S T	31 20 28 13 28 15 5	7	real	simple	long	RLSL	3.01	low	TRAINED_REAL_EXACT
+wfe_0309	K AE D AH L AE K	7 31 6 37 23 31 7	7	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0310	EH P S AH L AA N	30 3 15 37 23 32 21	7	real	simple	long	RLSL	2.88	low	TRAINED_REAL_EXACT
+wfe_0313	D AY AE S P ER AH	6 39 31 15 3 38 37	7	real	simple	long	RLSL	3.45	low	TRAINED_REAL_EXACT
+wfe_0314	K AE M AH L AA T	7 31 20 37 23 32 5	7	real	simple	long	RLSL	2.97	low	TRAINED_REAL_EXACT
+wfe_0315	K AH N AH N D R AH M	7 37 21 37 21 6 24 37 20	9	real	simple	long	RLSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0316	L AA M B AA R D	23 32 20 4 32 24 6	7	real	simple	long	RLSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0317	P L AH S IY B OW	3 23 37 15 27 4 34	7	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0318	B OW L SH AH V IH K	4 34 23 17 37 12 28 7	8	real	simple	long	RLSL	2.97	low	TRAINED_REAL_EXACT
+wfe_0319	IH F EH M ER AH L	28 11 30 20 38 37 23	7	real	simple	long	RLSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0320	N IH K ER AA G W AH	21 28 7 38 32 8 25 37	8	real	simple	long	RLSL	3.44	low	TRAINED_REAL_EXACT
+wfe_0321	EY P R AH K AA T	29 3 24 37 7 32 5	7	real	simple	long	RLSL	2.98	low	TRAINED_REAL_EXACT
+wfe_0322	HH IH R OW SH IY M AH	19 28 24 34 17 27 20 37	8	real	simple	long	RLSL	3.27	low	TRAINED_REAL_EXACT
+wfe_0323	AH D R IY N AH L	37 6 24 27 21 37 23	7	real	simple	long	RLSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0324	R EH K W IY AH M	24 30 7 25 27 37 20	7	real	simple	long	RLSL	3.06	low	TRAINED_REAL_EXACT
+wfe_0325	K EH N D R IH K	7 30 21 6 24 28 7	7	real	simple	long	RLSL	3.46	low	TRAINED_REAL_EXACT
+wfe_0326	M AA R L B ER OW	20 32 24 23 4 38 34	7	real	simple	long	RLSL	3.02	low	TRAINED_REAL_EXACT
+wfe_0329	N AA G AA S AA K IY	21 32 8 32 15 32 7 27	8	real	simple	long	RLSL	2.98	low	TRAINED_REAL_EXACT
+wfe_0330	M Y UW T AH N IY	20 26 36 5 37 21 27	7	real	simple	long	RLSL	3.27	low	TRAINED_REAL_EXACT
+wfe_0332	IH R AE D AH K EY T	28 24 31 6 37 7 29 5	8	real	simple	long	RLSL	3.29	low	TRAINED_REAL_EXACT
+wfe_0334	K AO R N IY L Y AH S	7 33 24 21 27 23 26 37 15	9	real	simple	long	RLSL	3.27	low	TRAINED_REAL_EXACT
+wfe_0335	K R AA K AH D AY L	7 24 32 7 37 6 39 23	8	real	simple	long	RLSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0336	P EH N S AH K OW L AH	3 30 21 15 37 7 34 23 37	9	real	simple	long	RLSL	3.06	low	TRAINED_REAL_EXACT
+wfe_0337	P AE S AH D IY N ER	3 31 15 37 6 27 21 38	8	real	simple	long	RLSL	3.45	low	TRAINED_REAL_EXACT
+wfe_0338	AE M Y AH L AH T	31 20 26 37 23 37 5	7	real	simple	long	RLSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0339	K AE L AH M AH Z UW	7 31 23 37 20 37 16 36	8	real	simple	long	RLSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0340	M AH L AE S AH Z	20 37 23 31 15 37 16	7	real	simple	long	RLSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0342	IH P IH T AH M IY	28 3 28 5 37 20 27	7	real	simple	long	RLSL	3.28	low	TRAINED_REAL_EXACT
+wfe_0343	HH EH Z B AA L AH	19 30 16 4 32 23 37	7	real	simple	long	RLSL	3.27	low	TRAINED_REAL_EXACT
+wfe_0344	R EH P R AH M AE N D	24 30 3 24 37 20 31 21 6	9	real	simple	long	RLSL	2.9	low	TRAINED_REAL_EXACT
+wfe_0345	P L AE NG K T AH N	3 23 31 22 7 5 37 21	8	real	simple	long	RLSL	3.05	low	TRAINED_REAL_EXACT
+wfe_0346	M AE S EH R AA T IY	20 31 15 30 24 32 5 27	8	real	simple	long	RLSL	2.98	low	TRAINED_REAL_EXACT
+wfe_0348	AE L B AH K ER K IY	31 23 4 37 7 38 7 27	8	real	simple	long	RLSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0349	P R EH T Z AH L	3 24 30 5 16 37 23	7	real	simple	long	RLSL	2.98	low	TRAINED_REAL_EXACT
+wfe_0350	L AE V AH T AO R IY	23 31 12 37 5 33 24 27	8	real	simple	long	RLSL	2.9	low	TRAINED_REAL_EXACT
+wfe_0351	M OW Z AE M B IY K	20 34 16 31 20 4 27 7	8	real	simple	long	RLSL	3.29	low	TRAINED_REAL_EXACT
+wfe_0352	P EH N AH S IH L AH N	3 30 21 37 15 28 23 37 21	9	real	simple	long	RLSL	3.04	low	TRAINED_REAL_EXACT
+wfe_0353	B R AA K AH L IY	4 24 32 7 37 23 27	7	real	simple	long	RLSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0354	M AO L AH T AA F	20 33 23 37 5 32 11	7	real	simple	long	RLSL	3.02	low	TRAINED_REAL_EXACT
+wfe_0356	B AH HH IY M AH TH	4 37 19 27 20 37 13	7	real	simple	long	RLSL	2.97	low	TRAINED_REAL_EXACT
+wfe_0357	S IY G F R IY D	15 27 8 11 24 27 6	7	real	simple	long	RLSL	3.03	low	TRAINED_REAL_EXACT
+wfe_0360	P R AE G M AE T IH K	3 24 31 8 20 31 5 28 7	9	real	simple	long	RLSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0361	B L EY T AH N T	4 23 29 5 37 21 5	7	real	simple	long	RLSL	3.45	low	TRAINED_REAL_EXACT
+wfe_0362	CH AA R D AA N EY	9 32 24 6 32 21 29	7	real	simple	long	RLSL	2.98	low	TRAINED_REAL_EXACT
+wfe_0364	JH EH R AH M AY AH	10 30 24 37 20 39 37	7	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0366	B AE D M IH N T AH N	4 31 6 20 28 21 5 37 21	9	real	simple	long	RLSL	3.28	low	TRAINED_REAL_EXACT
+wfe_0367	HH AY N AH K AH N	19 39 21 37 7 37 21	7	real	simple	long	RLSL	3.01	low	TRAINED_REAL_EXACT
+wfe_0368	AA Z ER B AY JH AA N	32 16 38 4 39 10 32 21	8	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0370	L AE B R AH D AO R	23 31 4 24 37 6 33 24	8	real	simple	long	RLSL	3.3	low	TRAINED_REAL_EXACT
+wfe_0371	Y UW F R EY T IY Z	26 36 11 24 29 5 27 16	8	real	simple	long	RLSL	2.89	low	TRAINED_REAL_EXACT
+wfe_0372	AE V AH L AE N CH	31 12 37 23 31 21 9	7	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0375	K AH N F EH T IY	7 37 21 11 30 5 27	7	real	simple	long	RLSL	3.03	low	TRAINED_REAL_EXACT
+wfe_0376	HH AE L AH L UW Y AH	19 31 23 37 23 36 26 37	8	real	simple	long	RLSL	3.3	low	TRAINED_REAL_EXACT
+wfe_0377	K AE T AH P AH L T	7 31 5 37 3 37 23 5	8	real	simple	long	RLSL	3.01	low	TRAINED_REAL_EXACT
+wfe_0378	SH EH R IH D AH N	17 30 24 28 6 37 21	7	real	simple	long	RLSL	3.47	low	TRAINED_REAL_EXACT
+wfe_0380	F L AH K CH AH W EY T	11 23 37 7 9 37 25 29 5	9	real	simple	long	RLSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0381	AH N AA M AH L IY	37 21 32 20 37 23 27	7	real	simple	long	RLSL	3.47	low	TRAINED_REAL_EXACT
+wfe_0383	AE V AH K AA D OW	31 12 37 7 32 6 34	7	real	simple	long	RLSL	3.45	low	TRAINED_REAL_EXACT
+wfe_0384	TH AH S AO R AH S	13 37 15 33 24 37 15	7	real	simple	long	RLSL	2.88	low	TRAINED_REAL_EXACT
+wfe_0385	P AO R K Y AH P AY N	3 33 24 7 26 37 3 39 21	9	real	simple	long	RLSL	2.88	low	TRAINED_REAL_EXACT
+wfe_0386	K EH R AH M AH L	7 30 24 37 20 37 23	7	real	simple	long	RLSL	3.48	low	TRAINED_REAL_EXACT
+wfe_0387	IH N Y UW EH N D OW	28 21 26 36 30 21 6 34	8	real	simple	long	RLSL	2.9	low	TRAINED_REAL_EXACT
+wfe_0388	K AO S T EH L OW	7 33 15 5 30 23 34	7	real	simple	long	RLSL	3.29	low	TRAINED_REAL_EXACT
+wfe_0389	IH P IH S K AH P AH L	28 3 28 15 7 37 3 37 23	9	real	simple	long	RLSL	3.44	low	TRAINED_REAL_EXACT
+wfe_0391	K AE N AH B AH L	7 31 21 37 4 37 23	7	real	simple	long	RLSL	3.05	low	TRAINED_REAL_EXACT
+wfe_0393	L AE V AH N D ER	23 31 12 37 21 6 38	7	real	simple	long	RLSL	3.44	low	TRAINED_REAL_EXACT
+wfe_0394	G IH NG G R IH CH	8 28 22 8 24 28 9	7	real	simple	long	RLSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0395	JH AE V AH L AH N	10 31 12 37 23 37 21	7	real	simple	long	RLSL	2.9	low	TRAINED_REAL_EXACT
+wfe_0396	P IH K AH D IH L IY	3 28 7 37 6 28 23 27	8	real	simple	long	RLSL	3.02	low	TRAINED_REAL_EXACT
+wfe_0397	AE N AH K AA N D AH	31 21 37 7 32 21 6 37	8	real	simple	long	RLSL	2.97	low	TRAINED_REAL_EXACT
+wfe_0398	M AE N AH K IH N	20 31 21 37 7 28 21	7	real	simple	long	RLSL	3.06	low	TRAINED_REAL_EXACT
+wfe_0399	F AH D UW SH IY EH R IY	11 37 6 36 17 27 30 24 27	9	real	simple	long	RLSL	3.05	low	TRAINED_REAL_EXACT
+wfe_0400	G AE DH ER D	8 31 14 38 6	5	real	complex	short	RSCH	4.27	high	TRAINED_REAL_EXACT
+wfe_0401	HH AE V IH NG	19 31 12 28 22	5	real	complex	short	RSCH	5.59	high	TRAINED_REAL_EXACT
+wfe_0402	L AH V L IY	23 37 12 23 27	5	real	complex	short	RSCH	4.74	high	TRAINED_REAL_EXACT
+wfe_0403	AH P D EY T	37 3 6 29 5	5	real	complex	short	RSCH	4.69	high	TRAINED_REAL_EXACT
+wfe_0404	HH EH L TH IY	19 30 23 13 27	5	real	complex	short	RSCH	4.8	high	TRAINED_REAL_EXACT
+wfe_0405	AW T L EH T	40 5 23 30 5	5	real	complex	short	RSCH	4.0	high	TRAINED_REAL_EXACT
+wfe_0406	EH M P ER ER	30 20 3 38 38	5	real	complex	short	RSCH	4.25	high	TRAINED_REAL_EXACT
+wfe_0407	R IY S ER CH	24 27 15 38 9	5	real	complex	short	RSCH	5.39	high	TRAINED_REAL_EXACT
+wfe_0408	DH EH R	14 30 24	3	real	complex	short	RSCH	6.33	high	TRAINED_REAL_EXACT
+wfe_0409	F UH T IH JH	11 35 5 28 10	5	real	complex	short	RSCH	4.31	high	TRAINED_REAL_EXACT
+wfe_0410	M EY K AH P	20 29 7 37 3	5	real	complex	short	RSCH	4.39	high	TRAINED_REAL_EXACT
+wfe_0413	G AA T AH N	8 32 5 37 21	5	real	complex	short	RSCH	4.47	high	TRAINED_REAL_EXACT
+wfe_0414	F ER EH V ER	11 38 30 12 38	5	real	complex	short	RSCH	4.74	high	TRAINED_REAL_EXACT
+wfe_0415	AH S AY N D	37 15 39 21 6	5	real	complex	short	RSCH	4.39	high	TRAINED_REAL_EXACT
+wfe_0416	W ER K AW T	25 38 7 40 5	5	real	complex	short	RSCH	4.02	high	TRAINED_REAL_EXACT
+wfe_0417	G UH D B AY	8 35 6 4 39	5	real	complex	short	RSCH	4.3	high	TRAINED_REAL_EXACT
+wfe_0418	G AA D AH S	8 32 6 37 15	5	real	complex	short	RSCH	4.01	high	TRAINED_REAL_EXACT
+wfe_0419	K AO L D	7 33 23 6	4	real	complex	short	RSCH	5.59	high	TRAINED_REAL_EXACT
+wfe_0420	S AH DH ER N	15 37 14 38 21	5	real	complex	short	RSCH	4.84	high	TRAINED_REAL_EXACT
+wfe_0421	D UW IH NG	6 36 28 22	4	real	complex	short	RSCH	5.6	high	TRAINED_REAL_EXACT
+wfe_0422	G R EY T ER	8 24 29 5 38	5	real	complex	short	RSCH	4.9	high	TRAINED_REAL_EXACT
+wfe_0423	EH R L AY N	30 24 23 39 21	5	real	complex	short	RSCH	4.04	high	TRAINED_REAL_EXACT
+wfe_0425	R IH L IY	24 28 23 27	4	real	complex	short	RSCH	5.97	high	TRAINED_REAL_EXACT
+wfe_0426	TH IH NG Z	13 28 22 16	4	real	complex	short	RSCH	5.74	high	TRAINED_REAL_EXACT
+wfe_0427	AW T K AH M	40 5 7 37 20	5	real	complex	short	RSCH	4.35	high	TRAINED_REAL_EXACT
+wfe_0428	M EH R IH JH	20 30 24 28 10	5	real	complex	short	RSCH	4.91	high	TRAINED_REAL_EXACT
+wfe_0429	S OW SH AH L	15 34 17 37 23	5	real	complex	short	RSCH	5.42	high	TRAINED_REAL_EXACT
+wfe_0430	P AE S AH JH	3 31 15 37 10	5	real	complex	short	RSCH	4.27	high	TRAINED_REAL_EXACT
+wfe_0432	N OW N	21 34 21	3	real	complex	short	RSCH	5.39	high	TRAINED_REAL_EXACT
+wfe_0433	G EH T IH NG	8 30 5 28 22	5	real	complex	short	RSCH	5.57	high	TRAINED_REAL_EXACT
+wfe_0435	B ER TH D EY	4 38 13 6 29	5	real	complex	short	RSCH	4.76	high	TRAINED_REAL_EXACT
+wfe_0436	EY JH IH NG	29 10 28 22	4	real	complex	short	RSCH	4.04	high	TRAINED_REAL_EXACT
+wfe_0437	K AE R IY ER	7 31 24 27 38	5	real	complex	short	RSCH	4.29	high	TRAINED_REAL_EXACT
+wfe_0438	B IY T IH NG	4 27 5 28 22	5	real	complex	short	RSCH	4.43	high	TRAINED_REAL_EXACT
+wfe_0439	TH R OW N	13 24 34 21	4	real	complex	short	RSCH	4.4	high	TRAINED_REAL_EXACT
+wfe_0440	G OW IH NG	8 34 28 22	4	real	complex	short	RSCH	5.94	high	TRAINED_REAL_EXACT
+wfe_0441	HH AY L IY	19 39 23 27	4	real	complex	short	RSCH	4.89	high	TRAINED_REAL_EXACT
+wfe_0442	S ER V EY Z	15 38 12 29 16	5	real	complex	short	RSCH	4.0	high	TRAINED_REAL_EXACT
+wfe_0443	D AY V IH NG	6 39 12 28 22	5	real	complex	short	RSCH	4.02	high	TRAINED_REAL_EXACT
+wfe_0445	N AH TH IH NG	21 37 13 28 22	5	real	complex	short	RSCH	5.55	high	TRAINED_REAL_EXACT
+wfe_0446	AH G R IY D	37 8 24 27 6	5	real	complex	short	RSCH	4.84	high	TRAINED_REAL_EXACT
+wfe_0447	IH N D IY D	28 21 6 27 6	5	real	complex	short	RSCH	4.79	high	TRAINED_REAL_EXACT
+wfe_0448	AW T D AO R	40 5 6 33 24	5	real	complex	short	RSCH	4.23	high	TRAINED_REAL_EXACT
+wfe_0450	W EH D IH NG	25 30 6 28 22	5	real	complex	short	RSCH	4.83	high	TRAINED_REAL_EXACT
+wfe_0451	T ER K IH SH	5 38 7 28 17	5	real	complex	short	RSCH	4.28	high	TRAINED_REAL_EXACT
+wfe_0453	HH AE F W EY	19 31 11 25 29	5	real	complex	short	RSCH	4.06	high	TRAINED_REAL_EXACT
+wfe_0454	AA S AH M	32 15 37 20	4	real	complex	short	RSCH	4.92	high	TRAINED_REAL_EXACT
+wfe_0455	TH ER M AH L	13 38 20 37 23	5	real	complex	short	RSCH	4.04	high	TRAINED_REAL_EXACT
+wfe_0457	R EH R L IY	24 30 24 23 27	5	real	complex	short	RSCH	4.42	high	TRAINED_REAL_EXACT
+wfe_0458	F AO R TH	11 33 24 13	4	real	complex	short	RSCH	4.83	high	TRAINED_REAL_EXACT
+wfe_0459	T R UW L IY	5 24 36 23 27	5	real	complex	short	RSCH	4.87	high	TRAINED_REAL_EXACT
+wfe_0460	OW V ER AO L	34 12 38 33 23	5	real	complex	short	RSCH	4.9	high	TRAINED_REAL_EXACT
+wfe_0461	AH N AH DH ER	37 21 37 14 38	5	real	complex	short	RSCH	5.74	high	TRAINED_REAL_EXACT
+wfe_0462	D EH L T	6 30 23 5	4	real	complex	short	RSCH	4.2	high	TRAINED_REAL_EXACT
+wfe_0463	W UH D AH N	25 35 6 37 21	5	real	complex	short	RSCH	4.33	high	TRAINED_REAL_EXACT
+wfe_0464	IH T S	28 5 15	3	real	complex	short	RSCH	6.14	high	TRAINED_REAL_EXACT
+wfe_0465	L AY ER	23 39 38	3	real	complex	short	RSCH	4.02	high	TRAINED_REAL_EXACT
+wfe_0466	IH N S EY N	28 21 15 29 21	5	real	complex	short	RSCH	4.4	high	TRAINED_REAL_EXACT
+wfe_0467	B IH K AO Z	4 28 7 33 16	5	real	complex	short	RSCH	6.03	high	TRAINED_REAL_EXACT
+wfe_0468	AH B R AO D	37 4 24 33 6	5	real	complex	short	RSCH	4.39	high	TRAINED_REAL_EXACT
+wfe_0469	N ER V AH S	21 38 12 37 15	5	real	complex	short	RSCH	4.42	high	TRAINED_REAL_EXACT
+wfe_0470	W EH R AE Z	25 30 24 31 16	5	real	complex	short	RSCH	4.41	high	TRAINED_REAL_EXACT
+wfe_0471	IY S T ER N	27 15 5 38 21	5	real	complex	short	RSCH	4.78	high	TRAINED_REAL_EXACT
+wfe_0472	AW T F IH T	40 5 11 28 5	5	real	complex	short	RSCH	4.22	high	TRAINED_REAL_EXACT
+wfe_0473	B IH HH AE F	4 28 19 31 11	5	real	complex	short	RSCH	4.42	high	TRAINED_REAL_EXACT
+wfe_0474	L IH K ER	23 28 7 38	4	real	complex	short	RSCH	4.01	high	TRAINED_REAL_EXACT
+wfe_0475	B IH G AH N	4 28 8 37 21	5	real	complex	short	RSCH	4.36	high	TRAINED_REAL_EXACT
+wfe_0476	F AA L AH N	11 32 23 37 21	5	real	complex	short	RSCH	4.39	high	TRAINED_REAL_EXACT
+wfe_0477	W IH DH IH N	25 28 14 28 21	5	real	complex	short	RSCH	5.44	high	TRAINED_REAL_EXACT
+wfe_0480	AH F EH N S	37 11 30 21 15	5	real	complex	short	RSCH	4.26	high	TRAINED_REAL_EXACT
+wfe_0481	R IH N UW D	24 28 21 36 6	5	real	complex	short	RSCH	4.04	high	TRAINED_REAL_EXACT
+wfe_0482	S EY F L IY	15 29 11 23 27	5	real	complex	short	RSCH	4.22	high	TRAINED_REAL_EXACT
+wfe_0483	L AA T ER IY	23 32 5 38 27	5	real	complex	short	RSCH	4.0	high	TRAINED_REAL_EXACT
+wfe_0484	F IH SH IH NG	11 28 17 28 22	5	real	complex	short	RSCH	4.47	high	TRAINED_REAL_EXACT
+wfe_0486	F ER G IH V	11 38 8 28 12	5	real	complex	short	RSCH	4.25	high	TRAINED_REAL_EXACT
+wfe_0487	S ER F AH S	15 38 11 37 15	5	real	complex	short	RSCH	4.83	high	TRAINED_REAL_EXACT
+wfe_0488	K IY P ER	7 27 3 38	4	real	complex	short	RSCH	4.02	high	TRAINED_REAL_EXACT
+wfe_0489	AH N AW N S	37 21 40 21 15	5	real	complex	short	RSCH	4.26	high	TRAINED_REAL_EXACT
+wfe_0490	B IY IH NG	4 27 28 22	4	real	complex	short	RSCH	5.95	high	TRAINED_REAL_EXACT
+wfe_0491	B IH K AH M	4 28 7 37 20	5	real	complex	short	RSCH	5.4	high	TRAINED_REAL_EXACT
+wfe_0492	AO L W EY Z	33 23 25 29 16	5	real	complex	short	RSCH	5.76	high	TRAINED_REAL_EXACT
+wfe_0494	AH F EH R Z	37 11 30 24 16	5	real	complex	short	RSCH	4.67	high	TRAINED_REAL_EXACT
+wfe_0495	R EY L W EY	24 29 23 25 29	5	real	complex	short	RSCH	4.46	high	TRAINED_REAL_EXACT
+wfe_0496	L EY T ER	23 29 5 38	4	real	complex	short	RSCH	5.49	high	TRAINED_REAL_EXACT
+wfe_0497	S EH K S IY	15 30 7 15 27	5	real	complex	short	RSCH	4.42	high	TRAINED_REAL_EXACT
+wfe_0498	T IY CH ER	5 27 9 38	4	real	complex	short	RSCH	4.88	high	TRAINED_REAL_EXACT
+wfe_0499	T ER N IH NG	5 38 21 28 22	5	real	complex	short	RSCH	4.71	high	TRAINED_REAL_EXACT
+wfe_0500	EH N K OW D	30 21 7 34 6	5	real	complex	short	RSCL	2.95	low	TRAINED_REAL_EXACT
+wfe_0501	B EY DH	4 29 14	3	real	complex	short	RSCL	3.22	low	TRAINED_REAL_EXACT
+wfe_0502	F AA G IY	11 32 8 27	4	real	complex	short	RSCL	3.19	low	TRAINED_REAL_EXACT
+wfe_0503	F UH T IH NG	11 35 5 28 22	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0504	L OW Z	23 34 16	3	real	complex	short	RSCL	3.45	low	TRAINED_REAL_EXACT
+wfe_0505	AY B R AW	39 4 24 40	4	real	complex	short	RSCL	3.37	low	TRAINED_REAL_EXACT
+wfe_0507	B IY HH AY V	4 27 19 39 12	5	real	complex	short	RSCL	2.89	low	TRAINED_REAL_EXACT
+wfe_0508	ER N ER	38 21 38	3	real	complex	short	RSCL	2.94	low	TRAINED_REAL_EXACT
+wfe_0511	P ER V ER S	3 38 12 38 15	5	real	complex	short	RSCL	3.19	low	TRAINED_REAL_EXACT
+wfe_0513	CH UW IY	9 36 27	3	real	complex	short	RSCL	2.94	low	TRAINED_REAL_EXACT
+wfe_0514	M EY T IH NG	20 29 5 28 22	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0515	D IY P AH N	6 27 3 37 21	5	real	complex	short	RSCL	3.19	low	TRAINED_REAL_EXACT
+wfe_0516	AH B L EY Z	37 4 23 29 16	5	real	complex	short	RSCL	2.93	low	TRAINED_REAL_EXACT
+wfe_0517	OW N ER AH S	34 21 38 37 15	5	real	complex	short	RSCL	2.92	low	TRAINED_REAL_EXACT
+wfe_0518	AH S EH S ER	37 15 30 15 38	5	real	complex	short	RSCL	2.88	low	TRAINED_REAL_EXACT
+wfe_0520	G IY S	8 27 15	3	real	complex	short	RSCL	3.35	low	TRAINED_REAL_EXACT
+wfe_0521	D OW N AH T	6 34 21 37 5	5	real	complex	short	RSCL	3.17	low	TRAINED_REAL_EXACT
+wfe_0522	HH EY SH AH N	19 29 17 37 21	5	real	complex	short	RSCL	3.35	low	TRAINED_REAL_EXACT
+wfe_0523	ER B AH L	38 4 37 23	4	real	complex	short	RSCL	3.36	low	TRAINED_REAL_EXACT
+wfe_0524	AH N UW	37 21 36	3	real	complex	short	RSCL	3.2	low	TRAINED_REAL_EXACT
+wfe_0525	D R AY ER	6 24 39 38	4	real	complex	short	RSCL	3.19	low	TRAINED_REAL_EXACT
+wfe_0528	F EY TH S	11 29 13 15	4	real	complex	short	RSCL	3.2	low	TRAINED_REAL_EXACT
+wfe_0530	HH IH P IY	19 28 3 27	4	real	complex	short	RSCL	3.36	low	TRAINED_REAL_EXACT
+wfe_0531	AY IH NG	39 28 22	3	real	complex	short	RSCL	3.16	low	TRAINED_REAL_EXACT
+wfe_0532	S K IH N ER	15 7 28 21 38	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0533	M IH K S ER	20 28 7 15 38	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0535	SH R AH NG K	17 24 37 22 7	5	real	complex	short	RSCL	3.18	low	TRAINED_REAL_EXACT
+wfe_0536	K ER EH S	7 38 30 15	4	real	complex	short	RSCL	2.94	low	TRAINED_REAL_EXACT
+wfe_0537	ER TH IY	38 13 27	3	real	complex	short	RSCL	3.02	low	TRAINED_REAL_EXACT
+wfe_0539	EH R T AY T	30 24 5 39 5	5	real	complex	short	RSCL	2.95	low	TRAINED_REAL_EXACT
+wfe_0540	IY T ER	27 5 38	3	real	complex	short	RSCL	3.42	low	TRAINED_REAL_EXACT
+wfe_0541	R IY D UW	24 27 6 36	4	real	complex	short	RSCL	3.19	low	TRAINED_REAL_EXACT
+wfe_0542	S IY M AH N	15 27 20 37 21	5	real	complex	short	RSCL	3.2	low	TRAINED_REAL_EXACT
+wfe_0544	R OW M IH NG	24 34 20 28 22	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0545	L AO NG IH NG	23 33 22 28 22	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0546	AO R AH T ER	33 24 37 5 38	5	real	complex	short	RSCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0547	N IY L	21 27 23	3	real	complex	short	RSCL	3.24	low	TRAINED_REAL_EXACT
+wfe_0548	HH EH L IH SH	19 30 23 28 17	5	real	complex	short	RSCL	2.92	low	TRAINED_REAL_EXACT
+wfe_0550	B L UW IH SH	4 23 36 28 17	5	real	complex	short	RSCL	2.88	low	TRAINED_REAL_EXACT
+wfe_0553	F IH N EH S	11 28 21 30 15	5	real	complex	short	RSCL	3.18	low	TRAINED_REAL_EXACT
+wfe_0556	F AO R S IY	11 33 24 15 27	5	real	complex	short	RSCL	3.18	low	TRAINED_REAL_EXACT
+wfe_0558	B IH G IY	4 28 8 27	4	real	complex	short	RSCL	3.18	low	TRAINED_REAL_EXACT
+wfe_0559	S OW N	15 34 21	3	real	complex	short	RSCL	3.18	low	TRAINED_REAL_EXACT
+wfe_0561	M AE P T	20 31 3 5	4	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0562	M EY L D	20 29 23 6	4	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0563	SH R AE NG K	17 24 31 22 7	5	real	complex	short	RSCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0564	IH M P EH R	28 20 3 30 24	5	real	complex	short	RSCL	2.93	low	TRAINED_REAL_EXACT
+wfe_0565	AH F UH T	37 11 35 5	4	real	complex	short	RSCL	2.89	low	TRAINED_REAL_EXACT
+wfe_0569	HH IH T ER	19 28 5 38	4	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0570	AW T IH NG	40 5 28 22	4	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0574	R IY N EY M	24 27 21 29 20	5	real	complex	short	RSCL	3.18	low	TRAINED_REAL_EXACT
+wfe_0576	S IY SH AO R	15 27 17 33 24	5	real	complex	short	RSCL	2.92	low	TRAINED_REAL_EXACT
+wfe_0578	M IH L K IY	20 28 23 7 27	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0579	AH S EH N T	37 15 30 21 5	5	real	complex	short	RSCL	3.42	low	TRAINED_REAL_EXACT
+wfe_0580	S AO M IH L	15 33 20 28 23	5	real	complex	short	RSCL	2.89	low	TRAINED_REAL_EXACT
+wfe_0582	B EY L AW T	4 29 23 40 5	5	real	complex	short	RSCL	3.16	low	TRAINED_REAL_EXACT
+wfe_0583	B EH G ER	4 30 8 38	4	real	complex	short	RSCL	3.17	low	TRAINED_REAL_EXACT
+wfe_0587	S AY N IH JH	15 39 21 28 10	5	real	complex	short	RSCL	3.19	low	TRAINED_REAL_EXACT
+wfe_0588	AY IH NG	39 28 22	3	real	complex	short	RSCL	3.16	low	TRAINED_REAL_EXACT
+wfe_0589	CH IH L IY	9 28 23 27	4	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0594	SH OW N	17 34 21	3	real	complex	short	RSCL	3.23	low	TRAINED_REAL_EXACT
+wfe_0595	M AW IH S T	20 40 28 15 5	5	real	complex	short	RSCL	2.9	low	TRAINED_REAL_EXACT
+wfe_0598	K R AE P IY	7 24 31 3 27	5	real	complex	short	RSCL	3.5	low	TRAINED_REAL_EXACT
+wfe_0600	AH G R IY	37 8 24 27	4	real	simple	short	RSSH	4.97	high	TRAINED_REAL_EXACT
+wfe_0601	K L EY M	7 23 29 20	4	real	simple	short	RSSH	4.95	high	TRAINED_REAL_EXACT
+wfe_0602	S EH D	15 30 6	3	real	simple	short	RSSH	6.01	high	TRAINED_REAL_EXACT
+wfe_0604	N OW N	21 34 21	3	real	simple	short	RSSH	5.39	high	TRAINED_REAL_EXACT
+wfe_0605	K EY S	7 29 15	3	real	simple	short	RSSH	5.55	high	TRAINED_REAL_EXACT
+wfe_0606	DH OW Z	14 34 16	3	real	simple	short	RSSH	5.9	high	TRAINED_REAL_EXACT
+wfe_0607	P L IY Z	3 23 27 16	4	real	simple	short	RSSH	5.66	high	TRAINED_REAL_EXACT
+wfe_0608	M IH N AH T	20 28 21 37 5	5	real	simple	short	RSSH	4.98	high	TRAINED_REAL_EXACT
+wfe_0609	M EY B IY	20 29 4 27	4	real	simple	short	RSSH	5.45	high	TRAINED_REAL_EXACT
+wfe_0610	S T EY T	15 5 29 5	4	real	simple	short	RSSH	5.78	high	TRAINED_REAL_EXACT
+wfe_0611	JH ER K	10 38 7	3	real	simple	short	RSSH	4.0	high	TRAINED_REAL_EXACT
+wfe_0612	D EH N	6 30 21	3	real	simple	short	RSSH	4.01	high	TRAINED_REAL_EXACT
+wfe_0613	L AE P	23 31 3	3	real	simple	short	RSSH	4.18	high	TRAINED_REAL_EXACT
+wfe_0614	K UH D	7 35 6	3	real	simple	short	RSSH	6.06	high	TRAINED_REAL_EXACT
+wfe_0615	T AE K S IY	5 31 7 15 27	5	real	simple	short	RSSH	4.19	high	TRAINED_REAL_EXACT
+wfe_0616	HH EH L P	19 30 23 3	4	real	simple	short	RSSH	5.75	high	TRAINED_REAL_EXACT
+wfe_0617	CH EY S	9 29 15	3	real	simple	short	RSSH	4.44	high	TRAINED_REAL_EXACT
+wfe_0618	P AA R T	3 32 24 5	4	real	simple	short	RSSH	5.78	high	TRAINED_REAL_EXACT
+wfe_0619	W EH R	25 30 24	3	real	simple	short	RSSH	4.92	high	TRAINED_REAL_EXACT
+wfe_0620	M AH N IY	20 37 21 27	4	real	simple	short	RSSH	5.64	high	TRAINED_REAL_EXACT
+wfe_0621	HH AA R M	19 32 24 20	4	real	simple	short	RSSH	4.47	high	TRAINED_REAL_EXACT
+wfe_0622	G EY JH	8 29 10	3	real	simple	short	RSSH	4.02	high	TRAINED_REAL_EXACT
+wfe_0623	B UW T	4 36 5	3	real	simple	short	RSSH	4.19	high	TRAINED_REAL_EXACT
+wfe_0624	CH AA R T	9 32 24 5	4	real	simple	short	RSSH	4.47	high	TRAINED_REAL_EXACT
+wfe_0625	HH EH L TH	19 30 23 13	4	real	simple	short	RSSH	5.44	high	TRAINED_REAL_EXACT
+wfe_0626	B AA R	4 32 24	3	real	simple	short	RSSH	4.94	high	TRAINED_REAL_EXACT
+wfe_0627	P AW ER	3 40 38	3	real	simple	short	RSSH	5.52	high	TRAINED_REAL_EXACT
+wfe_0628	B AA D IY	4 32 6 27	4	real	simple	short	RSSH	5.4	high	TRAINED_REAL_EXACT
+wfe_0629	B EH S T	4 30 15 5	4	real	simple	short	RSSH	5.84	high	TRAINED_REAL_EXACT
+wfe_0630	G R EY N	8 24 29 21	4	real	simple	short	RSSH	4.18	high	TRAINED_REAL_EXACT
+wfe_0631	W AY T	25 39 5	3	real	simple	short	RSSH	5.51	high	TRAINED_REAL_EXACT
+wfe_0632	R AY T	24 39 5	3	real	simple	short	RSSH	5.96	high	TRAINED_REAL_EXACT
+wfe_0633	DH EH M	14 30 20	3	real	simple	short	RSSH	6.19	high	TRAINED_REAL_EXACT
+wfe_0634	S AH N	15 37 21	3	real	simple	short	RSSH	4.97	high	TRAINED_REAL_EXACT
+wfe_0635	M AO R	20 33 24	3	real	simple	short	RSSH	6.36	high	TRAINED_REAL_EXACT
+wfe_0636	K R UW D	7 24 36 6	4	real	simple	short	RSSH	4.0	high	TRAINED_REAL_EXACT
+wfe_0637	B AW N D	4 40 21 6	4	real	simple	short	RSSH	4.46	high	TRAINED_REAL_EXACT
+wfe_0638	W EH N	25 30 21	3	real	simple	short	RSSH	6.37	high	TRAINED_REAL_EXACT
+wfe_0639	DH AE T	14 31 5	3	real	simple	short	RSSH	7.01	high	TRAINED_REAL_EXACT
+wfe_0640	HH IH P	19 28 3	3	real	simple	short	RSSH	4.46	high	TRAINED_REAL_EXACT
+wfe_0641	R AH N	24 37 21	3	real	simple	short	RSSH	5.49	high	TRAINED_REAL_EXACT
+wfe_0642	S ER CH	15 38 9	3	real	simple	short	RSSH	4.96	high	TRAINED_REAL_EXACT
+wfe_0643	N AH N	21 37 21	3	real	simple	short	RSSH	4.93	high	TRAINED_REAL_EXACT
+wfe_0644	L EH T	23 30 5	3	real	simple	short	RSSH	5.6	high	TRAINED_REAL_EXACT
+wfe_0645	F AW N D	11 40 21 6	4	real	simple	short	RSSH	5.68	high	TRAINED_REAL_EXACT
+wfe_0646	IH M AH JH	28 20 37 10	4	real	simple	short	RSSH	4.94	high	TRAINED_REAL_EXACT
+wfe_0647	HH OW L	19 34 23	3	real	simple	short	RSSH	5.46	high	TRAINED_REAL_EXACT
+wfe_0648	P EH T	3 30 5	3	real	simple	short	RSSH	4.45	high	TRAINED_REAL_EXACT
+wfe_0649	F L AE SH	11 23 31 17	4	real	simple	short	RSSH	4.45	high	TRAINED_REAL_EXACT
+wfe_0650	S AH CH	15 37 9	3	real	simple	short	RSSH	5.84	high	TRAINED_REAL_EXACT
+wfe_0651	K AY N D	7 39 21 6	4	real	simple	short	RSSH	5.45	high	TRAINED_REAL_EXACT
+wfe_0652	Y UW Z D	26 36 16 6	4	real	simple	short	RSSH	5.8	high	TRAINED_REAL_EXACT
+wfe_0653	B AE K	4 31 7	3	real	simple	short	RSSH	6.04	high	TRAINED_REAL_EXACT
+wfe_0654	S AW TH	15 40 13	3	real	simple	short	RSSH	5.4	high	TRAINED_REAL_EXACT
+wfe_0655	S T AA P	15 5 32 3	4	real	simple	short	RSSH	5.52	high	TRAINED_REAL_EXACT
+wfe_0656	F IH R	11 28 24	3	real	simple	short	RSSH	4.95	high	TRAINED_REAL_EXACT
+wfe_0657	M EY K	20 29 7	3	real	simple	short	RSSH	6.08	high	TRAINED_REAL_EXACT
+wfe_0658	F AA R	11 32 24	3	real	simple	short	RSSH	5.5	high	TRAINED_REAL_EXACT
+wfe_0659	DH AE N	14 31 21	3	real	simple	short	RSSH	6.13	high	TRAINED_REAL_EXACT
+wfe_0660	P OY N T	3 41 21 5	4	real	simple	short	RSSH	5.54	high	TRAINED_REAL_EXACT
+wfe_0661	S IY N	15 27 21	3	real	simple	short	RSSH	4.97	high	TRAINED_REAL_EXACT
+wfe_0662	R UW L	24 36 23	3	real	simple	short	RSSH	4.94	high	TRAINED_REAL_EXACT
+wfe_0663	S EH L	15 30 23	3	real	simple	short	RSSH	4.98	high	TRAINED_REAL_EXACT
+wfe_0664	G R EY	8 24 29	3	real	simple	short	RSSH	4.45	high	TRAINED_REAL_EXACT
+wfe_0665	DH IH S	14 28 15	3	real	simple	short	RSSH	6.82	high	TRAINED_REAL_EXACT
+wfe_0666	G R EY T	8 24 29 5	4	real	simple	short	RSSH	5.88	high	TRAINED_REAL_EXACT
+wfe_0667	B AE D	4 31 6	3	real	simple	short	RSSH	5.53	high	TRAINED_REAL_EXACT
+wfe_0668	F R AH M	11 24 37 20	4	real	simple	short	RSSH	6.63	high	TRAINED_REAL_EXACT
+wfe_0669	AH NG K AH L	37 22 7 37 23	5	real	simple	short	RSSH	4.45	high	TRAINED_REAL_EXACT
+wfe_0670	N UW D	21 36 6	3	real	simple	short	RSSH	4.0	high	TRAINED_REAL_EXACT
+wfe_0671	K R AH SH	7 24 37 17	4	real	simple	short	RSSH	4.17	high	TRAINED_REAL_EXACT
+wfe_0672	K AA R G OW	7 32 24 8 34	5	real	simple	short	RSSH	4.19	high	TRAINED_REAL_EXACT
+wfe_0673	DH EH R	14 30 24	3	real	simple	short	RSSH	6.31	high	TRAINED_REAL_EXACT
+wfe_0674	G AA T	8 32 5	3	real	simple	short	RSSH	5.91	high	TRAINED_REAL_EXACT
+wfe_0675	AH DH ER	37 14 38	3	real	simple	short	RSSH	6.16	high	TRAINED_REAL_EXACT
+wfe_0676	W IH CH	25 28 9	3	real	simple	short	RSSH	6.3	high	TRAINED_REAL_EXACT
+wfe_0677	K AE N	7 31 21	3	real	simple	short	RSSH	6.46	high	TRAINED_REAL_EXACT
+wfe_0678	N EY CH ER	21 29 9 38	4	real	simple	short	RSSH	4.98	high	TRAINED_REAL_EXACT
+wfe_0679	F AY V	11 39 12	3	real	simple	short	RSSH	5.45	high	TRAINED_REAL_EXACT
+wfe_0680	SH IH T	17 28 5	3	real	simple	short	RSSH	5.48	high	TRAINED_REAL_EXACT
+wfe_0681	F AE N	11 31 21	3	real	simple	short	RSSH	4.92	high	TRAINED_REAL_EXACT
+wfe_0682	R EY D	24 29 6	3	real	simple	short	RSSH	4.19	high	TRAINED_REAL_EXACT
+wfe_0683	G EH T	8 30 5	3	real	simple	short	RSSH	6.28	high	TRAINED_REAL_EXACT
+wfe_0684	SH UH R	17 35 24	3	real	simple	short	RSSH	5.67	high	TRAINED_REAL_EXACT
+wfe_0685	S AA K ER	15 32 7 38	4	real	simple	short	RSSH	4.48	high	TRAINED_REAL_EXACT
+wfe_0686	L AH V	23 37 12	3	real	simple	short	RSSH	5.82	high	TRAINED_REAL_EXACT
+wfe_0687	D R OW N	6 24 34 21	4	real	simple	short	RSSH	4.0	high	TRAINED_REAL_EXACT
+wfe_0688	B OW N	4 34 21	3	real	simple	short	RSSH	4.47	high	TRAINED_REAL_EXACT
+wfe_0689	R AO NG	24 33 22	3	real	simple	short	RSSH	5.39	high	TRAINED_REAL_EXACT
+wfe_0690	T EY P	5 29 3	3	real	simple	short	RSSH	4.44	high	TRAINED_REAL_EXACT
+wfe_0691	B AE T AH L	4 31 5 37 23	5	real	simple	short	RSSH	4.94	high	TRAINED_REAL_EXACT
+wfe_0692	B AE TH	4 31 13	3	real	simple	short	RSSH	4.44	high	TRAINED_REAL_EXACT
+wfe_0693	B AH L K	4 37 23 7	4	real	simple	short	RSSH	4.19	high	TRAINED_REAL_EXACT
+wfe_0694	W IY K	25 27 7	3	real	simple	short	RSSH	5.56	high	TRAINED_REAL_EXACT
+wfe_0695	HH AA R D	19 32 24 6	4	real	simple	short	RSSH	5.53	high	TRAINED_REAL_EXACT
+wfe_0696	L AE K	23 31 7	3	real	simple	short	RSSH	4.92	high	TRAINED_REAL_EXACT
+wfe_0697	M AY T	20 39 5	3	real	simple	short	RSSH	5.66	high	TRAINED_REAL_EXACT
+wfe_0698	TH IH NG	13 28 22	3	real	simple	short	RSSH	5.72	high	TRAINED_REAL_EXACT
+wfe_0699	S AO R T	15 33 24 5	4	real	simple	short	RSSH	5.0	high	TRAINED_REAL_EXACT
+wfe_0700	K EY JH AH N	7 29 10 37 21	5	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0701	JH UW D OW	10 36 6 34	4	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0702	HH EY N AH S	19 29 21 37 15	5	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0703	HH AY N D	19 39 21 6	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0704	L AA R V AH	23 32 24 12 37	5	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0705	B AH K AH L	4 37 7 37 23	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0706	EH L K	30 23 7	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0707	L EH K S	23 30 7 15	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0708	K AE N Z	7 31 21 16	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0710	M EY B AH L	20 29 4 37 23	5	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0712	K W EH L	7 25 30 23	4	real	simple	short	RSSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0713	D R UW IH D	6 24 36 28 6	5	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0714	K L AA G	7 23 32 8	4	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0715	B AA R JH	4 32 24 10	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0716	AH T AY ER	37 5 39 38	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0717	S AY D ER	15 39 6 38	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0718	B AA NG	4 32 22	3	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0719	D AY P ER	6 39 3 38	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0720	SH AH N EH L	17 37 21 30 23	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0721	JH IY HH AE D	10 27 19 31 6	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0722	G UW F	8 36 11	3	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0723	B ER T	4 38 5	3	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0724	D AH D	6 37 6	3	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0725	HH AE V AH K	19 31 12 37 7	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0726	S AE B AH TH	15 31 4 37 13	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0727	K AH S T ER	7 37 15 5 38	5	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0728	HH AY V	19 39 12	3	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0729	AE K S AH L	31 7 15 37 23	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0730	K W EH N CH	7 25 30 21 9	5	real	simple	short	RSSL	2.89	low	TRAINED_REAL_EXACT
+wfe_0731	D AH D L IY	6 37 6 23 27	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0732	K W IH L T	7 25 28 23 5	5	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0733	M EY S AH	20 29 15 37	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0735	L UW IY JH IY	23 36 27 10 27	5	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0736	EY AO R T AH	29 33 24 5 37	5	real	simple	short	RSSL	2.92	low	TRAINED_REAL_EXACT
+wfe_0737	L IH N T	23 28 21 5	4	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0738	G L IY	8 23 27	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0739	K AE S K	7 31 15 7	4	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0740	R UW S T	24 36 15 5	4	real	simple	short	RSSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0741	P IH V AH T	3 28 12 37 5	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0742	EH L IY AH T	30 23 27 37 5	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0743	D AE Z AH L	6 31 16 37 23	5	real	simple	short	RSSL	3.02	low	TRAINED_REAL_EXACT
+wfe_0744	AY K IY AH	39 7 27 37	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0745	M EY N JH ER	20 29 21 10 38	5	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0746	B L AE N D	4 23 31 21 6	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0747	P AH T EH L	3 37 5 30 23	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0748	D EY T AH N	6 29 5 37 21	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0749	HH Y UW	19 26 36	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0750	G AH L P	8 37 23 3	4	real	simple	short	RSSL	2.93	low	TRAINED_REAL_EXACT
+wfe_0752	M AH S K	20 37 15 7	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0753	K AA B	7 32 4	3	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0754	M AO TH	20 33 13	3	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0756	SH AA R D	17 32 24 6	4	real	simple	short	RSSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0757	F OW L IY	11 34 23 27	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0758	G IH N AH S	8 28 21 37 15	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0759	B R AY B	4 24 39 4	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0760	IH K W IH P	28 7 25 28 3	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0761	F L AE P	11 23 31 3	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0762	B R AE G	4 24 31 8	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0763	K OW K OW	7 34 7 34	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0764	S IH V	15 28 12	3	real	simple	short	RSSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0765	AY M AE M	39 20 31 20	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0766	D AY N	6 39 21	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0768	AH L UW F	37 23 36 11	4	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0769	JH EH K AH L	10 30 7 37 23	5	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0771	D EH R IH K	6 30 24 28 7	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0772	K L AW S	7 23 40 15	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0773	B IH M B OW	4 28 20 4 34	5	real	simple	short	RSSL	2.87	low	TRAINED_REAL_EXACT
+wfe_0774	AE N EH K S	31 21 30 7 15	5	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0775	L AA HH AO R	23 32 19 33 24	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0776	AA R B ER	32 24 4 38	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0777	B AA R L IY	4 32 24 23 27	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0778	AE P N IY AH	31 3 21 27 37	5	real	simple	short	RSSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0779	N EY Z AH L	21 29 16 37 23	5	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0780	L UW N	23 36 21	3	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0781	L OW F	23 34 11	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0782	S UW B ER UW	15 36 4 38 36	5	real	simple	short	RSSL	3.26	low	TRAINED_REAL_EXACT
+wfe_0783	AH K R UW	37 7 24 36	4	real	simple	short	RSSL	2.91	low	TRAINED_REAL_EXACT
+wfe_0784	P EH G	3 30 8	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0785	N EH K T ER	21 30 7 5 38	5	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0786	P IY T AH	3 27 5 37	4	real	simple	short	RSSL	3.0	low	TRAINED_REAL_EXACT
+wfe_0787	K AH B	7 37 4	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0788	S AO N AH	15 33 21 37	4	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0789	K AH N UW	7 37 21 36	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0791	N AA B	21 32 4	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0792	OW P R AH	34 3 24 37	4	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT
+wfe_0793	G W AA M	8 25 32 20	4	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0794	AE V AH D	31 12 37 6	4	real	simple	short	RSSL	3.5	low	TRAINED_REAL_EXACT
+wfe_0795	AH K EY SH AH	37 7 29 17 37	5	real	simple	short	RSSL	3.01	low	TRAINED_REAL_EXACT
+wfe_0796	AO F T	33 11 5	3	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0797	L IY CH	23 27 9	3	real	simple	short	RSSL	3.25	low	TRAINED_REAL_EXACT
+wfe_0798	HH UW T	19 36 5	3	real	simple	short	RSSL	2.99	low	TRAINED_REAL_EXACT
+wfe_0799	OW D ER	34 6 38	3	real	simple	short	RSSL	3.49	low	TRAINED_REAL_EXACT

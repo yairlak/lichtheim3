@@ -1,0 +1,163 @@
+{
+ "contract_name": "V7_INTACT_ROUTE_VALIDATION_CONTRACT",
+ "frozen_by": "CENTRAL_STEERING_FINAL_ARBITRATION_CLOSED",
+ "frozen_date": "2026-09-18",
+ "base_commit": "46e638628e2c610c640189523c7918ade60209ad",
+ "branch": "feat/v7-prelesion-validation",
+ "torch_recorded_by_v7": "2.6.0",
+ "status": "APPROVED_FOR_FROZEN_INTACT_VALIDATION",
+ "head_convention": {
+  "post_repair_scientific_witness": "head_first_c0.pt",
+  "head_first_c0_role": "CANONICAL_POST_REPAIR_SCIENTIFIC_WITNESS",
+  "head_final_role": "LATER_DERIVED_ARM_A_CONVERGENCE_ARTIFACT",
+  "head_final_behavior": "NOT_SCIENTIFICALLY_EVALUATED",
+  "reconstruction": "SOURCE checkpoint + head_first_c0 deployed state, IN MEMORY ONLY",
+  "deployed_state_keys": [
+   "2.weight",
+   "2.bias"
+  ],
+  "trace_evidence": {
+   "P1": {
+    "first_c0_iter": 30,
+    "steps": 30,
+    "heads_equal": true
+   },
+   "P2": {
+    "first_c0_iter": 34,
+    "steps": 35,
+    "heads_equal": false
+   },
+   "P3": {
+    "first_c0_iter": 67,
+    "steps": 68,
+    "heads_equal": false
+   },
+   "P4": {
+    "first_c0_iter": 29,
+    "steps": 30,
+    "heads_equal": false
+   }
+  }
+ },
+ "populations": {
+  "realword": {
+   "R": 29571,
+   "N": 29571,
+   "C": 27981,
+   "lexicon_sha256": "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+  },
+  "pseudoword_primary": {
+   "name": "V7_COMMON_UNSEEN",
+   "n": 378,
+   "rule": "391 NOVEL_PSEUDOWORD minus union of items in ANY P1-P4 dorsal pool",
+   "applies_to": {
+    "P1": "PRIMARY",
+    "P2": "PRIMARY",
+    "P3": "PRIMARY",
+    "P4": "DESCRIPTIVE"
+   }
+  },
+  "pseudoword_secondary": {
+   "name": "V7_SEED_UNSEEN",
+   "status": "SECONDARY_SENSITIVITY_ONLY",
+   "n": {
+    "P1": 384,
+    "P2": 390,
+    "P3": 389,
+    "P4": 387
+   }
+  },
+  "exposed": {
+   "name": "V7_DORSAL_POOL_EXPOSED",
+   "n": 13,
+   "status": "DESCRIPTIVE_ONLY"
+  },
+  "trained_real_exact": {
+   "n": 671,
+   "status": "DESCRIPTIVE_ONLY",
+   "warning": "NOT_A_PURE_CAUSAL_LEXICALITY_CONTRAST"
+  },
+  "source_table_sha256": "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67",
+  "dorsal_pool_generator": {
+   "fn": "train_joint_scratch.py::build_pool_entries",
+   "seed": "RAW_TRAIN_SEED",
+   "n": 4000,
+   "min_len": 2,
+   "max_len": 9,
+   "equality": "CANONICAL_PHONEME_ID_SEQUENCE"
+  }
+ },
+ "free_ar": {
+  "contract": "PASS",
+  "impl": "train_joint_scratch.py::free_ar_repetition",
+  "start_token": "vocab.bos_id",
+  "termination": "FIRST_EOS",
+  "max_steps": 12,
+  "target_length_used_for_termination": false,
+  "target_length_permitted_for": "SCORING_AND_DIAGNOSTICS_ONLY",
+  "route_keys": {
+   "full": "logits",
+   "wm": "wm_logits",
+   "ltm": "ltm_logits"
+  },
+  "scoring": "EXACT_SEQUENCE_EQUALITY_AFTER_TRIM_AT_FIRST_EOS"
+ },
+ "ordering_rule": {
+  "population": "V7_COMMON_UNSEEN_378",
+  "dtype": "float64",
+  "delta_acc": "exact_acc_WM - exact_acc_LTM",
+  "delta_ned": "mean_NED_LTM - mean_NED_WM",
+  "WM_DOMINANT": "delta_acc>=0 AND delta_ned>=0 AND at least one >0",
+  "TIE": "delta_acc==0 AND delta_ned==0",
+  "MIXED": "metrics favour opposite routes",
+  "LTM_DOMINANT": "delta_acc<=0 AND delta_ned<=0 AND at least one <0",
+  "post_hoc_tolerance": "FORBIDDEN"
+ },
+ "arm_a_preservation": {
+  "slots": [
+   "P1",
+   "P2",
+   "P3"
+  ],
+  "PRESERVED": "SOURCE WM_DOMINANT and POST_REPAIR WM_DOMINANT",
+  "PRESERVED_FROM_NONDOMINANT_SOURCE": "SOURCE not WM_DOMINANT, POST WM_DOMINANT",
+  "NOT_PRESERVED": "SOURCE WM_DOMINANT, POST not",
+  "NO_EXPECTED_PATTERN_AT_SOURCE": "neither WM_DOMINANT",
+  "family_yes_rule": "all P1/P2/P3 PRESERVED or PRESERVED_FROM_NONDOMINANT_SOURCE and none NOT_PRESERVED",
+  "p4_role": "SENSITIVITY_AND_PRESERVATION_COUNTEREXAMPLE_NOT_FAMILY_DEFINING"
+ },
+ "classification": [
+  "V7_LESION_READY",
+  "V7_LESION_READY_WITH_QUALIFICATION",
+  "V7_NOT_LESION_READY"
+ ],
+ "pathology_flags": [
+  "ROUTE_EVALUATOR_CRASH_OR_UNDEFINED",
+  "ALL_PREDICTIONS_IDENTICAL",
+  "HUNDRED_PCT_NO_EOS",
+  "ISOLATED_REALWORD_ROUTE_EXACT_ZERO"
+ ],
+ "states": [
+  "P1_SOURCE",
+  "P1_POST_REPAIR",
+  "P2_SOURCE",
+  "P2_POST_REPAIR",
+  "P3_SOURCE",
+  "P3_POST_REPAIR",
+  "P4_SOURCE",
+  "P4_POST_REPAIR"
+ ],
+ "forbidden": [
+  "TRAINING",
+  "PARAMETER_UPDATE",
+  "ARCHITECTURE_CHANGE",
+  "GATE_CHANGE",
+  "REPAIR_CHANGE",
+  "LESION_IMPLEMENTATION",
+  "LESION_EXECUTION",
+  "EVALUATING_HEAD_FINAL",
+  "MONOLITHIC_CHECKPOINT_MATERIALIZATION",
+  "POST_HOC_RULE_CHANGE",
+  "OUTCOME_DRIVEN_RERUN"
+ ]
+}

@@ -1,0 +1,24 @@
+# manifest	V7_DORSAL_POOL_EXPOSED
+# frozen_by	CENTRAL D2 (2026-09-18)
+# source_table	../lichtheim3/outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv
+# source_table_sha256	8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67
+# lexicon_file	data/lexicon_en_glove_covered.tsv
+# lexicon_file_sha256	ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66
+# dorsal_pool_generator	train_joint_scratch.py::build_pool_entries seed=raw_train_seed n=4000 min_len=2 max_len=9
+# rule	the 13 union-collision items; NOT unseen pseudowords
+# status	DESCRIPTIVE_ONLY
+# n_items	13
+item_id	target_arpabet	target_phoneme_ids	target_length	source_lexicality	morphology	size	condition	zipf_frequency	frequency_class	lichtheim_exposure_status	exposed_in_slots	pool_indices
+wfe_0833	IH N AW	28 21 40	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD	P1	P1:2277
+wfe_0843	IH P ER	28 3 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD	P1	P1:2072
+wfe_0848	G UW Z	8 36 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD	P1,P2	P1:2272,P2:309
+wfe_0899	P EY L OW	3 29 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD	P1	P1:1422
+wfe_1033	Y AH G	26 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P1	P1:2415
+wfe_1034	D AA P	6 32 3	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P4	P4:2297
+wfe_1036	F AH T	11 37 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P3	P3:788
+wfe_1043	T AO G	5 33 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P4	P4:1495
+wfe_1046	F AH G	11 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P4	P4:866
+wfe_1050	SH OY D	17 41 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P4	P4:1450
+wfe_1057	Z AA M	16 32 20	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P1	P1:755
+wfe_1064	M AH S	20 37 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P1	P1:1847
+wfe_1073	TH UW L AH	13 36 23 37	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD	P3	P3:2692

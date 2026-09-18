@@ -1,0 +1,1562 @@
+# manifest	V7_SEED_UNSEEN
+# frozen_by	CENTRAL D2 (2026-09-18)
+# source_table	../lichtheim3/outputs/behavioral_wfe_fulllexicon_93a577f/behavioral_analysis/tables/canonical_behavioral_item_table.tsv
+# source_table_sha256	8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67
+# lexicon_file	data/lexicon_en_glove_covered.tsv
+# lexicon_file_sha256	ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66
+# dorsal_pool_generator	train_joint_scratch.py::build_pool_entries seed=raw_train_seed n=4000 min_len=2 max_len=9
+# rule	original 391 MINUS that seed's own dorsal-pool overlaps
+# status	SECONDARY_SENSITIVITY_ONLY
+# counts	P1=384 P2=390 P3=389 P4=387
+# n_items	1550
+slot	seed	item_id	target_arpabet	target_phoneme_ids	target_length	source_lexicality	morphology	size	condition	zipf_frequency	frequency_class	lichtheim_exposure_status
+P1	31	wfe_0800	S OW L OW K AH M AO F	15 34 23 34 7 37 20 33 11	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0801	G AA S T R IY EH N T	8 32 15 5 24 27 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0802	D IH V EH S T R EY T	6 28 12 30 15 5 24 29 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0803	S T R UW S AH N AH D	15 5 24 36 15 37 21 37 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0804	D AY Y UH R AH L AH M	6 39 26 35 24 37 23 37 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0805	S P EH R IY B AO R M	15 3 30 24 27 4 33 24 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0806	IH N F L AH JH EH S T	28 21 11 23 37 10 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0807	B AA L EH N T IY N AH	4 32 23 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0808	K L AE D W IH CH IY T	7 23 31 6 25 28 9 27 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0809	W EH B S IH D AH N T	25 30 4 15 28 6 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0810	L IH V IH N IH S AH L	23 28 12 28 21 28 15 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0811	EH P IH R EH N T AH L	30 3 28 24 30 21 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0812	K OW AA L EH N S AY T	7 34 32 23 30 21 15 39 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0813	N OW T AH N S AH S T	21 34 5 37 21 15 37 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0814	IH S L AA T ER D AY N	28 15 23 32 5 38 6 39 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0815	Y EH S P IH R EH S T	26 30 15 3 28 24 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0816	F OW L D AA M AH N S	11 34 23 6 32 20 37 21 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0817	B AA V EH N T IY N AH	4 32 12 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0818	F R AE N S AH P AH L	11 24 31 21 15 37 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0819	V IH S T ER M AE N D	12 28 15 5 38 20 31 21 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0820	M AH S IH P IH T AH L	20 37 15 28 3 28 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0821	AE N K L UW S EH N T	31 21 7 23 36 15 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0822	S K W IH S T AH N T	15 7 25 28 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0823	EH V ER R IY AH L IH S	30 12 38 24 27 37 23 28 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0824	AE L R EH L AA P AH L	31 23 24 30 23 32 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0825	S T AO R S T AH N T	15 5 33 24 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0826	T R IH N K AH B EH L	5 24 28 21 7 37 4 30 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0827	AE D V AE N T IH N T	31 6 12 31 21 5 28 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0828	HH OW N OW F AH S IY N	19 34 21 34 11 37 15 27 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0829	R IY AH S OW D AH K T	24 27 37 15 34 6 37 7 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0830	S T OW G R IH CH ER IY	15 5 34 8 24 28 9 38 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0831	S IY G R UW S AH CH IY	15 27 8 24 36 15 37 9 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0832	W IH S K AH N S AH Z	25 28 15 7 37 21 15 37 16	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0834	AO TH T	33 13 5	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0835	AH K UW	37 7 36	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0836	AY T ER	39 5 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0837	N OW IY	21 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0838	TH IH CH	13 28 9	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0840	W IY Z	25 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0841	EH M D	30 20 6	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0844	S AO R	15 33 24	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0845	IY L ER	27 23 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0846	AA D IY	32 6 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0847	AH P AY	37 3 39	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0849	D IY Z	6 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0850	AH N TH	37 21 13	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0851	T OW IY	5 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0852	IY M Z	27 20 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0853	ER T S	38 5 15	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0854	AE T R OW	31 5 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0855	AH P R UW	37 3 24 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0856	R AA N T	24 32 21 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0857	AE S AH K	31 15 37 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0858	AA B S OW	32 4 15 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0859	AA P T IY	32 3 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0860	AW R EY N	40 24 29 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0861	TH AW T IY	13 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0862	JH AO R OW	10 33 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0863	T EH M AW	5 30 20 40	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0864	EH N F ER	30 21 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0865	AH K OW N	37 7 34 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0866	W IY F ER	25 27 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0867	AH N EH S	37 21 30 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0868	EH N IY TH	30 21 27 13	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0869	IH L UW M	28 23 36 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0870	IH T S ER	28 5 15 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0871	B AY L OW	4 39 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0872	IY D IY OW	27 6 27 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0873	SH OW IH K	17 34 28 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0874	D AA M ER	6 32 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0875	AH P AO R	37 3 33 24	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0877	N IY CH T	21 27 9 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0878	SH AW T IY	17 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0879	G IY V IY	8 27 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0880	AE N IH M	31 21 28 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0881	AW CH EY S	40 9 29 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0882	AY DH IH NG	39 14 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0883	AH N AE L	37 21 31 23	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0884	F EY V IY	11 29 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0885	W AH DH ER	25 37 14 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0886	JH ER Z D	10 38 16 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0887	AO CH IH NG	33 9 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0888	P ER F ER	3 38 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0889	AH N OW T	37 21 34 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0890	IH S ER T	28 15 38 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0891	AE L AH P	31 23 37 3	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0892	AH N ER JH	37 21 38 10	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0893	D EH L ER	6 30 23 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0894	EH N IH T	30 21 28 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0895	V AA L OW	12 32 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0896	D EH F UW	6 30 11 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0897	JH ER M ER	10 38 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0898	IH R IY D	28 24 27 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0900	AA K T IY M	32 7 5 27 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0901	HH OW M AE T	19 34 20 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0902	OW P IH S T	34 3 28 15 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0903	G OW V IY OW	8 34 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0904	B IH L W EY	4 28 23 25 29	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0905	IY K AO R G	27 7 33 24 8	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0906	R AE D IH S	24 31 6 28 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0907	S OW P AH T	15 34 3 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0908	HH IH M AH M	19 28 20 37 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0909	S AE K N OW	15 31 7 21 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0910	AH N K R AW	37 21 7 24 40	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0911	B UH L F ER	4 35 23 11 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0912	N AA N V ER	21 32 21 12 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0913	D EH F ER K	6 30 11 38 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0914	B IY OW M OW	4 27 34 20 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0915	AE D V IY OW	31 6 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0916	M AH L B OY	20 37 23 4 41	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0917	AE G R AE T	31 8 24 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0918	B IH F IH K	4 28 11 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0919	AH S AA S IY	37 15 32 15 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0920	AH N IY M D	37 21 27 20 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0921	IH N V AO R	28 21 12 33 24	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0922	F ER S AY D	11 38 15 39 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0923	T IY T IH N	5 27 5 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0924	G EH T ER T	8 30 5 38 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0925	R IY K AW S	24 27 7 40 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0926	M AH SH IH N	20 37 17 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0927	R EH D W IY	24 30 6 25 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0928	HH IH M B IY	19 28 20 4 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0929	Y UW R AW N	26 36 24 40 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0930	M IH N T AY	20 28 21 5 39	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0931	P ER T AH T	3 38 5 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0932	P ER L IH K	3 38 23 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0933	S ER V AY D AH D	15 38 12 39 6 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0934	IH N T IH P AH L	28 21 5 28 3 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0935	P AH B S AY D Z	3 37 4 15 39 6 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0936	D AH S OW SH IY OW	6 37 15 34 17 27 34	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0937	B Y UW T IY N Z	4 26 36 5 27 21 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0938	EH D AH T R AH L	30 6 37 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0939	P AH B L IH T IY	3 37 4 23 28 5 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0940	HH AA R JH IH NG Z	19 32 24 10 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0941	B IY N S P AO R	4 27 21 15 3 33 24	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0942	B R OW V EH L F	4 24 34 12 30 23 11	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0943	HH IH M AH L EY S	19 28 20 37 23 29 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0944	K AH N UW T AH D	7 37 21 36 5 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0945	B AE M P IY AH N	4 31 20 3 27 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0946	T W EH T S K IY	5 25 30 5 15 7 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0947	AE K T IH T OW M	31 7 5 28 5 34 20	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0948	F EH S AH M AY N	11 30 15 37 20 39 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0949	AH P IY D IY AH L	37 3 27 6 27 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0950	M AA M AH K AH L	20 32 20 37 7 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0951	B EH L AH N T ER	4 30 23 37 21 5 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0952	Y UW N AH V AH L	26 36 21 37 12 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0953	HH AE V AY S AH Z	19 31 12 39 15 37 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0954	EH N IY B AO L Z	30 21 27 4 33 23 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0955	D IH K AE M B ER	6 28 7 31 20 4 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0956	P ER V IH SH AH S	3 38 12 28 17 37 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0957	AH N L EH JH IH NG	37 21 23 30 10 28 22	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0958	AH T AE T IH NG Z	37 5 31 5 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0959	AH P AA R SH AH N	37 3 32 24 17 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0960	R EH T AE B IH T	24 30 5 31 4 28 5	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0961	K AH N K AA TH IY	7 37 21 7 32 13 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0962	F AH L UW T IH D	11 37 23 36 5 28 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0963	Y UW N IY Z IH K	26 36 21 27 16 28 7	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0964	R IH K AO Z IH Z	24 28 7 33 16 28 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0965	P R IY T R AH L	3 24 27 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0966	D IH S R IH T ER B	6 28 15 24 28 5 38 4	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0967	R IY OW L ER R AY Z	24 27 34 23 38 24 39 16	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0968	M IH S K R IY K T	20 28 15 7 24 27 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0969	T R UW Z AH B AH L	5 24 36 16 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0970	AH N W IH Z IH T ER	37 21 25 28 16 28 5 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0971	OW V ER IH L IH T IY	34 12 38 28 23 28 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0972	S AH M T AH B AH L	15 37 20 5 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0973	AH N M IH S T AE D	37 21 20 28 15 5 31 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0974	W IH T IH F AH L IY	25 28 5 28 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0975	AH N D ER L AE T IY	37 21 6 38 23 31 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0976	R EH D ER L AH T IY	24 30 6 38 23 37 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0977	S P R IH K T AA L	15 3 24 28 7 5 32 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0978	Y UW N IH F AO R T	26 36 21 28 11 33 24 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0979	M IH S T F AH L IY	20 28 15 5 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0980	D AY D AH N IH S T	6 39 6 37 21 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0981	R EY V ER S OW L D	24 29 12 38 15 34 23 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0982	AH N D AH F L EY T	37 21 6 37 11 23 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0983	D IH S K R IY L ER	6 28 15 7 24 27 23 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0984	P IH T L AH S L IY	3 28 5 23 37 15 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0985	D IH S HH AH N AH L	6 28 15 19 37 21 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0986	S K R IH N G AH L	15 7 24 28 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0987	R IY IH N S T EY K	24 27 28 21 15 5 29 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0988	S P R IH N D L IY	15 3 24 28 21 6 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0989	R EH P ER P AH S T	24 30 3 38 3 37 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0990	V AH L G ER IH S T	12 37 23 8 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0991	R EH M AH S T EY T	24 30 20 37 15 5 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0992	B IY W IH S T IH K	4 27 25 28 15 5 28 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0993	D IY OW D ER IH S T	6 27 34 6 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0994	S T R IH M P L IY	15 5 24 28 20 3 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0995	W UH M AH N G AH L	25 35 20 37 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0996	R EH D AH F AH L IY	24 30 6 37 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0997	S T EH R IY AE K T	15 5 30 24 27 31 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0998	G AO R M AH L OW N	8 33 24 20 37 23 34 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_0999	S T EH R AH L IY N	15 5 30 24 37 23 27 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1000	EH P IH S IH D EH N T	30 3 28 15 28 6 30 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1001	D IY AH D R IH Z AH M	6 27 37 6 24 28 16 37 20	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1002	AH W AO R L IY AE N T	37 25 33 24 23 27 31 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1003	P OY L D R EY SH AH N	3 41 23 6 24 29 17 37 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1004	W AH N T IH F IH K S	25 37 21 5 28 11 28 7 15	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1005	AE D V EH L AH T IY N	31 6 12 30 23 37 5 27 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1006	T R AE P L AH B AH L	5 24 31 3 23 37 4 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1007	AE L AH D K W AO R EY	31 23 37 6 7 25 33 24 29	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1008	N AA M P ER EY T IH D	21 32 20 3 38 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1009	R IY AH D IY N S AH Z	24 27 37 6 27 21 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1010	T R AE D AH N T IY Z	5 24 31 6 37 21 5 27 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1011	OW N AH S T R AE N D	34 21 37 15 5 24 31 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1012	K AH L IH S IY AH L IY	7 37 23 28 15 27 37 23 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1013	EH K S K L UH R AA L	30 7 15 7 23 35 24 32 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1014	M IH S AH M B EY D IY	20 28 15 37 20 4 29 6 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1015	R IY OW D EH N AH S T	24 27 34 6 30 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1016	HH AE V AH V EY T IH D	19 31 12 37 12 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1017	T EH N S AH N AH S T	5 30 21 15 37 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1018	EH N T IH K W AA R IY	30 21 5 28 7 25 32 24 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1019	V EH S ER N EY T IH D	12 30 15 38 21 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1020	Y UW N AH F AO R S T	26 36 21 37 11 33 24 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1021	W IH N Y UW F AE K T	25 28 21 26 36 11 31 7 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1022	EH K S P L IH F IH K	30 7 15 3 23 28 11 28 7	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1023	D EH T W AH S T AH L	6 30 5 25 37 15 5 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1024	D IY D AH N IH S AH Z	6 27 6 37 21 28 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1025	P Y UW Z K IH V IH NG	3 26 36 16 7 28 12 28 22	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1026	K AA N T R IY AH N D	7 32 21 5 24 27 37 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1027	B OW T IH N S L EH D	4 34 5 28 21 15 23 30 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1028	D EH L IY AH M N AH L	6 30 23 27 37 20 21 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1029	IH N V AO R AH B AH T	28 21 12 33 24 37 4 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1030	AH N F AO R N IH T IY	37 21 11 33 24 21 28 5 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1031	D IH D AH M P L EY T	6 28 6 37 20 3 23 29 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1032	W ER D AH N S T AH T	25 38 6 37 21 15 5 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1034	D AA P	6 32 3	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1036	F AH T	11 37 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1037	W IH D	25 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1038	T AA B	5 32 4	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1040	D AA V	6 32 12	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1041	T ER DH	5 38 14	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1042	JH ER F	10 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1043	T AO G	5 33 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1045	TH ER S	13 38 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1046	F AH G	11 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1047	K L OW	7 23 34	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1048	G ER F	8 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1049	CH UW N	9 36 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1050	SH OY D	17 41 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1051	S P IY	15 3 27	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1053	F R UW	11 24 36	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1054	P OY N	3 41 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1056	P UH K	3 35 7	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1058	V IH N	12 28 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1059	B IY AH	4 27 37	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1060	V IH D	12 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1061	TH OW L	13 34 23	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1062	TH EH T	13 30 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1063	P UH Z	3 35 16	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1065	V IH G	12 28 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1066	SH EH N D	17 30 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1067	K L AO R	7 23 33 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1068	P R EH N	3 24 30 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1069	F R EH L	11 24 30 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1070	AY CH AH N	39 9 37 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1071	EH SH IH NG	30 17 28 22	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1072	P L AA R	3 23 32 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1073	TH UW L AH	13 36 23 37	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1074	W EH S OW	25 30 15 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1076	F AA R L	11 32 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1077	AA P ER D	32 3 38 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1078	S T R UW	15 5 24 36	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1079	HH AO R M	19 33 24 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1080	S AE L ER	15 31 23 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1081	AO R IH K	33 24 28 7	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1082	P AO R L	3 33 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1083	K R AH S	7 24 37 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1084	AE N D OW	31 21 6 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1085	OW P EH R	34 3 30 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1086	F R EH S	11 24 30 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1087	HH EH K T	19 30 7 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1088	S M AE G	15 20 31 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1089	K AE NG G	7 31 22 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1090	K L IH JH	7 23 28 10	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1091	N OW B ER	21 34 4 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1092	TH AW N T	13 40 21 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1093	S T AH T	15 5 37 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1094	P L AE S	3 23 31 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1095	N AW N D	21 40 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1096	T AH NG TH	5 37 22 13	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1097	T R EY M	5 24 29 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1098	S W IH T	15 25 28 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1099	AH G AA IY	37 8 32 27	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1100	S ER K AY N	15 38 7 39 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1101	AO R IY V AH	33 24 27 12 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1102	F EH S IH G	11 30 15 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1103	AW T R OW AH	40 5 24 34 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1104	M AH S IH D	20 37 15 28 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1105	B AH S IY R	4 37 15 27 24	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1106	S M AA Z IY	15 20 32 16 27	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1107	S IH TH R OW	15 28 13 24 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1108	Y UW R IH S	26 36 24 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1109	N AO D IH N	21 33 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1110	T EH L AY D	5 30 23 39 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1111	CH ER AE K T	9 38 31 7 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1112	AE L TH AH D	31 23 13 37 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1113	N EH TH IY OW	21 30 13 27 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1114	S P IY HH OW	15 3 27 19 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1115	F AA V IH G	11 32 12 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1116	AE D R AH L	31 6 24 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1117	AE N AH HH AA	31 21 37 19 32	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1118	HH ER S IY N	19 38 15 27 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1119	P AA TH AH L	3 32 13 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1120	S AA M IH S	15 32 20 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1121	D ER D IH N	6 38 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1122	EH S T IH T	30 15 5 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1123	G OW V Y ER	8 34 12 26 38	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1124	S L AA S P	15 23 32 15 3	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1125	TH AE P AH T	13 31 3 37 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1126	HH AE P OW Z	19 31 3 34 16	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1127	F AE K D AH	11 31 7 6 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1128	W AA F IH T	25 32 11 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1129	M OW T AH K	20 34 5 37 7	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1130	D IH M IH TH	6 28 20 28 13	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1131	M EH L IH M	20 30 23 28 20	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1132	S EH G IH T	15 30 8 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1133	S IH N AH M P T	15 28 21 37 20 3 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1134	AE D M AH L EH R	31 6 20 37 23 30 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1135	SH OW S K W IH N	17 34 15 7 25 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1136	TH AE M AH S AH Z	13 31 20 37 15 37 16	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1137	HH AH N F IH K T	19 37 21 11 28 7 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1138	W IH N AH G AH N	25 28 21 37 8 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1139	HH AE Z IH D AH N	19 31 16 28 6 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1140	M AE N K EH T AH	20 31 21 7 30 5 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1141	D R IH S T IH V	6 24 28 15 5 28 12	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1142	G AE Z AH K IH N	8 31 16 37 7 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1143	R AE N AH N AH T	24 31 21 37 21 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1144	Y UH R SH AH N S	26 35 24 17 37 21 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1145	P L EH K S AH N	3 23 30 7 15 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1146	N AA M S EH S IY	21 32 20 15 30 15 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1147	AA N L AH T IH N	32 21 23 37 5 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1148	HH AH K S IH K S	19 37 7 15 28 7 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1149	R IH L AO R M AH	24 28 23 33 24 20 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1150	AY D S T EH R IY	39 6 15 5 30 24 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1151	K OW N ER M EY T	7 34 21 38 20 29 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1152	JH UW M TH IY N AE	10 36 20 13 27 21 31	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1153	IH N T ER CH AH L	28 21 5 38 9 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1154	T AE K S AH N D	5 31 7 15 37 21 6	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1155	AH S L AH T IH F	37 15 23 37 5 28 11	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1156	L IH S K Y UW S	23 28 15 7 26 36 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1157	L IH F L IH K AH	23 28 11 23 28 7 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1158	D UH R IY V AH T	6 35 24 27 12 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1159	G R OW V IY AH N	8 24 34 12 27 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1160	T OW JH EH N T OW	5 34 10 30 21 5 34	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1161	L IH M AH L AH T	23 28 20 37 23 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1162	CH AH L IH S IY AH	9 37 23 28 15 27 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1163	M EH M AH G AO R	20 30 20 37 8 33 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1164	K AA N T R IH NG	7 32 21 5 24 28 22	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1165	AO R G AA R AH L	33 24 8 32 24 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1166	F IH L AY AH L AH S	11 28 23 39 37 23 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1167	K AE S AH T EY N AH	7 31 15 37 5 29 21 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1168	JH AA S P IH T IH M	10 32 15 3 28 5 28 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1169	G AA S IH D AH N D	8 32 15 28 6 37 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1170	P UH R K R EH R IY	3 35 24 7 24 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1171	TH AE N IH N AH N T	13 31 21 28 21 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1172	S EH S IH R OW L D	15 30 15 28 24 34 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1173	M AE S T R AH N S	20 31 15 5 24 37 21 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1174	S EH N IH K AH N T	15 30 21 28 7 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1175	S EH N V ER S AH N	15 30 21 12 38 15 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1176	V IY OW K S IH D AH	12 27 34 7 15 28 6 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1177	JH AH N S P AE N D	10 37 21 15 3 31 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1178	S ER T R AH T AH N	15 38 5 24 37 5 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1179	M AA R B AH B AH S	20 32 24 4 37 4 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1180	S T R OW P AH N T	15 5 24 34 3 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1181	HH IH M B R IY AH N	19 28 20 4 24 27 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1182	AE D V IY OW N IY Z	31 6 12 27 34 21 27 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1183	L AE S T AH M AH N	23 31 15 5 37 20 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1184	K ER AH K S IY M AH	7 38 37 7 15 27 20 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1185	K AA M AH L EH R IY	7 32 20 37 23 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1186	T R EH F L AH N T	5 24 30 11 23 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1187	K AE S IH B Y UW R	7 31 15 28 4 26 36 24	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1188	HH AE V AH L V IH S	19 31 12 37 23 12 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1189	P AA L AH N AH L IY	3 32 23 37 21 37 23 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1190	T UH R F AO R IY AH	5 35 24 11 33 24 27 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1191	K L OW B AH L IH S	7 23 34 4 37 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1192	L AA N F L IH T IY	23 32 21 11 23 28 5 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1193	T AE Z D AH L AY M	5 31 16 6 37 23 39 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1194	AE NG K S IH M AH TH	31 22 7 15 28 20 37 13	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1195	HH AE P T OW N OW Z	19 31 3 5 34 21 34 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1196	F R EH JH IH L IH S	11 24 30 10 28 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1197	R IH G AA R T AH L	24 28 8 32 24 5 37 23	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1198	S P AA N Z AH N T	15 3 32 21 16 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P1	31	wfe_1199	P AE SH AH B AH L D	3 31 17 37 4 37 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0800	S OW L OW K AH M AO F	15 34 23 34 7 37 20 33 11	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0801	G AA S T R IY EH N T	8 32 15 5 24 27 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0802	D IH V EH S T R EY T	6 28 12 30 15 5 24 29 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0803	S T R UW S AH N AH D	15 5 24 36 15 37 21 37 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0804	D AY Y UH R AH L AH M	6 39 26 35 24 37 23 37 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0805	S P EH R IY B AO R M	15 3 30 24 27 4 33 24 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0806	IH N F L AH JH EH S T	28 21 11 23 37 10 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0807	B AA L EH N T IY N AH	4 32 23 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0808	K L AE D W IH CH IY T	7 23 31 6 25 28 9 27 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0809	W EH B S IH D AH N T	25 30 4 15 28 6 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0810	L IH V IH N IH S AH L	23 28 12 28 21 28 15 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0811	EH P IH R EH N T AH L	30 3 28 24 30 21 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0812	K OW AA L EH N S AY T	7 34 32 23 30 21 15 39 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0813	N OW T AH N S AH S T	21 34 5 37 21 15 37 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0814	IH S L AA T ER D AY N	28 15 23 32 5 38 6 39 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0815	Y EH S P IH R EH S T	26 30 15 3 28 24 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0816	F OW L D AA M AH N S	11 34 23 6 32 20 37 21 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0817	B AA V EH N T IY N AH	4 32 12 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0818	F R AE N S AH P AH L	11 24 31 21 15 37 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0819	V IH S T ER M AE N D	12 28 15 5 38 20 31 21 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0820	M AH S IH P IH T AH L	20 37 15 28 3 28 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0821	AE N K L UW S EH N T	31 21 7 23 36 15 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0822	S K W IH S T AH N T	15 7 25 28 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0823	EH V ER R IY AH L IH S	30 12 38 24 27 37 23 28 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0824	AE L R EH L AA P AH L	31 23 24 30 23 32 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0825	S T AO R S T AH N T	15 5 33 24 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0826	T R IH N K AH B EH L	5 24 28 21 7 37 4 30 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0827	AE D V AE N T IH N T	31 6 12 31 21 5 28 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0828	HH OW N OW F AH S IY N	19 34 21 34 11 37 15 27 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0829	R IY AH S OW D AH K T	24 27 37 15 34 6 37 7 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0830	S T OW G R IH CH ER IY	15 5 34 8 24 28 9 38 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0831	S IY G R UW S AH CH IY	15 27 8 24 36 15 37 9 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0832	W IH S K AH N S AH Z	25 28 15 7 37 21 15 37 16	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0833	IH N AW	28 21 40	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0834	AO TH T	33 13 5	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0835	AH K UW	37 7 36	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0836	AY T ER	39 5 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0837	N OW IY	21 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0838	TH IH CH	13 28 9	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0840	W IY Z	25 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0841	EH M D	30 20 6	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0843	IH P ER	28 3 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0844	S AO R	15 33 24	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0845	IY L ER	27 23 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0846	AA D IY	32 6 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0847	AH P AY	37 3 39	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0849	D IY Z	6 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0850	AH N TH	37 21 13	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0851	T OW IY	5 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0852	IY M Z	27 20 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0853	ER T S	38 5 15	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0854	AE T R OW	31 5 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0855	AH P R UW	37 3 24 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0856	R AA N T	24 32 21 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0857	AE S AH K	31 15 37 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0858	AA B S OW	32 4 15 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0859	AA P T IY	32 3 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0860	AW R EY N	40 24 29 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0861	TH AW T IY	13 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0862	JH AO R OW	10 33 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0863	T EH M AW	5 30 20 40	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0864	EH N F ER	30 21 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0865	AH K OW N	37 7 34 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0866	W IY F ER	25 27 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0867	AH N EH S	37 21 30 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0868	EH N IY TH	30 21 27 13	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0869	IH L UW M	28 23 36 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0870	IH T S ER	28 5 15 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0871	B AY L OW	4 39 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0872	IY D IY OW	27 6 27 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0873	SH OW IH K	17 34 28 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0874	D AA M ER	6 32 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0875	AH P AO R	37 3 33 24	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0877	N IY CH T	21 27 9 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0878	SH AW T IY	17 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0879	G IY V IY	8 27 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0880	AE N IH M	31 21 28 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0881	AW CH EY S	40 9 29 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0882	AY DH IH NG	39 14 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0883	AH N AE L	37 21 31 23	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0884	F EY V IY	11 29 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0885	W AH DH ER	25 37 14 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0886	JH ER Z D	10 38 16 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0887	AO CH IH NG	33 9 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0888	P ER F ER	3 38 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0889	AH N OW T	37 21 34 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0890	IH S ER T	28 15 38 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0891	AE L AH P	31 23 37 3	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0892	AH N ER JH	37 21 38 10	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0893	D EH L ER	6 30 23 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0894	EH N IH T	30 21 28 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0895	V AA L OW	12 32 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0896	D EH F UW	6 30 11 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0897	JH ER M ER	10 38 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0898	IH R IY D	28 24 27 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0899	P EY L OW	3 29 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0900	AA K T IY M	32 7 5 27 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0901	HH OW M AE T	19 34 20 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0902	OW P IH S T	34 3 28 15 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0903	G OW V IY OW	8 34 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0904	B IH L W EY	4 28 23 25 29	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0905	IY K AO R G	27 7 33 24 8	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0906	R AE D IH S	24 31 6 28 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0907	S OW P AH T	15 34 3 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0908	HH IH M AH M	19 28 20 37 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0909	S AE K N OW	15 31 7 21 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0910	AH N K R AW	37 21 7 24 40	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0911	B UH L F ER	4 35 23 11 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0912	N AA N V ER	21 32 21 12 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0913	D EH F ER K	6 30 11 38 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0914	B IY OW M OW	4 27 34 20 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0915	AE D V IY OW	31 6 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0916	M AH L B OY	20 37 23 4 41	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0917	AE G R AE T	31 8 24 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0918	B IH F IH K	4 28 11 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0919	AH S AA S IY	37 15 32 15 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0920	AH N IY M D	37 21 27 20 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0921	IH N V AO R	28 21 12 33 24	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0922	F ER S AY D	11 38 15 39 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0923	T IY T IH N	5 27 5 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0924	G EH T ER T	8 30 5 38 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0925	R IY K AW S	24 27 7 40 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0926	M AH SH IH N	20 37 17 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0927	R EH D W IY	24 30 6 25 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0928	HH IH M B IY	19 28 20 4 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0929	Y UW R AW N	26 36 24 40 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0930	M IH N T AY	20 28 21 5 39	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0931	P ER T AH T	3 38 5 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0932	P ER L IH K	3 38 23 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0933	S ER V AY D AH D	15 38 12 39 6 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0934	IH N T IH P AH L	28 21 5 28 3 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0935	P AH B S AY D Z	3 37 4 15 39 6 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0936	D AH S OW SH IY OW	6 37 15 34 17 27 34	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0937	B Y UW T IY N Z	4 26 36 5 27 21 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0938	EH D AH T R AH L	30 6 37 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0939	P AH B L IH T IY	3 37 4 23 28 5 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0940	HH AA R JH IH NG Z	19 32 24 10 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0941	B IY N S P AO R	4 27 21 15 3 33 24	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0942	B R OW V EH L F	4 24 34 12 30 23 11	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0943	HH IH M AH L EY S	19 28 20 37 23 29 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0944	K AH N UW T AH D	7 37 21 36 5 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0945	B AE M P IY AH N	4 31 20 3 27 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0946	T W EH T S K IY	5 25 30 5 15 7 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0947	AE K T IH T OW M	31 7 5 28 5 34 20	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0948	F EH S AH M AY N	11 30 15 37 20 39 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0949	AH P IY D IY AH L	37 3 27 6 27 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0950	M AA M AH K AH L	20 32 20 37 7 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0951	B EH L AH N T ER	4 30 23 37 21 5 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0952	Y UW N AH V AH L	26 36 21 37 12 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0953	HH AE V AY S AH Z	19 31 12 39 15 37 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0954	EH N IY B AO L Z	30 21 27 4 33 23 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0955	D IH K AE M B ER	6 28 7 31 20 4 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0956	P ER V IH SH AH S	3 38 12 28 17 37 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0957	AH N L EH JH IH NG	37 21 23 30 10 28 22	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0958	AH T AE T IH NG Z	37 5 31 5 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0959	AH P AA R SH AH N	37 3 32 24 17 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0960	R EH T AE B IH T	24 30 5 31 4 28 5	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0961	K AH N K AA TH IY	7 37 21 7 32 13 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0962	F AH L UW T IH D	11 37 23 36 5 28 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0963	Y UW N IY Z IH K	26 36 21 27 16 28 7	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0964	R IH K AO Z IH Z	24 28 7 33 16 28 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0965	P R IY T R AH L	3 24 27 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0966	D IH S R IH T ER B	6 28 15 24 28 5 38 4	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0967	R IY OW L ER R AY Z	24 27 34 23 38 24 39 16	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0968	M IH S K R IY K T	20 28 15 7 24 27 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0969	T R UW Z AH B AH L	5 24 36 16 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0970	AH N W IH Z IH T ER	37 21 25 28 16 28 5 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0971	OW V ER IH L IH T IY	34 12 38 28 23 28 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0972	S AH M T AH B AH L	15 37 20 5 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0973	AH N M IH S T AE D	37 21 20 28 15 5 31 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0974	W IH T IH F AH L IY	25 28 5 28 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0975	AH N D ER L AE T IY	37 21 6 38 23 31 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0976	R EH D ER L AH T IY	24 30 6 38 23 37 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0977	S P R IH K T AA L	15 3 24 28 7 5 32 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0978	Y UW N IH F AO R T	26 36 21 28 11 33 24 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0979	M IH S T F AH L IY	20 28 15 5 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0980	D AY D AH N IH S T	6 39 6 37 21 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0981	R EY V ER S OW L D	24 29 12 38 15 34 23 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0982	AH N D AH F L EY T	37 21 6 37 11 23 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0983	D IH S K R IY L ER	6 28 15 7 24 27 23 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0984	P IH T L AH S L IY	3 28 5 23 37 15 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0985	D IH S HH AH N AH L	6 28 15 19 37 21 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0986	S K R IH N G AH L	15 7 24 28 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0987	R IY IH N S T EY K	24 27 28 21 15 5 29 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0988	S P R IH N D L IY	15 3 24 28 21 6 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0989	R EH P ER P AH S T	24 30 3 38 3 37 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0990	V AH L G ER IH S T	12 37 23 8 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0991	R EH M AH S T EY T	24 30 20 37 15 5 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0992	B IY W IH S T IH K	4 27 25 28 15 5 28 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0993	D IY OW D ER IH S T	6 27 34 6 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0994	S T R IH M P L IY	15 5 24 28 20 3 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0995	W UH M AH N G AH L	25 35 20 37 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0996	R EH D AH F AH L IY	24 30 6 37 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0997	S T EH R IY AE K T	15 5 30 24 27 31 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0998	G AO R M AH L OW N	8 33 24 20 37 23 34 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_0999	S T EH R AH L IY N	15 5 30 24 37 23 27 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1000	EH P IH S IH D EH N T	30 3 28 15 28 6 30 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1001	D IY AH D R IH Z AH M	6 27 37 6 24 28 16 37 20	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1002	AH W AO R L IY AE N T	37 25 33 24 23 27 31 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1003	P OY L D R EY SH AH N	3 41 23 6 24 29 17 37 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1004	W AH N T IH F IH K S	25 37 21 5 28 11 28 7 15	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1005	AE D V EH L AH T IY N	31 6 12 30 23 37 5 27 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1006	T R AE P L AH B AH L	5 24 31 3 23 37 4 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1007	AE L AH D K W AO R EY	31 23 37 6 7 25 33 24 29	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1008	N AA M P ER EY T IH D	21 32 20 3 38 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1009	R IY AH D IY N S AH Z	24 27 37 6 27 21 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1010	T R AE D AH N T IY Z	5 24 31 6 37 21 5 27 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1011	OW N AH S T R AE N D	34 21 37 15 5 24 31 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1012	K AH L IH S IY AH L IY	7 37 23 28 15 27 37 23 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1013	EH K S K L UH R AA L	30 7 15 7 23 35 24 32 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1014	M IH S AH M B EY D IY	20 28 15 37 20 4 29 6 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1015	R IY OW D EH N AH S T	24 27 34 6 30 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1016	HH AE V AH V EY T IH D	19 31 12 37 12 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1017	T EH N S AH N AH S T	5 30 21 15 37 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1018	EH N T IH K W AA R IY	30 21 5 28 7 25 32 24 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1019	V EH S ER N EY T IH D	12 30 15 38 21 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1020	Y UW N AH F AO R S T	26 36 21 37 11 33 24 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1021	W IH N Y UW F AE K T	25 28 21 26 36 11 31 7 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1022	EH K S P L IH F IH K	30 7 15 3 23 28 11 28 7	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1023	D EH T W AH S T AH L	6 30 5 25 37 15 5 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1024	D IY D AH N IH S AH Z	6 27 6 37 21 28 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1025	P Y UW Z K IH V IH NG	3 26 36 16 7 28 12 28 22	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1026	K AA N T R IY AH N D	7 32 21 5 24 27 37 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1027	B OW T IH N S L EH D	4 34 5 28 21 15 23 30 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1028	D EH L IY AH M N AH L	6 30 23 27 37 20 21 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1029	IH N V AO R AH B AH T	28 21 12 33 24 37 4 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1030	AH N F AO R N IH T IY	37 21 11 33 24 21 28 5 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1031	D IH D AH M P L EY T	6 28 6 37 20 3 23 29 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1032	W ER D AH N S T AH T	25 38 6 37 21 15 5 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1033	Y AH G	26 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1034	D AA P	6 32 3	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1036	F AH T	11 37 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1037	W IH D	25 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1038	T AA B	5 32 4	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1040	D AA V	6 32 12	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1041	T ER DH	5 38 14	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1042	JH ER F	10 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1043	T AO G	5 33 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1045	TH ER S	13 38 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1046	F AH G	11 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1047	K L OW	7 23 34	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1048	G ER F	8 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1049	CH UW N	9 36 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1050	SH OY D	17 41 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1051	S P IY	15 3 27	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1053	F R UW	11 24 36	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1054	P OY N	3 41 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1056	P UH K	3 35 7	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1057	Z AA M	16 32 20	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1058	V IH N	12 28 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1059	B IY AH	4 27 37	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1060	V IH D	12 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1061	TH OW L	13 34 23	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1062	TH EH T	13 30 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1063	P UH Z	3 35 16	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1064	M AH S	20 37 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1065	V IH G	12 28 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1066	SH EH N D	17 30 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1067	K L AO R	7 23 33 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1068	P R EH N	3 24 30 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1069	F R EH L	11 24 30 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1070	AY CH AH N	39 9 37 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1071	EH SH IH NG	30 17 28 22	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1072	P L AA R	3 23 32 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1073	TH UW L AH	13 36 23 37	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1074	W EH S OW	25 30 15 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1076	F AA R L	11 32 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1077	AA P ER D	32 3 38 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1078	S T R UW	15 5 24 36	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1079	HH AO R M	19 33 24 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1080	S AE L ER	15 31 23 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1081	AO R IH K	33 24 28 7	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1082	P AO R L	3 33 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1083	K R AH S	7 24 37 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1084	AE N D OW	31 21 6 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1085	OW P EH R	34 3 30 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1086	F R EH S	11 24 30 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1087	HH EH K T	19 30 7 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1088	S M AE G	15 20 31 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1089	K AE NG G	7 31 22 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1090	K L IH JH	7 23 28 10	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1091	N OW B ER	21 34 4 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1092	TH AW N T	13 40 21 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1093	S T AH T	15 5 37 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1094	P L AE S	3 23 31 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1095	N AW N D	21 40 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1096	T AH NG TH	5 37 22 13	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1097	T R EY M	5 24 29 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1098	S W IH T	15 25 28 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1099	AH G AA IY	37 8 32 27	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1100	S ER K AY N	15 38 7 39 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1101	AO R IY V AH	33 24 27 12 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1102	F EH S IH G	11 30 15 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1103	AW T R OW AH	40 5 24 34 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1104	M AH S IH D	20 37 15 28 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1105	B AH S IY R	4 37 15 27 24	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1106	S M AA Z IY	15 20 32 16 27	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1107	S IH TH R OW	15 28 13 24 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1108	Y UW R IH S	26 36 24 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1109	N AO D IH N	21 33 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1110	T EH L AY D	5 30 23 39 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1111	CH ER AE K T	9 38 31 7 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1112	AE L TH AH D	31 23 13 37 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1113	N EH TH IY OW	21 30 13 27 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1114	S P IY HH OW	15 3 27 19 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1115	F AA V IH G	11 32 12 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1116	AE D R AH L	31 6 24 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1117	AE N AH HH AA	31 21 37 19 32	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1118	HH ER S IY N	19 38 15 27 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1119	P AA TH AH L	3 32 13 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1120	S AA M IH S	15 32 20 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1121	D ER D IH N	6 38 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1122	EH S T IH T	30 15 5 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1123	G OW V Y ER	8 34 12 26 38	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1124	S L AA S P	15 23 32 15 3	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1125	TH AE P AH T	13 31 3 37 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1126	HH AE P OW Z	19 31 3 34 16	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1127	F AE K D AH	11 31 7 6 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1128	W AA F IH T	25 32 11 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1129	M OW T AH K	20 34 5 37 7	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1130	D IH M IH TH	6 28 20 28 13	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1131	M EH L IH M	20 30 23 28 20	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1132	S EH G IH T	15 30 8 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1133	S IH N AH M P T	15 28 21 37 20 3 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1134	AE D M AH L EH R	31 6 20 37 23 30 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1135	SH OW S K W IH N	17 34 15 7 25 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1136	TH AE M AH S AH Z	13 31 20 37 15 37 16	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1137	HH AH N F IH K T	19 37 21 11 28 7 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1138	W IH N AH G AH N	25 28 21 37 8 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1139	HH AE Z IH D AH N	19 31 16 28 6 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1140	M AE N K EH T AH	20 31 21 7 30 5 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1141	D R IH S T IH V	6 24 28 15 5 28 12	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1142	G AE Z AH K IH N	8 31 16 37 7 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1143	R AE N AH N AH T	24 31 21 37 21 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1144	Y UH R SH AH N S	26 35 24 17 37 21 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1145	P L EH K S AH N	3 23 30 7 15 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1146	N AA M S EH S IY	21 32 20 15 30 15 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1147	AA N L AH T IH N	32 21 23 37 5 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1148	HH AH K S IH K S	19 37 7 15 28 7 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1149	R IH L AO R M AH	24 28 23 33 24 20 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1150	AY D S T EH R IY	39 6 15 5 30 24 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1151	K OW N ER M EY T	7 34 21 38 20 29 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1152	JH UW M TH IY N AE	10 36 20 13 27 21 31	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1153	IH N T ER CH AH L	28 21 5 38 9 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1154	T AE K S AH N D	5 31 7 15 37 21 6	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1155	AH S L AH T IH F	37 15 23 37 5 28 11	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1156	L IH S K Y UW S	23 28 15 7 26 36 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1157	L IH F L IH K AH	23 28 11 23 28 7 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1158	D UH R IY V AH T	6 35 24 27 12 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1159	G R OW V IY AH N	8 24 34 12 27 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1160	T OW JH EH N T OW	5 34 10 30 21 5 34	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1161	L IH M AH L AH T	23 28 20 37 23 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1162	CH AH L IH S IY AH	9 37 23 28 15 27 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1163	M EH M AH G AO R	20 30 20 37 8 33 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1164	K AA N T R IH NG	7 32 21 5 24 28 22	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1165	AO R G AA R AH L	33 24 8 32 24 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1166	F IH L AY AH L AH S	11 28 23 39 37 23 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1167	K AE S AH T EY N AH	7 31 15 37 5 29 21 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1168	JH AA S P IH T IH M	10 32 15 3 28 5 28 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1169	G AA S IH D AH N D	8 32 15 28 6 37 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1170	P UH R K R EH R IY	3 35 24 7 24 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1171	TH AE N IH N AH N T	13 31 21 28 21 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1172	S EH S IH R OW L D	15 30 15 28 24 34 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1173	M AE S T R AH N S	20 31 15 5 24 37 21 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1174	S EH N IH K AH N T	15 30 21 28 7 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1175	S EH N V ER S AH N	15 30 21 12 38 15 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1176	V IY OW K S IH D AH	12 27 34 7 15 28 6 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1177	JH AH N S P AE N D	10 37 21 15 3 31 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1178	S ER T R AH T AH N	15 38 5 24 37 5 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1179	M AA R B AH B AH S	20 32 24 4 37 4 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1180	S T R OW P AH N T	15 5 24 34 3 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1181	HH IH M B R IY AH N	19 28 20 4 24 27 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1182	AE D V IY OW N IY Z	31 6 12 27 34 21 27 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1183	L AE S T AH M AH N	23 31 15 5 37 20 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1184	K ER AH K S IY M AH	7 38 37 7 15 27 20 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1185	K AA M AH L EH R IY	7 32 20 37 23 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1186	T R EH F L AH N T	5 24 30 11 23 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1187	K AE S IH B Y UW R	7 31 15 28 4 26 36 24	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1188	HH AE V AH L V IH S	19 31 12 37 23 12 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1189	P AA L AH N AH L IY	3 32 23 37 21 37 23 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1190	T UH R F AO R IY AH	5 35 24 11 33 24 27 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1191	K L OW B AH L IH S	7 23 34 4 37 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1192	L AA N F L IH T IY	23 32 21 11 23 28 5 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1193	T AE Z D AH L AY M	5 31 16 6 37 23 39 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1194	AE NG K S IH M AH TH	31 22 7 15 28 20 37 13	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1195	HH AE P T OW N OW Z	19 31 3 5 34 21 34 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1196	F R EH JH IH L IH S	11 24 30 10 28 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1197	R IH G AA R T AH L	24 28 8 32 24 5 37 23	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1198	S P AA N Z AH N T	15 3 32 21 16 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P2	32	wfe_1199	P AE SH AH B AH L D	3 31 17 37 4 37 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0800	S OW L OW K AH M AO F	15 34 23 34 7 37 20 33 11	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0801	G AA S T R IY EH N T	8 32 15 5 24 27 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0802	D IH V EH S T R EY T	6 28 12 30 15 5 24 29 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0803	S T R UW S AH N AH D	15 5 24 36 15 37 21 37 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0804	D AY Y UH R AH L AH M	6 39 26 35 24 37 23 37 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0805	S P EH R IY B AO R M	15 3 30 24 27 4 33 24 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0806	IH N F L AH JH EH S T	28 21 11 23 37 10 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0807	B AA L EH N T IY N AH	4 32 23 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0808	K L AE D W IH CH IY T	7 23 31 6 25 28 9 27 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0809	W EH B S IH D AH N T	25 30 4 15 28 6 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0810	L IH V IH N IH S AH L	23 28 12 28 21 28 15 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0811	EH P IH R EH N T AH L	30 3 28 24 30 21 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0812	K OW AA L EH N S AY T	7 34 32 23 30 21 15 39 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0813	N OW T AH N S AH S T	21 34 5 37 21 15 37 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0814	IH S L AA T ER D AY N	28 15 23 32 5 38 6 39 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0815	Y EH S P IH R EH S T	26 30 15 3 28 24 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0816	F OW L D AA M AH N S	11 34 23 6 32 20 37 21 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0817	B AA V EH N T IY N AH	4 32 12 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0818	F R AE N S AH P AH L	11 24 31 21 15 37 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0819	V IH S T ER M AE N D	12 28 15 5 38 20 31 21 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0820	M AH S IH P IH T AH L	20 37 15 28 3 28 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0821	AE N K L UW S EH N T	31 21 7 23 36 15 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0822	S K W IH S T AH N T	15 7 25 28 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0823	EH V ER R IY AH L IH S	30 12 38 24 27 37 23 28 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0824	AE L R EH L AA P AH L	31 23 24 30 23 32 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0825	S T AO R S T AH N T	15 5 33 24 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0826	T R IH N K AH B EH L	5 24 28 21 7 37 4 30 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0827	AE D V AE N T IH N T	31 6 12 31 21 5 28 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0828	HH OW N OW F AH S IY N	19 34 21 34 11 37 15 27 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0829	R IY AH S OW D AH K T	24 27 37 15 34 6 37 7 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0830	S T OW G R IH CH ER IY	15 5 34 8 24 28 9 38 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0831	S IY G R UW S AH CH IY	15 27 8 24 36 15 37 9 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0832	W IH S K AH N S AH Z	25 28 15 7 37 21 15 37 16	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0833	IH N AW	28 21 40	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0834	AO TH T	33 13 5	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0835	AH K UW	37 7 36	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0836	AY T ER	39 5 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0837	N OW IY	21 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0838	TH IH CH	13 28 9	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0840	W IY Z	25 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0841	EH M D	30 20 6	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0843	IH P ER	28 3 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0844	S AO R	15 33 24	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0845	IY L ER	27 23 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0846	AA D IY	32 6 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0847	AH P AY	37 3 39	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0848	G UW Z	8 36 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0849	D IY Z	6 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0850	AH N TH	37 21 13	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0851	T OW IY	5 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0852	IY M Z	27 20 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0853	ER T S	38 5 15	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0854	AE T R OW	31 5 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0855	AH P R UW	37 3 24 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0856	R AA N T	24 32 21 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0857	AE S AH K	31 15 37 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0858	AA B S OW	32 4 15 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0859	AA P T IY	32 3 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0860	AW R EY N	40 24 29 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0861	TH AW T IY	13 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0862	JH AO R OW	10 33 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0863	T EH M AW	5 30 20 40	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0864	EH N F ER	30 21 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0865	AH K OW N	37 7 34 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0866	W IY F ER	25 27 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0867	AH N EH S	37 21 30 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0868	EH N IY TH	30 21 27 13	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0869	IH L UW M	28 23 36 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0870	IH T S ER	28 5 15 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0871	B AY L OW	4 39 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0872	IY D IY OW	27 6 27 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0873	SH OW IH K	17 34 28 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0874	D AA M ER	6 32 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0875	AH P AO R	37 3 33 24	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0877	N IY CH T	21 27 9 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0878	SH AW T IY	17 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0879	G IY V IY	8 27 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0880	AE N IH M	31 21 28 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0881	AW CH EY S	40 9 29 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0882	AY DH IH NG	39 14 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0883	AH N AE L	37 21 31 23	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0884	F EY V IY	11 29 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0885	W AH DH ER	25 37 14 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0886	JH ER Z D	10 38 16 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0887	AO CH IH NG	33 9 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0888	P ER F ER	3 38 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0889	AH N OW T	37 21 34 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0890	IH S ER T	28 15 38 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0891	AE L AH P	31 23 37 3	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0892	AH N ER JH	37 21 38 10	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0893	D EH L ER	6 30 23 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0894	EH N IH T	30 21 28 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0895	V AA L OW	12 32 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0896	D EH F UW	6 30 11 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0897	JH ER M ER	10 38 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0898	IH R IY D	28 24 27 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0899	P EY L OW	3 29 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0900	AA K T IY M	32 7 5 27 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0901	HH OW M AE T	19 34 20 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0902	OW P IH S T	34 3 28 15 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0903	G OW V IY OW	8 34 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0904	B IH L W EY	4 28 23 25 29	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0905	IY K AO R G	27 7 33 24 8	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0906	R AE D IH S	24 31 6 28 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0907	S OW P AH T	15 34 3 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0908	HH IH M AH M	19 28 20 37 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0909	S AE K N OW	15 31 7 21 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0910	AH N K R AW	37 21 7 24 40	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0911	B UH L F ER	4 35 23 11 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0912	N AA N V ER	21 32 21 12 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0913	D EH F ER K	6 30 11 38 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0914	B IY OW M OW	4 27 34 20 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0915	AE D V IY OW	31 6 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0916	M AH L B OY	20 37 23 4 41	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0917	AE G R AE T	31 8 24 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0918	B IH F IH K	4 28 11 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0919	AH S AA S IY	37 15 32 15 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0920	AH N IY M D	37 21 27 20 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0921	IH N V AO R	28 21 12 33 24	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0922	F ER S AY D	11 38 15 39 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0923	T IY T IH N	5 27 5 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0924	G EH T ER T	8 30 5 38 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0925	R IY K AW S	24 27 7 40 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0926	M AH SH IH N	20 37 17 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0927	R EH D W IY	24 30 6 25 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0928	HH IH M B IY	19 28 20 4 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0929	Y UW R AW N	26 36 24 40 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0930	M IH N T AY	20 28 21 5 39	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0931	P ER T AH T	3 38 5 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0932	P ER L IH K	3 38 23 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0933	S ER V AY D AH D	15 38 12 39 6 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0934	IH N T IH P AH L	28 21 5 28 3 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0935	P AH B S AY D Z	3 37 4 15 39 6 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0936	D AH S OW SH IY OW	6 37 15 34 17 27 34	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0937	B Y UW T IY N Z	4 26 36 5 27 21 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0938	EH D AH T R AH L	30 6 37 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0939	P AH B L IH T IY	3 37 4 23 28 5 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0940	HH AA R JH IH NG Z	19 32 24 10 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0941	B IY N S P AO R	4 27 21 15 3 33 24	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0942	B R OW V EH L F	4 24 34 12 30 23 11	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0943	HH IH M AH L EY S	19 28 20 37 23 29 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0944	K AH N UW T AH D	7 37 21 36 5 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0945	B AE M P IY AH N	4 31 20 3 27 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0946	T W EH T S K IY	5 25 30 5 15 7 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0947	AE K T IH T OW M	31 7 5 28 5 34 20	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0948	F EH S AH M AY N	11 30 15 37 20 39 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0949	AH P IY D IY AH L	37 3 27 6 27 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0950	M AA M AH K AH L	20 32 20 37 7 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0951	B EH L AH N T ER	4 30 23 37 21 5 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0952	Y UW N AH V AH L	26 36 21 37 12 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0953	HH AE V AY S AH Z	19 31 12 39 15 37 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0954	EH N IY B AO L Z	30 21 27 4 33 23 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0955	D IH K AE M B ER	6 28 7 31 20 4 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0956	P ER V IH SH AH S	3 38 12 28 17 37 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0957	AH N L EH JH IH NG	37 21 23 30 10 28 22	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0958	AH T AE T IH NG Z	37 5 31 5 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0959	AH P AA R SH AH N	37 3 32 24 17 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0960	R EH T AE B IH T	24 30 5 31 4 28 5	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0961	K AH N K AA TH IY	7 37 21 7 32 13 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0962	F AH L UW T IH D	11 37 23 36 5 28 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0963	Y UW N IY Z IH K	26 36 21 27 16 28 7	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0964	R IH K AO Z IH Z	24 28 7 33 16 28 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0965	P R IY T R AH L	3 24 27 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0966	D IH S R IH T ER B	6 28 15 24 28 5 38 4	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0967	R IY OW L ER R AY Z	24 27 34 23 38 24 39 16	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0968	M IH S K R IY K T	20 28 15 7 24 27 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0969	T R UW Z AH B AH L	5 24 36 16 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0970	AH N W IH Z IH T ER	37 21 25 28 16 28 5 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0971	OW V ER IH L IH T IY	34 12 38 28 23 28 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0972	S AH M T AH B AH L	15 37 20 5 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0973	AH N M IH S T AE D	37 21 20 28 15 5 31 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0974	W IH T IH F AH L IY	25 28 5 28 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0975	AH N D ER L AE T IY	37 21 6 38 23 31 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0976	R EH D ER L AH T IY	24 30 6 38 23 37 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0977	S P R IH K T AA L	15 3 24 28 7 5 32 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0978	Y UW N IH F AO R T	26 36 21 28 11 33 24 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0979	M IH S T F AH L IY	20 28 15 5 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0980	D AY D AH N IH S T	6 39 6 37 21 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0981	R EY V ER S OW L D	24 29 12 38 15 34 23 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0982	AH N D AH F L EY T	37 21 6 37 11 23 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0983	D IH S K R IY L ER	6 28 15 7 24 27 23 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0984	P IH T L AH S L IY	3 28 5 23 37 15 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0985	D IH S HH AH N AH L	6 28 15 19 37 21 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0986	S K R IH N G AH L	15 7 24 28 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0987	R IY IH N S T EY K	24 27 28 21 15 5 29 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0988	S P R IH N D L IY	15 3 24 28 21 6 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0989	R EH P ER P AH S T	24 30 3 38 3 37 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0990	V AH L G ER IH S T	12 37 23 8 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0991	R EH M AH S T EY T	24 30 20 37 15 5 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0992	B IY W IH S T IH K	4 27 25 28 15 5 28 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0993	D IY OW D ER IH S T	6 27 34 6 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0994	S T R IH M P L IY	15 5 24 28 20 3 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0995	W UH M AH N G AH L	25 35 20 37 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0996	R EH D AH F AH L IY	24 30 6 37 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0997	S T EH R IY AE K T	15 5 30 24 27 31 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0998	G AO R M AH L OW N	8 33 24 20 37 23 34 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_0999	S T EH R AH L IY N	15 5 30 24 37 23 27 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1000	EH P IH S IH D EH N T	30 3 28 15 28 6 30 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1001	D IY AH D R IH Z AH M	6 27 37 6 24 28 16 37 20	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1002	AH W AO R L IY AE N T	37 25 33 24 23 27 31 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1003	P OY L D R EY SH AH N	3 41 23 6 24 29 17 37 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1004	W AH N T IH F IH K S	25 37 21 5 28 11 28 7 15	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1005	AE D V EH L AH T IY N	31 6 12 30 23 37 5 27 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1006	T R AE P L AH B AH L	5 24 31 3 23 37 4 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1007	AE L AH D K W AO R EY	31 23 37 6 7 25 33 24 29	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1008	N AA M P ER EY T IH D	21 32 20 3 38 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1009	R IY AH D IY N S AH Z	24 27 37 6 27 21 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1010	T R AE D AH N T IY Z	5 24 31 6 37 21 5 27 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1011	OW N AH S T R AE N D	34 21 37 15 5 24 31 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1012	K AH L IH S IY AH L IY	7 37 23 28 15 27 37 23 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1013	EH K S K L UH R AA L	30 7 15 7 23 35 24 32 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1014	M IH S AH M B EY D IY	20 28 15 37 20 4 29 6 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1015	R IY OW D EH N AH S T	24 27 34 6 30 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1016	HH AE V AH V EY T IH D	19 31 12 37 12 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1017	T EH N S AH N AH S T	5 30 21 15 37 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1018	EH N T IH K W AA R IY	30 21 5 28 7 25 32 24 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1019	V EH S ER N EY T IH D	12 30 15 38 21 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1020	Y UW N AH F AO R S T	26 36 21 37 11 33 24 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1021	W IH N Y UW F AE K T	25 28 21 26 36 11 31 7 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1022	EH K S P L IH F IH K	30 7 15 3 23 28 11 28 7	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1023	D EH T W AH S T AH L	6 30 5 25 37 15 5 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1024	D IY D AH N IH S AH Z	6 27 6 37 21 28 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1025	P Y UW Z K IH V IH NG	3 26 36 16 7 28 12 28 22	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1026	K AA N T R IY AH N D	7 32 21 5 24 27 37 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1027	B OW T IH N S L EH D	4 34 5 28 21 15 23 30 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1028	D EH L IY AH M N AH L	6 30 23 27 37 20 21 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1029	IH N V AO R AH B AH T	28 21 12 33 24 37 4 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1030	AH N F AO R N IH T IY	37 21 11 33 24 21 28 5 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1031	D IH D AH M P L EY T	6 28 6 37 20 3 23 29 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1032	W ER D AH N S T AH T	25 38 6 37 21 15 5 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1033	Y AH G	26 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1034	D AA P	6 32 3	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1037	W IH D	25 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1038	T AA B	5 32 4	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1040	D AA V	6 32 12	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1041	T ER DH	5 38 14	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1042	JH ER F	10 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1043	T AO G	5 33 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1045	TH ER S	13 38 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1046	F AH G	11 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1047	K L OW	7 23 34	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1048	G ER F	8 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1049	CH UW N	9 36 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1050	SH OY D	17 41 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1051	S P IY	15 3 27	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1053	F R UW	11 24 36	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1054	P OY N	3 41 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1056	P UH K	3 35 7	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1057	Z AA M	16 32 20	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1058	V IH N	12 28 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1059	B IY AH	4 27 37	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1060	V IH D	12 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1061	TH OW L	13 34 23	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1062	TH EH T	13 30 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1063	P UH Z	3 35 16	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1064	M AH S	20 37 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1065	V IH G	12 28 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1066	SH EH N D	17 30 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1067	K L AO R	7 23 33 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1068	P R EH N	3 24 30 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1069	F R EH L	11 24 30 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1070	AY CH AH N	39 9 37 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1071	EH SH IH NG	30 17 28 22	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1072	P L AA R	3 23 32 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1074	W EH S OW	25 30 15 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1076	F AA R L	11 32 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1077	AA P ER D	32 3 38 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1078	S T R UW	15 5 24 36	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1079	HH AO R M	19 33 24 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1080	S AE L ER	15 31 23 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1081	AO R IH K	33 24 28 7	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1082	P AO R L	3 33 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1083	K R AH S	7 24 37 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1084	AE N D OW	31 21 6 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1085	OW P EH R	34 3 30 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1086	F R EH S	11 24 30 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1087	HH EH K T	19 30 7 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1088	S M AE G	15 20 31 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1089	K AE NG G	7 31 22 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1090	K L IH JH	7 23 28 10	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1091	N OW B ER	21 34 4 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1092	TH AW N T	13 40 21 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1093	S T AH T	15 5 37 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1094	P L AE S	3 23 31 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1095	N AW N D	21 40 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1096	T AH NG TH	5 37 22 13	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1097	T R EY M	5 24 29 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1098	S W IH T	15 25 28 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1099	AH G AA IY	37 8 32 27	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1100	S ER K AY N	15 38 7 39 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1101	AO R IY V AH	33 24 27 12 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1102	F EH S IH G	11 30 15 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1103	AW T R OW AH	40 5 24 34 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1104	M AH S IH D	20 37 15 28 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1105	B AH S IY R	4 37 15 27 24	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1106	S M AA Z IY	15 20 32 16 27	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1107	S IH TH R OW	15 28 13 24 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1108	Y UW R IH S	26 36 24 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1109	N AO D IH N	21 33 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1110	T EH L AY D	5 30 23 39 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1111	CH ER AE K T	9 38 31 7 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1112	AE L TH AH D	31 23 13 37 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1113	N EH TH IY OW	21 30 13 27 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1114	S P IY HH OW	15 3 27 19 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1115	F AA V IH G	11 32 12 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1116	AE D R AH L	31 6 24 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1117	AE N AH HH AA	31 21 37 19 32	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1118	HH ER S IY N	19 38 15 27 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1119	P AA TH AH L	3 32 13 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1120	S AA M IH S	15 32 20 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1121	D ER D IH N	6 38 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1122	EH S T IH T	30 15 5 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1123	G OW V Y ER	8 34 12 26 38	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1124	S L AA S P	15 23 32 15 3	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1125	TH AE P AH T	13 31 3 37 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1126	HH AE P OW Z	19 31 3 34 16	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1127	F AE K D AH	11 31 7 6 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1128	W AA F IH T	25 32 11 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1129	M OW T AH K	20 34 5 37 7	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1130	D IH M IH TH	6 28 20 28 13	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1131	M EH L IH M	20 30 23 28 20	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1132	S EH G IH T	15 30 8 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1133	S IH N AH M P T	15 28 21 37 20 3 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1134	AE D M AH L EH R	31 6 20 37 23 30 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1135	SH OW S K W IH N	17 34 15 7 25 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1136	TH AE M AH S AH Z	13 31 20 37 15 37 16	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1137	HH AH N F IH K T	19 37 21 11 28 7 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1138	W IH N AH G AH N	25 28 21 37 8 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1139	HH AE Z IH D AH N	19 31 16 28 6 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1140	M AE N K EH T AH	20 31 21 7 30 5 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1141	D R IH S T IH V	6 24 28 15 5 28 12	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1142	G AE Z AH K IH N	8 31 16 37 7 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1143	R AE N AH N AH T	24 31 21 37 21 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1144	Y UH R SH AH N S	26 35 24 17 37 21 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1145	P L EH K S AH N	3 23 30 7 15 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1146	N AA M S EH S IY	21 32 20 15 30 15 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1147	AA N L AH T IH N	32 21 23 37 5 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1148	HH AH K S IH K S	19 37 7 15 28 7 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1149	R IH L AO R M AH	24 28 23 33 24 20 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1150	AY D S T EH R IY	39 6 15 5 30 24 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1151	K OW N ER M EY T	7 34 21 38 20 29 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1152	JH UW M TH IY N AE	10 36 20 13 27 21 31	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1153	IH N T ER CH AH L	28 21 5 38 9 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1154	T AE K S AH N D	5 31 7 15 37 21 6	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1155	AH S L AH T IH F	37 15 23 37 5 28 11	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1156	L IH S K Y UW S	23 28 15 7 26 36 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1157	L IH F L IH K AH	23 28 11 23 28 7 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1158	D UH R IY V AH T	6 35 24 27 12 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1159	G R OW V IY AH N	8 24 34 12 27 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1160	T OW JH EH N T OW	5 34 10 30 21 5 34	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1161	L IH M AH L AH T	23 28 20 37 23 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1162	CH AH L IH S IY AH	9 37 23 28 15 27 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1163	M EH M AH G AO R	20 30 20 37 8 33 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1164	K AA N T R IH NG	7 32 21 5 24 28 22	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1165	AO R G AA R AH L	33 24 8 32 24 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1166	F IH L AY AH L AH S	11 28 23 39 37 23 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1167	K AE S AH T EY N AH	7 31 15 37 5 29 21 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1168	JH AA S P IH T IH M	10 32 15 3 28 5 28 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1169	G AA S IH D AH N D	8 32 15 28 6 37 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1170	P UH R K R EH R IY	3 35 24 7 24 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1171	TH AE N IH N AH N T	13 31 21 28 21 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1172	S EH S IH R OW L D	15 30 15 28 24 34 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1173	M AE S T R AH N S	20 31 15 5 24 37 21 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1174	S EH N IH K AH N T	15 30 21 28 7 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1175	S EH N V ER S AH N	15 30 21 12 38 15 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1176	V IY OW K S IH D AH	12 27 34 7 15 28 6 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1177	JH AH N S P AE N D	10 37 21 15 3 31 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1178	S ER T R AH T AH N	15 38 5 24 37 5 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1179	M AA R B AH B AH S	20 32 24 4 37 4 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1180	S T R OW P AH N T	15 5 24 34 3 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1181	HH IH M B R IY AH N	19 28 20 4 24 27 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1182	AE D V IY OW N IY Z	31 6 12 27 34 21 27 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1183	L AE S T AH M AH N	23 31 15 5 37 20 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1184	K ER AH K S IY M AH	7 38 37 7 15 27 20 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1185	K AA M AH L EH R IY	7 32 20 37 23 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1186	T R EH F L AH N T	5 24 30 11 23 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1187	K AE S IH B Y UW R	7 31 15 28 4 26 36 24	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1188	HH AE V AH L V IH S	19 31 12 37 23 12 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1189	P AA L AH N AH L IY	3 32 23 37 21 37 23 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1190	T UH R F AO R IY AH	5 35 24 11 33 24 27 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1191	K L OW B AH L IH S	7 23 34 4 37 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1192	L AA N F L IH T IY	23 32 21 11 23 28 5 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1193	T AE Z D AH L AY M	5 31 16 6 37 23 39 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1194	AE NG K S IH M AH TH	31 22 7 15 28 20 37 13	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1195	HH AE P T OW N OW Z	19 31 3 5 34 21 34 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1196	F R EH JH IH L IH S	11 24 30 10 28 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1197	R IH G AA R T AH L	24 28 8 32 24 5 37 23	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1198	S P AA N Z AH N T	15 3 32 21 16 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P3	33	wfe_1199	P AE SH AH B AH L D	3 31 17 37 4 37 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0800	S OW L OW K AH M AO F	15 34 23 34 7 37 20 33 11	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0801	G AA S T R IY EH N T	8 32 15 5 24 27 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0802	D IH V EH S T R EY T	6 28 12 30 15 5 24 29 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0803	S T R UW S AH N AH D	15 5 24 36 15 37 21 37 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0804	D AY Y UH R AH L AH M	6 39 26 35 24 37 23 37 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0805	S P EH R IY B AO R M	15 3 30 24 27 4 33 24 20	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0806	IH N F L AH JH EH S T	28 21 11 23 37 10 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0807	B AA L EH N T IY N AH	4 32 23 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0808	K L AE D W IH CH IY T	7 23 31 6 25 28 9 27 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0809	W EH B S IH D AH N T	25 30 4 15 28 6 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0810	L IH V IH N IH S AH L	23 28 12 28 21 28 15 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0811	EH P IH R EH N T AH L	30 3 28 24 30 21 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0812	K OW AA L EH N S AY T	7 34 32 23 30 21 15 39 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0813	N OW T AH N S AH S T	21 34 5 37 21 15 37 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0814	IH S L AA T ER D AY N	28 15 23 32 5 38 6 39 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0815	Y EH S P IH R EH S T	26 30 15 3 28 24 30 15 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0816	F OW L D AA M AH N S	11 34 23 6 32 20 37 21 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0817	B AA V EH N T IY N AH	4 32 12 30 21 5 27 21 37	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0818	F R AE N S AH P AH L	11 24 31 21 15 37 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0819	V IH S T ER M AE N D	12 28 15 5 38 20 31 21 6	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0820	M AH S IH P IH T AH L	20 37 15 28 3 28 5 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0821	AE N K L UW S EH N T	31 21 7 23 36 15 30 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0822	S K W IH S T AH N T	15 7 25 28 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0823	EH V ER R IY AH L IH S	30 12 38 24 27 37 23 28 15	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0824	AE L R EH L AA P AH L	31 23 24 30 23 32 3 37 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0825	S T AO R S T AH N T	15 5 33 24 15 5 37 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0826	T R IH N K AH B EH L	5 24 28 21 7 37 4 30 23	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0827	AE D V AE N T IH N T	31 6 12 31 21 5 28 21 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0828	HH OW N OW F AH S IY N	19 34 21 34 11 37 15 27 21	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0829	R IY AH S OW D AH K T	24 27 37 15 34 6 37 7 5	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0830	S T OW G R IH CH ER IY	15 5 34 8 24 28 9 38 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0831	S IY G R UW S AH CH IY	15 27 8 24 36 15 37 9 27	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0832	W IH S K AH N S AH Z	25 28 15 7 37 21 15 37 16	9	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0833	IH N AW	28 21 40	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0834	AO TH T	33 13 5	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0835	AH K UW	37 7 36	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0836	AY T ER	39 5 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0837	N OW IY	21 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0838	TH IH CH	13 28 9	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0840	W IY Z	25 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0841	EH M D	30 20 6	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0843	IH P ER	28 3 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0844	S AO R	15 33 24	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0845	IY L ER	27 23 38	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0846	AA D IY	32 6 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0847	AH P AY	37 3 39	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0848	G UW Z	8 36 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0849	D IY Z	6 27 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0850	AH N TH	37 21 13	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0851	T OW IY	5 34 27	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0852	IY M Z	27 20 16	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0853	ER T S	38 5 15	3	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0854	AE T R OW	31 5 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0855	AH P R UW	37 3 24 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0856	R AA N T	24 32 21 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0857	AE S AH K	31 15 37 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0858	AA B S OW	32 4 15 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0859	AA P T IY	32 3 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0860	AW R EY N	40 24 29 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0861	TH AW T IY	13 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0862	JH AO R OW	10 33 24 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0863	T EH M AW	5 30 20 40	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0864	EH N F ER	30 21 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0865	AH K OW N	37 7 34 21	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0866	W IY F ER	25 27 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0867	AH N EH S	37 21 30 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0868	EH N IY TH	30 21 27 13	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0869	IH L UW M	28 23 36 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0870	IH T S ER	28 5 15 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0871	B AY L OW	4 39 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0872	IY D IY OW	27 6 27 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0873	SH OW IH K	17 34 28 7	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0874	D AA M ER	6 32 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0875	AH P AO R	37 3 33 24	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0877	N IY CH T	21 27 9 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0878	SH AW T IY	17 40 5 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0879	G IY V IY	8 27 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0880	AE N IH M	31 21 28 20	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0881	AW CH EY S	40 9 29 15	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0882	AY DH IH NG	39 14 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0883	AH N AE L	37 21 31 23	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0884	F EY V IY	11 29 12 27	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0885	W AH DH ER	25 37 14 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0886	JH ER Z D	10 38 16 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0887	AO CH IH NG	33 9 28 22	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0888	P ER F ER	3 38 11 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0889	AH N OW T	37 21 34 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0890	IH S ER T	28 15 38 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0891	AE L AH P	31 23 37 3	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0892	AH N ER JH	37 21 38 10	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0893	D EH L ER	6 30 23 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0894	EH N IH T	30 21 28 5	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0895	V AA L OW	12 32 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0896	D EH F UW	6 30 11 36	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0897	JH ER M ER	10 38 20 38	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0898	IH R IY D	28 24 27 6	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0899	P EY L OW	3 29 23 34	4	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0900	AA K T IY M	32 7 5 27 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0901	HH OW M AE T	19 34 20 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0902	OW P IH S T	34 3 28 15 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0903	G OW V IY OW	8 34 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0904	B IH L W EY	4 28 23 25 29	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0905	IY K AO R G	27 7 33 24 8	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0906	R AE D IH S	24 31 6 28 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0907	S OW P AH T	15 34 3 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0908	HH IH M AH M	19 28 20 37 20	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0909	S AE K N OW	15 31 7 21 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0910	AH N K R AW	37 21 7 24 40	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0911	B UH L F ER	4 35 23 11 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0912	N AA N V ER	21 32 21 12 38	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0913	D EH F ER K	6 30 11 38 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0914	B IY OW M OW	4 27 34 20 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0915	AE D V IY OW	31 6 12 27 34	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0916	M AH L B OY	20 37 23 4 41	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0917	AE G R AE T	31 8 24 31 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0918	B IH F IH K	4 28 11 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0919	AH S AA S IY	37 15 32 15 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0920	AH N IY M D	37 21 27 20 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0921	IH N V AO R	28 21 12 33 24	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0922	F ER S AY D	11 38 15 39 6	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0923	T IY T IH N	5 27 5 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0924	G EH T ER T	8 30 5 38 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0925	R IY K AW S	24 27 7 40 15	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0926	M AH SH IH N	20 37 17 28 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0927	R EH D W IY	24 30 6 25 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0928	HH IH M B IY	19 28 20 4 27	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0929	Y UW R AW N	26 36 24 40 21	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0930	M IH N T AY	20 28 21 5 39	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0931	P ER T AH T	3 38 5 37 5	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0932	P ER L IH K	3 38 23 28 7	5	pseudo	complex	short	PSC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0933	S ER V AY D AH D	15 38 12 39 6 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0934	IH N T IH P AH L	28 21 5 28 3 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0935	P AH B S AY D Z	3 37 4 15 39 6 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0936	D AH S OW SH IY OW	6 37 15 34 17 27 34	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0937	B Y UW T IY N Z	4 26 36 5 27 21 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0938	EH D AH T R AH L	30 6 37 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0939	P AH B L IH T IY	3 37 4 23 28 5 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0940	HH AA R JH IH NG Z	19 32 24 10 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0941	B IY N S P AO R	4 27 21 15 3 33 24	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0942	B R OW V EH L F	4 24 34 12 30 23 11	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0943	HH IH M AH L EY S	19 28 20 37 23 29 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0944	K AH N UW T AH D	7 37 21 36 5 37 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0945	B AE M P IY AH N	4 31 20 3 27 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0946	T W EH T S K IY	5 25 30 5 15 7 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0947	AE K T IH T OW M	31 7 5 28 5 34 20	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0948	F EH S AH M AY N	11 30 15 37 20 39 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0949	AH P IY D IY AH L	37 3 27 6 27 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0950	M AA M AH K AH L	20 32 20 37 7 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0951	B EH L AH N T ER	4 30 23 37 21 5 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0952	Y UW N AH V AH L	26 36 21 37 12 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0953	HH AE V AY S AH Z	19 31 12 39 15 37 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0954	EH N IY B AO L Z	30 21 27 4 33 23 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0955	D IH K AE M B ER	6 28 7 31 20 4 38	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0956	P ER V IH SH AH S	3 38 12 28 17 37 15	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0957	AH N L EH JH IH NG	37 21 23 30 10 28 22	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0958	AH T AE T IH NG Z	37 5 31 5 28 22 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0959	AH P AA R SH AH N	37 3 32 24 17 37 21	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0960	R EH T AE B IH T	24 30 5 31 4 28 5	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0961	K AH N K AA TH IY	7 37 21 7 32 13 27	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0962	F AH L UW T IH D	11 37 23 36 5 28 6	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0963	Y UW N IY Z IH K	26 36 21 27 16 28 7	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0964	R IH K AO Z IH Z	24 28 7 33 16 28 16	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0965	P R IY T R AH L	3 24 27 5 24 37 23	7	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0966	D IH S R IH T ER B	6 28 15 24 28 5 38 4	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0967	R IY OW L ER R AY Z	24 27 34 23 38 24 39 16	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0968	M IH S K R IY K T	20 28 15 7 24 27 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0969	T R UW Z AH B AH L	5 24 36 16 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0970	AH N W IH Z IH T ER	37 21 25 28 16 28 5 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0971	OW V ER IH L IH T IY	34 12 38 28 23 28 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0972	S AH M T AH B AH L	15 37 20 5 37 4 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0973	AH N M IH S T AE D	37 21 20 28 15 5 31 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0974	W IH T IH F AH L IY	25 28 5 28 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0975	AH N D ER L AE T IY	37 21 6 38 23 31 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0976	R EH D ER L AH T IY	24 30 6 38 23 37 5 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0977	S P R IH K T AA L	15 3 24 28 7 5 32 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0978	Y UW N IH F AO R T	26 36 21 28 11 33 24 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0979	M IH S T F AH L IY	20 28 15 5 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0980	D AY D AH N IH S T	6 39 6 37 21 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0981	R EY V ER S OW L D	24 29 12 38 15 34 23 6	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0982	AH N D AH F L EY T	37 21 6 37 11 23 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0983	D IH S K R IY L ER	6 28 15 7 24 27 23 38	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0984	P IH T L AH S L IY	3 28 5 23 37 15 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0985	D IH S HH AH N AH L	6 28 15 19 37 21 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0986	S K R IH N G AH L	15 7 24 28 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0987	R IY IH N S T EY K	24 27 28 21 15 5 29 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0988	S P R IH N D L IY	15 3 24 28 21 6 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0989	R EH P ER P AH S T	24 30 3 38 3 37 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0990	V AH L G ER IH S T	12 37 23 8 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0991	R EH M AH S T EY T	24 30 20 37 15 5 29 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0992	B IY W IH S T IH K	4 27 25 28 15 5 28 7	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0993	D IY OW D ER IH S T	6 27 34 6 38 28 15 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0994	S T R IH M P L IY	15 5 24 28 20 3 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0995	W UH M AH N G AH L	25 35 20 37 21 8 37 23	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0996	R EH D AH F AH L IY	24 30 6 37 11 37 23 27	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0997	S T EH R IY AE K T	15 5 30 24 27 31 7 5	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0998	G AO R M AH L OW N	8 33 24 20 37 23 34 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_0999	S T EH R AH L IY N	15 5 30 24 37 23 27 21	8	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1000	EH P IH S IH D EH N T	30 3 28 15 28 6 30 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1001	D IY AH D R IH Z AH M	6 27 37 6 24 28 16 37 20	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1002	AH W AO R L IY AE N T	37 25 33 24 23 27 31 21 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1003	P OY L D R EY SH AH N	3 41 23 6 24 29 17 37 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1004	W AH N T IH F IH K S	25 37 21 5 28 11 28 7 15	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1005	AE D V EH L AH T IY N	31 6 12 30 23 37 5 27 21	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1006	T R AE P L AH B AH L	5 24 31 3 23 37 4 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1007	AE L AH D K W AO R EY	31 23 37 6 7 25 33 24 29	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1008	N AA M P ER EY T IH D	21 32 20 3 38 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1009	R IY AH D IY N S AH Z	24 27 37 6 27 21 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1010	T R AE D AH N T IY Z	5 24 31 6 37 21 5 27 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1011	OW N AH S T R AE N D	34 21 37 15 5 24 31 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1012	K AH L IH S IY AH L IY	7 37 23 28 15 27 37 23 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1013	EH K S K L UH R AA L	30 7 15 7 23 35 24 32 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1014	M IH S AH M B EY D IY	20 28 15 37 20 4 29 6 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1015	R IY OW D EH N AH S T	24 27 34 6 30 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1016	HH AE V AH V EY T IH D	19 31 12 37 12 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1017	T EH N S AH N AH S T	5 30 21 15 37 21 37 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1018	EH N T IH K W AA R IY	30 21 5 28 7 25 32 24 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1019	V EH S ER N EY T IH D	12 30 15 38 21 29 5 28 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1020	Y UW N AH F AO R S T	26 36 21 37 11 33 24 15 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1021	W IH N Y UW F AE K T	25 28 21 26 36 11 31 7 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1022	EH K S P L IH F IH K	30 7 15 3 23 28 11 28 7	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1023	D EH T W AH S T AH L	6 30 5 25 37 15 5 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1024	D IY D AH N IH S AH Z	6 27 6 37 21 28 15 37 16	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1025	P Y UW Z K IH V IH NG	3 26 36 16 7 28 12 28 22	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1026	K AA N T R IY AH N D	7 32 21 5 24 27 37 21 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1027	B OW T IH N S L EH D	4 34 5 28 21 15 23 30 6	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1028	D EH L IY AH M N AH L	6 30 23 27 37 20 21 37 23	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1029	IH N V AO R AH B AH T	28 21 12 33 24 37 4 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1030	AH N F AO R N IH T IY	37 21 11 33 24 21 28 5 27	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1031	D IH D AH M P L EY T	6 28 6 37 20 3 23 29 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1032	W ER D AH N S T AH T	25 38 6 37 21 15 5 37 5	9	pseudo	complex	long	PLC		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1033	Y AH G	26 37 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1036	F AH T	11 37 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1037	W IH D	25 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1038	T AA B	5 32 4	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1040	D AA V	6 32 12	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1041	T ER DH	5 38 14	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1042	JH ER F	10 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1045	TH ER S	13 38 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1047	K L OW	7 23 34	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1048	G ER F	8 38 11	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1049	CH UW N	9 36 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1051	S P IY	15 3 27	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1053	F R UW	11 24 36	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1054	P OY N	3 41 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1056	P UH K	3 35 7	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1057	Z AA M	16 32 20	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1058	V IH N	12 28 21	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1059	B IY AH	4 27 37	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1060	V IH D	12 28 6	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1061	TH OW L	13 34 23	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1062	TH EH T	13 30 5	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1063	P UH Z	3 35 16	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1064	M AH S	20 37 15	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1065	V IH G	12 28 8	3	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1066	SH EH N D	17 30 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1067	K L AO R	7 23 33 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1068	P R EH N	3 24 30 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1069	F R EH L	11 24 30 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1070	AY CH AH N	39 9 37 21	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1071	EH SH IH NG	30 17 28 22	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1072	P L AA R	3 23 32 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1073	TH UW L AH	13 36 23 37	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1074	W EH S OW	25 30 15 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1076	F AA R L	11 32 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1077	AA P ER D	32 3 38 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1078	S T R UW	15 5 24 36	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1079	HH AO R M	19 33 24 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1080	S AE L ER	15 31 23 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1081	AO R IH K	33 24 28 7	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1082	P AO R L	3 33 24 23	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1083	K R AH S	7 24 37 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1084	AE N D OW	31 21 6 34	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1085	OW P EH R	34 3 30 24	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1086	F R EH S	11 24 30 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1087	HH EH K T	19 30 7 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1088	S M AE G	15 20 31 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1089	K AE NG G	7 31 22 8	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1090	K L IH JH	7 23 28 10	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1091	N OW B ER	21 34 4 38	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1092	TH AW N T	13 40 21 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1093	S T AH T	15 5 37 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1094	P L AE S	3 23 31 15	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1095	N AW N D	21 40 21 6	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1096	T AH NG TH	5 37 22 13	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1097	T R EY M	5 24 29 20	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1098	S W IH T	15 25 28 5	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1099	AH G AA IY	37 8 32 27	4	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1100	S ER K AY N	15 38 7 39 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1101	AO R IY V AH	33 24 27 12 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1102	F EH S IH G	11 30 15 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1103	AW T R OW AH	40 5 24 34 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1104	M AH S IH D	20 37 15 28 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1105	B AH S IY R	4 37 15 27 24	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1106	S M AA Z IY	15 20 32 16 27	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1107	S IH TH R OW	15 28 13 24 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1108	Y UW R IH S	26 36 24 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1109	N AO D IH N	21 33 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1110	T EH L AY D	5 30 23 39 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1111	CH ER AE K T	9 38 31 7 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1112	AE L TH AH D	31 23 13 37 6	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1113	N EH TH IY OW	21 30 13 27 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1114	S P IY HH OW	15 3 27 19 34	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1115	F AA V IH G	11 32 12 28 8	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1116	AE D R AH L	31 6 24 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1117	AE N AH HH AA	31 21 37 19 32	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1118	HH ER S IY N	19 38 15 27 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1119	P AA TH AH L	3 32 13 37 23	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1120	S AA M IH S	15 32 20 28 15	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1121	D ER D IH N	6 38 6 28 21	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1122	EH S T IH T	30 15 5 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1123	G OW V Y ER	8 34 12 26 38	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1124	S L AA S P	15 23 32 15 3	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1125	TH AE P AH T	13 31 3 37 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1126	HH AE P OW Z	19 31 3 34 16	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1127	F AE K D AH	11 31 7 6 37	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1128	W AA F IH T	25 32 11 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1129	M OW T AH K	20 34 5 37 7	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1130	D IH M IH TH	6 28 20 28 13	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1131	M EH L IH M	20 30 23 28 20	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1132	S EH G IH T	15 30 8 28 5	5	pseudo	simple	short	PSS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1133	S IH N AH M P T	15 28 21 37 20 3 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1134	AE D M AH L EH R	31 6 20 37 23 30 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1135	SH OW S K W IH N	17 34 15 7 25 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1136	TH AE M AH S AH Z	13 31 20 37 15 37 16	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1137	HH AH N F IH K T	19 37 21 11 28 7 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1138	W IH N AH G AH N	25 28 21 37 8 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1139	HH AE Z IH D AH N	19 31 16 28 6 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1140	M AE N K EH T AH	20 31 21 7 30 5 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1141	D R IH S T IH V	6 24 28 15 5 28 12	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1142	G AE Z AH K IH N	8 31 16 37 7 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1143	R AE N AH N AH T	24 31 21 37 21 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1144	Y UH R SH AH N S	26 35 24 17 37 21 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1145	P L EH K S AH N	3 23 30 7 15 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1146	N AA M S EH S IY	21 32 20 15 30 15 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1147	AA N L AH T IH N	32 21 23 37 5 28 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1148	HH AH K S IH K S	19 37 7 15 28 7 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1149	R IH L AO R M AH	24 28 23 33 24 20 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1150	AY D S T EH R IY	39 6 15 5 30 24 27	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1151	K OW N ER M EY T	7 34 21 38 20 29 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1152	JH UW M TH IY N AE	10 36 20 13 27 21 31	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1153	IH N T ER CH AH L	28 21 5 38 9 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1154	T AE K S AH N D	5 31 7 15 37 21 6	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1155	AH S L AH T IH F	37 15 23 37 5 28 11	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1156	L IH S K Y UW S	23 28 15 7 26 36 15	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1157	L IH F L IH K AH	23 28 11 23 28 7 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1158	D UH R IY V AH T	6 35 24 27 12 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1159	G R OW V IY AH N	8 24 34 12 27 37 21	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1160	T OW JH EH N T OW	5 34 10 30 21 5 34	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1161	L IH M AH L AH T	23 28 20 37 23 37 5	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1162	CH AH L IH S IY AH	9 37 23 28 15 27 37	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1163	M EH M AH G AO R	20 30 20 37 8 33 24	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1164	K AA N T R IH NG	7 32 21 5 24 28 22	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1165	AO R G AA R AH L	33 24 8 32 24 37 23	7	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1166	F IH L AY AH L AH S	11 28 23 39 37 23 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1167	K AE S AH T EY N AH	7 31 15 37 5 29 21 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1168	JH AA S P IH T IH M	10 32 15 3 28 5 28 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1169	G AA S IH D AH N D	8 32 15 28 6 37 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1170	P UH R K R EH R IY	3 35 24 7 24 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1171	TH AE N IH N AH N T	13 31 21 28 21 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1172	S EH S IH R OW L D	15 30 15 28 24 34 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1173	M AE S T R AH N S	20 31 15 5 24 37 21 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1174	S EH N IH K AH N T	15 30 21 28 7 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1175	S EH N V ER S AH N	15 30 21 12 38 15 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1176	V IY OW K S IH D AH	12 27 34 7 15 28 6 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1177	JH AH N S P AE N D	10 37 21 15 3 31 21 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1178	S ER T R AH T AH N	15 38 5 24 37 5 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1179	M AA R B AH B AH S	20 32 24 4 37 4 37 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1180	S T R OW P AH N T	15 5 24 34 3 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1181	HH IH M B R IY AH N	19 28 20 4 24 27 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1182	AE D V IY OW N IY Z	31 6 12 27 34 21 27 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1183	L AE S T AH M AH N	23 31 15 5 37 20 37 21	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1184	K ER AH K S IY M AH	7 38 37 7 15 27 20 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1185	K AA M AH L EH R IY	7 32 20 37 23 30 24 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1186	T R EH F L AH N T	5 24 30 11 23 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1187	K AE S IH B Y UW R	7 31 15 28 4 26 36 24	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1188	HH AE V AH L V IH S	19 31 12 37 23 12 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1189	P AA L AH N AH L IY	3 32 23 37 21 37 23 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1190	T UH R F AO R IY AH	5 35 24 11 33 24 27 37	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1191	K L OW B AH L IH S	7 23 34 4 37 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1192	L AA N F L IH T IY	23 32 21 11 23 28 5 27	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1193	T AE Z D AH L AY M	5 31 16 6 37 23 39 20	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1194	AE NG K S IH M AH TH	31 22 7 15 28 20 37 13	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1195	HH AE P T OW N OW Z	19 31 3 5 34 21 34 16	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1196	F R EH JH IH L IH S	11 24 30 10 28 23 28 15	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1197	R IH G AA R T AH L	24 28 8 32 24 5 37 23	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1198	S P AA N Z AH N T	15 3 32 21 16 37 21 5	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
+P4	34	wfe_1199	P AE SH AH B AH L D	3 31 17 37 4 37 23 6	8	pseudo	simple	long	PLS		n/a_pseudoword	NOVEL_PSEUDOWORD
