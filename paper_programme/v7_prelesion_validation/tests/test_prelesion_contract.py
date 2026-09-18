@@ -24,13 +24,24 @@ CONTRACT = os.path.join(PKG, "contract")
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(PKG, "scripts"))
 
-CANON_TABLE = os.path.join(
-    ROOT, "..", "lichtheim3", "outputs", "behavioral_wfe_fulllexicon_93a577f",
-    "behavioral_analysis", "tables", "canonical_behavioral_item_table.tsv")
+sys.path.insert(0, os.path.join(PKG, "execution"))
+import inputs as EXIN  # noqa: E402  machine-portable input resolution
+
 LEXICON = os.path.join(ROOT, "data", "lexicon_en_glove_covered.tsv")
 
-CANON_SHA = "8988aff6fac55ca36cb43ce758f5684f30ae10a6303bdbd7b0b9f462433d5a67"
+CANON_SHA = EXIN.CANON_TABLE_SHA256
 LEX_SHA = "ae80918165e16b8cbdb58e16d0c9d1fff291773abffd7c0d786e6746024a6a66"
+
+needs_canon_table = pytest.mark.skipif(
+    not EXIN.canon_table_available(),
+    reason=("canonical WFE table not configured on this machine: set "
+            "L3_CANON_TABLE (or L3_EXECUTION_INPUTS) to the file with sha256 "
+            + CANON_SHA))
+
+
+def canon_table():
+    """SHA-verified path; raises rather than substituting a related table."""
+    return EXIN.canon_table_path(required=True)
 
 
 def _sha(path):
@@ -74,8 +85,9 @@ def _pool(seed, n=4000, min_len=2, max_len=9):
 
 
 # ------------------------------------------------------------ 1. provenance --
+@needs_canon_table
 def test_canonical_table_sha():
-    assert _sha(CANON_TABLE) == CANON_SHA
+    assert _sha(canon_table()) == CANON_SHA
 
 
 def test_lexicon_sha_matches_v7_driver_expectation():
@@ -90,8 +102,9 @@ def test_lexicon_population_sizes():
     assert len({" ".join(r["arpabet"].split()) for r in rows}) == 27_981
 
 
+@needs_canon_table
 def test_canonical_table_shape():
-    rows = list(csv.DictReader(open(CANON_TABLE), delimiter="\t"))
+    rows = list(csv.DictReader(open(canon_table()), delimiter="\t"))
     assert len(rows) == 14_400 == 1200 * 3 * 4
     assert len({r["item_id"] for r in rows}) == 1200
     by = {}
@@ -155,11 +168,12 @@ def test_per_seed_manifest_counts():
     assert len(m) == 1550
 
 
+@needs_canon_table
 def test_primary_plus_exposed_reconstructs_391():
     prim = {r["item_id"] for r in _manifest("stimulus_manifest_common_unseen_378.tsv")}
     exp = {r["item_id"] for r in _manifest("stimulus_manifest_dorsal_pool_exposed_13.tsv")}
     assert not (prim & exp)
-    rows = list(csv.DictReader(open(CANON_TABLE), delimiter="\t"))
+    rows = list(csv.DictReader(open(canon_table()), delimiter="\t"))
     nov = {r["item_id"] for r in rows
            if r["lichtheim_exposure_status"] == "NOVEL_PSEUDOWORD"}
     assert len(nov) == 391
@@ -304,31 +318,350 @@ def test_summarize_reports_required_quantiles():
 
 # ------------------------------------------- 6. artifact-dependent (skipped) --
 def _artifacts_present():
-    m = _manifest("state_manifest.tsv")
-    return all(os.path.exists(r.get("source_checkpoint_path", "")) for r in m)
+    """True only if every P1-P4 SOURCE checkpoint and head_first_c0 resolves
+    under L3_V7_RUN_ROOT *and* matches its frozen SHA (fail closed)."""
+    return EXIN.artifacts_available()
 
 
 needs_artifacts = pytest.mark.skipif(
     not _artifacts_present(),
-    reason="V7 checkpoints/heads not present on this machine (Jean-Zay /lustre)")
+    reason=("V7 SOURCE checkpoints / head_first_c0.pt not resolvable: set "
+            "L3_V7_RUN_ROOT to the directory holding "
+            "fresh_ceiling_v7_p{1..4}_s{31..34}/"))
 
 
 @needs_artifacts
-def test_reconstruction_changes_only_head_tensors():
-    raise NotImplementedError("runs on the cluster: state_dict diff must be "
-                              "exactly {'2.weight','2.bias'}")
+@pytest.mark.parametrize("slot", ["P1", "P2", "P3", "P4"])
+def test_reconstruction_changes_only_head_tensors(slot):
+    """POST_REPAIR must differ from SOURCE in EXACTLY the Arm-A head tensors.
+
+    The acceptable key set is taken from frozen code, never from the outcome:
+    `gradient_training_probe.TRAINABLE_NAMES` is Arm-A's own declaration of what
+    it optimises, and `frozen_head_probe._isolated_model` loads the derived head
+    into `model.ltm.to_semantic`. Any other changed tensor fails the test.
+    """
+    import torch
+    import prelesion_eval as pe
+    from scripts.naming_comprehension.gradient_training_probe import TRAINABLE_NAMES
+
+    art = EXIN.resolve_artifacts()[slot]
+    glove = _glove_path()
+
+    tr_src, src_model, _ = pe.build_state(art["source_checkpoint"], None, glove)
+    src_sd = {k: v.detach().clone() for k, v in src_model.state_dict().items()}
+
+    _, post_model, prov = pe.build_state(
+        art["source_checkpoint"], art["repair_head"], glove)
+    post_sd = post_model.state_dict()
+
+    assert set(src_sd) == set(post_sd), "architecture changed during reconstruction"
+    changed = {k for k in src_sd if not torch.equal(src_sd[k], post_sd[k])}
+    assert changed == set(TRAINABLE_NAMES), (
+        f"{slot}: expected exactly {sorted(TRAINABLE_NAMES)} to change, "
+        f"got {sorted(changed)}")
+
+    # the deployed head digest recorded must match the frozen one
+    assert prov["repair_head_deployed_state_sha256"] == \
+        art["repair_head_deployed_state_sha256"]
 
 
 @needs_artifacts
-def test_checkpoint_and_head_immutable_across_evaluation():
-    raise NotImplementedError("runs on the cluster: sha256 before/after")
+@pytest.mark.parametrize("slot", ["P1", "P2", "P3", "P4"])
+def test_checkpoint_and_head_immutable_across_evaluation(slot):
+    """Byte-level immutability of SOURCE checkpoint and head across a real
+    (small) evaluation, not merely across a load."""
+    import prelesion_eval as pe
+
+    art = EXIN.resolve_artifacts()[slot]
+    ck, hd = art["source_checkpoint"], art["repair_head"]
+    ck_before, hd_before = pe.sha256_file(ck), pe.sha256_file(hd)
+
+    tr, model, _ = pe.build_state(ck, hd, _glove_path())
+    pe.free_ar_items(tr, model, _smoke_entries(tr), routes=("full",))
+
+    assert pe.sha256_file(ck) == ck_before == art["source_checkpoint_sha256"]
+    assert pe.sha256_file(hd) == hd_before == art["repair_head_file_sha256"]
+    pe.assert_source_unchanged(ck, ck_before)
 
 
 @needs_artifacts
 def test_deterministic_decode_repeat_on_smoke_ids():
-    raise NotImplementedError("runs on the cluster: byte-identical repeat")
+    """Two identical decodes of the predeclared smoke set must agree exactly.
+
+    Smoke items are fixed in `execution/inputs.py` before any execution and are
+    chosen without reference to any scientific outcome (lowest bank indices).
+    No stochastic code is involved.
+    """
+    import prelesion_eval as pe
+
+    art = EXIN.resolve_artifacts()["P1"]
+    tr, model, _ = pe.build_state(
+        art["source_checkpoint"], art["repair_head"], _glove_path())
+    ents = _smoke_entries(tr)
+    state_before = pe.model_state_digest(model)
+
+    a = pe.free_ar_items(tr, model, ents, routes=("full", "wm", "ltm"))
+    b = pe.free_ar_items(tr, model, ents, routes=("full", "wm", "ltm"))
+    assert _digest(a) == _digest(b), "decode is not deterministic"
+    assert pe.model_state_digest(model) == state_before, \
+        "model state_dict changed during evaluation"
 
 
 @needs_artifacts
 def test_full_canonical_and_freear_match_frozen_v7_on_smoke():
-    raise NotImplementedError("runs on the cluster: parity with frozen battery")
+    """Evaluator parity between the new read-only wrapper and frozen V7.
+
+    What is tested, precisely:
+      * free-AR: our item-level wrapper, aggregated to FULL exact-match, must
+        equal the frozen `JointScratchTrainer.free_ar_repetition` aggregate on
+        the same predeclared smoke items and the same model. This is an
+        equivalence test between wrapper and frozen evaluator -- no archived
+        item-level output is fabricated.
+      * canonical: the contract reuses the frozen `repetition_snapshot`
+        unchanged (no wrapper), so parity is asserted as reproducibility of the
+        frozen function on the smoke set, and its FULL readout is required to be
+        a well-formed rate.
+    The frozen OFFICIAL AGGREGATE battery outcomes are retained separately, as
+    an external invariant for the full scientific run
+    (`EXIN.FROZEN_OFFICIAL_POST_BATTERY`); they are deliberately NOT asserted
+    here, because this smoke subset is not the official population.
+    """
+    import prelesion_eval as pe
+    from scripts.naming_comprehension.train_tasks import repetition_snapshot
+
+    art = EXIN.resolve_artifacts()["P1"]
+    tr, model, _ = pe.build_state(
+        art["source_checkpoint"], art["repair_head"], _glove_path())
+    idx = EXIN.SMOKE_REAL_BANK_INDICES
+    ents = _smoke_entries(tr)
+
+    # -- genuine free-AR parity --------------------------------------------
+    orig = tr.model
+    try:
+        tr.model = model
+        frozen_far = tr.free_ar_repetition(idx, routes=("full", "wm", "ltm"))
+    finally:
+        tr.model = orig
+    ours = pe.free_ar_items(tr, model, ents, routes=("full", "wm", "ltm"))
+    for route in ("full", "wm", "ltm"):
+        mine = sum(r["exact"] for r in ours[route]) / len(idx)
+        assert mine == pytest.approx(frozen_far[route], abs=0.0), (
+            f"free-AR wrapper disagrees with frozen evaluator on {route}: "
+            f"{mine} vs {frozen_far[route]}")
+
+    # -- canonical (forced-length) reproducibility --------------------------
+    s1 = repetition_snapshot(model, tr.vocab, tr.entries, idx, tr.bank_raw,
+                             "cpu", include_teacher_forced=False)
+    s2 = repetition_snapshot(model, tr.vocab, tr.entries, idx, tr.bank_raw,
+                             "cpu", include_teacher_forced=False)
+    e1 = s1["primary_readout"]["exact_match"]
+    e2 = s2["primary_readout"]["exact_match"]
+    for route in ("full", "wm", "ltm"):
+        assert float(e1[route]) == float(e2[route])
+        assert 0.0 <= float(e1[route]) <= 1.0
+
+
+# ------------------------------------------------- artifact-test helpers ----
+def _glove_path():
+    from scripts.naming_comprehension.ceiling_source_completion import GLOVE
+    return GLOVE
+
+
+def _smoke_entries(tr):
+    """Predeclared smoke entries as the evaluator consumes them."""
+    return [{"item_id": f"bank_{i}", "phonemes": list(tr.entries[i].phonemes)}
+            for i in EXIN.SMOKE_REAL_BANK_INDICES]
+
+
+def _digest(out):
+    import hashlib
+    import json
+    return hashlib.sha256(json.dumps(out, sort_keys=True).encode()).hexdigest()
+
+
+# ------------------------------------- static proof the above are implemented --
+ARTIFACT_TEST_NAMES = (
+    "test_reconstruction_changes_only_head_tensors",
+    "test_checkpoint_and_head_immutable_across_evaluation",
+    "test_deterministic_decode_repeat_on_smoke_ids",
+    "test_full_canonical_and_freear_match_frozen_v7_on_smoke",
+)
+
+
+def test_no_placeholder_bodies_remain_in_suite():
+    """No test function may still be a NotImplementedError placeholder.
+
+    Checked over function BODIES via AST, so this test's own reference to the
+    sentinel name does not trip it.
+    """
+    import ast
+    src = open(__file__).read()
+    tree = ast.parse(src)
+    offenders = []
+    for n in ast.walk(tree):
+        if not isinstance(n, ast.FunctionDef) or not n.name.startswith("test_"):
+            continue
+        if n.name == "test_no_placeholder_bodies_remain_in_suite":
+            continue
+        for st in ast.walk(n):
+            if (isinstance(st, ast.Raise) and st.exc is not None
+                    and "NotImplementedError" in ast.dump(st.exc)):
+                offenders.append(n.name)
+    assert not offenders, f"placeholder test bodies remain: {sorted(set(offenders))}"
+
+
+def test_evaluator_module_has_no_placeholders():
+    import ast
+    import prelesion_eval as pe
+    src = open(pe.__file__).read()
+    for n in ast.walk(ast.parse(src)):
+        if isinstance(n, ast.Raise) and n.exc is not None:
+            assert "NotImplementedError" not in ast.dump(n.exc)
+
+
+def test_artifact_dependent_tests_are_really_implemented():
+    """Each artifact test must have a real body that exercises the evaluator."""
+    import ast
+    import inspect
+    tree = ast.parse(open(__file__).read())
+    fns = {n.name: n for n in ast.walk(tree)
+           if isinstance(n, ast.FunctionDef)}
+    for name in ARTIFACT_TEST_NAMES:
+        assert name in fns, f"{name} missing"
+        body = ast.get_source_segment(open(__file__).read(), fns[name])
+        assert "prelesion_eval" in body, f"{name} does not use the evaluator"
+        for st in ast.walk(fns[name]):
+            assert not (isinstance(st, ast.Raise) and st.exc is not None
+                        and "NotImplementedError" in ast.dump(st.exc))
+        # more than a docstring + pass
+        stmts = [st for st in fns[name].body
+                 if not (isinstance(st, ast.Expr)
+                         and isinstance(st.value, ast.Constant))]
+        assert len(stmts) >= 3, f"{name} body is too thin to be a real test"
+
+
+def test_artifact_guard_uses_real_resolution():
+    """The skip guard must consult real SHA-verified resolution, not a field
+    that does not exist in the frozen manifest (the earlier defect)."""
+    import inspect
+    src = inspect.getsource(_artifacts_present)
+    assert "artifacts_available" in src
+    assert "source_checkpoint_path" not in src
+    cols = set(_manifest("state_manifest.tsv")[0])
+    assert "source_checkpoint_path" not in cols
+    assert {"source_checkpoint_sha256", "repair_head_file_sha256"} <= cols
+
+
+def test_artifact_paths_derive_from_frozen_layout():
+    d = EXIN.derive_artifact_paths("/RUNS", "P1", 31, 4125330, 1485)
+    assert d["run_id"] == "fresh_ceiling_v7_p1_s31"
+    assert d["source_checkpoint"] == \
+        "/RUNS/fresh_ceiling_v7_p1_s31/checkpoints/step_04125330.pt"
+    assert d["repair_head"] == \
+        "/RUNS/fresh_ceiling_v7_p1_s31/post/seed31_u1485_A/head_first_c0.pt"
+
+
+def test_input_resolution_fails_closed_on_sha_mismatch(tmp_path):
+    bad = tmp_path / "canonical_behavioral_item_table.tsv"
+    bad.write_text("not the frozen table\n")
+    os.environ["L3_CANON_TABLE"] = str(bad)
+    try:
+        with pytest.raises(EXIN.InputResolutionError) as e:
+            EXIN.canon_table_path(required=True)
+        assert "SHA256 mismatch" in str(e.value)
+    finally:
+        del os.environ["L3_CANON_TABLE"]
+
+
+def test_input_resolution_fails_closed_on_missing_file():
+    os.environ["L3_CANON_TABLE"] = "/nonexistent/table.tsv"
+    try:
+        with pytest.raises(EXIN.InputResolutionError):
+            EXIN.canon_table_path(required=True)
+    finally:
+        del os.environ["L3_CANON_TABLE"]
+
+
+def test_frozen_official_battery_invariants_recorded():
+    """The external aggregate invariant must match the frozen contract."""
+    inv = EXIN.FROZEN_OFFICIAL_POST_BATTERY
+    assert inv["P4"] == {"Rcan": 1, "Rfree": 1, "N": 0, "C": 0}
+    for slot in ("P1", "P2", "P3"):
+        assert inv[slot] == {"Rcan": 0, "Rfree": 0, "N": 0, "C": 0}
+    for r in _manifest("state_manifest.tsv"):
+        if r["state_kind"] != "POST_REPAIR":
+            continue
+        want = inv[r["slot"]]
+        assert r["frozen_official_post_battery_Rcan_Rfree_N_C"] == \
+            f"{want['Rcan']}/{want['Rfree']}/{want['N']}/{want['C']}"
+
+
+def test_artifact_resolution_fails_closed_when_root_set_but_empty(tmp_path):
+    """A configured-but-wrong run root must RAISE, never silently skip.
+
+    This is the defect class that made the old guard vacuous: it must be
+    impossible for a misconfigured root to look like "artifacts absent".
+    """
+    os.environ["L3_V7_RUN_ROOT"] = str(tmp_path)
+    try:
+        with pytest.raises(EXIN.InputResolutionError) as e:
+            EXIN.resolve_artifacts(required=True)
+        assert "does not exist" in str(e.value)
+        # and the boolean helper reports False rather than raising
+        assert EXIN.artifacts_available() is False
+    finally:
+        del os.environ["L3_V7_RUN_ROOT"]
+
+
+def test_artifact_resolution_rejects_nondirectory_root(tmp_path):
+    f = tmp_path / "not_a_dir"
+    f.write_text("x")
+    os.environ["L3_V7_RUN_ROOT"] = str(f)
+    try:
+        with pytest.raises(EXIN.InputResolutionError):
+            EXIN.v7_run_root(required=True)
+    finally:
+        del os.environ["L3_V7_RUN_ROOT"]
+
+
+DESIGN_COMMIT = "2d240e1fd4b81ca93b4144b772eb21e8700d8ddf"
+FROZEN_CONTRACT_FILES = (
+    "V7_INTACT_ROUTE_VALIDATION_CONTRACT.md", "validation_contract.json",
+    "population_manifests.json", "state_manifest.tsv",
+    "stimulus_manifest_common_unseen_378.tsv",
+    "stimulus_manifest_dorsal_pool_exposed_13.tsv",
+    "stimulus_manifest_seed_unseen.tsv",
+    "stimulus_manifest_trained_real_exact_671.tsv",
+)
+
+
+def test_contract_is_byte_identical_to_design_commit():
+    """The scientific contract may never drift from the preregistration anchor."""
+    import subprocess
+    for name in FROZEN_CONTRACT_FILES:
+        rel = f"paper_programme/v7_prelesion_validation/contract/{name}"
+        p = subprocess.run(["git", "show", f"{DESIGN_COMMIT}:{rel}"],
+                           capture_output=True, cwd=ROOT)
+        assert p.returncode == 0, f"{rel} missing at {DESIGN_COMMIT}"
+        frozen = hashlib.sha256(p.stdout).hexdigest()
+        here = hashlib.sha256(open(os.path.join(ROOT, rel), "rb").read()).hexdigest()
+        assert here == frozen, f"CONTRACT DRIFT in {name}"
+
+
+def test_no_results_namespace_exists():
+    assert not os.path.exists(os.path.join(PKG, "results"))
+
+
+def test_no_training_or_lesion_code_added():
+    """The execution plumbing must stay read-only in kind."""
+    import ast
+    banned = ("backward", "optimizer", "requires_grad_", "load_state_dict",
+              "save", "lesion", "p_max")
+    for rel in ("execution/inputs.py", "scripts/prelesion_eval.py"):
+        src = open(os.path.join(PKG, rel)).read()
+        tree = ast.parse(src)
+        called = {n.func.attr for n in ast.walk(tree)
+                  if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)}
+        for b in banned:
+            assert b not in called, f"{rel} calls banned operation {b}()"
+        assert "torch.save" not in src and "def train" not in src

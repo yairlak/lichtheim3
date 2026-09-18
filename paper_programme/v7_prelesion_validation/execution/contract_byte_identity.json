@@ -1,0 +1,54 @@
+{
+ "design_commit": "2d240e1fd4b81ca93b4144b772eb21e8700d8ddf",
+ "all_equal": true,
+ "files": [
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/V7_INTACT_ROUTE_VALIDATION_CONTRACT.md",
+   "sha_at_2d240e1f": "0f67a253f8b64f7ca2dd52916d5ee4c9eb25414258b383e1e99f2cf37b1e201a",
+   "sha_at_execution_implementation": "0f67a253f8b64f7ca2dd52916d5ee4c9eb25414258b383e1e99f2cf37b1e201a",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/validation_contract.json",
+   "sha_at_2d240e1f": "4a45e7fabb574dd35222d1dcc809c24663c34c9fd7e97b386a48f2d8678c9704",
+   "sha_at_execution_implementation": "4a45e7fabb574dd35222d1dcc809c24663c34c9fd7e97b386a48f2d8678c9704",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/population_manifests.json",
+   "sha_at_2d240e1f": "f428db9e95830c3d8805cc9f6cfedd99128e1fc66ff0ae23a4714b0cc42b2d92",
+   "sha_at_execution_implementation": "f428db9e95830c3d8805cc9f6cfedd99128e1fc66ff0ae23a4714b0cc42b2d92",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/state_manifest.tsv",
+   "sha_at_2d240e1f": "28fde688a8aed12c20d7d0f346665e89fba8f914cc2f5bbdf0f0b33f4bc00316",
+   "sha_at_execution_implementation": "28fde688a8aed12c20d7d0f346665e89fba8f914cc2f5bbdf0f0b33f4bc00316",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/stimulus_manifest_common_unseen_378.tsv",
+   "sha_at_2d240e1f": "f5bd118133acd587ea38df5d2b23b17534bcbc7e8fd9c3d38a0adfb07bbd6d1c",
+   "sha_at_execution_implementation": "f5bd118133acd587ea38df5d2b23b17534bcbc7e8fd9c3d38a0adfb07bbd6d1c",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/stimulus_manifest_dorsal_pool_exposed_13.tsv",
+   "sha_at_2d240e1f": "4b8ca49c08e1e0285781330f93c20187697295368d2599ce616090d65df9665b",
+   "sha_at_execution_implementation": "4b8ca49c08e1e0285781330f93c20187697295368d2599ce616090d65df9665b",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/stimulus_manifest_seed_unseen.tsv",
+   "sha_at_2d240e1f": "04b1b48247230533fe5ecdf27a473a296903b0849eae8bb967d90f3ff713a06a",
+   "sha_at_execution_implementation": "04b1b48247230533fe5ecdf27a473a296903b0849eae8bb967d90f3ff713a06a",
+   "equal": "YES"
+  },
+  {
+   "path": "paper_programme/v7_prelesion_validation/contract/stimulus_manifest_trained_real_exact_671.tsv",
+   "sha_at_2d240e1f": "1287c7a97ba0a210d482817ea628c0afb5b281b66b44bb78856030333c9bdc54",
+   "sha_at_execution_implementation": "1287c7a97ba0a210d482817ea628c0afb5b281b66b44bb78856030333c9bdc54",
+   "equal": "YES"
+  }
+ ]
+}
