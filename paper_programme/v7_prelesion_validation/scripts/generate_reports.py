@@ -26,6 +26,32 @@ import rules as pe                 # noqa: E402  frozen rules, imported not copi
 SLOTS = ("P1", "P2", "P3", "P4")
 ROUTES = ("full", "wm", "ltm")
 
+# The EIGHT binary transition endpoints in SOURCE_POST_PAIRED.json. This is an
+# explicit frozen schema, not a discovered one: reporting must fail closed if
+# the schema drifts, never quietly skip an endpoint or mistake a scalar for a
+# transition table.
+PAIRED_TRANSITION_ENDPOINTS = (
+    "FULL_canonical",
+    "FULL_freear",
+    "WM_canonical",
+    "WM_freear",
+    "LTM_canonical",
+    "LTM_freear",
+    "Naming",
+    "C",
+)
+TRANSITION_KEYS = ("cc", "cw", "wc", "ww", "undefined")
+
+# Present in the frozen file but NOT binary endpoints. Listed so their status
+# is explicit rather than implied by absence.
+PAIRED_CONTINUOUS_SUMMARIES = ("c_ltm_delta_summary", "g_delta_summary")
+PAIRED_CONTINUOUS_SCALARS = ("c_ltm_n_changed", "g_n_changed")
+PAIRED_METADATA = ("n_items_paired",)
+
+
+class ReportSchemaError(RuntimeError):
+    """The frozen paired-result schema is not what reporting requires."""
+
 
 def load(results: str):
     summaries = json.load(open(os.path.join(results, "STATE_SUMMARY.json")))
@@ -123,24 +149,89 @@ def pseudoword_report(states, man) -> str:
     return "\n".join(L) + "\n"
 
 
+def validate_paired_schema(paired: dict) -> None:
+    """Fail closed unless every slot carries every expected transition endpoint.
+
+    A missing endpoint, or an endpoint missing any of cc/cw/wc/ww/undefined, is
+    an error -- never silently skipped.
+    """
+    for slot in SLOTS:
+        if slot not in paired:
+            raise ReportSchemaError(f"SOURCE_POST_PAIRED.json has no slot {slot}")
+        d = paired[slot]
+        for ep in PAIRED_TRANSITION_ENDPOINTS:
+            if ep not in d:
+                raise ReportSchemaError(
+                    f"{slot}: expected transition endpoint {ep!r} is missing")
+            t = d[ep]
+            if not isinstance(t, dict):
+                raise ReportSchemaError(
+                    f"{slot}.{ep} is {type(t).__name__}, not a transition table")
+            missing = [k for k in TRANSITION_KEYS if k not in t]
+            if missing:
+                raise ReportSchemaError(
+                    f"{slot}.{ep} is missing transition keys {missing}")
+
+
 def paired_report(results, states) -> str:
     path = os.path.join(results, "SOURCE_POST_PAIRED.json")
-    paired = json.load(open(path)) if os.path.exists(path) else {}
+    if not os.path.exists(path):
+        raise ReportSchemaError(f"missing frozen result file: {path}")
+    paired = json.load(open(path))
+    validate_paired_schema(paired)
+
     L = ["# V7 SOURCE -> POST_REPAIR PAIRED ANALYSIS", "",
-         "Item-level transitions, computed from the frozen item tables.", ""]
+         "Item-level transitions, read from the frozen SOURCE_POST_PAIRED.json.",
+         "No model was run and no scientific result was recomputed.", ""]
     for slot in SLOTS:
-        L.append(f"## {slot}")
-        d = paired.get(slot, {})
-        for endpoint, t in sorted(d.items()):
-            L.append(f"    {endpoint}: c->c {t['cc']}  c->w {t['cw']}  "
-                     f"w->c {t['wc']}  w->w {t['ww']}")
+        d = paired[slot]
+        L += [f"## {slot}", "",
+              f"    items paired: {d.get('n_items_paired')}", "",
+              "| endpoint | c->c | c->w | w->c | w->w | undefined |",
+              "|---|---|---|---|---|---|"]
+        # iterate the FROZEN tuple, never the file's key order
+        for ep in PAIRED_TRANSITION_ENDPOINTS:
+            t = d[ep]
+            L.append(f"| {ep} | {t['cc']} | {t['cw']} | {t['wc']} | {t['ww']} "
+                     f"| {t['undefined']} |")
+        changed = {ep: d[ep].get("changed_item_ids", [])
+                   for ep in PAIRED_TRANSITION_ENDPOINTS}
+        L += ["", "    changed items per endpoint:"]
+        for ep, ids in changed.items():
+            L.append(f"      {ep}: n={len(ids)}"
+                     + (f"  ids={', '.join(ids)}" if 0 < len(ids) <= 40
+                        else ("  (see SOURCE_POST_PAIRED.json)" if ids else "")))
+
+        # continuous quantities: reported AS continuous, never as transitions
+        L += ["", "    continuous endpoints (not binary transitions):"]
+        for key in PAIRED_CONTINUOUS_SUMMARIES:
+            summ = d.get(key)
+            if isinstance(summ, dict):
+                L.append(f"      {key}: n={summ.get('n')} "
+                         f"mean={_fmt(summ.get('mean'))} sd={_fmt(summ.get('sd'))} "
+                         f"min={_fmt(summ.get('min'))} p50={_fmt(summ.get('p50'))} "
+                         f"max={_fmt(summ.get('max'))}")
+        for key in PAIRED_CONTINUOUS_SCALARS:
+            if key in d:
+                L.append(f"      {key}: {d[key]}")
         L.append("")
+
     L += ["## Interpretation categories", "",
           "    WHAT_ARM_A_REPAIRS              endpoints with w->c > 0",
           "    WHAT_ARM_A_PRESERVES            endpoints with c->w == 0",
           "    WHAT_ARM_A_CHANGES_INCIDENTALLY non-C endpoints with any change",
           "",
-          "Arm A is NOT assumed to affect only C."]
+          "Arm A is NOT assumed to affect only C.", ""]
+    for slot in SLOTS:
+        d = paired[slot]
+        rep = [ep for ep in PAIRED_TRANSITION_ENDPOINTS if d[ep]["wc"] > 0]
+        pres = [ep for ep in PAIRED_TRANSITION_ENDPOINTS if d[ep]["cw"] == 0]
+        inc = [ep for ep in PAIRED_TRANSITION_ENDPOINTS
+               if ep != "C" and (d[ep]["wc"] or d[ep]["cw"])]
+        L += [f"### {slot}",
+              f"    WHAT_ARM_A_REPAIRS              {', '.join(rep) or 'none'}",
+              f"    WHAT_ARM_A_PRESERVES            {', '.join(pres) or 'none'}",
+              f"    WHAT_ARM_A_CHANGES_INCIDENTALLY {', '.join(inc) or 'none'}", ""]
     return "\n".join(L) + "\n"
 
 
@@ -168,6 +259,34 @@ def classify(states) -> dict:
             "pathology_flags": flags}
 
 
+def verify_frozen_results(results: str) -> dict:
+    """Re-verify every file listed in FILE_SHA256SUMS. Reporting must never
+    modify one; this is checked before AND after the reports are written."""
+    import hashlib
+    man = os.path.join(results, "FILE_SHA256SUMS")
+    if not os.path.exists(man):
+        raise ReportSchemaError(f"missing {man}")
+    seen = {}
+    for line in open(man):
+        line = line.strip()
+        if not line:
+            continue
+        want, rel = line.split(None, 1)
+        p = os.path.join(results, rel.strip())
+        if not os.path.exists(p):
+            raise ReportSchemaError(f"frozen result missing: {rel}")
+        h = hashlib.sha256()
+        with open(p, "rb") as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b""):
+                h.update(chunk)
+        got = h.hexdigest()
+        if got != want:
+            raise ReportSchemaError(
+                f"FROZEN RESULT ALTERED: {rel}\n expected {want}\n got      {got}")
+        seen[rel.strip()] = got
+    return seen
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Generate reports from frozen results.")
     ap.add_argument("--results", default=os.path.join(PKG, "results"))
@@ -175,6 +294,7 @@ def main(argv=None) -> int:
     if not os.path.isdir(a.results):
         print(f"no results namespace: {a.results}", file=sys.stderr)
         return 2
+    before = verify_frozen_results(a.results)
     states, man = load(a.results)
     out = os.path.join(a.results, "reports")
     os.makedirs(out, exist_ok=True)
@@ -203,7 +323,11 @@ def main(argv=None) -> int:
              "reporting.", "", "    STOP. RETURN TO CENTRAL."]
     open(os.path.join(out, "CENTRAL_STEERING_HANDOFF_V7_PRELESION_VALIDATION.md"),
          "w").write("\n".join(hand) + "\n")
+    after = verify_frozen_results(a.results)
+    if before != after:
+        raise RuntimeError("REFUSED: a frozen result file changed during reporting")
     print(f"reports written to {out}")
+    print(f"FROZEN_RESULTS_HASH_CHECK=PASS_ALL ({len(after)} files)")
     print(f"PRELESION_VALIDATION_STATUS={cls['PRELESION_VALIDATION_STATUS']}")
     return 0
 

@@ -66,3 +66,55 @@
     local (artifacts absent)   79 passed, 10 skipped
       pre-existing suite unchanged at 40 passed, 10 skipped
     Jean Zay (inputs set)      89 passed, 0 skipped expected
+
+## PREFLIGHT_ATTEMPT_3 / SCIENTIFIC RUN
+
+    dry-run                       PASS (sentinel repair abf126df effective)
+    SCIENTIFIC_RUN                COMPLETE
+    SCIENTIFIC_RERUN_REQUIRED     NO
+    FROZEN_RESULTS_HASH_CHECK     PASS_ALL (sha256sum -c FILE_SHA256SUMS)
+    runner commit                 abf126df21de182569a65880cc05d3bf4560d715
+
+## REPORTING_ATTEMPT_1
+
+    outcome   FAILED_SCHEMA_ITERATION — KeyError: 'cc'
+    stage     rendering V7_SOURCE_REPAIR_PAIRED_ANALYSIS.md only
+    produced  V7_INTACT_ROUTE_VALIDATION_RESULTS.md      (complete)
+              V7_PSEUDOWORD_VALIDATION_RESULTS.md        (complete)
+              V7_SOURCE_REPAIR_PAIRED_ANALYSIS.md        (zero bytes)
+
+    root cause
+      `paired_report` iterated `sorted(d.items())` over every key of each slot
+      in SOURCE_POST_PAIRED.json and treated each as a binary transition table.
+      Only eight of the thirteen entries per slot are transition tables. The
+      other five are `n_items_paired` (metadata), two `*_delta_summary` dicts
+      and two `*_n_changed` scalars — none of which carry `cc`.
+
+    scope     DERIVED REPORTING ONLY. No model, no scientific result, no
+              contract, metric, classification rule, state definition, runner
+              or evaluator was involved.
+
+## REPORTING FIX (this commit)
+
+    * `PAIRED_TRANSITION_ENDPOINTS` — an explicit frozen tuple of the eight
+      binary endpoints. `paired_report` iterates ONLY that tuple, so rendering
+      no longer depends on the file's key order.
+    * Endpoints are NEVER discovered by probing for a "cc" key; a test forbids
+      that and forbids the old `sorted(d.items())` iteration.
+    * `validate_paired_schema` fails closed: a missing slot, a missing expected
+      endpoint, a non-dict endpoint, or an endpoint missing any of
+      cc/cw/wc/ww/undefined raises `ReportSchemaError`. Nothing is skipped.
+    * The continuous quantities are reported AS continuous (n/mean/sd/min/p50/
+      max and the n_changed scalars) and are never given transition semantics.
+      They are not reinterpreted.
+    * `n_items_paired` is rendered as metadata, not as an endpoint.
+    * `verify_frozen_results` re-checks every file in FILE_SHA256SUMS BEFORE and
+      AFTER reporting and refuses if any changed. Reports are written only
+      under `results/reports/`, which FILE_SHA256SUMS does not cover.
+
+    Test counts after the fix
+      local   98 passed, 10 skipped
+        contract suite  40 passed, 10 skipped   (unchanged)
+        runner suite    39 passed               (unchanged)
+        reporting suite 19 passed               (new)
+      cluster 108 passed, 0 skipped expected
