@@ -1,0 +1,153 @@
+{
+ "item_level_columns": [
+  "state_id",
+  "state_sha256",
+  "site",
+  "severity_k",
+  "severity_s",
+  "connectivity_fraction",
+  "n_logical_edges_total",
+  "n_logical_edges_removed",
+  "realization",
+  "mask_seed_digest",
+  "item_id",
+  "activation_seed_digest",
+  "task",
+  "decoding_convention",
+  "target",
+  "prediction",
+  "correct"
+ ],
+ "summary_grouping": [
+  "state_id",
+  "site",
+  "severity_k",
+  "realization",
+  "task",
+  "decoding_convention"
+ ],
+ "aggregate_rule": "aggregate across realizations WITHOUT deleting per-realization rows",
+ "no_adaptive_early_stopping": true,
+ "primary_endpoints": [
+  "rep_canonical_full",
+  "rep_freear_full",
+  "naming_exact",
+  "c_top1"
+ ],
+ "diagnostic_endpoints": [
+  "rep_canonical_wm",
+  "rep_freear_wm",
+  "rep_canonical_ltm",
+  "rep_freear_ltm"
+ ],
+ "endpoint_definitions": [
+  {
+   "key": "rep_canonical_full",
+   "tier": "PRIMARY",
+   "task": "repetition",
+   "route": "full",
+   "decoding_convention": "CANONICAL_FORCED_LENGTH_AR",
+   "population": "R = 29,571 real words (full frozen repetition population)",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS",
+   "undefined_handling": "no undefined items; every item is scored"
+  },
+  {
+   "key": "rep_freear_full",
+   "tier": "PRIMARY",
+   "task": "repetition",
+   "route": "full",
+   "decoding_convention": "GENUINE_FREE_AR",
+   "population": "R = 29,571 real words (full frozen repetition population)",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS; non-termination within FREE_AR_MAX_STEPS=12 is an error",
+   "undefined_handling": "no undefined items"
+  },
+  {
+   "key": "naming_exact",
+   "tier": "PRIMARY",
+   "task": "naming",
+   "route": "full",
+   "decoding_convention": "SEMANTIC_GREEDY_AR_GLOBAL_CAP",
+   "population": "N = 29,571",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS",
+   "undefined_handling": "no undefined items"
+  },
+  {
+   "key": "c_top1",
+   "tier": "PRIMARY",
+   "task": "comprehension",
+   "route": "full",
+   "decoding_convention": "STRICT_TOP1_RETRIEVAL",
+   "population": "C = 27,981 canonical phonological targets, retrieved against the full 29,571 bank",
+   "numerator": "items whose top-1 retrieval is the canonical target",
+   "denominator": "27981",
+   "exactness": "strict top-1 identity",
+   "undefined_handling": "no undefined items"
+  },
+  {
+   "key": "rep_canonical_wm",
+   "tier": "DIAGNOSTIC",
+   "task": "repetition",
+   "route": "wm",
+   "decoding_convention": "CANONICAL_FORCED_LENGTH_AR",
+   "population": "R = 29,571 real words (full frozen repetition population)",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS",
+   "undefined_handling": "no undefined items"
+  },
+  {
+   "key": "rep_freear_wm",
+   "tier": "DIAGNOSTIC",
+   "task": "repetition",
+   "route": "wm",
+   "decoding_convention": "GENUINE_FREE_AR",
+   "population": "R = 29,571 real words (full frozen repetition population)",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS",
+   "undefined_handling": "no undefined items"
+  },
+  {
+   "key": "rep_canonical_ltm",
+   "tier": "DIAGNOSTIC",
+   "task": "repetition",
+   "route": "ltm",
+   "decoding_convention": "CANONICAL_FORCED_LENGTH_AR",
+   "population": "R = 29,571 real words (full frozen repetition population)",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS",
+   "undefined_handling": "no undefined items"
+  },
+  {
+   "key": "rep_freear_ltm",
+   "tier": "DIAGNOSTIC",
+   "task": "repetition",
+   "route": "ltm",
+   "decoding_convention": "GENUINE_FREE_AR",
+   "population": "R = 29,571 real words (full frozen repetition population)",
+   "numerator": "items with exact match",
+   "denominator": "29571",
+   "exactness": "exact phoneme-ID sequence equality after trimming at first EOS",
+   "undefined_handling": "no undefined items"
+  }
+ ],
+ "evaluator_binding": {
+  "CANONICAL_FORCED_LENGTH_AR": "scripts.evaluate_train_lexicon_ceiling.evaluate_forms_ar",
+  "GENUINE_FREE_AR": "train_joint_scratch.JointScratchTrainer.free_ar_repetition semantics (FREE_AR_MAX_STEPS=12, BOS start, first-EOS trim, target length never terminates decoding)",
+  "SEMANTIC_GREEDY_AR_GLOBAL_CAP": "scripts.naming_comprehension.train_tasks.evaluate_naming",
+  "STRICT_TOP1_RETRIEVAL": "scripts.naming_comprehension.train_tasks.evaluate_comprehension_subset"
+ },
+ "excluded": {
+  "pseudoword_lesion_battery": "PSEUDOWORD_PRIMARY_LESION_BATTERY=NO",
+  "ueno_adapted_naming": "UENO_ADAPTED_NAMING_PRIMARY=NO",
+  "hf_lf_split": "HF_LF_PRIMARY_ENDPOINT=NO",
+  "seven_panel_replication": "FULL_SEVEN_PANEL_UENO_REPLICATION=NO"
+ }
+}

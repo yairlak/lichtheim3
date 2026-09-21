@@ -1,0 +1,30 @@
+{
+ "sd_definition": "torch.Tensor.std() of flattened pooled intact activations",
+ "sd_axes": "all sampled items x all hidden dims pooled; flatten then cat",
+ "sd_ddof": 1,
+ "sd_tensor_shape": "scalar per (state, site)",
+ "sd_n_items": 2048,
+ "sd_sample_seed": 7,
+ "sd_sample_rule": "deterministic_sample(range(N), 2048, seed=7), sorted",
+ "sd_batch_size": 256,
+ "model_mode": "eval",
+ "device": "cpu",
+ "dtype": "float32",
+ "forward": "teacher_forced_intact",
+ "site_tensor": {
+  "L1": "final wm.encoder h_n",
+  "L2": "final ltm.encoder h_n, BEFORE to_semantic",
+  "L3": "h0 = tanh(sem_to_h0(s_hat)), AFTER tanh"
+ },
+ "site_historically_calibrated": {
+  "L1": true,
+  "L2": true,
+  "L3": false
+ },
+ "length_handling": "pack_padded_sequence as in the intact forward; the measured h_n is the final state at each item's own true length",
+ "batch_construction": "sorted population, contiguous slices of 256",
+ "flattening": "per-batch .flatten() then torch.cat over batches",
+ "no_lesion": true,
+ "no_activation_noise": true,
+ "procedure_hash": "122ae40c600e639f875bdcb18e588bd32242981af0fa42c0e975a296bc851942"
+}

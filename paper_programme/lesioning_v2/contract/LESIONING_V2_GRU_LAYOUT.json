@@ -1,0 +1,17 @@
+{
+ "torch_version": "2.12.1",
+ "weight_ih_l0_shape": [
+  21,
+  5
+ ],
+ "weight_hh_l0_shape": [
+  21,
+  7
+ ],
+ "three_contiguous_H_blocks": true,
+ "logical_mask_tiles_identically": true,
+ "independent_of_block_order": true,
+ "documented_human_readable_order": "r,z,n",
+ "operator_depends_on_gate_names": false,
+ "verified": true
+}
