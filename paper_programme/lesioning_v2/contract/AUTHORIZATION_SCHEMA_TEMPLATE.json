@@ -1,0 +1,14 @@
+{
+ "_schema": {
+  "token": "string, must equal 'CENTRAL_GO_FOR_SCIENTIFIC_EXECUTION_LESIONING_V2'",
+  "go_for_scientific_execution": "boolean, must be exactly true",
+  "execution_commit": "string, 40-hex git commit; must equal HEAD at run time",
+  "run_matrix_sha256": "string, must equal 'cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a'",
+  "_note": "additional provenance fields are permitted and are non-operative"
+ },
+ "_note": "TEMPLATE ONLY. go_for_scientific_execution is false and execution_commit is a placeholder, so this artifact can never authorize a run.",
+ "token": "CENTRAL_GO_FOR_SCIENTIFIC_EXECUTION_LESIONING_V2",
+ "go_for_scientific_execution": false,
+ "execution_commit": "<EXACT_FINAL_EXECUTION_COMMIT>",
+ "run_matrix_sha256": "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a"
+}

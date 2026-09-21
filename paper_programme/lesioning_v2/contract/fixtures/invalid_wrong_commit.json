@@ -1,0 +1,7 @@
+{
+ "token": "CENTRAL_GO_FOR_SCIENTIFIC_EXECUTION_LESIONING_V2",
+ "go_for_scientific_execution": true,
+ "execution_commit": "0000000000000000000000000000000000000000",
+ "run_matrix_sha256": "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a",
+ "_fixture": "INVALID BY CONSTRUCTION - test use only"
+}

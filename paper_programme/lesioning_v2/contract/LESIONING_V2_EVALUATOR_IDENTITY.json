@@ -1,0 +1,15 @@
+{
+ "evaluator_identity": {
+  "lesion_operator/masks.py": "660b38538f07628a11556ce39f0c81313b1b9ed5980916ee9ff0e9e73514ed5d",
+  "lesion_operator/noise.py": "6868514a6cb00ea4569719cea07c9e364d4403c327da6836042a461a436def9e",
+  "lesion_operator/context.py": "aad0d6725a63bfdcab4d0848f5b883c126adeaf4f5455629290770188a86d1c1",
+  "lesion_operator/sites.py": "b3595c0877b4abc27243e5384b37cd5d42b5e300cdb5b69249af1ae3758fc6ad",
+  "lesion_operator/seeds.py": "369bf7c8bcc9a9fea99db70a89cefa077bf763bd318f599b6ee6c047242041fe",
+  "lesion_operator/sd_procedure.py": "e67b298bfa228f95acefd47364c6d11218a9ade7e8785145e489d58c2069fa2d",
+  "lesion_operator/battery.py": "1cca2e1b2007fd165b65a2847ec335c7653742a67997cd916066028716ca0209",
+  "execution/injection.py": "517680c0e02e3ed5e7dcf7906000701a025f991f407d046e7f55273e56c903a7",
+  "execution/evaluators.py": "dda40e427d3d8c0d47efd7d1d8ad8408c7fc425a710d87c7c5750770f5c174aa",
+  "_combined": "9647fc95a27b3b1cd324f998da6880871e99a8e7e99b4554a5930b10a63ced3f"
+ },
+ "note": "hashes of the exact files whose bytes define scientific behaviour; frozen at the execution-integration commit"
+}

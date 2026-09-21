@@ -1,0 +1,47 @@
+{
+ "authoritative_matrix_sha256": "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a",
+ "diagnostic_endpoints": [
+  "rep_canonical_wm",
+  "rep_freear_wm",
+  "rep_canonical_ltm",
+  "rep_freear_ltm"
+ ],
+ "duplicate_cell_identities": 0,
+ "evaluator_identity": "9647fc95a27b3b1cd324f998da6880871e99a8e7e99b4554a5930b10a63ced3f",
+ "intact_control_rows": 12,
+ "matrix_regenerated_by_runner": false,
+ "missing_cell_identities": 0,
+ "nonzero_lesion_rows": 1800,
+ "plan_name": "LESIONING_V2_EXECUTION_PLAN",
+ "post_repair_only": true,
+ "preflight": {
+  "authorized": false,
+  "evaluator_identity": "9647fc95a27b3b1cd324f998da6880871e99a8e7e99b4554a5930b10a63ced3f",
+  "head_commit": "dfdd2b6d023c788e2693f1dbee4cdd9a78219abc",
+  "matrix_sha256": "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a",
+  "n_cells": 1812,
+  "no_training_path": true,
+  "output_namespace_absent": true,
+  "package_integrity": "OK",
+  "primary_endpoints": [
+   "rep_canonical_full",
+   "rep_freear_full",
+   "naming_exact",
+   "c_top1"
+  ],
+  "scientific_configuration": "UNCHANGED",
+  "sd_constants": "PENDING_TRANSFER",
+  "state_identities": "PENDING_TRANSFER",
+  "torch_version": "2.12.1",
+  "tree_clean": false
+ },
+ "primary_endpoints": [
+  "rep_canonical_full",
+  "rep_freear_full",
+  "naming_exact",
+  "c_top1"
+ ],
+ "scientific_results_included": false,
+ "total_rows": 1812,
+ "unique_executable_cell_identities": 1812
+}
