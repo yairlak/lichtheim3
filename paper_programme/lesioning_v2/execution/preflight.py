@@ -40,6 +40,10 @@ EVALUATOR_IDENTITY_FILES = (
     "lesion_operator/seeds.py", "lesion_operator/sd_procedure.py",
     "lesion_operator/battery.py",
     "execution/injection.py", "execution/evaluators.py",
+    # k>0 scientific output depends on this driver's bytes: it selects the
+    # batch boundaries at which each frozen evaluator is invoked and the ids
+    # the perturbation is derived from.
+    "execution/lesioned_eval.py",
 )
 
 
@@ -244,6 +248,7 @@ def run(out_root: str, *, require_authorization: bool,
     banned_calls = ("backward", "step", "zero_grad", "requires_grad_", "save")
     for rel in EVALUATOR_IDENTITY_FILES + ("execution/cells.py",
                                            "execution/aggregate.py",
+                                           "execution/continuity.py",
                                            "execution/preflight.py",
                                            "scripts/run_lesion_v2.py"):
         p = os.path.join(PKG, rel)
@@ -272,10 +277,11 @@ def run(out_root: str, *, require_authorization: bool,
                 f"exist: {out_root}")
         try:
             man = json.load(open(continuity_manifest))
-            continuity.validate_for_continuation(man, out_root, m)
+            cont = continuity.validate_for_continuation(man, out_root, m)
         except continuity.ContinuityError as e:
             raise PreflightError(f"continuation refused: {e}")
         rep["mode"] = "CONTINUATION"
+        rep["continuation"] = cont
         rep["continuity_manifest_sha256"] = man.get("manifest_sha256")
         rep["existing_complete_k0_cells"] = man.get("n_complete_k0_cells")
         rep["output_namespace_absent"] = False

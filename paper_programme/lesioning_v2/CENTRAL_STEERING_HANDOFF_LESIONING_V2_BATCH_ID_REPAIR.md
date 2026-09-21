@@ -116,3 +116,76 @@ the exact JSON back, and make the FINAL closure commit. Only that commit goes
 to CENTRAL for scientific execution authorization.
 
     STOP. NO REAL LESION EXECUTED.
+
+---
+
+# ADVERSARIAL STATIC AUDIT — findings and repairs
+
+Two real integration omissions were found and fixed. Both would have surfaced
+only on the cluster.
+
+## Finding 1 — `lesioned_eval.py` was outside the scientific identity
+
+The new driver directly determines k>0 output: it chooses the batch boundaries
+at which each frozen evaluator is invoked and the ids the perturbation is
+derived from. It was in `SHA256SUMS` but **not** in `EVALUATOR_IDENTITY_FILES`,
+so it was covered by neither the evaluator identity hash nor the no-training
+AST scan. Its bytes could have changed without altering the evaluator identity.
+
+Fixed: added to `EVALUATOR_IDENTITY_FILES` (which the no-training scan iterates),
+and `execution/continuity.py` added to the no-training scan. A test mutates
+`lesioned_eval.py` and asserts the combined identity actually changes, then
+restores it — proving the binding is real rather than declared.
+
+    LESIONED_EVAL_IN_EVALUATOR_IDENTITY=YES
+    LESIONED_EVAL_IN_PACKAGE_INTEGRITY=YES
+    LESIONED_EVAL_IN_NO_TRAINING_SCAN=YES
+
+## Finding 2 — continuation assumed a flat single-root namespace
+
+`validate_for_continuation` required `abspath(out_root) == manifest.result_root`
+and then demanded exactly 12 COMPLETE k=0 cells under that root. The real
+namespace is
+
+    $SCRATCH/l3_lesion_v2_results_0b22b904/shard_00 .. shard_11
+
+with ONE control per shard, and the repaired run will again invoke the runner
+once per shard with `--out-dir <parent>/shard_XX`. Every shard would therefore
+have been refused: it holds one control, not twelve.
+
+Fixed: validation now has two sanctioned shapes, both re-reading the
+filesystem.
+
+    GLOBAL  out_root IS the parent        -> all 12 must be present
+    SHARD   out_root is a shard beneath it -> only that shard's own control is
+            expected; the other 11 are never looked for, moved or copied
+
+The GLOBAL manifest is still structurally checked in both modes, so a shard
+cannot continue on a manifest that is missing another shard's control or that
+declares any COMPLETE k>0 cell.
+
+## Topology tests added
+
+All 12 shards exercised exactly as the future runner will (global manifest,
+`--out-dir parent/shard_XX`): continuation accepted for every shard, the
+correct local control recognised and skipped, the other 11 absent locally and
+not required, that shard's nonzero rows still eligible. Refused: wrong local
+hash, another shard's control substituted, a global manifest missing a
+control, a manifest declaring COMPLETE k>0, a COMPLETE k>0 cell inside a
+shard, an out_root outside the parent. One test hashes every file in the
+namespace before and after generating and validating all 12 shards and asserts
+nothing changed.
+
+## Provenance truth
+
+Every manifest entry records
+`original_execution_commit = 0b22b90455a30b8d2ee1ca86df0fc96955e4e542`, and
+future k>0 cells carry the repaired commit in their own provenance. Nothing is
+homogenised and no old artifact is rewritten.
+
+## Corrected result parent
+
+Documentation and commands now use
+`$SCRATCH/l3_lesion_v2_results_0b22b904`. The manifest is written under
+`$WORK/l3_lesion_v2_control/`, never inside the results parent — the generator
+refuses an `--out` inside the result root.

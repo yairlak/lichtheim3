@@ -58,7 +58,7 @@ No valid production authorization exists in this repository; a test asserts it.
     git status --porcelain                   # must be empty
 
     export L3_LESION_V2_CONTROL_DIR=$WORK/l3_lesion_v2_control
-    export L3_LESION_V2_RESULTS=$SCRATCH/l3_lesion_v2_results   # OUTSIDE the worktree
+    export L3_LESION_V2_RESULTS=$SCRATCH/l3_lesion_v2_results_0b22b904   # OUTSIDE the worktree
     export L3_LESION_V2_AUTHORIZATION=$L3_LESION_V2_CONTROL_DIR/authorization.json
 
     # stage the two transfer-required artifacts into $L3_LESION_V2_CONTROL_DIR

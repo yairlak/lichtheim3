@@ -5,7 +5,7 @@ Writes ONLY to --out, which must lie OUTSIDE the scientific result namespace.
 Nothing inside the result root is created, modified or deleted.
 
     python generate_continuity_manifest.py \
-        --result-root $SCRATCH/l3_lesion_v2_results \
+        --result-root $SCRATCH/l3_lesion_v2_results_0b22b904 \
         --out $WORK/l3_lesion_v2_control/LESIONING_V2_INTACT_CONTROL_CONTINUITY_MANIFEST.json
 """
 from __future__ import annotations
