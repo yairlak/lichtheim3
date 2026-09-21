@@ -1,6 +1,8 @@
 # LESIONING V2 — BATCH-ID INVARIANCE TEST RECORD
 
-    148 tests passed (128 pre-existing + 20 new). Zero real P1-P4 nonzero forward.
+    local  181 passed. Zero real P1-P4 nonzero forward.
+    cluster 180 passed, 1 skipped (torch-version guard skips by design when
+            already on the canonical runtime).
 
 ## A-J as required by CENTRAL
 

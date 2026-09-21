@@ -1,7 +1,0 @@
-{
-    "status": "PENDING_CLUSTER_READ_ONLY_GENERATION",
-    "note": "Generate read-only on Jean-Zay with scripts/generate_continuity_manifest.py against the real result namespace. Hashes must NOT be fabricated locally.",
-    "original_execution_commit": "0b22b90455a30b8d2ee1ca86df0fc96955e4e542",
-    "expected_k0_cells": 12,
-    "expected_nonzero_complete": 0
-}

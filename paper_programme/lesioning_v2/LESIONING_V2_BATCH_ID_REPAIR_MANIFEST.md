@@ -117,6 +117,25 @@ Old cells keep their original provenance; nothing is rewritten. The final
 package can therefore state truthfully that k=0 carries execution commit
 `0b22b904…` while k>0 carries the repaired commit.
 
+## 5a. Cluster continuity — CLOSED
+
+The read-only manifest was generated on Jean-Zay against
+`$SCRATCH/l3_lesion_v2_results_0b22b904` and imported byte-identical as
+`LESIONING_V2_INTACT_CONTROL_CONTINUITY_MANIFEST.json`:
+
+    outer file SHA256      a800a75f79a15ce099a3f2e35b1068bab8fd3ec252547329d07575d9a68e1467
+    internal manifest_sha256
+                           5fc1fd38f3ff6933f7474306255cdf166499da2920bb0648259d844c818943a9
+    EXISTING_K0_COMPLETE            12/12
+    NONZERO_LESION_CELL_FINALIZED   0
+
+One control per shard root, `shard_00`..`shard_11`, every entry stamped
+`original_execution_commit = 0b22b90455a30b8d2ee1ca86df0fc96955e4e542`. The
+scan left the namespace unaltered (12 COMPLETE, 0 staging, 0 failed).
+
+    EXISTING_K0_REUSE_STATUS=SAFE_TO_REUSE
+    BATCH_ID_REPAIR_STATUS=READY_FOR_AUTHORIZATION
+
 ## 6. Authorization
 
 Unchanged and not weakened. The previous authorization for `0b22b904` is VOID

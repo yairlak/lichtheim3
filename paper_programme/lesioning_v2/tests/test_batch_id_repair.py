@@ -670,3 +670,96 @@ def test_lesioned_eval_is_in_the_no_training_scan():
     assert "EVALUATOR_IDENTITY_FILES" in scan
     assert "execution/lesioned_eval.py" in preflight.EVALUATOR_IDENTITY_FILES
     assert "execution/continuity.py" in scan
+
+
+# ============================================================================
+#  CLOSURE — the real cluster-generated continuity manifest
+#
+#  Pins the imported artifact so it cannot drift. The outer file SHA and the
+#  internal manifest_sha256 are DIFFERENT quantities by design: the first
+#  hashes the final JSON bytes, the second is the generator's logical digest
+#  over the manifest body. Neither is derived from the other.
+# ============================================================================
+REAL_MANIFEST = os.path.join(
+    PKG, "LESIONING_V2_INTACT_CONTROL_CONTINUITY_MANIFEST.json")
+MANIFEST_FILE_SHA = \
+    "a800a75f79a15ce099a3f2e35b1068bab8fd3ec252547329d07575d9a68e1467"
+MANIFEST_INTERNAL_SHA = \
+    "5fc1fd38f3ff6933f7474306255cdf166499da2920bb0648259d844c818943a9"
+BASE_EXECUTION_COMMIT = "0b22b90455a30b8d2ee1ca86df0fc96955e4e542"
+
+
+def _real_manifest():
+    return json.load(open(REAL_MANIFEST))
+
+
+def test_closure_manifest_outer_file_sha_is_exact():
+    got = hashlib.sha256(open(REAL_MANIFEST, "rb").read()).hexdigest()
+    assert got == MANIFEST_FILE_SHA, "the imported manifest was modified"
+
+
+def test_closure_manifest_internal_digest_is_exact_and_recomputes():
+    m = _real_manifest()
+    assert m["manifest_sha256"] == MANIFEST_INTERNAL_SHA
+    body = {k: v for k, v in m.items() if k != "manifest_sha256"}
+    rec = hashlib.sha256(
+        json.dumps(body, sort_keys=True).encode("utf-8")).hexdigest()
+    assert rec == MANIFEST_INTERNAL_SHA
+
+
+def test_closure_outer_and_internal_digests_are_distinct_concepts():
+    assert MANIFEST_FILE_SHA != MANIFEST_INTERNAL_SHA
+
+
+def test_closure_manifest_declares_twelve_controls_and_no_nonzero():
+    m = _real_manifest()
+    assert m["n_complete_k0_cells"] == 12
+    assert m["n_complete_nonzero_cells"] == 0
+    assert len(m["cells"]) == 12
+
+
+def test_closure_manifest_binds_the_authoritative_matrix():
+    assert _real_manifest()["run_matrix_sha256"] == \
+        "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a"
+
+
+def test_closure_every_control_carries_the_ORIGINAL_execution_commit():
+    """k=0 provenance must stay the old commit; it is never homogenised."""
+    m = _real_manifest()
+    assert m["original_execution_commit"] == BASE_EXECUTION_COMMIT
+    for c in m["cells"]:
+        assert c["original_execution_commit"] == BASE_EXECUTION_COMMIT
+        assert int(c["severity_k"]) == 0
+        assert c["status"] == "COMPLETE"
+        assert c["restoration_verified"] is True
+
+
+def test_closure_manifest_passes_the_repository_validator():
+    declared = continuity._check_manifest_structure(_real_manifest(), MATRIX)
+    assert len(declared) == 12
+    k0 = {cells.cell_identity(r) for r in MATRIX["cells"]
+          if int(r["severity_k"]) == 0}
+    assert set(declared) == k0
+
+
+def test_closure_one_control_per_shard_root():
+    m = _real_manifest()
+    shards = [c["relative_location"].split("/")[0] for c in m["cells"]]
+    assert sorted(shards) == [f"shard_{i:02d}" for i in range(12)]
+
+
+def test_closure_cell_keys_agree_with_authoritative_rows():
+    byid = {cells.cell_identity(r): r for r in MATRIX["cells"]}
+    for c in _real_manifest()["cells"]:
+        assert c["cell_key"] == cells.cell_key(byid[c["cell_identity"]])
+
+
+def test_closure_manifest_records_the_real_results_parent():
+    assert _real_manifest()["result_root"].endswith(
+        "l3_lesion_v2_results_0b22b904")
+
+
+def test_closure_no_pending_placeholder_remains():
+    assert not os.path.exists(os.path.join(
+        PKG, "contract",
+        "LESIONING_V2_INTACT_CONTROL_CONTINUITY_MANIFEST.PENDING.json"))
