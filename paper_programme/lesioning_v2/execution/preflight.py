@@ -87,8 +87,15 @@ def _recompute_matrix_sha(m: Dict) -> str:
 
 
 def run(out_root: str, *, require_authorization: bool,
-        transfer_dir: str = None, allow_missing_transfer: bool = False) -> Dict:
-    """Execute checks A-L. `require_authorization` is False only for --dry-run."""
+        transfer_dir: str = None, allow_missing_transfer: bool = False,
+        continuity_manifest: str = None) -> Dict:
+    """Execute checks A-L. `require_authorization` is False only for --dry-run.
+
+    `continuity_manifest` enables the ONLY sanctioned way to run into an
+    existing namespace: the manifest must validate that namespace as exactly
+    the 12 COMPLETE k=0 controls and nothing else. Absent it, check L refuses
+    any existing namespace, as before.
+    """
     rep: Dict[str, object] = {}
 
     # ---- A. execution commit (verified against the authorization, below) ---
@@ -254,10 +261,31 @@ def run(out_root: str, *, require_authorization: bool,
     rep["no_training_path"] = True
 
     # ---- L. output namespace -------------------------------------------------
-    if os.path.exists(out_root):
-        raise PreflightError(
-            f"REFUSED: scientific result namespace already exists: {out_root}")
-    rep["output_namespace_absent"] = True
+    if continuity_manifest:
+        from . import continuity
+        if not os.path.exists(continuity_manifest):
+            raise PreflightError(
+                f"continuity manifest not found: {continuity_manifest}")
+        if not os.path.isdir(out_root):
+            raise PreflightError(
+                "continuation requested but the result namespace does not "
+                f"exist: {out_root}")
+        try:
+            man = json.load(open(continuity_manifest))
+            continuity.validate_for_continuation(man, out_root, m)
+        except continuity.ContinuityError as e:
+            raise PreflightError(f"continuation refused: {e}")
+        rep["mode"] = "CONTINUATION"
+        rep["continuity_manifest_sha256"] = man.get("manifest_sha256")
+        rep["existing_complete_k0_cells"] = man.get("n_complete_k0_cells")
+        rep["output_namespace_absent"] = False
+    else:
+        if os.path.exists(out_root):
+            raise PreflightError(
+                f"REFUSED: scientific result namespace already exists: "
+                f"{out_root}\n  (a continuation requires --continuity-manifest)")
+        rep["mode"] = "FRESH"
+        rep["output_namespace_absent"] = True
 
     # ---- A (completed): authorization binds commit AND matrix ----------------
     if require_authorization:

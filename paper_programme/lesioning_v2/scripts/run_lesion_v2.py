@@ -28,7 +28,8 @@ for p in (REPO, os.path.join(REPO, "paper_programme", "v7_prelesion_validation",
         sys.path.insert(0, p)
 
 from paper_programme.lesioning_v2.execution import (  # noqa: E402
-    aggregate, authorization, cells, evaluators, injection, preflight)
+    aggregate, authorization, cells, evaluators, injection, lesioned_eval,
+    preflight)
 from paper_programme.lesioning_v2.lesion_operator import (  # noqa: E402
     battery, context, masks)
 from paper_programme.lesioning_v2.lesion_operator.sites import SITES  # noqa: E402
@@ -83,22 +84,34 @@ def run_cell(row: dict, state_cache: dict, sd_constants: dict,
 
     bank = list(range(len(tr.entries)))
     comp = list(tr.comp_idx)
-    item_ids = [evaluators.item_id(i) for i in bank]
     sd_site = float(sd_constants["constants"][f"{state_id}/{row['site']}"]
                     ["sample_sd"])
 
-    eta_fn = None
-    if k > 0:
-        eta_fn = injection.batch_eta_fn(row["state_sha256"], row["site"],
-                                        int(row["realization"]), item_ids, k,
-                                        sd_site)
     cell_masks = masks.build_mask(row["state_sha256"], site,
                                   int(row["realization"]), k)
 
-    with context.connectivity_lesion(model, cell_masks):
-        with injection.activation_injection(model, row["site"], eta_fn):
-            item_rows = evaluators.evaluate_endpoints(
-                tr, model, battery.ALL_ENDPOINTS, bank, comp)
+    if k == 0:
+        # INTACT CONTROL -- the original path, unchanged. The null perturbation
+        # still installs and removes the same hook, so the control traverses a
+        # byte-identical evaluator path; it is deliberately NOT routed through
+        # the nonzero batching driver.
+        with context.connectivity_lesion(model, cell_masks):
+            with injection.activation_injection(model, row["site"], None):
+                item_rows = evaluators.evaluate_endpoints(
+                    tr, model, battery.ALL_ENDPOINTS, bank, comp)
+    else:
+        # NONZERO -- each frozen evaluator is driven one chunk at a time at its
+        # OWN batch size, with the hook installed per chunk from exactly that
+        # chunk's GLOBAL item ids.
+        def make_eta(batch_item_ids):
+            return injection.batch_eta_fn(
+                row["state_sha256"], row["site"], int(row["realization"]),
+                batch_item_ids, k, sd_site)
+
+        with context.connectivity_lesion(model, cell_masks):
+            item_rows = lesioned_eval.evaluate_endpoints_lesioned(
+                tr, model, battery.ALL_ENDPOINTS, bank, comp, row["site"],
+                make_eta)
 
     restored = context.parameter_digest(model) == pristine
     pe.assert_source_unchanged(ck, ck_before)
@@ -158,6 +171,11 @@ def main(argv=None) -> int:
                     help="external execution-control directory holding the two "
                          "transfer-required artifacts")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--continuity-manifest", default=None,
+                    help="explicit, fail-closed continuation into an existing "
+                         "namespace validated as exactly the 12 COMPLETE k=0 "
+                         "controls. Without it an existing namespace is "
+                         "refused, as before.")
     ap.add_argument("--plan-out", default=None)
     ap.add_argument("--shard", type=int, default=None,
                     help="scheduler shard index; partitions cells by "
@@ -170,7 +188,8 @@ def main(argv=None) -> int:
         rep = preflight.run(a.out_dir,
                             require_authorization=not a.dry_run,
                             transfer_dir=a.transfer_dir,
-                            allow_missing_transfer=a.dry_run)
+                            allow_missing_transfer=a.dry_run,
+                            continuity_manifest=a.continuity_manifest)
     except (preflight.PreflightError,
             authorization.AuthorizationRefused) as e:
         print(f"PREFLIGHT_FAIL\n{e}", file=sys.stderr)
@@ -179,7 +198,8 @@ def main(argv=None) -> int:
     m = _matrix()
     plan = execution_plan(m, rep)
     print("PREFLIGHT_OK")
-    for kk in ("head_commit", "matrix_sha256", "n_cells", "package_integrity",
+    for kk in ("head_commit", "matrix_sha256", "n_cells", "mode",
+               "package_integrity",
                "scientific_configuration", "no_training_path",
                "output_namespace_absent", "tree_clean"):
         print(f"  {kk} = {rep.get(kk)}")
