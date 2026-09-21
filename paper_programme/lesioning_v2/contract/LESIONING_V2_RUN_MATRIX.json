@@ -52590,7 +52590,7 @@
   }
  ],
  "state_sha_resolved": true,
- "state_sha_source": "frozen identities (deterministic)",
+ "state_sha_source": "cluster verify_states.py",
  "frozen_identity": {
   "P1_POST_REPAIR": {
    "source_checkpoint_sha256": "8e5188055ce5a3fda361b16b482b1010c124473806f07448fe0cd0fd9a7bc707",
@@ -52615,5 +52615,5 @@
   "P3_POST_REPAIR": "1ed7ace0a0297cae6ad0c7692b272949dbd882d2e5434697cf6c35f79a24e783",
   "P4_POST_REPAIR": "1d2d4c6a58e40ae93fdd02552f9fc7e9ee7ceb9dc2bc097673ae6344e3107711"
  },
- "matrix_sha256": "b4d3c98816b46f59afb3e32f081fa073dd5a48cd27f2279fdaccb1f47ca6887c"
+ "matrix_sha256": "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a"
 }

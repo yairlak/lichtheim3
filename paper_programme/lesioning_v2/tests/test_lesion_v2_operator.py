@@ -388,3 +388,76 @@ def test_run_matrix_is_frozen_and_consistent():
         site = SITES[c["site"]]
         assert c["n_logical_edges_removed"] == masks.n_removed(site,
                                                                c["severity_k"])
+
+
+# ============================================================= closure ======
+#  Canonical Jean-Zay artifacts (torch 2.6.0). These pin the binding hashes so
+#  a later edit to the matrix or the layout record cannot pass unnoticed.
+# ============================================================================
+CANON = os.path.join(PKG, "contract", "CANONICAL_CLUSTER_ARTIFACTS.json")
+RUN_MATRIX_SEMANTIC_SHA = \
+    "cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a"
+
+
+def _sha_file(p):
+    import hashlib
+    return hashlib.sha256(open(p, "rb").read()).hexdigest()
+
+
+def test_canonical_artifact_record_exists():
+    c = json.load(open(CANON))
+    assert c["run_matrix_semantic_sha256"] == RUN_MATRIX_SEMANTIC_SHA
+    assert c["scientific_lesion_executed"] is False
+    assert c["go_for_scientific_execution"] is False
+    assert c["intact_sd_procedure_hash"] == sd_procedure.procedure_hash()
+
+
+def test_present_canonical_artifacts_match_their_binding_hashes():
+    c = json.load(open(CANON))
+    for name, rec in c["artifacts"].items():
+        p = os.path.join(PKG, "contract", name)
+        if rec["present_in_repo"]:
+            assert os.path.exists(p), f"{name} declared present but missing"
+            assert _sha_file(p) == rec["file_sha256"], f"{name} hash drift"
+        else:
+            assert not os.path.exists(p), \
+                f"{name} is declared transfer-required but a local file exists"
+
+
+def test_run_matrix_semantic_hash_is_the_cluster_one():
+    from paper_programme.lesioning_v2.scripts.build_run_matrix import matrix_sha256
+    m = json.load(open(os.path.join(PKG, "contract",
+                                    "LESIONING_V2_RUN_MATRIX.json")))
+    assert m["matrix_sha256"] == RUN_MATRIX_SEMANTIC_SHA
+    assert matrix_sha256(m) == RUN_MATRIX_SEMANTIC_SHA     # recomputed, not trusted
+    assert m["state_sha_resolved"] is True
+    assert m["n_cells"] == 1812 and m["n_lesion_cells"] == 1800
+
+
+def test_authorization_must_bind_the_cluster_matrix_hash(tmp_path, monkeypatch):
+    """An authorization for the pre-cluster matrix must NOT license this one."""
+    stale = tmp_path / "stale.json"
+    stale.write_text(json.dumps({
+        "token": guard.REQUIRED_TOKEN, "go_for_scientific_execution": True,
+        "run_matrix_sha256":
+            "b4d3c98816b46f59afb3e32f081fa073dd5a48cd27f2279fdaccb1f47ca6887c"}))
+    monkeypatch.setenv(guard.AUTH_ENV, str(stale))
+    with pytest.raises(guard.ExecutionRefused):
+        guard.check_authorized(RUN_MATRIX_SEMANTIC_SHA)
+
+
+def test_sd_constants_absent_means_execution_still_refused():
+    """Until the SD constants file is transferred, no real run can proceed."""
+    p = os.path.join(PKG, "contract", "LESIONING_V2_INTACT_SD_CONSTANTS.json")
+    assert not os.path.exists(p)
+
+
+def test_gru_layout_record_is_the_canonical_2_6_0_one():
+    g = json.load(open(os.path.join(PKG, "contract",
+                                    "LESIONING_V2_GRU_LAYOUT.json")))
+    assert g["torch_version"] == "2.6.0"
+    assert g["three_contiguous_H_blocks"] is True
+    assert g["logical_mask_tiles_identically"] is True
+    assert g["operator_depends_on_gate_names"] is False
+    assert g["documented_human_readable_order"] == "r,z,n"
+    assert g["verified"] is True

@@ -1,5 +1,5 @@
 {
- "torch_version": "2.12.1",
+ "torch_version": "2.6.0",
  "weight_ih_l0_shape": [
   21,
   5

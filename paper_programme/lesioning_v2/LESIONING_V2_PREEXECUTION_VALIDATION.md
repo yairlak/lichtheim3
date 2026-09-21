@@ -1,11 +1,14 @@
 # LESIONING V2 — PRE-EXECUTION VALIDATION
 
-    DATE  2026-09-21
+    DATE  2026-09-21 (closed 2026-09-21 after cluster validation)
     SCIENTIFIC_LESION_EXECUTED = NO
+    ALL THREE CLUSTER GATES PASSED under torch 2.6.0
 
 ## 1. What was validated here (local, synthetic)
 
-    64 tests passed, 0 failed, 0 skipped
+    70 tests passed, 0 failed, 0 skipped
+    (64 at implementation freeze + 6 closure tests pinning the
+     canonical artifact hashes and the matrix-bound authorization)
 
 Covering all 23 required checks:
 
@@ -43,29 +46,70 @@ Runner behaviour:
     (no flag, no auth)   refuses; currently at the SD gate, and at the
                          authorization guard once SD constants exist
 
-## 2. What CANNOT be validated locally — the three cluster gates
+## 2. Cluster gates — ALL PASSED (torch 2.6.0)
 
-The P1-P4 artifacts are on Jean Zay, not on this machine. These three gates are
-implemented and ready but must run there.
+    IMPLEMENTATION_TESTS         = 64 PASS on the cluster
+    GATE 1  verify_states.py     PASS   L1/L2/L3 tensors verified on the
+                                        ACTUAL P1-P4 POST_REPAIR state_dicts
+    GATE 2  verify_gru_layout.py PASS   under the canonical torch 2.6.0
+    GATE 3  extract_intact_sd.py PASS   intact-only SD constants frozen
 
-    GATE 1  verify_states.py      actual P1-P4 state_dict names/shapes
-    GATE 2  verify_gru_layout.py  torch 2.6.0 GRU layout
-    GATE 3  extract_intact_sd.py  intact-only SD constants
+    L1_TENSOR_VERIFIED           = YES
+    L2_TENSOR_VERIFIED           = YES
+    L3_TENSOR_VERIFIED           = YES
+    TORCH_GRU_LAYOUT_VERIFIED    = YES
+    INTACT_SD_PROCEDURE_FROZEN   = YES
+    INTACT_SD_CONSTANTS_FROZEN   = YES
 
-GATE 2 has been run locally under torch 2.12.1 and PASSES
-(`contract/LESIONING_V2_GRU_LAYOUT.json`), but the canonical environment is
-2.6.0 and the record must be produced there. Note the operator does not depend
-on the documented gate ORDER at all — only on the (3H, D) shape invariant — so
-a layout change could not silently corrupt a mask; a test proves the tiling is
-invariant under permutation of the three blocks.
+GRU runtime under 2.6.0: `three_contiguous_H_blocks=true`,
+`logical_mask_tiles_identically=true`, `operator_depends_on_gate_names=false`,
+documented order `r,z,n`. The operator never consults that order — only the
+(3H, D) shape invariant — and a test proves the tiling is invariant under
+permutation of the three blocks.
 
-Until all three gates pass on the cluster:
+### Frozen intact site SDs
 
-    L1_TENSOR_VERIFIED           = NO (pending GATE 1)
-    L2_TENSOR_VERIFIED           = NO (pending GATE 1)
-    L3_TENSOR_VERIFIED           = NO (pending GATE 1)
-    TORCH_GRU_LAYOUT_VERIFIED    = NO (pending GATE 2 under 2.6.0)
-    INTACT_SD_CONSTANTS_FROZEN   = NO (pending GATE 3)
+    state              L1         L2         L3
+    P1_POST_REPAIR     0.492585   0.524076   0.820609
+    P2_POST_REPAIR     0.477633   0.535038   0.824531
+    P3_POST_REPAIR     0.491430   0.572050   0.839828
+    P4_POST_REPAIR     0.482054   0.489595   0.802448
+
+    procedure hash 122ae40c600e639f875bdcb18e588bd32242981af0fa42c0e975a296bc851942
+
+These are recorded for the written record. The OPERATIONAL source is the
+transferred `LESIONING_V2_INTACT_SD_CONSTANTS.json` with its full per-constant
+provenance; the values above must never be hand-entered into an execution path.
+
+At k=15 the perturbation half-width equals the site SD above; the distribution
+SD is that value divided by sqrt(3) (e.g. P1/L3: half-width 0.820609,
+distribution SD 0.473779).
+
+### Canonical artifacts and their binding hashes
+
+    LESIONING_V2_RUN_MATRIX.json          751a71d6...de150   in repo
+    LESIONING_V2_GRU_LAYOUT.json          762d9547...b49c37  in repo
+    LESIONING_V2_STATE_VERIFICATION.json  d216fe56...f96349  TRANSFER REQUIRED
+    LESIONING_V2_INTACT_SD_CONSTANTS.json 3c6dcd35...b0602   TRANSFER REQUIRED
+
+    RUN_MATRIX_SEMANTIC_SHA256
+    cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a
+
+The run matrix and the GRU layout record were **reproduced byte-identically off
+the cluster** from the frozen code, and their installed copies match the
+canonical hashes exactly — an independent confirmation that the cluster ran this
+code and nothing else.
+
+The other two artifacts contain cluster-local absolute paths, deployed-head
+digests, the population hash and descriptive statistics that cannot be derived
+off-cluster. They were NOT reconstructed: fabricating a file to match a
+published hash would defeat the purpose of the hash. They must be transferred
+into `contract/` and verified against the hashes above before execution. A test
+asserts they are absent while declared transfer-required, so the two states
+cannot be confused.
+
+Until `LESIONING_V2_INTACT_SD_CONSTANTS.json` is present, the runner refuses any
+real run at the SD gate — the safe failure.
 
 ## 3. Exact Jean-Zay commands
 
@@ -99,8 +143,13 @@ Until all three gates pass on the cluster:
     # dry run only. This must NOT be followed by a real run.
     python paper_programme/lesioning_v2/scripts/run_lesion_v2.py --dry-run
 
-Then STOP and return to CENTRAL with the three gate artifacts. A real run
-requires an authorization artifact CENTRAL has not issued.
+All three gates have now been run and passed. A real run still requires an
+authorization artifact CENTRAL has not issued, and that artifact must bind
+
+    run_matrix_sha256 = cd48e99cc95fe959315b599d3a1ccbfa4093f0fd5ff3aa7cd3c124a41071732a
+
+An authorization naming the earlier pre-cluster matrix (`b4d3c988...`) is
+refused; a test pins that behaviour.
 
 ## 4. Hard-stop conditions (section 15), all implemented
 
