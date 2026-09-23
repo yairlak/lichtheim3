@@ -25,7 +25,9 @@ def build(results_parent: str, res: Dict, cell_rows: Sequence[Dict],
             realizations.setdefault(r["state_id"], set()).add(r["realization"])
     return {
         "execution_status": "COMPLETE",
-        "validity_status": "PASS",
+        "validity_status": (
+            "PASS" if res["comprehension_repair"]["recovery_status"]
+            == "LOSSLESS_FOR_C_TOP1" else "FAIL"),
         "results_parent": os.path.abspath(results_parent),
         "execution_commits": {
             "k0_controls": K0_EXECUTION_COMMIT,
@@ -82,6 +84,16 @@ def build(results_parent: str, res: Dict, cell_rows: Sequence[Dict],
         "no_lesion_applied": True,
         "generated_artifact_sha256": dict(sorted(artifact_hashes.items())),
         "excluded_from_this_package": dict(battery.EXCLUDED),
+        "comprehension_encoding_bug_detected": True,
+        "comprehension_encoding_recovery":
+            res["comprehension_repair"]["recovery_status"],
+        "comprehension_source_correct_field_valid": False,
+        "comprehension_recovery_field": "prediction",
+        "comprehension_prediction_identity_preserved": False,
+        "comprehension_top1_correctness_preserved": True,
+        "comprehension_repair_counts": dict(res["comprehension_counters"]),
+        "comprehension_repair": res["comprehension_repair"],
+        "endpoints_recoded": ["c_top1"],
         "statistical_inference_performed": False,
         "severity_selected": False,
         "models_pooled": False,

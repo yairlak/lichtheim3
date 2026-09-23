@@ -18,7 +18,8 @@ if REPO not in sys.path:
     sys.path.insert(0, REPO)
 
 from paper_programme.lesioning_v2.post_analysis import (  # noqa: E402
-    aggregate_multishard as agg, curves, figures, io_utils, report, validate)
+    aggregate_multishard as agg, comprehension_repair, curves, figures,
+    io_utils, report, validate)
 from paper_programme.lesioning_v2.post_analysis.io_utils import AnalysisError  # noqa: E402
 
 
@@ -61,6 +62,10 @@ def main(argv=None) -> int:
         art.update(figures.primary_figures(curve, out))
         art.update(figures.diagnostic_figures(curve, out))
 
+    art["COMPREHENSION_ENCODING_REPAIR.json"] = comprehension_repair.write(
+        os.path.join(out, "COMPREHENSION_ENCODING_REPAIR.json"),
+        res["comprehension_repair"])
+
     val = validate.build(a.results_parent, res, rows, consistency, art)
     art["ANALYSIS_VALIDATION.json"] = validate.write(
         os.path.join(out, "ANALYSIS_VALIDATION.json"), val)
@@ -77,8 +82,15 @@ def main(argv=None) -> int:
         for k in sorted(art):
             fh.write(f"{art[k]}  {k}\n")
 
+    cr = res["comprehension_repair"]
     print(f"cells={res['census']['n_cells']} rows={len(rows)} "
           f"(expected {agg.EXPECTED_ROWS})")
+    print(f"c_top1 recovery: {cr['recovery_status']}  "
+          f"comprehension rows={cr['counts']['n_comprehension_rows']}  "
+          f"pred1={cr['counts']['n_prediction_1']} "
+          f"pred0={cr['counts']['n_prediction_0']}  "
+          f"source!=effective={cr['counts']['n_source_differs_from_effective']}")
+    print(f"VALIDITY_STATUS={val['validity_status']}")
     print(f"artifacts written to {out}:")
     for k in sorted(art):
         print(f"  {art[k]}  {k}")

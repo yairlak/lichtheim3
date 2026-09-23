@@ -92,7 +92,7 @@ def primary_figures(curve: Sequence[Dict], out_dir: str) -> Dict[str, str]:
     out = {}
     for site in SITES:
         p = os.path.join(out_dir, "figures", f"PRIMARY_{site}.png")
-        out[f"PRIMARY_{site}.png"] = _figure(
+        out[os.path.join("figures", f"PRIMARY_{site}.png")] = _figure(
             curve, site, list(battery.PRIMARY),
             f"Lesioning V2 - site {site} - PRIMARY endpoints (all k=0..15)", p)
     return out
@@ -104,7 +104,7 @@ def diagnostic_figures(curve: Sequence[Dict], out_dir: str) -> Dict[str, str]:
     out = {}
     for site in SITES:
         p = os.path.join(out_dir, "figures_diagnostic", f"DIAGNOSTIC_{site}.png")
-        out[f"DIAGNOSTIC_{site}.png"] = _figure(
+        out[os.path.join("figures_diagnostic", f"DIAGNOSTIC_{site}.png")] = _figure(
             curve, site, list(battery.DIAGNOSTIC),
             f"Lesioning V2 - site {site} - DIAGNOSTIC route-isolated "
             f"(explanatory only)", p)

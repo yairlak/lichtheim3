@@ -24,13 +24,14 @@ if REPO not in sys.path:
     sys.path.insert(0, REPO)
 
 from paper_programme.lesioning_v2.execution import cells, preflight  # noqa: E402
-from paper_programme.lesioning_v2.post_analysis import endpoints, io_utils  # noqa: E402
+from paper_programme.lesioning_v2.post_analysis import (  # noqa: E402
+    comprehension_repair, endpoints, io_utils)
 from paper_programme.lesioning_v2.post_analysis.io_utils import AnalysisError  # noqa: E402
 
 CANONICAL_COLUMNS = (
     "state_id", "site", "severity_k", "severity_s", "realization",
     "endpoint", "tier", "route", "task", "decoding_convention",
-    "n", "correct", "exact_match",
+    "n", "correct", "exact_match", "correctness_source",
 )
 EXPECTED_CELLS = 1812
 EXPECTED_K0 = 12
@@ -100,22 +101,33 @@ def reconcile(found: List[Dict], matrix: Dict) -> Dict:
             "n_cells": len(seen), "n_k0": k0, "n_nonzero": nz}
 
 
-def endpoint_rows_for_cell(marker: Dict, row: Dict) -> List[Dict]:
+def endpoint_rows_for_cell(marker: Dict, row: Dict,
+                           counters: Dict = None) -> List[Dict]:
     """Reduce one cell's item rows to its 8 endpoint rows.
 
     Grouping is on the scientific triple, so each repetition route keeps its
     OWN denominator; routes are never pooled.
+
+    For the frozen c_top1 endpoint the correctness bit is taken from the
+    serialized `prediction` field, which is where the execution adapters
+    actually stored it (see `comprehension_repair`). Every other endpoint uses
+    its stored `correct` untouched. The metric itself is unchanged.
     """
     acc: Dict[tuple, Dict] = {}
     for r in io_utils.read_items(marker["_dir"]):
         triple = (r["task"], r["route"], r["decoding_convention"])
         e = endpoints.resolve(*triple)
+        eff, source = comprehension_repair.effective_correct(r, counters)
         a = acc.setdefault(triple, {"endpoint": e.key, "tier": e.tier,
                                     "task": e.task, "route": e.route,
                                     "decoding_convention": e.decoding_convention,
-                                    "n": 0, "correct": 0})
+                                    "n": 0, "correct": 0,
+                                    "correctness_source": source})
+        if a["correctness_source"] != source:
+            raise AnalysisError(
+                f"{marker['cell_key']}: {e.key} mixes correctness sources")
         a["n"] += 1
-        a["correct"] += int(r["correct"])
+        a["correct"] += eff
     if len(acc) != endpoints.EXPECTED_ENDPOINTS_PER_CELL:
         raise AnalysisError(
             f"{marker['cell_key']}: found {len(acc)} endpoint groups, expected "
@@ -136,7 +148,7 @@ def endpoint_rows_for_cell(marker: Dict, row: Dict) -> List[Dict]:
             "n": a["n"], "correct": a["correct"],
             "exact_match": (a["correct"] / a["n"]) if a["n"] else None,
             **{k: a[k] for k in ("endpoint", "tier", "task", "route",
-                                 "decoding_convention")},
+                                 "decoding_convention", "correctness_source")},
         })
     return out
 
@@ -150,16 +162,23 @@ def build(results_parent: str, verify: bool = True) -> Dict:
         raise AnalysisError(
             f"lifecycle not clean: staging={life['staging']} "
             f"failed={life['failed']}")
+    counters = comprehension_repair.new_counters()
     rows: List[Dict] = []
     for cid, marker in rec["by_identity"].items():
-        rows.extend(endpoint_rows_for_cell(marker, rec["matrix_by_identity"][cid]))
+        rows.extend(endpoint_rows_for_cell(
+            marker, rec["matrix_by_identity"][cid], counters))
     if len(rows) != EXPECTED_ROWS:
         raise AnalysisError(
             f"produced {len(rows)} endpoint rows, expected {EXPECTED_ROWS}")
     rows.sort(key=lambda r: (r["state_id"], r["site"], r["severity_k"],
                              r["realization"], r["endpoint"]))
+    recovered = sum(1 for r in rows
+                    if r["correctness_source"] == comprehension_repair.RECOVERED)
     return {"rows": rows, "matrix": matrix, "census": rec, "lifecycle": life,
-            "n_shards": len(io_utils.SHARD_NAMES)}
+            "n_shards": len(io_utils.SHARD_NAMES),
+            "comprehension_counters": counters,
+            "comprehension_repair": comprehension_repair.repair_record(
+                counters, recovered)}
 
 
 def main(argv=None) -> int:

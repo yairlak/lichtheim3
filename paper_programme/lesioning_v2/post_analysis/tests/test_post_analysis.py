@@ -139,13 +139,23 @@ def test_metric_parity_with_frozen_definition_where_route_is_unambiguous():
 
 # ---------------------------------------------- synthetic namespace ---------
 def _endpoint_items(seed=0):
+    """Synthetic rows reproducing the REAL execution encoding.
+
+    Comprehension rows mirror the observed bug: the binary correctness bit is
+    stored in `prediction`, and `correct` is a constant 0.
+    """
     out = []
     for i, e in enumerate(battery.ALL_ENDPOINTS):
         n = 5
         for j in range(n):
-            out.append({"item_id": f"bank_{j}", "task": e.task, "route": e.route,
-                        "decoding_convention": e.decoding_convention,
-                        "correct": 1 if (j + i + seed) % 2 == 0 else 0})
+            bit = 1 if (j + i + seed) % 2 == 0 else 0
+            row = {"item_id": f"bank_{j}", "task": e.task, "route": e.route,
+                   "decoding_convention": e.decoding_convention,
+                   "correct": bit}
+            if e.key == "c_top1":
+                row["correct"] = 0              # the faulty stored value
+                row["prediction"] = str(bit)    # the true bit, losslessly kept
+            out.append(row)
     return out
 
 
@@ -163,7 +173,7 @@ def _build(tmp_path, drop=None, dup=False, extra_endpoint=False):
                 items.append({"item_id": "bank_0", "task": "repetition",
                               "route": "bogus",
                               "decoding_convention": "GENUINE_FREE_AR",
-                              "correct": 1})
+                              "correct": 1, "prediction": "x"})
             cells.write_cell(shard, row, items, {"rows": []}, {"p": 1},
                              restoration_verified=True)
         if dup and idx == 0:
@@ -440,3 +450,236 @@ def test_validation_payload_is_complete(namespace, tmp_path):
     assert val["statistical_inference_performed"] is False
     assert val["results_namespace_written_to"] is False
     assert val["analysis_schema_observation"]["route_is_load_bearing"] is True
+
+
+# ============================================================================
+#  COMPREHENSION ENCODING REPAIR
+#  FAILURE_CLASS = EXECUTION_OUTPUT_COMPREHENSION_CORRECT_FIELD_ENCODING
+# ============================================================================
+from paper_programme.lesioning_v2.post_analysis import comprehension_repair as CR  # noqa: E402
+
+
+def _c_row(pred, correct=0):
+    return {"task": "comprehension", "route": "full",
+            "decoding_convention": "STRICT_TOP1_RETRIEVAL",
+            "prediction": pred, "correct": correct}
+
+
+# 1. canonical evaluator semantics ------------------------------------------
+def test_canonical_evaluator_treats_per_item_top1_as_binary_correctness():
+    """Read from the frozen evaluator source, not assumed."""
+    src = open(os.path.join(REPO, "scripts", "naming_comprehension",
+                            "train_tasks.py")).read()
+    i = src.index("def evaluate_comprehension_subset")
+    blk = src[i:i + 7000]
+    assert '"top1": float(np.mean(m["top1"]))' in blk
+    j = blk.index('out["_per_item"]')
+    per = blk[j:j + 520]
+    assert '"top1": int(m["top1"][k])' in per
+    assert '"correct"' not in per and '"top1_correct"' not in per
+    assert '"top1_word"' in per        # identity exists in the evaluator ...
+
+
+def test_adapters_are_left_unmodified_as_provenance():
+    for rel in ("execution/evaluators.py", "execution/lesioned_eval.py"):
+        src = open(os.path.join(PKG, rel)).read()
+        assert 'r.get("correct", r.get("top1_correct", 0))' in src, \
+            f"{rel} was retrospectively 'fixed'; it must stay as provenance"
+
+
+def test_predicted_identity_is_not_recoverable():
+    """top1_word / top1_idx were never serialized."""
+    src = open(os.path.join(PKG, "execution", "evaluators.py")).read()
+    assert "top1_word" not in src and "top1_idx" not in src
+    rec = CR.repair_record(CR.new_counters(), 0)
+    assert rec["PREDICTED_IDENTITY_RECOVERABLE_FROM_ITEMS_JSONL"] == "NO"
+
+
+# 2. the recovery rule -------------------------------------------------------
+def test_recovery_maps_prediction_to_effective_correct():
+    assert CR.effective_correct(_c_row("1", correct=0)) == (1, CR.RECOVERED)
+    assert CR.effective_correct(_c_row("0", correct=0)) == (0, CR.RECOVERED)
+
+
+def test_recovery_ignores_the_faulty_stored_correct():
+    """Even a nonzero stored value must not override the serialized bit."""
+    assert CR.effective_correct(_c_row("1", correct=0))[0] == 1
+    assert CR.effective_correct(_c_row("0", correct=1))[0] == 0
+
+
+# 3. fail closed -------------------------------------------------------------
+@pytest.mark.parametrize("bad", ["", "2", "-1", "yes", "1.0", "True", "None"])
+def test_invalid_prediction_fails_closed(bad):
+    with pytest.raises(AnalysisError):
+        CR.effective_correct(_c_row(bad))
+
+
+def test_missing_prediction_fails_closed():
+    row = _c_row("1")
+    del row["prediction"]
+    with pytest.raises(AnalysisError):
+        CR.effective_correct(row)
+
+
+def test_invalid_prediction_fails_the_whole_build(tmp_path):
+    parent = _build(tmp_path)
+    shard0 = os.path.join(parent, "shard_00")
+    m = cells.read_complete_cells(shard0)[0]
+    p = os.path.join(m["_dir"], "items.jsonl")
+    rows = [json.loads(l) for l in open(p) if l.strip()]
+    for r in rows:
+        if r["task"] == "comprehension":
+            r["prediction"] = "2"
+            break
+    with open(p, "w") as fh:
+        fh.write("\n".join(json.dumps(r, sort_keys=True) for r in rows) + "\n")
+    with pytest.raises(AnalysisError):
+        agg.build(parent, verify=False)
+
+
+# 4. no other endpoint is changed -------------------------------------------
+def test_non_comprehension_rows_are_untouched():
+    for e in battery.ALL_ENDPOINTS:
+        if e.key == "c_top1":
+            continue
+        row = {"task": e.task, "route": e.route,
+               "decoding_convention": e.decoding_convention,
+               "correct": 1, "prediction": "whatever"}
+        assert CR.effective_correct(row) == (1, CR.STORED)
+        row["correct"] = 0
+        assert CR.effective_correct(row) == (0, CR.STORED)
+
+
+def test_only_c_top1_is_marked_recovered(namespace):
+    res = agg.build(namespace, verify=False)
+    for r in res["rows"]:
+        want = CR.RECOVERED if r["endpoint"] == "c_top1" else CR.STORED
+        assert r["correctness_source"] == want
+
+
+def test_repair_record_declares_a_single_recoded_endpoint():
+    rec = CR.repair_record(CR.new_counters(), 0)
+    assert rec["endpoints_recoded"] == ["c_top1"]
+    assert rec["metric_changed"] is False and rec["endpoint_changed"] is False
+    assert rec["model_rerun"] is False and rec["lesion_rerun"] is False
+    assert rec["original_results_modified"] is False
+
+
+# 5. route-aware aggregation still holds ------------------------------------
+def test_route_aware_aggregation_unchanged_by_the_repair(namespace):
+    res = agg.build(namespace, verify=False)
+    per = {}
+    for r in res["rows"]:
+        k = (r["state_id"], r["site"], r["severity_k"], r["realization"])
+        per.setdefault(k, set()).add(r["endpoint"])
+    assert all(len(v) == 8 for v in per.values())
+    assert len(res["rows"]) == 14496
+
+
+# 6. recovered c_top1 equals the mean of the serialized bits ----------------
+def test_recovered_c_top1_equals_mean_of_serialized_top1_bits(namespace):
+    res = agg.build(namespace, verify=False)
+    marker = cells.read_complete_cells(os.path.join(namespace, "shard_00"))[0]
+    bits = [int(r["prediction"]) for r in io_utils.read_items(marker["_dir"])
+            if r["task"] == "comprehension"]
+    expected = sum(bits) / len(bits)
+    row = next(r for r in res["rows"]
+               if r["endpoint"] == "c_top1"
+               and r["state_id"] == MATRIX["cells"][0]["state_id"]
+               and r["site"] == MATRIX["cells"][0]["site"]
+               and int(r["severity_k"]) == int(marker["identity_fields"]["severity_k"])
+               and int(r["realization"]) == int(marker["identity_fields"]["realization"]))
+    assert row["exact_match"] == expected
+    assert row["correct"] == sum(bits) and row["n"] == len(bits)
+
+
+def test_stored_correct_would_have_given_zero(namespace):
+    """Without the repair c_top1 would have been identically 0."""
+    marker = cells.read_complete_cells(os.path.join(namespace, "shard_00"))[0]
+    stored = [int(r["correct"]) for r in io_utils.read_items(marker["_dir"])
+              if r["task"] == "comprehension"]
+    assert sum(stored) == 0
+    res = agg.build(namespace, verify=False)
+    recovered = [r for r in res["rows"] if r["endpoint"] == "c_top1"]
+    assert any(io_utils.fnum(r["exact_match"]) > 0 for r in recovered)
+
+
+def test_counters_and_status_are_reported(namespace):
+    res = agg.build(namespace, verify=False)
+    c = res["comprehension_counters"]
+    assert c["n_comprehension_rows"] == c["n_prediction_0"] + c["n_prediction_1"]
+    assert c["n_source_correct_1"] == 0          # the faulty field is all zeros
+    assert c["n_source_differs_from_effective"] == c["n_prediction_1"]
+    assert res["comprehension_repair"]["recovery_status"] == "LOSSLESS_FOR_C_TOP1"
+
+
+def test_k0_c_top1_is_reported_descriptively_without_an_expected_value(namespace):
+    """No hard-coded expectation gates the repair."""
+    res = agg.build(namespace, verify=False)
+    k0 = [r for r in res["rows"]
+          if r["endpoint"] == "c_top1" and int(r["severity_k"]) == 0]
+    assert len(k0) == 12
+    for r in k0:
+        v = io_utils.fnum(r["exact_match"])
+        assert v is not None and 0.0 <= v <= 1.0
+
+
+# 7-8. read-only and no model path (re-asserted post-repair) ----------------
+def test_repair_module_has_no_model_or_torch_path():
+    src = open(os.path.join(PA, "comprehension_repair.py")).read()
+    tree = ast.parse(src)
+    imported = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            imported |= {a.name.split(".")[0] for a in n.names}
+        elif isinstance(n, ast.ImportFrom) and n.module:
+            imported.add(n.module.split(".")[0])
+    assert "torch" not in imported
+    for bad in ("build_state", "evaluate_comprehension_subset("):
+        assert bad not in src
+
+
+def test_validation_reports_the_encoding_repair(namespace):
+    res = agg.build(namespace, verify=False)
+    base = curves.intact_baselines(res["rows"])
+    cons = curves.k0_cross_site_consistency(base)
+    val = validate.build(namespace, res, res["rows"], cons, {})
+    assert val["comprehension_encoding_bug_detected"] is True
+    assert val["comprehension_encoding_recovery"] == "LOSSLESS_FOR_C_TOP1"
+    assert val["comprehension_source_correct_field_valid"] is False
+    assert val["comprehension_recovery_field"] == "prediction"
+    assert val["comprehension_prediction_identity_preserved"] is False
+    assert val["comprehension_top1_correctness_preserved"] is True
+    assert val["validity_status"] == "PASS"
+    assert val["comprehension_repair_counts"]["n_comprehension_rows"] > 0
+
+
+# 9. output checksum manifest verifies, including figure subdirectories -----
+def test_output_sha256_manifest_verifies_with_figure_subdirs(tmp_path, namespace):
+    import subprocess
+    from paper_programme.lesioning_v2.post_analysis import run_post_analysis as R
+    out = str(tmp_path / "an_out")
+    assert R.main(["--results-parent", namespace, "--out-dir", out]) == 0
+    man = os.path.join(out, "ANALYSIS_OUTPUT_SHA256SUMS")
+    listed = [l.split(None, 1)[1].strip() for l in open(man) if l.strip()]
+    for rel in ("figures/PRIMARY_L1.png", "figures/PRIMARY_L2.png",
+                "figures/PRIMARY_L3.png",
+                "figures_diagnostic/DIAGNOSTIC_L1.png",
+                "figures_diagnostic/DIAGNOSTIC_L2.png",
+                "figures_diagnostic/DIAGNOSTIC_L3.png",
+                "COMPREHENSION_ENCODING_REPAIR.json"):
+        assert rel in listed, f"{rel} missing from the manifest"
+        assert os.path.exists(os.path.join(out, rel))
+    for rel in listed:
+        assert os.path.exists(os.path.join(out, rel)), f"unresolvable: {rel}"
+    tool = "sha256sum" if shutil_which("sha256sum") else "shasum"
+    args = [tool, "-c", "ANALYSIS_OUTPUT_SHA256SUMS"] if tool == "sha256sum" \
+        else [tool, "-a", "256", "-c", "ANALYSIS_OUTPUT_SHA256SUMS"]
+    r = subprocess.run(args, cwd=out, capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "FAILED" not in r.stdout
+
+
+def shutil_which(x):
+    import shutil
+    return shutil.which(x)
